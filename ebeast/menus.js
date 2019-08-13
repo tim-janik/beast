@@ -50,7 +50,7 @@ export async function setup_app_menu()
   }
   complete_menu_items (menubar_menuitems);
   const menubar_menu = Electron.Menu.buildFromTemplate (menubar_menuitems);
-  Electron.Menu.setApplicationMenu (menubar_menu);
+  Electron.getCurrentWindow().setMenu (menubar_menu);
   check_all_menu_items();
 }
 
@@ -99,8 +99,10 @@ function menu_command (menuitem)
 			  nodeIntegration: false,
 			  plugins: true, // needed for pdf_viewer
 			  sandbox: true } });
+      let u = new URL (window.location);
+      u = u.origin + '/doc/beast-manual.html';
+      win.loadURL (u);
       win.setMenu (null);
-      win.loadURL ('file:///' + __dirname + '/../doc/beast-manual.html');
       win.webContents.on ('before-input-event', (event, input) => {
 	if (input.type == 'keyUp' || input.type == 'keyDown')
 	  {

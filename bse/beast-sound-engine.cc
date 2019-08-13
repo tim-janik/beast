@@ -354,17 +354,18 @@ static std::string
 app_path (const std::string &path)
 {
   using namespace Bse;
-  static const char *basepath = realpath ((runpath (RPath::INSTALLDIR) + "/app/").c_str(), NULL);
-  if (basepath)
+  static const char *apppath = realpath ((runpath (RPath::INSTALLDIR) + "/app/").c_str(), NULL);
+  static size_t apppath_length = strlen (apppath ? apppath : "");
+  static const char *docpath = realpath ((runpath (RPath::INSTALLDIR) + "/doc/").c_str(), NULL);
+  static size_t docpath_length = strlen (docpath ? docpath : "");
+  if (apppath && docpath)
     {
-      static size_t baselen = strlen (basepath);
-      char *uripath = realpath ((basepath + std::string ("/") + path).c_str(), NULL);
-      if (uripath && strncmp (uripath, basepath, baselen) == 0 && uripath[baselen] == '/')
-        {
-          std::string dest = uripath;
-          free (uripath);
-          return dest;
-        }
+      char *uripath = realpath ((apppath + std::string ("/") + path).c_str(), NULL);
+      std::string dest = uripath ? uripath : "";
+      free (uripath);
+      if ((dest.compare (0, apppath_length, apppath) == 0 && dest[apppath_length] == '/') ||
+          (dest.compare (0, docpath_length, docpath) == 0 && dest[docpath_length] == '/'))
+        return dest;
     }
   return ""; // 404
 }
@@ -395,16 +396,26 @@ http_request (websocketpp::connection_hdl hdl)
     }
   // file
   std::string filepath = app_path (simplepath);
-  if (Path::check (filepath, "drx"))
+  if (!filepath.empty() && Path::check (filepath, "drx"))
     filepath = Path::join (filepath, "index.html");
   if (Path::check (filepath, "fr"))
     {
-      if (string_endswith (filepath, ".html"))
+      if (string_endswith (filepath, ".html") || string_endswith (filepath, ".htm"))
         con->append_header ("Content-Type", "text/html; charset=utf-8");
       else if (string_endswith (filepath, ".js") || string_endswith (filepath, ".mjs"))
         con->append_header ("Content-Type", "application/javascript");
       else if (string_endswith (filepath, ".css"))
         con->append_header ("Content-Type", "text/css");
+      else if (string_endswith (filepath, ".ico"))
+        con->append_header ("Content-Type", "image/x-icon");
+      else if (string_endswith (filepath, ".gif"))
+        con->append_header ("Content-Type", "image/gif");
+      else if (string_endswith (filepath, ".svg"))
+        con->append_header ("Content-Type", "image/svg+xml");
+      else if (string_endswith (filepath, ".png"))
+        con->append_header ("Content-Type", "image/png");
+      else if (string_endswith (filepath, ".jpg"))
+        con->append_header ("Content-Type", "image/jpeg");
       else
         con->append_header ("Content-Type", "application/octet-stream");
       Blob blob = Blob::from_file (filepath);
