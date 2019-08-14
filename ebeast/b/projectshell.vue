@@ -57,7 +57,7 @@ module.exports = {
     Vue.prototype.Shell = this;
     assert (this === p.Shell);
     // provide default project
-    this.load_project();
+    this.load_project (Bse.server.last_project());
     // load_project() also forces an update with new Shell properties in place
   },
   provide () { return { 'b-projectshell': this }; },
@@ -69,18 +69,23 @@ module.exports = {
     status (...args) {
       console.log (...args);
     },
-    async load_project (projectpath)
+    async load_project (project_or_path)
     {
+      project_or_path = await project_or_path;
       // always replace the existing project with a new one
-      let newproject = await Bse.server.create_project ('Untitled');
-      // load from disk if possible
-      if (projectpath != undefined)
+      let newproject = project_or_path instanceof Bse.Project ? project_or_path : null;
+      if (!newproject)
 	{
-	  const ret = await newproject.restore_from_file (projectpath);
-	  if (ret != Bse.Error.NONE)
-	    return ret;
-	  const basename = projectpath.replace (/.*\//, '');
-	  await newproject.set_name (basename);
+	  newproject = await Bse.server.create_project ('Untitled');
+	  // load from disk if possible
+	  if (project_or_path)
+	    {
+	      const ret = await newproject.restore_from_file (project_or_path);
+	      if (ret != Bse.Error.NONE)
+		return ret;
+	      const basename = project_or_path.replace (/.*\//, '');
+	      await newproject.set_name (basename);
+	    }
 	}
       // ensure project has a song
       let song, supers = await newproject.get_supers();
