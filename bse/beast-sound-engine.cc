@@ -460,7 +460,13 @@ class EventHub {
     event (const Aida::Event &event)
     {
       Bse::ObjectIfaceP obj = weak_obj.lock();
-      ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl);
+      websocketpp::lib::error_code ec;
+      ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl, ec);
+      if (ec) // ec.value() == websocketpp::error::bad_connection
+        {
+          disconnect_id (handler_id);
+          return; // `this` is deleted
+        }
       if (obj && con)
         {
           rapidjson::Document d (rapidjson::kObjectType);
@@ -514,20 +520,26 @@ public:
     if (cbi.n_args() == 1)
       {
         const ssize_t handler_id = Jsonipc::from_json<ssize_t> (cbi.ntharg (0));
-        HandlerMap &hmap = handlers();
-        auto it = hmap.find (handler_id);
-        bool result = false;
-        if (it != hmap.end())
-          {
-            EventHandler &ehandler = it->second;
-            ehandler.event_con.disconnect();
-            hmap.erase (it);
-            result = true;
-          }
+        const bool result = disconnect_id (handler_id);
         cbi.set_result (Jsonipc::to_json (result, cbi.allocator()).Move());
         return NULL;
       }
     return new std::string (cbi.invalid_params);
+  }
+  static bool
+  disconnect_id (ssize_t handler_id)
+  {
+    HandlerMap &hmap = handlers();
+    auto it = hmap.find (handler_id);
+    bool result = false;
+    if (it != hmap.end())
+      {
+        EventHandler &ehandler = it->second;
+        ehandler.event_con.disconnect();
+        hmap.erase (it);
+        result = true;
+      }
+    return result;
   }
   /* TODO: delete all EventHandler entries on connection death
    * TODO: clean up EventHandler entries on object deletion
