@@ -1153,6 +1153,18 @@ ServerImpl::create_project (const String &project_name)
   return project->as<ProjectIfaceP>();
 }
 
+ProjectIfaceP
+ServerImpl::last_project ()
+{
+  BseServer *server = as<BseServer*>();
+  if (server->projects)
+    {
+      BseProject *project = (BseProject*) server->projects->data;
+      return project->as<ProjectIfaceP>();
+    }
+  return nullptr;
+}
+
 void
 ServerImpl::destroy_project (ProjectIface &project_iface)
 {

@@ -114,6 +114,7 @@ public:
   virtual void   load_assets             () override;
   virtual bool   can_load                (const String &file_name) override;
   virtual ProjectIfaceP create_project   (const String &project_name) override;
+  virtual ProjectIfaceP last_project     () override;
   virtual void          destroy_project  (ProjectIface &project) override;
   virtual AuxDataSeq list_module_types      () override;
   virtual AuxData    find_module_type       (const String &module_type) override;
