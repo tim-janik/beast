@@ -852,12 +852,17 @@ function remove_frame_handler (handler_id) {
 /// Install a permanent redraw handler, to run as long as the DSP engine is active.
 export function add_frame_handler (handlerfunc) {
   if (frame_handler_array === undefined) { // must initialize
-    frame_handler_active = Boolean (Bse.server.engine_active());
     frame_handler_array = [];
-    Bse.server.on ('enginechange', (ev) => {
-      frame_handler_active = Boolean (ev.active);
+    (async function() {
+      const check_active_promise = Bse.server.engine_active();
+      const onenginechange_promise = Bse.server.on ('enginechange', (ev) => {
+	frame_handler_active = Boolean (ev.active);
+	reinstall_frame_handler();
+      } );
+      frame_handler_active = Boolean (await check_active_promise);
       reinstall_frame_handler();
-    } );
+      await onenginechange_promise;
+    }) ();
   }
   const handler_id = frame_handler_id++;
   frame_handler_array.push ([handlerfunc, handler_id]);
