@@ -84,6 +84,13 @@ typedef vector<String> StringVector;    ///< Convenience alias for a std::vector
 #define BSE_DECLARE_VLA(Type, var, count)          Type var[count] ///< Declare a variable length array (clang++ uses std::vector<>).
 #endif
 
+/// Test string equality at compile time.
+extern inline constexpr bool
+constexpr_equals (const char *a, const char *b, size_t n)
+{
+  return n == 0 || (a[0] == b[0] && (a[0] == 0 || constexpr_equals (a + 1, b + 1, n - 1)));
+}
+
 /// Call inplace new operator by automatically inferring the Type.
 template<class Type, class ...Ts> __attribute__ ((always_inline)) inline void
 new_inplace (Type &typemem, Ts &&... args)
