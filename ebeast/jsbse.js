@@ -50,6 +50,10 @@ server['$promise'] = new Promise ((resolve, reject) => {
     error => reject (error));
 });
 
+// Handle binary messages for shm updates
+import * as Util from './utilities.js';
+Bse.$jsonipc.onbinary = Util.shm_receive;
+
 // Define BSE JS unit tests
 async function ebeast_test_bse_basics() {
   console.assert (server && server.$id > 0);
