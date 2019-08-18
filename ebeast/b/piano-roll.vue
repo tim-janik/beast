@@ -88,7 +88,7 @@ const piano_roll_cssheight = 841;
 
 module.exports = {
   name: 'b-piano-roll',
-  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
   props: {
     'piano-part': [Bse.Part],
   },
@@ -137,7 +137,7 @@ module.exports = {
     piano_layout: piano_layout,
     render_piano: render_piano,
     render_notes: render_notes,
-    dom_updated() {
+    dom_update() {
       if (!this.resize_observer)
 	this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
       if (this.resizable_scrollarea != this.$refs.scrollarea) {

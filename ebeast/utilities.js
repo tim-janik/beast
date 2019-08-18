@@ -193,15 +193,57 @@ export function hyphenate (string) {
   return string.replace (uppercase_boundary, '-$1').toLowerCase();
 }
 
-/** Vue mixin to provide a `dom_updated` hook.
- * This mixin is a bit of a sledge hammer, usually it's better to have something
- * similar to a paint_canvas() method and just use $watch (this.paint_canvas);
- * to update automatically.
- * A dom_updated() method is only really needed to operate on initialized $refs[].
+/** Vue mixin to provide a `dom_create`, `dom_update`, `dom_destroy` hooks.
+ * This mixin allowes async instance method callbacks for DOM element creation
+ * (`this.dom_create()`), updates (`this.dom_update()`, also called right after
+ * `this.dom_create()`) and destruction (`this.dom_destroy()`). It is ensured
+ * that invocation of asnyc callbacks is serialized, so `dom_create` needs to
+ * finish before `dom_update`, which in turn has to finish before subsequent
+ * calls to `dom_update` or `dom_destroy`.
+ * The Boolean member `this.dom_present` indicates whether DOM elements are
+ * still accessible (e.g. via `this.$el` or `this.$refs`), which can change
+ * at any `await` point in an async function.
+ * The Boolean member `this.dom_destroying` indicates wether DOM elements are
+ * being destroyed intermittingly, which can happen at any `await` point in
+ * an async function.
  */
-vue_mixins.dom_updated = {
-  mounted: function () { this.dom_updated(); },
-  updated: function () { this.dom_updated(); },
+vue_mixins.dom_updates = {
+  beforeCreate: function () {
+    console.assert (this.dom_handler_promise == undefined);
+    this.dom_handler_promise = null;
+    this.dom_present = false;
+    this.dom_destroying = false;
+  },
+  mounted: function () {
+    this.dom_present = true;
+    console.assert (this.dom_handler_promise == null);
+    this.dom_handler_promise = (async () => {
+      if (this.dom_create)
+	await this.dom_create();
+    }) ();
+    if (this.dom_update)
+      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
+	if (this.dom_present)
+	  await this.dom_update();
+      });
+  },
+  updated: function () {
+    console.assert (this.dom_handler_promise);
+    if (this.dom_update)
+      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
+	if (this.dom_present)
+	  await this.dom_update();
+      });
+  },
+  beforeDestroy: function () {
+    this.dom_present = false;
+    this.dom_destroying = true;
+    console.assert (this.dom_handler_promise);
+    if (this.dom_destroy)
+      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
+	await this.dom_destroy();
+      });
+  },
 };
 
 /** VueifyObject - turn a regular object into a Vue instance.

@@ -32,7 +32,7 @@
 const tick_quant = 384; // FIXME
 module.exports = {
   name: 'b-part-thumb',
-  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
   props: {
     part: { type: Bse.Part, },
     tick: { type: Number, },
@@ -59,7 +59,7 @@ module.exports = {
   },
   methods: {
     render_canvas: render_canvas,
-    dom_updated() {
+    dom_update() {
       this.render_canvas();
     },
   },

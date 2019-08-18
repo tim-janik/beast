@@ -33,7 +33,7 @@
 <script>
 module.exports = {
   name: 'b-example',
-  mixins: [ Util.vue_mixins.dom_updated, ],	// Always call the dom_updated() method
+  mixins: [ Util.vue_mixins.dom_updates, ],	// Always call the dom_update(), etc methods
   props: { valuefromparent: String, },
   computed: {
     sample:	{ set (v) { this.sample_ = v; },
@@ -46,7 +46,7 @@ module.exports = {
     sample_:	'Some default',
   },
   methods: {	// Custom methods
-    dom_updated() {},	// See Util.vue_mixins.dom_updated
+    dom_update() {},	// See Util.vue_mixins.dom_updates
   },
 };
 </script>
