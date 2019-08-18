@@ -1356,6 +1356,114 @@ ServerImpl::tick_stamp_from_systime (int64 systime_usecs)
   return bse_engine_tick_stamp_from_systime (systime_usecs);
 }
 
+struct FragmentBroadcaster {
+  using BinarySender = IpcHandler::BinarySender;
+  BinarySender   binary_sender;
+  size_t         binary_size = 0;
+  ptrdiff_t      conid = 0;
+  ShmFragmentSeq plan;
+  SharedMemory   smem;
+  uint           timerid = 0;
+};
+static std::vector<FragmentBroadcaster> fbroadcasters;
+
+static void
+broadcast_timer (ptrdiff_t conid)
+{
+  size_t i;
+  for (i = 0; i < fbroadcasters.size(); ++i)    // size() is usually 1
+    if (conid == fbroadcasters[i].conid)
+      break;
+  if (i >= fbroadcasters.size())
+    return;                                     // should not happen
+  FragmentBroadcaster &broad = fbroadcasters[i];
+  const SharedMemory &smem = broad.smem;
+  const char *shm_start = (char*) smem.shm_start;
+  std::string binary;
+  binary.resize (broad.binary_size);
+  char *data = &binary[0];
+  for (const auto &frag : broad.plan)           // offsets and lengths were validated earlier
+    memcpy (data + frag.bpos, shm_start + frag.shmoffset, frag.blength);
+  const bool keep_alive = broad.binary_sender (binary);
+  if (!keep_alive)                              // clear slot, disable timer
+    {
+      exec_handler_clear (broad.timerid);
+      broad.timerid = 0;
+      broad.conid = 0;
+      broad.binary_sender = nullptr;
+      broad.plan.clear();
+      broad.smem = SharedMemory();
+    }
+}
+
+static bool
+validate_shm_fragments (const SharedMemory &smem, const ShmFragmentSeq &plan, size_t *lengthp)
+{
+  size_t length = 0;
+  for (const auto &frag : plan)
+    if (frag.shmoffset < 0 || frag.blength < 0 || frag.bpos < 0 ||
+        size_t (frag.shmoffset) + frag.blength > smem.shm_length)
+      return false;
+    else
+      length = std::max (length, frag.bpos + size_t (frag.blength));
+  // the target buffer length does not strictly need to be smaller than the shared memory
+  // area, but if it is indeed bigger, something fishy or very inefficient is going on
+  if (length > smem.shm_length)
+    return false;       // heuristic for overflow or out-of-bounds somewhere
+  *lengthp = length;
+  return true;
+}
+
+void
+ServerImpl::broadcast_shm_fragments (int64 shm_id, const ShmFragmentSeq &plan, int interval_ms)
+{
+  assert_return (shm_id != 0);
+  SharedMemory sm = get_shared_memory (shm_id);
+  assert_return (sm.shm_id != 0); // shm_id must be valid
+  IpcHandler *ipch = get_ipc_handler();
+  const ptrdiff_t conid = ipch ? ipch->current_connection_id() : 0;
+  assert_return (conid != 0);
+  size_t maxlen = 0;
+  const bool valid_shm_plan = validate_shm_fragments (sm, plan, &maxlen);
+  assert_return (valid_shm_plan);
+  size_t i;
+  for (i = 0; i < fbroadcasters.size(); ++i)    // find candidate for re-assigment
+    if (fbroadcasters[i].conid == conid)
+      break;
+  if (i == fbroadcasters.size())                // none found, new connection plan
+    {
+      if (plan.empty())
+        return;                                 // reset of unknown plan
+      for (i = 0; i < fbroadcasters.size(); ++i)
+        if (fbroadcasters[i].conid == 0)        // found empty slot
+          break;
+      if (i == fbroadcasters.size())
+        fbroadcasters.resize (i + 1);           // or allocate new slot
+      fbroadcasters[i].conid = conid;
+      fbroadcasters[i].binary_sender = ipch->create_binary_sender();
+    }
+  FragmentBroadcaster &broad = fbroadcasters[i];   // change existing plan
+  if (broad.timerid)
+    exec_handler_clear (broad.timerid);
+  broad.timerid = 0;
+  broad.plan = plan;
+  broad.binary_size = maxlen;
+  if (plan.empty())                             // reset of old plan
+    {
+      broad.conid = 0;
+      broad.binary_sender = nullptr;
+      broad.plan.clear();
+      broad.smem = SharedMemory();
+      return;                                   // clear slot to keep indices stable
+    }
+  broad.smem = sm;
+  std::function<bool()> broadcast_timer_func = [conid] () {
+    broadcast_timer (conid);
+    return true;                                // keep interval timer alive
+  };
+  broad.timerid = exec_timeout (broadcast_timer_func, std::max (interval_ms, 16));
+}
+
 #define SHARED_MEMORY_AREA_SIZE (4 * 1024 * 1024)
 
 static std::vector<uint32> shared_memory_area_ids;
@@ -1413,6 +1521,23 @@ ServerImpl::release_shared_block (const SharedBlock &sb)
   assert_return (sb.mem_length == int32 (sb.mem_length));
   AlignedBlock ab { uint32 (sb.shm_id), uint32 (sb.mem_length), sb.mem_start };
   release_aligned_block (ab);
+}
+
+IpcHandler::~IpcHandler()
+{}
+
+static IpcHandler *server_ipc_handler = nullptr;
+
+void
+ServerImpl::set_ipc_handler (IpcHandler *ipch)
+{
+  server_ipc_handler = ipch;
+}
+
+IpcHandler*
+ServerImpl::get_ipc_handler ()
+{
+  return server_ipc_handler;
 }
 
 int
