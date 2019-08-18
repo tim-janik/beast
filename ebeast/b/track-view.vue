@@ -140,7 +140,7 @@ const maxdb =  +6.0; // +12.0;
 
 module.exports = {
   name: 'b-track-view',
-  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
@@ -169,12 +169,6 @@ module.exports = {
 		   this.mc = await this.track.midi_channel();
 		 }
 	     } },
-  },
-  beforeDestroy() {
-    if (this.remove_frame_handler) {
-      this.remove_frame_handler();
-      this.remove_frame_handler = undefined;
-    }
   },
   destroyed() {
     if (this.notifyid_)
@@ -208,8 +202,7 @@ module.exports = {
 	return true;
       return false;
     },
-    update_levels: update_levels,
-    async dom_updated() {
+    async dom_update() { // note, `this.dom_present` may change at await points
       if (this.track) {
 	// setup level gradient based on mindb..maxdb
 	const levelbg = this.$refs['levelbg'];
@@ -243,10 +236,17 @@ module.exports = {
 	// cache level width in pxiels to avoid expensive recalculations in fps handler
 	this.level_width = levelbg.getBoundingClientRect().width;
 	// trigger frequent screen updates
-	if (!this.remove_frame_handler)
+	if (!this.remove_frame_handler && this.dom_present)
 	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
       }
     },
+    async dom_destroy() {
+      if (this.remove_frame_handler) {
+	this.remove_frame_handler();
+	this.remove_frame_handler = undefined;
+      }
+    },
+    update_levels: update_levels,
   },
 };
 
