@@ -434,8 +434,7 @@ http_request (websocketpp::connection_hdl hdl)
                  "<p>The requested URL was not found: <tt>" + con->get_uri()->str() + "</tt></p>\n"
                  "<hr><address>" "beast-sound-engine/" + Bse::version() + "</address>\n"
                  "<hr></body></html>\n");
-  if (verbose)
-    Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
+  Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
 }
 
 class EventHub {
