@@ -228,6 +228,18 @@ module.exports = {
 	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
 	this.rdbspl = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_SPL);
 	this.rdbtip = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_TIP);
+	// subscribe to shared memory updates
+	let l_shmid = this.lmonitor.get_shm_id(), l_offset = this.lmonitor.get_shm_offset(),
+	    r_shmid = this.rmonitor.get_shm_id(), r_offset = this.rmonitor.get_shm_offset(); // promises
+	l_shmid = await l_shmid; l_offset = await l_offset; r_shmid = await r_shmid; r_offset = await r_offset;
+	this.sub_lspl = Util.shm_subscribe (l_shmid, l_offset + 16, 4); // FIXME: Bse.MonitorField.F32_DB_SPL
+	this.sub_ltip = Util.shm_subscribe (l_shmid, l_offset + 20, 4); // FIXME: Bse.MonitorField.F32_DB_TIP
+	this.sub_rspl = Util.shm_subscribe (r_shmid, r_offset + 16, 4); // FIXME: Bse.MonitorField.F32_DB_SPL
+	this.sub_rtip = Util.shm_subscribe (r_shmid, r_offset + 20, 4); // FIXME: Bse.MonitorField.F32_DB_TIP
+	this.rdbspl = this.sub_rspl[0] / 4;
+	this.rdbtip = this.sub_rtip[0] / 4;
+	this.ldbspl = this.sub_lspl[0] / 4;
+	this.ldbtip = this.sub_ltip[0] / 4;
 	// cache level width in pxiels to avoid expensive recalculations in fps handler
 	this.level_width = levelbg.getBoundingClientRect().width;
 	// trigger frequent screen updates
@@ -260,8 +272,8 @@ function update_levels (active) {
   const tw = 2; // tip thickness in pixels
   const pxrs_round = (fraction) => Math.round (fraction / pxrs) * pxrs; // scale up, round to pixel, scale down
   // handle multiple channels
-  const channels = [ [this.ldbspl[0], this.ldbtip[0], covertip0, covermid0],
-		     [this.rdbspl[0], this.rdbtip[0], covertip1, covermid1], ];
+  const channels = [ [Util.shm_array_float32[this.ldbspl], Util.shm_array_float32[this.ldbtip], covertip0, covermid0],
+		     [Util.shm_array_float32[this.rdbspl], Util.shm_array_float32[this.rdbtip], covertip1, covermid1], ];
   for (const chan_entry of channels) {
     const [dbspl, dbtip, covertip, covermid] = chan_entry;
     // map dB SPL to a 0..1 paint range
