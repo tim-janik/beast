@@ -814,7 +814,7 @@ let frame_handler_id = 0x200000,
     frame_handler_array = undefined;
 
 function call_frame_handlers () {
-  const active = frame_handler_active;
+  const active = frame_handler_active && shm_array_active;
   frame_handler_max = frame_handler_array.length;
   for (frame_handler_cur = 0; frame_handler_cur < frame_handler_max; frame_handler_cur++) {
     const handler_id = frame_handler_array[frame_handler_cur][1];
@@ -834,7 +834,7 @@ function reinstall_frame_handler() {
   if (frame_handler_active)
     frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
   else
-    call_frame_handlers(); // call one last time with frame_handler_active == false
+    call_frame_handlers(); // call one time for cleanups with frame_handler_active == false
 }
 
 function remove_frame_handler (handler_id) {
@@ -846,7 +846,7 @@ function remove_frame_handler (handler_id) {
       frame_handler_max--;
       return;
     }
-  console.log ("remove_frame_handler(" + handler_id + "): invalid id");
+  console.error ("remove_frame_handler(" + handler_id + "): invalid id");
 }
 
 /// Install a permanent redraw handler, to run as long as the DSP engine is active.
@@ -857,16 +857,19 @@ export function add_frame_handler (handlerfunc) {
       const check_active_promise = Bse.server.engine_active();
       const onenginechange_promise = Bse.server.on ('enginechange', (ev) => {
 	frame_handler_active = Boolean (ev.active);
+	shm_reschedule();
 	reinstall_frame_handler();
       } );
       frame_handler_active = Boolean (await check_active_promise);
+      shm_reschedule();
       reinstall_frame_handler();
       await onenginechange_promise;
     }) ();
   }
   const handler_id = frame_handler_id++;
   frame_handler_array.push ([handlerfunc, handler_id]);
-  reinstall_frame_handler();
+  if (!frame_handler_callback_id) // ensure handlerfunc is called at least once
+    frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
   return function() { remove_frame_handler (handler_id); };
 }
 
@@ -909,6 +912,105 @@ export function array_fields_f32 (afields, byte_offset) {
 export function array_fields_f64 (afields, byte_offset) {
   console.assert ((byte_offset & 0x7) == 0); // 8 - 1
   return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
+}
+
+let shm_array_shmid = 0;
+let shm_array_active = false;
+let shm_array_entries = []; // { bpos, blength, shmoffset, usecount, }
+let shm_array_binary_size = 8;
+let shm_array_buffer = new ArrayBuffer (0);
+export let shm_array_int32   = undefined;	// assigned by shm_receive
+export let shm_array_float32 = undefined;	// assigned by shm_receive
+export let shm_array_float64 = undefined;	// assigned by shm_receive
+shm_receive (null);
+
+export function shm_receive (arraybuffer) {
+  shm_array_active = frame_handler_active && arraybuffer && shm_array_binary_size <= arraybuffer.byteLength;
+  if (shm_array_active)
+    shm_array_buffer = arraybuffer;
+  else
+    shm_array_buffer = new ArrayBuffer (shm_array_binary_size);
+  shm_array_int32   = new Int32Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 4 ^0);
+  shm_array_float32 = new Float32Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 4 ^0);
+  shm_array_float64 = new Float64Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 8 ^0);
+}
+
+export function shm_subscribe (shmid, byteoffset, bytelength) {
+  if (shm_array_shmid == 0)
+    shm_array_shmid = shmid;
+  else if (shmid != shm_array_shmid)
+    {
+      console.assert (shmid == shm_array_shmid);
+      return;
+    }
+  const lalignment = 4;
+  bytelength = (((bytelength + lalignment-1) / lalignment) ^0) * lalignment;
+  // reuse existing region
+  for (let i = 0; i < shm_array_entries.length; ++i)
+    {
+      const e = shm_array_entries[i];
+      if (e.shmoffset <= byteoffset && e.shmoffset + e.blength >= byteoffset + bytelength)
+	{
+	  const pos = e.bpos + byteoffset - e.shmoffset;
+	  e.usecount += 1;
+	  return [ pos, i ];
+	}
+    }
+  // reallocate freed region
+  for (let i = 0; i < shm_array_entries.length; ++i)
+    {
+      const e = shm_array_entries[i];
+      if (e.usecount == 0 && e.blength == bytelength)
+	{
+	  e.shmoffset = byteoffset;
+	  e.usecount = 1;
+	  shm_reschedule();
+	  return [ e.bpos, i ];
+	}
+    }
+  // allocate new pos, if length exceeds 4, pos needs larger alignment (e.g. for double)
+  let nextpos = shm_array_binary_size;
+  if (bytelength > 4)
+    nextpos = (((nextpos + 8-1) / 8) ^0) * 8;
+  // allocate new region
+  let e = {
+    bpos: nextpos,
+    blength: bytelength,
+    shmoffset: byteoffset,
+    usecount: 1,
+  };
+  shm_array_binary_size = nextpos + bytelength;
+  shm_array_entries.push (e);
+  shm_reschedule();
+  return [ e.bpos, shm_array_entries.length - 1 ];
+}
+
+export function shm_unsubscribe (subscription_tuple) {
+  const e = shm_array_entries[subscription_tuple[0]];
+  console.assert (e.usecount > 0);
+  if (e.usecount)
+    {
+      e.usecount--;
+      if (e.usecount == 0)
+	{
+	  e.shmoffset = -1;
+	  // entry is disabled but stays around for future allocations and stable indexing
+	  shm_reschedule();
+	}
+      return true;
+    }
+  return false;
+}
+
+async function shm_reschedule() {
+  if (frame_handler_active)
+    await Bse.server.broadcast_shm_fragments (shm_array_shmid, shm_array_entries, 33);
+  else
+    {
+      const promise = Bse.server.broadcast_shm_fragments (shm_array_shmid, [], 0);
+      shm_receive (null);
+      await promise;
+    }
 }
 
 // Format window titles
