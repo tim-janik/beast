@@ -271,17 +271,17 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self, Bse::SourceH source)
           features.probe_range = true;
           self->lmonitor.set_probe_features (features);
           self->rmonitor.set_probe_features (features);
-          Bst::MonitorFieldU lfields = Bst::monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset());
-          Bst::MonitorFieldU rfields = Bst::monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset());
+          Bst::MonitorFieldU lfields = Bst::monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset (Bse::MonitorField (0)));
+          Bst::MonitorFieldU rfields = Bst::monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset (Bse::MonitorField (0)));
           auto framecb = [self, lfields, rfields] () {
             scope_draw_range (self,
                               lfields.f32 (Bse::MonitorField::F32_MIN), lfields.f32 (Bse::MonitorField::F32_MAX),
                               rfields.f32 (Bse::MonitorField::F32_MIN), rfields.f32 (Bse::MonitorField::F32_MAX));
             if (0)
               printerr ("SnifferScope: (%x.%x/%x %x.%x/%x) %f,%f %f,%f\n",
-                        self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset(),
+                        self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset (Bse::MonitorField (0)),
                         lfields.f64 (Bse::MonitorField::F64_GENERATION),
-                        self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset(),
+                        self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset (Bse::MonitorField (0)),
                         rfields.f64 (Bse::MonitorField::F64_GENERATION),
                         lfields.f32 (Bse::MonitorField::F32_MIN), lfields.f32 (Bse::MonitorField::F32_MAX),
                         rfields.f32 (Bse::MonitorField::F32_MIN), rfields.f32 (Bse::MonitorField::F32_MAX));

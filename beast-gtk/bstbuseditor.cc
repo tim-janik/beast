@@ -198,16 +198,16 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       self->rmonitor = self->source.create_signal_monitor (1);
       self->lmonitor.set_probe_features (features);
       self->rmonitor.set_probe_features (features);
-      Bst::MonitorFieldU lfields = Bst::monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset());
-      Bst::MonitorFieldU rfields = Bst::monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset());
+      Bst::MonitorFieldU lfields = Bst::monitor_fields_from_shm (self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset (Bse::MonitorField (0)));
+      Bst::MonitorFieldU rfields = Bst::monitor_fields_from_shm (self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset (Bse::MonitorField (0)));
       auto framecb = [self, lfields, rfields] () {
         bst_db_beam_set_value (self->lbeam, lfields.f32 (Bse::MonitorField::F32_DB_SPL));
         bst_db_beam_set_value (self->rbeam, rfields.f32 (Bse::MonitorField::F32_DB_SPL));
         if (0)
           printerr ("BstBusEditor: (%x.%x/%x %x.%x/%x) ldb=%f rdb=%f\n",
-                    self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset(),
+                    self->lmonitor.get_shm_id(), self->lmonitor.get_shm_offset (Bse::MonitorField (0)),
                     lfields.f64 (Bse::MonitorField::F64_GENERATION),
-                    self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset(),
+                    self->rmonitor.get_shm_id(), self->rmonitor.get_shm_offset (Bse::MonitorField (0)),
                     rfields.f64 (Bse::MonitorField::F64_GENERATION),
                     lfields.f32 (Bse::MonitorField::F32_DB_SPL),
                     rfields.f32 (Bse::MonitorField::F32_DB_SPL));
