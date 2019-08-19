@@ -39,22 +39,22 @@ module.exports = {
     index: { type: Number, },
     trackindex: { type: Number, },
   },
-  data_tmpl: { partname: "", allnotes: [] },
+  data_tmpl: { partname: "", allnotes: [], lasttick: 0, },
   watch: {
     part: { immediate: true, async handler (n, o) {
       let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
       let partname = this.part.get_name();
+      let lasttick = this.part.get_last_tick();
       this.allnotes = await allnotes;
       this.partname = await partname;
+      this.lasttick = await lasttick;
     } },
   },
   computed: {
     tickscale: function() { return 10 / 384.0; }, // FIXME
     pxoffset: function() { return this.tick * 10 / 384.0; }, // FIXME
     canvas_width: function() {
-      const part = this.part;
-      let last_tick = part ? part.get_last_tick() : 0;
-      return this.tickscale * Math.floor ((last_tick + tick_quant - 1) / tick_quant) * tick_quant;
+      return this.tickscale * Math.floor ((this.lasttick + tick_quant - 1) / tick_quant) * tick_quant;
     },
   },
   methods: {
