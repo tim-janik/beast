@@ -1020,6 +1020,12 @@ interface Bus : SubSynth {
   };
 };
 
+/// Offsets for signal monitoring fields in bytes, field type and size is used as prefix.
+enum SongTelemetry {
+  I32_TICK_POINTER      =       0 * 4,  ///< Current song position pointer.
+  BYTECOUNT             =       1 * 4,  ///< Total length of all fields.
+};
+
 /// Interface for Track and Part objects, as well as meta data for sequencing.
 interface Song : SNet {
   SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
@@ -1036,6 +1042,7 @@ interface Song : SNet {
   Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
   /// Synthesize a note on a song of an active project.
   void       synthesize_note         (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity);
+  int64      get_shm_offset          (SongTelemetry fld);   ///< Offset into SharedMemory for SongTelemetry fields.
   // signal void   pointer_changed (int32 a);
   // group _("MIDI Instrument") {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
