@@ -215,19 +215,17 @@ module.exports = {
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);
 	// fetch shared memory offsets (all returns are promises)
-	let l_shmid = this.lmonitor.get_shm_id(), r_shmid = this.rmonitor.get_shm_id();
 	let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
 	    ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
 	    rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
 	    rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
-	l_shmid = await l_shmid; r_shmid = await r_shmid;
 	lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
 	rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
 	// subscribe to shared memory updates
-	this.sub_lspl = Util.shm_subscribe (l_shmid, lspl_offset, 4);
-	this.sub_ltip = Util.shm_subscribe (l_shmid, ltip_offset, 4);
-	this.sub_rspl = Util.shm_subscribe (r_shmid, rspl_offset, 4);
-	this.sub_rtip = Util.shm_subscribe (r_shmid, rtip_offset, 4);
+	this.sub_lspl = Util.shm_subscribe (lspl_offset, 4);
+	this.sub_ltip = Util.shm_subscribe (ltip_offset, 4);
+	this.sub_rspl = Util.shm_subscribe (rspl_offset, 4);
+	this.sub_rtip = Util.shm_subscribe (rtip_offset, 4);
 	this.rdbspl = this.sub_rspl[0] / 4;
 	this.rdbtip = this.sub_rtip[0] / 4;
 	this.ldbspl = this.sub_lspl[0] / 4;

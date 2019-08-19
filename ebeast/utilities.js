@@ -956,7 +956,6 @@ export function array_fields_f64 (afields, byte_offset) {
   return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
 }
 
-let shm_array_shmid = 0;
 let shm_array_active = false;
 let shm_array_entries = []; // { bpos, blength, shmoffset, usecount, }
 let shm_array_binary_size = 8;
@@ -977,14 +976,7 @@ export function shm_receive (arraybuffer) {
   shm_array_float64 = new Float64Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 8 ^0);
 }
 
-export function shm_subscribe (shmid, byteoffset, bytelength) {
-  if (shm_array_shmid == 0)
-    shm_array_shmid = shmid;
-  else if (shmid != shm_array_shmid)
-    {
-      console.assert (shmid == shm_array_shmid);
-      return;
-    }
+export function shm_subscribe (byteoffset, bytelength) {
   const lalignment = 4;
   bytelength = (((bytelength + lalignment-1) / lalignment) ^0) * lalignment;
   // reuse existing region
@@ -1046,10 +1038,10 @@ export function shm_unsubscribe (subscription_tuple) {
 
 async function shm_reschedule() {
   if (frame_handler_active)
-    await Bse.server.broadcast_shm_fragments (shm_array_shmid, shm_array_entries, 33);
+    await Bse.server.broadcast_shm_fragments (shm_array_entries, 33);
   else
     {
-      const promise = Bse.server.broadcast_shm_fragments (shm_array_shmid, [], 0);
+      const promise = Bse.server.broadcast_shm_fragments ([], 0);
       shm_receive (null);
       await promise;
     }
