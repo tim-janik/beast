@@ -214,13 +214,6 @@ module.exports = {
 	pf.probe_energy = true;
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);
-	// fetch shared memory pointers for monitoring fields
-	let lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset (0));
-	this.ldbspl = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_DB_SPL);
-	this.ldbtip = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_DB_TIP);
-	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset (0));
-	this.rdbspl = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_SPL);
-	this.rdbtip = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_TIP);
 	// fetch shared memory offsets (all returns are promises)
 	let l_shmid = this.lmonitor.get_shm_id(), r_shmid = this.rmonitor.get_shm_id();
 	let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
