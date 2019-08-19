@@ -21,6 +21,7 @@
       <b-part-list class="b-track-list-row"
 		    v-for="(pair, tindex) in tracks" :key="pair[1]"
 		    :track="pair[0]" :trackindex="tindex"></b-part-list>
+      <span class="b-track-list-pointer" ref="tickpointer"></span>
     </div>
   </div>
 
@@ -45,16 +46,23 @@
     background-color: grey;
   }
   .b-track-list-parts {
+    position: relative;
     display: flex;
     flex-direction: column;
     white-space: nowrap; overflow-x: scroll;
     width: 100%;
+  }
+  .b-track-list-pointer {
+    position: absolute; height: 100%; display: flex;
+    transform: translateX(0px);
+    left: -1.5px; width: 1px; background: #fff8; border: 1px solid #0008; box-sizing: content-box;
   }
 </style>
 
 <script>
 module.exports = {
   name: 'b-track-list',
+  mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song }
   },
@@ -85,8 +93,39 @@ module.exports = {
 	message = method + ': unimplemented';
       Shell.status (message);
     },
+    async dom_create() { // note, `this.dom_present` may change at await points
+      if (!this.remove_frame_handler && this.dom_present)
+	this.remove_frame_handler = Util.add_frame_handler (this.update_tick_pointer);
+      this.last_tickpos = -1;
+    },
+    async dom_update() { // note, `this.dom_present` may change at await points
+      if (!this.song) return;
+      const tickpos_offset = await this.song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
+      // subscribe to shared memory updates
+      this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
+      this.i32tickpos = this.sub_i32tickpos[0] / 4;
+    },
+    async dom_destroy() {
+      if (this.remove_frame_handler) {
+	this.remove_frame_handler();
+	this.remove_frame_handler = null;
+      }
+    },
+    update_tick_pointer (active) {
+      const tickpos = Util.shm_array_int32[this.i32tickpos];
+      if (this.last_tickpos != tickpos)
+	{
+	  const tickscale = 10 / 384.0; // FIXME
+	  const tickpointer = this.$refs['tickpointer'];
+	  this.last_tickpos = tickpos;
+	  const transform = 'translateX(+' + Math.round (tickpos * tickscale) + 'px)';
+	  if (transform != tickpointer.style.getPropertyValue ('transform')) // reduce style recalculations
+	    tickpointer.style.setProperty ('transform', transform);
+	}
+    },
   },
 };
+
 // i18n example
 if (window.__undefined__)
   _("Audio");
