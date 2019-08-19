@@ -215,20 +215,26 @@ module.exports = {
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);
 	// fetch shared memory pointers for monitoring fields
-	let lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset());
+	let lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset (0));
 	this.ldbspl = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_DB_SPL);
 	this.ldbtip = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_DB_TIP);
-	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
+	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset (0));
 	this.rdbspl = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_SPL);
 	this.rdbtip = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_TIP);
+	// fetch shared memory offsets (all returns are promises)
+	let l_shmid = this.lmonitor.get_shm_id(), r_shmid = this.rmonitor.get_shm_id();
+	let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
+	    ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
+	    rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
+	    rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
+	l_shmid = await l_shmid; r_shmid = await r_shmid;
+	lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
+	rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
 	// subscribe to shared memory updates
-	let l_shmid = this.lmonitor.get_shm_id(), l_offset = this.lmonitor.get_shm_offset(),
-	    r_shmid = this.rmonitor.get_shm_id(), r_offset = this.rmonitor.get_shm_offset(); // promises
-	l_shmid = await l_shmid; l_offset = await l_offset; r_shmid = await r_shmid; r_offset = await r_offset;
-	this.sub_lspl = Util.shm_subscribe (l_shmid, l_offset + 16, 4); // FIXME: Bse.MonitorField.F32_DB_SPL
-	this.sub_ltip = Util.shm_subscribe (l_shmid, l_offset + 20, 4); // FIXME: Bse.MonitorField.F32_DB_TIP
-	this.sub_rspl = Util.shm_subscribe (r_shmid, r_offset + 16, 4); // FIXME: Bse.MonitorField.F32_DB_SPL
-	this.sub_rtip = Util.shm_subscribe (r_shmid, r_offset + 20, 4); // FIXME: Bse.MonitorField.F32_DB_TIP
+	this.sub_lspl = Util.shm_subscribe (l_shmid, lspl_offset, 4);
+	this.sub_ltip = Util.shm_subscribe (l_shmid, ltip_offset, 4);
+	this.sub_rspl = Util.shm_subscribe (r_shmid, rspl_offset, 4);
+	this.sub_rtip = Util.shm_subscribe (r_shmid, rtip_offset, 4);
 	this.rdbspl = this.sub_rspl[0] / 4;
 	this.rdbtip = this.sub_rtip[0] / 4;
 	this.ldbspl = this.sub_lspl[0] / 4;
