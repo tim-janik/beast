@@ -47,13 +47,6 @@ SignalMonitorImpl::get_ochannel()
 }
 
 int64
-SignalMonitorImpl::get_shm_id ()
-{
-  SharedBlock sb = source_->cmon_get_block();
-  return sb.shm_id;
-}
-
-int64
 SignalMonitorImpl::get_shm_offset (MonitorField fld)
 {
   SharedBlock sb = source_->cmon_get_block();

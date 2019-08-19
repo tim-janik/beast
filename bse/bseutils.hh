@@ -89,8 +89,7 @@ bool icon_sanitize (Icon *icon);
 Aida::ExecutionContext& execution_context ();   // bsemain.cc
 
 // == memory ==
-struct SharedBlock { // TODO: move to memory.hh
-  int64 shm_id = 0;
+struct SharedBlock {
   int32 mem_offset = 0;
   int32 mem_length = 0;
   void *mem_start = NULL;

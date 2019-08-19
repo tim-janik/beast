@@ -17,7 +17,6 @@ protected:
   friend class           FriendAllocator<SignalMonitorImpl>;
 public:
   explicit               SignalMonitorImpl  (SourceImplP source, uint ochannel);
-  virtual int64          get_shm_id         () override;
   virtual SourceIfaceP   get_osource        () override;
   virtual int64          get_shm_offset     (MonitorField fld) override;
   virtual int32          get_ochannel       () override;
