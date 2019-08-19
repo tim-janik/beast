@@ -80,6 +80,15 @@ void		bse_server_queue_kill_wire		(BseServer	    *server,
 
 namespace Bse {
 
+class IpcHandler {
+protected:
+  virtual ~IpcHandler() = 0;
+public:
+  using BinarySender = std::function<bool(const std::string&)>;
+  virtual ptrdiff_t    current_connection_id () = 0;
+  virtual BinarySender create_binary_sender  () = 0;
+};
+
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   int32              tc_ = 0;
   bool               log_messages_ = true;
@@ -89,6 +98,8 @@ public:
   void                enginechange          (bool active);
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
+  void                set_ipc_handler       (IpcHandler *ipch);
+  IpcHandler*         get_ipc_handler       ();
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;
@@ -97,6 +108,8 @@ public:
   virtual bool             engine_active    () override;
   virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
   virtual SharedMemory  get_shared_memory   (int64 id) override;
+  virtual void    broadcast_shm_fragments   (int64  shm_id, const ShmFragmentSeq &plan,
+                                             int interval_ms) override;
   virtual String        get_mp3_version     () override;
   virtual String        get_vorbis_version  () override;
   virtual String        get_ladspa_path     () override;

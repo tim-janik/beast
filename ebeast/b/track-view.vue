@@ -140,7 +140,7 @@ const maxdb =  +6.0; // +12.0;
 
 module.exports = {
   name: 'b-track-view',
-  mixins: [ Util.vue_mixins.dom_updated, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
@@ -169,12 +169,6 @@ module.exports = {
 		   this.mc = await this.track.midi_channel();
 		 }
 	     } },
-  },
-  beforeDestroy() {
-    if (this.remove_frame_handler) {
-      this.remove_frame_handler();
-      this.remove_frame_handler = undefined;
-    }
   },
   destroyed() {
     if (this.notifyid_)
@@ -208,8 +202,7 @@ module.exports = {
 	return true;
       return false;
     },
-    update_levels: update_levels,
-    async dom_updated() {
+    async dom_update() { // note, `this.dom_present` may change at await points
       if (this.track) {
 	// setup level gradient based on mindb..maxdb
 	const levelbg = this.$refs['levelbg'];
@@ -222,19 +215,44 @@ module.exports = {
 	this.lmonitor.set_probe_features (pf);
 	this.rmonitor.set_probe_features (pf);
 	// fetch shared memory pointers for monitoring fields
-	let lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset());
+	let lfields = Util.array_fields_from_shm (this.lmonitor.get_shm_id(), this.lmonitor.get_shm_offset (0));
 	this.ldbspl = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_DB_SPL);
 	this.ldbtip = Util.array_fields_f32 (lfields, Bse.MonitorField.F32_DB_TIP);
-	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset());
+	let rfields = Util.array_fields_from_shm (this.rmonitor.get_shm_id(), this.rmonitor.get_shm_offset (0));
 	this.rdbspl = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_SPL);
 	this.rdbtip = Util.array_fields_f32 (rfields, Bse.MonitorField.F32_DB_TIP);
+	// fetch shared memory offsets (all returns are promises)
+	let l_shmid = this.lmonitor.get_shm_id(), r_shmid = this.rmonitor.get_shm_id();
+	let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
+	    ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
+	    rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
+	    rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
+	l_shmid = await l_shmid; r_shmid = await r_shmid;
+	lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
+	rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
+	// subscribe to shared memory updates
+	this.sub_lspl = Util.shm_subscribe (l_shmid, lspl_offset, 4);
+	this.sub_ltip = Util.shm_subscribe (l_shmid, ltip_offset, 4);
+	this.sub_rspl = Util.shm_subscribe (r_shmid, rspl_offset, 4);
+	this.sub_rtip = Util.shm_subscribe (r_shmid, rtip_offset, 4);
+	this.rdbspl = this.sub_rspl[0] / 4;
+	this.rdbtip = this.sub_rtip[0] / 4;
+	this.ldbspl = this.sub_lspl[0] / 4;
+	this.ldbtip = this.sub_ltip[0] / 4;
 	// cache level width in pxiels to avoid expensive recalculations in fps handler
 	this.level_width = levelbg.getBoundingClientRect().width;
 	// trigger frequent screen updates
-	if (!this.remove_frame_handler)
+	if (!this.remove_frame_handler && this.dom_present)
 	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
       }
     },
+    async dom_destroy() {
+      if (this.remove_frame_handler) {
+	this.remove_frame_handler();
+	this.remove_frame_handler = undefined;
+      }
+    },
+    update_levels: update_levels,
   },
 };
 
@@ -260,8 +278,8 @@ function update_levels (active) {
   const tw = 2; // tip thickness in pixels
   const pxrs_round = (fraction) => Math.round (fraction / pxrs) * pxrs; // scale up, round to pixel, scale down
   // handle multiple channels
-  const channels = [ [this.ldbspl[0], this.ldbtip[0], covertip0, covermid0],
-		     [this.rdbspl[0], this.rdbtip[0], covertip1, covermid1], ];
+  const channels = [ [Util.shm_array_float32[this.ldbspl], Util.shm_array_float32[this.ldbtip], covertip0, covermid0],
+		     [Util.shm_array_float32[this.rdbspl], Util.shm_array_float32[this.rdbtip], covertip1, covermid1], ];
   for (const chan_entry of channels) {
     const [dbspl, dbtip, covertip, covermid] = chan_entry;
     // map dB SPL to a 0..1 paint range

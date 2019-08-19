@@ -6,7 +6,7 @@ const CONFIG = {
 };
 let win;
 let bse_proc; // assigned spawn.child
-let verbose = false;
+let verbose = false, verbose_binary = false;
 
 // Load Electron module for BrowserWindow, etc
 const Electron = require ('electron');
@@ -73,6 +73,8 @@ function create_beast_sound_engine (datacb, errorcb) {
   let args = [ '--embed', '3' ];
   if (verbose)
     args.push ('--verbose');
+  if (verbose_binary)
+    args.push ('--binary');
   let bse_proc = spawn (__dirname + '/../lib/BeastSoundEngine', args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
@@ -156,6 +158,9 @@ const project_files = [];
 	break;
       case '--verbose':
 	verbose = true;
+	break;
+      case '--binary':
+	verbose_binary = true;
 	break;
       default:
 	if (/^-/.test (arg)) {

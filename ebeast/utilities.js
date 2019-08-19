@@ -193,15 +193,57 @@ export function hyphenate (string) {
   return string.replace (uppercase_boundary, '-$1').toLowerCase();
 }
 
-/** Vue mixin to provide a `dom_updated` hook.
- * This mixin is a bit of a sledge hammer, usually it's better to have something
- * similar to a paint_canvas() method and just use $watch (this.paint_canvas);
- * to update automatically.
- * A dom_updated() method is only really needed to operate on initialized $refs[].
+/** Vue mixin to provide a `dom_create`, `dom_update`, `dom_destroy` hooks.
+ * This mixin allowes async instance method callbacks for DOM element creation
+ * (`this.dom_create()`), updates (`this.dom_update()`, also called right after
+ * `this.dom_create()`) and destruction (`this.dom_destroy()`). It is ensured
+ * that invocation of asnyc callbacks is serialized, so `dom_create` needs to
+ * finish before `dom_update`, which in turn has to finish before subsequent
+ * calls to `dom_update` or `dom_destroy`.
+ * The Boolean member `this.dom_present` indicates whether DOM elements are
+ * still accessible (e.g. via `this.$el` or `this.$refs`), which can change
+ * at any `await` point in an async function.
+ * The Boolean member `this.dom_destroying` indicates wether DOM elements are
+ * being destroyed intermittingly, which can happen at any `await` point in
+ * an async function.
  */
-vue_mixins.dom_updated = {
-  mounted: function () { this.dom_updated(); },
-  updated: function () { this.dom_updated(); },
+vue_mixins.dom_updates = {
+  beforeCreate: function () {
+    console.assert (this.dom_handler_promise == undefined);
+    this.dom_handler_promise = null;
+    this.dom_present = false;
+    this.dom_destroying = false;
+  },
+  mounted: function () {
+    this.dom_present = true;
+    console.assert (this.dom_handler_promise == null);
+    this.dom_handler_promise = (async () => {
+      if (this.dom_create)
+	await this.dom_create();
+    }) ();
+    if (this.dom_update)
+      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
+	if (this.dom_present)
+	  await this.dom_update();
+      });
+  },
+  updated: function () {
+    console.assert (this.dom_handler_promise);
+    if (this.dom_update)
+      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
+	if (this.dom_present)
+	  await this.dom_update();
+      });
+  },
+  beforeDestroy: function () {
+    this.dom_present = false;
+    this.dom_destroying = true;
+    console.assert (this.dom_handler_promise);
+    if (this.dom_destroy)
+      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
+	await this.dom_destroy();
+      });
+  },
 };
 
 /** VueifyObject - turn a regular object into a Vue instance.
@@ -814,7 +856,7 @@ let frame_handler_id = 0x200000,
     frame_handler_array = undefined;
 
 function call_frame_handlers () {
-  const active = frame_handler_active;
+  const active = frame_handler_active && shm_array_active;
   frame_handler_max = frame_handler_array.length;
   for (frame_handler_cur = 0; frame_handler_cur < frame_handler_max; frame_handler_cur++) {
     const handler_id = frame_handler_array[frame_handler_cur][1];
@@ -834,7 +876,7 @@ function reinstall_frame_handler() {
   if (frame_handler_active)
     frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
   else
-    call_frame_handlers(); // call one last time with frame_handler_active == false
+    call_frame_handlers(); // call one time for cleanups with frame_handler_active == false
 }
 
 function remove_frame_handler (handler_id) {
@@ -846,22 +888,30 @@ function remove_frame_handler (handler_id) {
       frame_handler_max--;
       return;
     }
-  console.log ("remove_frame_handler(" + handler_id + "): invalid id");
+  console.error ("remove_frame_handler(" + handler_id + "): invalid id");
 }
 
 /// Install a permanent redraw handler, to run as long as the DSP engine is active.
 export function add_frame_handler (handlerfunc) {
   if (frame_handler_array === undefined) { // must initialize
-    frame_handler_active = Boolean (Bse.server.engine_active());
     frame_handler_array = [];
-    Bse.server.on ('enginechange', (ev) => {
-      frame_handler_active = Boolean (ev.active);
+    (async function() {
+      const check_active_promise = Bse.server.engine_active();
+      const onenginechange_promise = Bse.server.on ('enginechange', (ev) => {
+	frame_handler_active = Boolean (ev.active);
+	shm_reschedule();
+	reinstall_frame_handler();
+      } );
+      frame_handler_active = Boolean (await check_active_promise);
+      shm_reschedule();
       reinstall_frame_handler();
-    } );
+      await onenginechange_promise;
+    }) ();
   }
   const handler_id = frame_handler_id++;
   frame_handler_array.push ([handlerfunc, handler_id]);
-  reinstall_frame_handler();
+  if (!frame_handler_callback_id) // ensure handlerfunc is called at least once
+    frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
   return function() { remove_frame_handler (handler_id); };
 }
 
@@ -904,6 +954,105 @@ export function array_fields_f32 (afields, byte_offset) {
 export function array_fields_f64 (afields, byte_offset) {
   console.assert ((byte_offset & 0x7) == 0); // 8 - 1
   return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
+}
+
+let shm_array_shmid = 0;
+let shm_array_active = false;
+let shm_array_entries = []; // { bpos, blength, shmoffset, usecount, }
+let shm_array_binary_size = 8;
+let shm_array_buffer = new ArrayBuffer (0);
+export let shm_array_int32   = undefined;	// assigned by shm_receive
+export let shm_array_float32 = undefined;	// assigned by shm_receive
+export let shm_array_float64 = undefined;	// assigned by shm_receive
+shm_receive (null);
+
+export function shm_receive (arraybuffer) {
+  shm_array_active = frame_handler_active && arraybuffer && shm_array_binary_size <= arraybuffer.byteLength;
+  if (shm_array_active)
+    shm_array_buffer = arraybuffer;
+  else
+    shm_array_buffer = new ArrayBuffer (shm_array_binary_size);
+  shm_array_int32   = new Int32Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 4 ^0);
+  shm_array_float32 = new Float32Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 4 ^0);
+  shm_array_float64 = new Float64Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 8 ^0);
+}
+
+export function shm_subscribe (shmid, byteoffset, bytelength) {
+  if (shm_array_shmid == 0)
+    shm_array_shmid = shmid;
+  else if (shmid != shm_array_shmid)
+    {
+      console.assert (shmid == shm_array_shmid);
+      return;
+    }
+  const lalignment = 4;
+  bytelength = (((bytelength + lalignment-1) / lalignment) ^0) * lalignment;
+  // reuse existing region
+  for (let i = 0; i < shm_array_entries.length; ++i)
+    {
+      const e = shm_array_entries[i];
+      if (e.shmoffset <= byteoffset && e.shmoffset + e.blength >= byteoffset + bytelength)
+	{
+	  const pos = e.bpos + byteoffset - e.shmoffset;
+	  e.usecount += 1;
+	  return [ pos, i ];
+	}
+    }
+  // reallocate freed region
+  for (let i = 0; i < shm_array_entries.length; ++i)
+    {
+      const e = shm_array_entries[i];
+      if (e.usecount == 0 && e.blength == bytelength)
+	{
+	  e.shmoffset = byteoffset;
+	  e.usecount = 1;
+	  shm_reschedule();
+	  return [ e.bpos, i ];
+	}
+    }
+  // allocate new pos, if length exceeds 4, pos needs larger alignment (e.g. for double)
+  let nextpos = shm_array_binary_size;
+  if (bytelength > 4)
+    nextpos = (((nextpos + 8-1) / 8) ^0) * 8;
+  // allocate new region
+  let e = {
+    bpos: nextpos,
+    blength: bytelength,
+    shmoffset: byteoffset,
+    usecount: 1,
+  };
+  shm_array_binary_size = nextpos + bytelength;
+  shm_array_entries.push (e);
+  shm_reschedule();
+  return [ e.bpos, shm_array_entries.length - 1 ];
+}
+
+export function shm_unsubscribe (subscription_tuple) {
+  const e = shm_array_entries[subscription_tuple[0]];
+  console.assert (e.usecount > 0);
+  if (e.usecount)
+    {
+      e.usecount--;
+      if (e.usecount == 0)
+	{
+	  e.shmoffset = -1;
+	  // entry is disabled but stays around for future allocations and stable indexing
+	  shm_reschedule();
+	}
+      return true;
+    }
+  return false;
+}
+
+async function shm_reschedule() {
+  if (frame_handler_active)
+    await Bse.server.broadcast_shm_fragments (shm_array_shmid, shm_array_entries, 33);
+  else
+    {
+      const promise = Bse.server.broadcast_shm_fragments (shm_array_shmid, [], 0);
+      shm_receive (null);
+      await promise;
+    }
 }
 
 // Format window titles

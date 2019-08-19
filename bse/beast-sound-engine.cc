@@ -216,7 +216,7 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 
 static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
-static bool verbose = false;
+static bool verbose = false, verbose_binary = false;
 static GPollFD embedding_pollfd = { -1, 0, 0 };
 static std::string authenticated_subprotocol = "";
 
@@ -333,6 +333,44 @@ ws_message (websocketpp::connection_hdl hdl, server::message_ptr msg)
   sem.wait();
 }
 
+struct IpcHandlerImpl : Bse::IpcHandler {
+  virtual
+  ~IpcHandlerImpl()
+  {}
+  virtual ptrdiff_t
+  current_connection_id () override
+  {
+    if (bse_current_websocket_hdl)
+      {
+        websocketpp::lib::error_code ec;
+        ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (*bse_current_websocket_hdl, ec);
+        if (!ec) // not ec.value() in (websocketpp::error::bad_connection, ...)
+          return ptrdiff_t (con.get());
+      }
+    return 0;
+  }
+  virtual BinarySender
+  create_binary_sender () override
+  {
+    BSE_ASSERT_RETURN (bse_current_websocket_hdl != nullptr, BinarySender());
+    websocketpp::connection_hdl weak_hdl = *bse_current_websocket_hdl;
+    auto binary_sender = [weak_hdl] (std::string message) {
+      websocketpp::lib::error_code ec;
+      websocket_server.send (weak_hdl, message, websocketpp::frame::opcode::binary, ec);
+      if (ec)
+        return false;   // invalid connection or send failed
+      if (verbose_binary)
+        {
+          ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl, ec);
+          const ptrdiff_t conid = ptrdiff_t (con.get());
+          Bse::printerr ("%p: BINARY:  len=%d hash=%016x\n", conid, message.size(), Bse::fnv1a_consthash64 (message));
+        }
+      return true; // connection alive and message queued
+    };
+    return binary_sender;
+  }
+};
+
 static std::string
 simplify_path (const std::string &path)
 {
@@ -434,8 +472,7 @@ http_request (websocketpp::connection_hdl hdl)
                  "<p>The requested URL was not found: <tt>" + con->get_uri()->str() + "</tt></p>\n"
                  "<hr><address>" "beast-sound-engine/" + Bse::version() + "</address>\n"
                  "<hr></body></html>\n");
-  if (verbose)
-    Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
+  Bse::printerr ("%p: 404:     %s\n", conid, simplepath);
 }
 
 class EventHub {
@@ -578,6 +615,7 @@ print_usage (bool help)
   Bse::printout ("  --help       Print command line help\n");
   Bse::printout ("  --version    Print program version\n");
   Bse::printout ("  --verbose    Print requests and replies\n");
+  Bse::printout ("  --binary     Print binary requests\n");
   Bse::printout ("  --embed <fd> Parent process socket for embedding\n");
 }
 
@@ -587,6 +625,8 @@ main (int argc, char *argv[])
   Bse::this_thread_set_name ("BeastSoundEngineMain");
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
   bse_server = Bse::init_server_instance();
+  IpcHandlerImpl ipchandlerimpl;
+  Bse::ServerImpl::instance().set_ipc_handler (&ipchandlerimpl);
 
   randomize_subprotocol();
 
@@ -655,6 +695,10 @@ main (int argc, char *argv[])
         else if (arg_name == "v" || arg_name == "verbose")
           {
             verbose = true;
+          }
+        else if (arg_name == "binary")
+          {
+            verbose_binary = true;
           }
         else
           {

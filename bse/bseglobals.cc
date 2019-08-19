@@ -92,32 +92,43 @@ exec_gsource (const std::function<R()> &function, uint delay_ms, int priority)
   return id;
 }
 
-// Run `function` immediately with the next event loop iteration, return `true` to keep alive.
+/// Run `function` immediately with the next event loop iteration, return `true` to keep alive.
 uint
 exec_now (const std::function<bool()> &function)
 {
   return exec_gsource (function, 0, BSE_PRIORITY_NOW);
 }
 
-// Run `function` immediately with the next event loop iteration.
+/// Run `function` immediately with the next event loop iteration.
 uint
 exec_now (const std::function<void()> &function)
 {
   return exec_gsource (function, 0, BSE_PRIORITY_NOW);
 }
 
-// Run `function` after `delay_ms` milliseconds have passed, return `true` to keep alive.
+/// Run `function` after `delay_ms` milliseconds have passed, return `true` to keep alive.
 uint
 exec_timeout (const std::function<bool()> &function, uint delay_ms)
 {
   return exec_gsource (function, delay_ms, BSE_PRIORITY_NORMAL);
 }
 
-// Run `function` after `delay_ms` milliseconds have passed.
+/// Run `function` after `delay_ms` milliseconds have passed.
 uint
 exec_timeout (const std::function<void()> &function, uint delay_ms)
 {
   return exec_gsource (function, delay_ms, BSE_PRIORITY_NORMAL);
+}
+
+/// Remove a function previously added with exec_now() or exec_timeout()
+bool
+exec_handler_clear (uint id)
+{
+  assert_return (id > 0, false);
+  GSource *source = g_main_context_find_source_by_id (bse_main_context, id);
+  if (source)
+    g_source_destroy (source);
+  return source != nullptr;
 }
 
 } // Bse
