@@ -801,12 +801,12 @@ record ProbeFeatures {
 
 /// Interface for monitoring output signals.
 interface SignalMonitor {
+  Source        get_osource        ();                  ///< Retrieve output module the SignalMonitor is connected to.
+  int32         get_ochannel       ();                  ///< Retrieve output channel the SignalMonitor is connected to.
+  int64         get_mix_freq       ();                  ///< Mix frequency at which monitor values are calculated.
+  int64         get_frame_duration ();                  ///< Frame duration in µseconds for the calculation of monitor values.
   int64         get_shm_id         ();                  ///< Identifier for the associated shared memory area.
-  Source        get_osource        ();                  ///< Retrieve output module the SignalSnooper is connected to.
-  int64         get_shm_offset     ();                  ///< Offset into shm_id for MonitorField values of @a ochannel.
-  int32         get_ochannel       ();                  ///< Offset into shm_id for MonitorField values of @a ochannel.
-  int64         get_mix_freq       ();                  ///< Mix frame at which SnoopFields values are calculated.
-  int64         get_frame_duration ();                  ///< Frame duration in µseconds for the calculation of SnoopFields values.
+  int64         get_shm_offset     ();                  ///< Offset into shm_id for MonitorField values of `ochannel`.
   void          set_probe_features (ProbeFeatures pf);  ///< Configure probe features.
   ProbeFeatures get_probe_features ();                  ///< Get configured probe features.
 };
