@@ -54,14 +54,14 @@ SignalMonitorImpl::get_shm_id ()
 }
 
 int64
-SignalMonitorImpl::get_shm_offset()
+SignalMonitorImpl::get_shm_offset (MonitorField fld)
 {
   SharedBlock sb = source_->cmon_get_block();
   char *fields0 = source_->cmon_monitor_field_start (0);
   assert_return (sb.mem_start == (void*) fields0, 0);
   char *fieldsn = source_->cmon_monitor_field_start (ochannel_);
   const size_t channel_offset = fieldsn - fields0;
-  return sb.mem_offset + channel_offset;
+  return sb.mem_offset + channel_offset + ptrdiff_t (fld);
 }
 
 int64

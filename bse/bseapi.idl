@@ -806,7 +806,7 @@ interface SignalMonitor {
   int64         get_mix_freq       ();                  ///< Mix frequency at which monitor values are calculated.
   int64         get_frame_duration ();                  ///< Frame duration in µseconds for the calculation of monitor values.
   int64         get_shm_id         ();                  ///< Identifier for the associated shared memory area.
-  int64         get_shm_offset     ();                  ///< Offset into shm_id for MonitorField values of `ochannel`.
+  int64         get_shm_offset     (MonitorField fld);  ///< Offset into shm_id for MonitorField values of `ochannel`.
   void          set_probe_features (ProbeFeatures pf);  ///< Configure probe features.
   ProbeFeatures get_probe_features ();                  ///< Get configured probe features.
 };
