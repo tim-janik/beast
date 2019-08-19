@@ -144,12 +144,11 @@ add_frame_handler (const std::function<void()> &func)
 
 // == Shared Memory Monitors ==
 MonitorFieldU
-monitor_fields_from_shm (int64 shm_id, uint32 shm_offset)
+monitor_fields_from_shm (uint32 shm_offset)
 {
   const MonitorFieldU mfu0 { NULL };
   assert_return ((shm_offset & 0x0f) == 0, mfu0); // must have alginment >= 16 bytes
-  Bse::SharedMemory sm = bse_server.get_shared_memory (shm_id);
-  assert_return (sm.shm_id == shm_id, mfu0);
+  Bse::SharedMemory sm = bse_server.get_shared_memory();
   assert_return (sm.shm_creator == Bse::this_thread_getpid(), mfu0);
   char *shm_start = (char*) sm.shm_start; // allowed if sm.shm_creator matches our pid
   assert_return (shm_start != NULL, mfu0);
