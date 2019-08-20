@@ -83,9 +83,12 @@ module.exports = {
 function render_canvas () {
   // canvas setup
   const canvas = this.$refs['canvas'], ctx = canvas.getContext ('2d');
+  Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
   const style = getComputedStyle (canvas);
-  const width = canvas.clientWidth, height = canvas.clientHeight;
-  canvas.width = width; canvas.height = height;
+  const width = canvas.width, height = canvas.height;
+  const tickscale = this.tickscale * window.devicePixelRatio;
+  //const width = canvas.clientWidth, height = canvas.clientHeight;
+  //canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
   // color setup
   const colors = Util.split_comma (style.getPropertyValue ('--part-thumb-colors'));
@@ -109,7 +112,6 @@ function render_canvas () {
   const pnotes = this.allnotes; // await part.list_notes_crossing (0, MAXINT);
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
-  const tickscale = this.tickscale;
   for (const note of pnotes) {
     ctx.fillRect (note.tick * tickscale, (note.note - noteoffset) * notescale, note.duration * tickscale, 1);
   }
