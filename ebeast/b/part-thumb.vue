@@ -82,16 +82,16 @@ module.exports = {
 
 function render_canvas () {
   // canvas setup
-  const canvas = this.$refs['canvas'], ctx = canvas.getContext ('2d');
+  const canvas = this.$refs['canvas'];
   Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
-  const style = getComputedStyle (canvas);
+  const ctx = canvas.getContext ('2d'), cstyle = getComputedStyle (canvas), csp = cstyle.getPropertyValue.bind (cstyle);
   const width = canvas.width, height = canvas.height;
   const tickscale = this.tickscale * window.devicePixelRatio;
   //const width = canvas.clientWidth, height = canvas.clientHeight;
   //canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
   // color setup
-  const colors = Util.split_comma (style.getPropertyValue ('--part-thumb-colors'));
+  const colors = Util.split_comma (csp ('--part-thumb-colors'));
   let cindex;
   cindex = this.trackindex;			// - color per track
   cindex = (cindex + 1013904223) * 1664557;	//   LCG randomization step
@@ -102,18 +102,21 @@ function render_canvas () {
   ctx.fillStyle = bgcol;
   ctx.fillRect (0, 0, width, height);
   // draw name
-  ctx.font = style.getPropertyValue ('--part-thumb-font');
-  ctx.fillStyle = style.getPropertyValue ('--part-thumb-font-color');
+  const fpx = height / 3;
+  const note_font = csp ('--part-thumb-font');
+  const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+  ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
+  ctx.fillStyle = csp ('--part-thumb-font-color');
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
   ctx.fillText (this.partname, 1.5, .5);
   // paint notes
-  ctx.fillStyle = style.getPropertyValue ('--part-thumb-note-color');
+  ctx.fillStyle = csp ('--part-thumb-note-color');
   const pnotes = this.allnotes; // await part.list_notes_crossing (0, MAXINT);
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
   for (const note of pnotes) {
-    ctx.fillRect (note.tick * tickscale, (note.note - noteoffset) * notescale, note.duration * tickscale, 1);
+    ctx.fillRect (note.tick * tickscale, (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * window.devicePixelRatio);
   }
 }
 
