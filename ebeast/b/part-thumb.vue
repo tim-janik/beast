@@ -116,7 +116,7 @@ function render_canvas () {
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
   for (const note of pnotes) {
-    ctx.fillRect (note.tick * tickscale, (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * window.devicePixelRatio);
+    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * window.devicePixelRatio);
   }
 }
 
