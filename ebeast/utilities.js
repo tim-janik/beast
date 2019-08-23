@@ -437,6 +437,14 @@ vue_mixins.dom_updates = {
   },
 };
 
+/// Extract the promise `p` state as one of: 'pending', 'fulfilled', 'rejected'
+export function promise_state (p) {
+  const t = {}; // dummy, acting as fulfilled
+  return Promise.race ([p, t])
+		.then (v => v === t ? 'pending' : 'fulfilled',
+		       v => 'rejected');
+}
+
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
  * with a getter (and possibly setter) are turned into Vue `computed`
