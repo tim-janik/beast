@@ -39,15 +39,24 @@ module.exports = {
     index: { type: Number, },
     trackindex: { type: Number, },
   },
-  data_tmpl: { partname: "", allnotes: [], lasttick: 0, },
+  data_tmpl: { partname: "",
+	       allnotes: [],
+	       lasttick: 0,
+  },
   watch: {
     part: { immediate: true, async handler (n, o) {
-      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
+      // first send out async queries in parallel
       let partname = this.part.get_name();
       let lasttick = this.part.get_last_tick();
-      this.allnotes = await allnotes;
-      this.partname = await partname;
-      this.lasttick = await lasttick;
+      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
+      // then, await results in batch
+      partname = await partname;
+      lasttick = await lasttick;
+      allnotes = await allnotes;
+      // finally, assign Vue-reactive data without further suspension (await)
+      this.partname = partname;
+      this.lasttick = lasttick;
+      this.allnotes = allnotes;
     } },
   },
   computed: {
@@ -58,25 +67,10 @@ module.exports = {
     },
   },
   methods: {
-    render_canvas: render_canvas,
     dom_update() {
-      this.render_canvas();
+      if (this.lasttick)
+	render_canvas.call (this);
     },
-  },
-  mounted() {
-    /* DOM and $el is in place, now:
-     * a) render into the canvas, we call render_canvas() for this;
-     * b) re-render the canvases if anything changes, for this we install a watcher
-     */
-    if (!this.unwatch_render_canvas)
-      this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
-    this.render_canvas();
-  },
-  beforeDestroy() {
-    if (this.unwatch_render_canvas) {
-      this.unwatch_render_canvas();
-      this.unwatch_render_canvas = undefined;
-    }
   },
 };
 
