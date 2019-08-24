@@ -979,7 +979,7 @@ export function shm_subscribe (byteoffset, bytelength) {
 }
 
 export function shm_unsubscribe (subscription_tuple) {
-  const e = shm_array_entries[subscription_tuple[0]];
+  const e = shm_array_entries[subscription_tuple[1]];
   console.assert (e.usecount > 0);
   if (e.usecount)
     {
