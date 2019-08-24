@@ -72,8 +72,8 @@
     <div class="b-track-view-control">
       <span class="b-track-view-label"
 	    @dblclick="nameedit_++" >
-	<span class="b-track-view-label-el">{{ trackname }}</span>
-	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="trackname"
+	<span class="b-track-view-label-el">{{ adata.trackname }}</span>
+	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="adata.trackname"
 	       type="text" @change="$event.target.cancelled || track.set_name ($event.target.value.trim())" />
       </span>
       <div class="b-track-view-meter">
@@ -107,27 +107,27 @@
       <b-menuitem uc="Ｓ"               role="solo-track" >     Solo Track		</b-menuitem>
       <b-menuseparator style="margin: 7px" />
       <b-menutitle> MIDI Channel </b-menutitle>
-      <b-menuitem role="mc-0"    :uc="mc ==  0 ?c:n" > Internal Channel </b-menuitem>
+      <b-menuitem   role="mc-0"  :uc="mcc( 0)" > Internal Channel </b-menuitem>
       <b-menurow noturn>
-	<b-menuitem role="mc-1"  :uc="mc ==  1 ?c:n" >  1 </b-menuitem>
-	<b-menuitem role="mc-2"  :uc="mc ==  2 ?c:n" >  2 </b-menuitem>
-	<b-menuitem role="mc-3"  :uc="mc ==  3 ?c:n" >  3 </b-menuitem>
-	<b-menuitem role="mc-4"  :uc="mc ==  4 ?c:n" >  4 </b-menuitem>
+	<b-menuitem role="mc-1"  :uc="mcc(1)"  >  1 </b-menuitem>
+	<b-menuitem role="mc-2"  :uc="mcc(2)"  >  2 </b-menuitem>
+	<b-menuitem role="mc-3"  :uc="mcc(3)"  >  3 </b-menuitem>
+	<b-menuitem role="mc-4"  :uc="mcc(4)"  >  4 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-5"  :uc="mc ==  5 ?c:n" >  5 </b-menuitem>
-	<b-menuitem role="mc-6"  :uc="mc ==  6 ?c:n" >  6 </b-menuitem>
-	<b-menuitem role="mc-7"  :uc="mc ==  7 ?c:n" >  7 </b-menuitem>
-	<b-menuitem role="mc-8"  :uc="mc ==  8 ?c:n" >  8 </b-menuitem>
+	<b-menuitem role="mc-5"  :uc="mcc(5)"  >  5 </b-menuitem>
+	<b-menuitem role="mc-6"  :uc="mcc(6)"  >  6 </b-menuitem>
+	<b-menuitem role="mc-7"  :uc="mcc(7)"  >  7 </b-menuitem>
+	<b-menuitem role="mc-8"  :uc="mcc(8)"  >  8 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-9"  :uc="mc ==  9 ?c:n" >  9 </b-menuitem>
-	<b-menuitem role="mc-10" :uc="mc == 10 ?c:n" > 10 </b-menuitem>
-	<b-menuitem role="mc-11" :uc="mc == 11 ?c:n" > 11 </b-menuitem>
-	<b-menuitem role="mc-12" :uc="mc == 12 ?c:n" > 12 </b-menuitem>
+	<b-menuitem role="mc-9"  :uc="mcc(9)"  >  9 </b-menuitem>
+	<b-menuitem role="mc-10" :uc="mcc(10)" > 10 </b-menuitem>
+	<b-menuitem role="mc-11" :uc="mcc(11)" > 11 </b-menuitem>
+	<b-menuitem role="mc-12" :uc="mcc(12)" > 12 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-13" :uc="mc == 13 ?c:n" > 13 </b-menuitem>
-	<b-menuitem role="mc-14" :uc="mc == 14 ?c:n" > 14 </b-menuitem>
-	<b-menuitem role="mc-15" :uc="mc == 15 ?c:n" > 15 </b-menuitem>
-	<b-menuitem role="mc-16" :uc="mc == 16 ?c:n" > 16 </b-menuitem>
+	<b-menuitem role="mc-13" :uc="mcc(13)" > 13 </b-menuitem>
+	<b-menuitem role="mc-14" :uc="mcc(14)" > 14 </b-menuitem>
+	<b-menuitem role="mc-15" :uc="mcc(15)" > 15 </b-menuitem>
+	<b-menuitem role="mc-16" :uc="mcc(16)" > 16 </b-menuitem>
       </b-menurow>
     </b-contextmenu>
 
@@ -138,6 +138,64 @@
 const mindb = -48.0; // -96.0;
 const maxdb =  +6.0; // +12.0;
 
+class AData {
+  static async create (track, vm) {
+    const adata = new AData();
+    await adata.init_ (track, vm);
+    return adata;
+  }
+  async init_ (track, vm) {
+    console.assert (!this.deleters && !this.update);
+    this.deleters = [];
+    this.update = () => vm.$forceUpdate();
+    this.track = track;
+    // create signal monitors and query properties
+    this.lmonitor = track.create_signal_monitor (0);		this.deleters.push (() => Util.discard_remote (this.lmonitor));
+    this.rmonitor = track.create_signal_monitor (1);		this.deleters.push (() => Util.discard_remote (this.rmonitor));
+    this.trackname = track.get_name();
+    this.mc = track.midi_channel();
+    // monitor properties
+    let notifyid = track.on ("notify:uname", async (e) => {
+      this.trackname = await track.get_name(); this.update();
+    });
+    { const nid = await notifyid;				this.deleters.push (() => track.off (nid)); }
+    notifyid = track.on ("notify:midi_channel", async (e) => {
+      this.mc = await track.midi_channel(); this.update();
+    });
+    { const nid = await notifyid;				this.deleters.push (() => track.off (nid)); }
+    // request dB SPL updates
+    const pf = new Bse.ProbeFeatures();
+    pf.probe_energy = true;
+    this.lmonitor = await this.lmonitor;
+    this.lmonitor.set_probe_features (pf);			this.deleters.push (() => this.lmonitor.set_probe_features ({}));
+    this.rmonitor = await this.rmonitor;
+    this.rmonitor.set_probe_features (pf);			this.deleters.push (() => this.rmonitor.set_probe_features ({}));
+    // resolve queries
+    this.trackname = await this.trackname;
+    this.mc = await this.mc;
+    // fetch shared memory offsets (all returns are promises)
+    let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
+	ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
+	rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
+	rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
+    lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
+    rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
+    // subscribe to shared memory updates
+    this.sub_lspl = Util.shm_subscribe (lspl_offset, 4);	this.deleters.push (() => Util.shm_unsubscribe (this.sub_lspl));
+    this.sub_ltip = Util.shm_subscribe (ltip_offset, 4);  	this.deleters.push (() => Util.shm_unsubscribe (this.sub_ltip));
+    this.sub_rspl = Util.shm_subscribe (rspl_offset, 4);  	this.deleters.push (() => Util.shm_unsubscribe (this.sub_rspl));
+    this.sub_rtip = Util.shm_subscribe (rtip_offset, 4);  	this.deleters.push (() => Util.shm_unsubscribe (this.sub_rtip));
+  }
+  destroy() {
+    this.update = () => undefined;
+    if (this.deleters)
+      while (this.deleters.length)
+        this.deleters.pop() ();
+    for (const key in this)
+      this[key] = undefined;
+  }
+}
+
 module.exports = {
   name: 'b-track-view',
   mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
@@ -146,35 +204,58 @@ module.exports = {
     'trackindex': { type: Number, },
   },
   data_tmpl: {
-    trackname: "",
-    mc: -1, c: '√', n: ' ',
     nameedit_: 0,
-    notifyid_: 0,
   },
-  watch: {
-    track: { immediate: true,
-	     async handler (newtrack, oldtrack) {
-	       if (this.notifyid_)
-		 oldtrack.off (this.notifyid_);
-	       this.notifyid_ = 0;
-	       this.trackname = "";
-	       this.mc = -1;
-	       if (this.track)
-		 {
-		   this.notifyid_ = await this.track.on ("notify", async e => {
-		     this.trackname = await this.track.get_name();
-		     this.mc = await this.track.midi_channel();
-		   });
-		   this.trackname = await this.track.get_name();
-		   this.mc = await this.track.midi_channel();
-		 }
-	     } },
-  },
-  destroyed() {
-    if (this.notifyid_)
-      this.track.off (this.notifyid_);
+  priv_tmpl: {
+    framehandlerclear: () => 0,
+    // setup dummy adata for the first render() calls
+    adata: { destroy: () => 0, },
   },
   methods: {
+    async setup_adata() {	// setup .adata from .track
+      if (this.track === (this.adata && this.adata.track))
+	return;
+      const adata = await AData.create (this.track, this);
+      if (this.$dom_updates.destroying) // dom_destroy() can occour during `await`
+	{
+	  adata.destroy();
+	  return;
+	}
+      this.adata && this.adata.destroy();
+      this.adata = adata;
+      this.rdbspl = this.adata.sub_rspl[0] / 4;
+      this.rdbtip = this.adata.sub_rtip[0] / 4;
+      this.ldbspl = this.adata.sub_lspl[0] / 4;
+      this.ldbtip = this.adata.sub_ltip[0] / 4;
+      this.framehandlerclear();
+      // trigger frequent screen updates
+      this.framehandlerclear = Util.add_frame_handler (this.dom_animate.bind (this));
+      // re-render after adata changes, since it's not-reactive
+      this.adata.update();
+    },
+    dom_update() {
+      // setup level gradient based on mindb..maxdb
+      const levelbg = this.$refs['levelbg'];
+      levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
+      // cache level width in pxiels to avoid expensive recalculations in fps handler
+      this.level_width = levelbg.getBoundingClientRect().width;
+      // update async data, fetched from track
+      this.setup_adata();
+      console.assert (!this.$dom_updates.destroying);
+    },
+    dom_destroy() {
+      this.adata.destroy();
+      this.framehandlerclear();
+    },
+    dom_animate (active) {
+      update_levels.call (this, active);
+    },
+    mcc: function (n) { // midi_channel character
+      if (n == this.adata.mc)
+	return '√';
+      else
+	return ' ';
+    },
     menuactivation (role) {
       console.log ("menuactivation:", role);
       // close popup to remove focus guards
@@ -202,48 +283,6 @@ module.exports = {
 	return true;
       return false;
     },
-    async dom_update() { // note, `this.dom_present` may change at await points
-      if (this.track) {
-	// setup level gradient based on mindb..maxdb
-	const levelbg = this.$refs['levelbg'];
-	levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
-	// request dB SPL updates
-	this.lmonitor = await this.track.create_signal_monitor (0);
-	this.rmonitor = await this.track.create_signal_monitor (1);
-	let pf = new Bse.ProbeFeatures();
-	pf.probe_energy = true;
-	this.lmonitor.set_probe_features (pf);
-	this.rmonitor.set_probe_features (pf);
-	// fetch shared memory offsets (all returns are promises)
-	let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
-	    ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
-	    rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
-	    rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
-	lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
-	rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
-	// subscribe to shared memory updates
-	this.sub_lspl = Util.shm_subscribe (lspl_offset, 4);
-	this.sub_ltip = Util.shm_subscribe (ltip_offset, 4);
-	this.sub_rspl = Util.shm_subscribe (rspl_offset, 4);
-	this.sub_rtip = Util.shm_subscribe (rtip_offset, 4);
-	this.rdbspl = this.sub_rspl[0] / 4;
-	this.rdbtip = this.sub_rtip[0] / 4;
-	this.ldbspl = this.sub_lspl[0] / 4;
-	this.ldbtip = this.sub_ltip[0] / 4;
-	// cache level width in pxiels to avoid expensive recalculations in fps handler
-	this.level_width = levelbg.getBoundingClientRect().width;
-	// trigger frequent screen updates
-	if (!this.remove_frame_handler && this.dom_present)
-	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
-      }
-    },
-    async dom_destroy() {
-      if (this.remove_frame_handler) {
-	this.remove_frame_handler();
-	this.remove_frame_handler = undefined;
-      }
-    },
-    update_levels: update_levels,
   },
 };
 
