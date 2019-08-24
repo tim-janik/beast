@@ -194,55 +194,108 @@ export function hyphenate (string) {
 }
 
 /** Vue mixin to provide a `dom_create`, `dom_update`, `dom_destroy` hooks.
- * This mixin allowes async instance method callbacks for DOM element creation
- * (`this.dom_create()`), updates (`this.dom_update()`, also called right after
- * `this.dom_create()`) and destruction (`this.dom_destroy()`). It is ensured
- * that invocation of asnyc callbacks is serialized, so `dom_create` needs to
- * finish before `dom_update`, which in turn has to finish before subsequent
- * calls to `dom_update` or `dom_destroy`.
- * The Boolean member `this.dom_present` indicates whether DOM elements are
- * still accessible (e.g. via `this.$el` or `this.$refs`), which can change
- * at any `await` point in an async function.
- * The Boolean member `this.dom_destroying` indicates wether DOM elements are
- * being destroyed intermittingly, which can happen at any `await` point in
- * an async function.
+ * This mixin calls instance method callbacks for DOM element creation
+ * (`this.dom_create()`), updates (`this.dom_update()`,
+ * and destruction (`this.dom_destroy()`).
+ * If `dom_create` is an async function or returns a Promise, `dom_update`
+ * calls are deferred until the returned Promise is resolved.
+ *
+ * Access to reactive properties during `dom_update` are tracked as dependencies,
+ * watched by Vue, so future changes cause rerendering of the Vue component.
  */
 vue_mixins.dom_updates = {
   beforeCreate: function () {
-    console.assert (this.dom_handler_promise == undefined);
-    this.dom_handler_promise = null;
-    this.dom_present = false;
-    this.dom_destroying = false;
-  },
+    console.assert (this.$dom_updates == undefined);
+    // install $dom_updates helper on Vue instance
+    this.$dom_updates = {
+      // members
+      promise: Promise.resolve(),
+      destroying: false,
+      pending: false,	// dom_update pending
+      unwatch: null,
+      // methods
+      chain_await: (promise_or_function) => {
+	const result = promise_or_function instanceof Function ? promise_or_function() : promise_or_function;
+	if (result instanceof Promise)
+	  this.$dom_updates.promise =
+	    this.$dom_updates.promise.then (async () => await result);
+      },
+      call_update: (resolve) => {
+	/* Here we invoke `dom_update` with dependency tracking through $watch. In case
+	 * it is implemented as an async function, we await the returned promise to
+	 * serialize with future `dom_update` or `dom_destroy` calls. Note that
+	 * dependencies cannot be tracked beyond the first await point in `dom_update`.
+	 */
+	// Clear old $watch if any
+	if (this.$dom_updates.unwatch)
+	  {
+	    this.$dom_updates.unwatch();
+	    this.$dom_updates.unwatch = null;
+	  }
+	/* Note, if vm._watcher is triggered before the $watch from below, it'll re-render
+	 * the VNodes and then our watcher is triggered, which causes $forceUpdate() and the
+	 * VNode tree is rendered *again*. This causes multiple calles to updated(), too.
+	 */
+	let once = 0;
+	const update_expr = vm => {
+	  if (once == 0)
+	    {
+	      const result = this.dom_update (this);
+	      if (result instanceof Promise)
+		{
+		  // Note, async dom_update() looses reactivity…
+		  result.then (resolve);
+		  // console.warn ('dom_update() should not return Promise:', this);
+		}
+	      else
+		resolve();
+	    }
+	  return ++once; // always change return value and guard against subsequent calls
+	};
+	/* A note on $watch. Its `expOrFn` is called immediately, the retrun value and
+	 * dependencies are recorded. Later, once a dependency changes, its `expOrFn`
+	 * is called again, also recording return value and new dependencies.
+	 * If the return value changes, `callback` is invoked.
+	 * What we need for updating DOM elements, is:
+	 * a) the initial call with dependency recording which we use for (expensive) updating,
+	 * b) trigger $forceUpdate() once a dependency changes, without intermediate expensive updating.
+	 */
+	this.$dom_updates.unwatch = this.$watch (update_expr, this.$forceUpdate);
+      },
+    };
+  }, // beforeCreate
   mounted: function () {
-    this.dom_present = true;
-    console.assert (this.dom_handler_promise == null);
-    this.dom_handler_promise = (async () => {
-      if (this.dom_create)
-	await this.dom_create();
-    }) ();
-    if (this.dom_update)
-      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
-	if (this.dom_present)
-	  await this.dom_update();
-      });
+    console.assert (this.$dom_updates);
+    if (this.dom_create)
+      this.$dom_updates.chain_await (this.dom_create());
+    this.$forceUpdate();  // always trigger `dom_update` after `dom_create`
   },
   updated: function () {
-    console.assert (this.dom_handler_promise);
-    if (this.dom_update)
-      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
-	if (this.dom_present)
-	  await this.dom_update();
-      });
+    console.assert (this.$dom_updates);
+    /* If multiple $watch() instances are triggered by an update, Vue may re-render
+     * and call updated() several times in a row. To avoid expensive intermediate
+     * updates, we use this.$dom_updates.pending as guard.
+     */
+    if (this.dom_update && !this.$dom_updates.pending)
+      {
+	this.$dom_updates.chain_await (new Promise (resolve => {
+	  // Wrap call_update() into a chained promise to serialize with dom_destroy
+	  this.$nextTick (() => {
+	    this.$dom_updates.pending = false;
+	    if (this.$dom_updates.destroying)
+	      resolve(); // No need for updates during destruction
+	    else
+	      this.$dom_updates.call_update (resolve);
+	  });
+	}));
+	this.$dom_updates.pending = true;
+      }
   },
   beforeDestroy: function () {
-    this.dom_present = false;
-    this.dom_destroying = true;
-    console.assert (this.dom_handler_promise);
+    console.assert (this.$dom_updates);
+    this.$dom_updates.destroying = true;
     if (this.dom_destroy)
-      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
-	await this.dom_destroy();
-      });
+      this.$dom_updates.chain_await (() => this.dom_destroy());
   },
 };
 
