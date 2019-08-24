@@ -97,34 +97,38 @@ module.exports = {
 	message = method + ': unimplemented';
       Shell.status (message);
     },
-    async dom_create() { // note, `this.dom_present` may change at await points
-      if (!this.remove_frame_handler && this.dom_present)
-	this.remove_frame_handler = Util.add_frame_handler (this.update_tick_pointer);
-      this.last_tickpos = -1;
-    },
-    async dom_update() { // note, `this.dom_present` may change at await points
+    async dom_update() {
       if (!this.song) return;
-      const tickpos_offset = await this.song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
-      // subscribe to shared memory updates
-      this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
-      this.i32tickpos = this.sub_i32tickpos[0] / 4;
+      this.last_tickpos = -1;
+      if (!this.remove_frame_handler)
+	this.remove_frame_handler = Util.add_frame_handler (this.update_tick_pointer);
+      // beware, we use await below, this ends reactive dependency tracking
+      if (!this.sub_i32tickpos)
+	{
+	  const tickpos_offset = await this.song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
+	  this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
+	  this.i32tickpos = this.sub_i32tickpos[0] / 4;
+	}
     },
-    async dom_destroy() {
-      if (this.remove_frame_handler) {
+    dom_destroy() {
+      if (this.remove_frame_handler)
 	this.remove_frame_handler();
-	this.remove_frame_handler = null;
-      }
+      if (this.sub_i32tickpos)
+	Util.shm_unsubscribe (this.sub_i32tickpos);
     },
     update_tick_pointer (active) {
-      const tickpos = Util.shm_array_int32[this.i32tickpos];
-      if (this.last_tickpos != tickpos)
+      const tickpointer = this.$refs['tickpointer'];
+      if (tickpointer && this.sub_i32tickpos)
 	{
-	  const tickscale = 10 / 384.0; // FIXME
-	  const tickpointer = this.$refs['tickpointer'];
-	  this.last_tickpos = tickpos;
-	  const transform = 'translateX(+' + Math.round (tickpos * tickscale) + 'px)';
-	  if (transform != tickpointer.style.getPropertyValue ('transform')) // reduce style recalculations
-	    tickpointer.style.setProperty ('transform', transform);
+	  const tickpos = Util.shm_array_int32[this.i32tickpos];
+	  if (this.last_tickpos != tickpos)
+	    {
+	      const tickscale = 10 / 384.0; // FIXME
+	      const transform = 'translateX(+' + Math.round (tickpos * tickscale) + 'px)';
+	      if (transform != tickpointer.style.getPropertyValue ('transform')) // reduce style recalculations
+		tickpointer.style.setProperty ('transform', transform);
+	      this.last_tickpos = tickpos;
+	    }
 	}
     },
   },
