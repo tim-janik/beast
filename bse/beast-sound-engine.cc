@@ -364,6 +364,19 @@ struct IpcHandlerImpl : Bse::IpcHandler {
           ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl, ec);
           const ptrdiff_t conid = ptrdiff_t (con.get());
           Bse::printerr ("%p: BINARY:  len=%d hash=%016x\n", conid, message.size(), Bse::fnv1a_consthash64 (message));
+          if (0)
+            {
+              std::string hex;
+              for (size_t i = 0; i < message.size(); i++)
+                {
+                  if (i && 0 == i % 16)
+                    hex += "\n ";
+                  else if (0 == i % 8)
+                    hex += " ";
+                  hex += Bse::string_format (" %02x", message[i]);
+                }
+              Bse::printerr ("%s\n", hex);
+            }
         }
       return true; // connection alive and message queued
     };
