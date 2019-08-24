@@ -70,21 +70,24 @@ module.exports = {
   props: {
     song: { type: Bse.Song }
   },
-  watch: {
-    song: async function (newval) { this.tracks = await this.list_tracks(); },
-  },
   data_tmpl: {
     tracks: [],	// [[track,uniqid], ...]
   },
-  methods:  {
-    async list_tracks () {
-      if (!this.song) return [];
-      let items = await this.song.list_children();
+  watch: {
+    song: async function (song) {
+      this.clear_dom_handlers();
+      this.tracks = null;
+      const tickpos_offset = await song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
+      this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
+      this.i32tickpos = this.sub_i32tickpos[0] / 4;
+      let items = await song.list_children();
       let tracks = items.filter (item => item instanceof Bse.Track);
       tracks = tracks.map (async item => [item, await item.unique_id()]);
       tracks = await Promise.all (tracks);
-      return tracks;
+      this.tracks = tracks;
     },
+  },
+  methods:  {
     bclick (method, e) {
       let project = Shell.project(), m = project[method], message;
       if (m !== undefined) {
@@ -102,19 +105,23 @@ module.exports = {
       this.last_tickpos = -1;
       if (!this.remove_frame_handler)
 	this.remove_frame_handler = Util.add_frame_handler (this.update_tick_pointer);
-      // beware, we use await below, this ends reactive dependency tracking
-      if (!this.sub_i32tickpos)
-	{
-	  const tickpos_offset = await this.song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
-	  this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
-	  this.i32tickpos = this.sub_i32tickpos[0] / 4;
-	}
     },
     dom_destroy() {
+      this.clear_dom_handlers();
+    },
+    clear_dom_handlers() {
       if (this.remove_frame_handler)
-	this.remove_frame_handler();
+	{
+	  this.remove_frame_handler();
+	  this.remove_frame_handler = null;
+	}
       if (this.sub_i32tickpos)
-	Util.shm_unsubscribe (this.sub_i32tickpos);
+	{
+	  Util.shm_unsubscribe (this.sub_i32tickpos);
+	  this.sub_i32tickpos = null;
+	  this.i32tickpos = -1;
+	}
+      this.last_tickpos = -1;
     },
     update_tick_pointer (active) {
       const tickpointer = this.$refs['tickpointer'];
