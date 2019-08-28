@@ -453,7 +453,7 @@ fnv1a_consthash64 (const Num *const data, size_t length, uint64_t hash)
 }
 
 /// Variant of fnv1a_consthash64() for std::string.
-extern inline constexpr uint64_t
+extern inline uint64_t
 fnv1a_consthash64 (const std::string &str, uint64_t hash = 0xcbf29ce484222325)
 {
   return fnv1a_consthash64 (str.data(), str.size(), hash);
