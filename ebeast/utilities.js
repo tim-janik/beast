@@ -856,6 +856,7 @@ let frame_handler_id = 0x200000,
     frame_handler_array = undefined;
 
 function call_frame_handlers () {
+  frame_handler_callback_id = undefined;
   const active = frame_handler_active && shm_array_active;
   frame_handler_max = frame_handler_array.length;
   for (frame_handler_cur = 0; frame_handler_cur < frame_handler_max; frame_handler_cur++) {
