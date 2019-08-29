@@ -969,6 +969,10 @@ export function add_frame_handler (handlerfunc) {
   return function() { remove_frame_handler (handler_id); };
 }
 
+export function discard_remote (bseobject) {
+  console.log ("FIXME: Bse/discard:", bseobject);
+}
+
 let shm_array_active = false;
 let shm_array_entries = []; // { bpos, blength, shmoffset, usecount, }
 let shm_array_binary_size = 8;
