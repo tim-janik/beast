@@ -998,7 +998,17 @@ export function shm_unsubscribe (subscription_tuple) {
 
 async function shm_reschedule() {
   if (frame_handler_active)
-    await Bse.server.broadcast_shm_fragments (shm_array_entries, 33);
+    {
+      const entries = copy_recursively (shm_array_entries);
+      for (let i = entries.length - 1; i >= 0; i--)
+	{
+	  if (entries[i].usecount == 0)
+	    entries.splice (i, 1);
+	  else
+	    delete entries[i].usecount;
+	}
+      await Bse.server.broadcast_shm_fragments (entries, 33);
+    }
   else
     {
       const promise = Bse.server.broadcast_shm_fragments ([], 0);
