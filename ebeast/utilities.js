@@ -996,25 +996,42 @@ export function shm_unsubscribe (subscription_tuple) {
   return false;
 }
 
-async function shm_reschedule() {
-  if (frame_handler_active)
-    {
-      const entries = copy_recursively (shm_array_entries);
-      for (let i = entries.length - 1; i >= 0; i--)
-	{
-	  if (entries[i].usecount == 0)
-	    entries.splice (i, 1);
-	  else
-	    delete entries[i].usecount;
-	}
-      await Bse.server.broadcast_shm_fragments (entries, 33);
-    }
-  else
-    {
-      const promise = Bse.server.broadcast_shm_fragments ([], 0);
-      shm_receive (null);
-      await promise;
-    }
+function shm_reschedule() {
+  if (pending_shm_reschedule_promise)
+    return;
+  pending_shm_reschedule_promise = delay (-1); // Vue.nextTick();
+  pending_shm_reschedule_promise.then (async () => {
+    pending_shm_reschedule_promise = null; // allow new shm_reschedule() calls
+    if (frame_handler_active)
+      {
+	const entries = copy_recursively (shm_array_entries);
+	for (let i = entries.length - 1; i >= 0; i--)
+	  {
+	    if (entries[i].usecount == 0)
+	      entries.splice (i, 1);
+	    else
+	      delete entries[i].usecount;
+	  }
+	await Bse.server.broadcast_shm_fragments (entries, 33);
+      }
+    else
+      {
+	const promise = Bse.server.broadcast_shm_fragments ([], 0);
+	shm_receive (null);
+	await promise;
+      }
+  });
+}
+let pending_shm_reschedule_promise = null;
+
+/// Create a promise that resolves after the given `timeout` with `value`.
+function delay (timeout, value) {
+  return new Promise (resolve => {
+    if (timeout >= 0)
+      setTimeout (resolve.bind (null, value), timeout);
+    else
+      setImmediate (resolve.bind (null, value));
+  });
 }
 
 // Format window titles
