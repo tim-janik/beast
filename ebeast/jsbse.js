@@ -7,24 +7,36 @@ export * from './bseapi_jsonipc.js';
 // -------- Javascript BSE API (auto-generated) --------
 
 // == Object.on ==
-Bse.ObjectIface.prototype.on = async function (eventselector, callback) {
-  const connection_id = await Bse.$jsonipc.send ("Bse/EventHub/connect", [ this, eventselector ]);
-  if (connection_id)
-    {
-      Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection_id ], callback);
-      return connection_id;
-    }
-  return false;
-};
-
-// == Object.off ==
-Bse.ObjectIface.prototype.off = async function (connection_id) {
-  if (connection_id)
-    {
-      Bse.$jsonipc.unobserve ("Bse/EventHub/event", [ connection_id ]);
-      return await Bse.$jsonipc.send ("Bse/EventHub/disconnect", [ connection_id ]);
-    }
-  return false;
+Bse.ObjectIface.prototype.on = function (eventselector, callback) {
+  const connection = {
+    active: true,
+    promise: null,
+    id: 0,
+  };
+  const connect = async () => {
+    connection.id = await Bse.$jsonipc.send ("Bse/EventHub/connect", [ this, eventselector ]);
+    if (connection.id)
+      {
+	Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection.id ], function (...args) {
+	  if (connection.active)
+	    callback.call (this, ...args);
+	});
+      }
+  };
+  connection.promise = connect();
+  const disconnect = async () => {
+    if (!connection.active)
+      return;
+    connection.active = false; // deactivate *before* first await
+    await connection.promise;
+    if (connection.id)
+      {
+	Bse.$jsonipc.unobserve ("Bse/EventHub/event", [ connection.id ]);
+	await Bse.$jsonipc.send ("Bse/EventHub/disconnect", [ connection.id ]);
+      }
+  };
+  // after calling disconnect(), callback() is never executed
+  return disconnect;
 };
 
 // Connect and fetch Bse.server on startup

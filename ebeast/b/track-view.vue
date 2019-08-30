@@ -155,14 +155,12 @@ class AData {
     this.trackname = track.get_name();
     this.mc = track.midi_channel();
     // monitor properties
-    let notifyid = track.on ("notify:uname", async (e) => {
+    let notifyclear = track.on ("notify:uname", async (e) => {
       this.trackname = await track.get_name(); this.update();
-    });
-    { const nid = await notifyid;				this.deleters.push (() => track.off (nid)); }
-    notifyid = track.on ("notify:midi_channel", async (e) => {
+    });								this.deleters.push (notifyclear);
+    notifyclear = track.on ("notify:midi_channel", async (e) => {
       this.mc = await track.midi_channel(); this.update();
-    });
-    { const nid = await notifyid;				this.deleters.push (() => track.off (nid)); }
+    });								this.deleters.push (notifyclear);
     // request dB SPL updates
     const pf = new Bse.ProbeFeatures();
     pf.probe_energy = true;
