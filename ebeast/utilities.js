@@ -1,6 +1,8 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+const AUTOTEST = true;
+
 export const vue_mixins = {};
 export const vue_directives = {};
 
@@ -74,6 +76,78 @@ export function* range (bound, end, step = 1) {
   for (; bound < end; bound += step)
     yield bound;
 }
+
+/** Check if `a == b`, recursively if the arguments are of type Array or Object */
+export function equals_recursively (a, b) {
+  // compare primitives
+  if (a === b)
+    return true;
+  if (typeof a != typeof b)
+    return false;
+  if (typeof a == 'number' && isNaN (a) && isNaN (b))
+    return true;
+  // check Objects, note: typeof null === 'object' && null instanceof Object === false
+  if (!(a instanceof Object && b instanceof Object))
+    return false;
+  if (a.constructor !== b.constructor)
+    return false;
+  // functions must be exactly equal, due to scoping
+  if (a instanceof Function)
+    return false;
+  // compare Array lengths
+  if (Array.isArray (a) && a.length != b.length)
+    return false;
+  // compare RegExp
+  if (a instanceof RegExp)
+    return a.source == b.source && a.flags == b.flags && a.lastIndex  == b.lastIndex;
+  // compare Object properties
+  for (const k in a)
+    {
+      const av = a[k], bv = b[k];
+      if (av === bv || equals_recursively (av, bv))
+	continue;
+      return false;
+    }
+  for (const k in b)
+    {
+      if (a.hasOwnProperty (k))
+	continue;	// compared above
+      const av = a[k], bv = b[k];
+      if (av === bv || equals_recursively (av, bv))
+	continue;	// compare inherited props
+      return false;
+    }
+  // compare non-Array iterables (e.g. Set)
+  if (!Array.isArray (a) && typeof a[Symbol.iterator] == 'function')
+    {
+      const itera = a[Symbol.iterator]();
+      const iterb = b[Symbol.iterator]();
+      do {
+	const { value: va, done: da } = itera.next();
+	const { value: vb, done: db } = iterb.next();
+	if (da !== db)
+	  return false;
+	else if (da)
+	  break;
+	if (!(va === vb || equals_recursively (va, vb)))
+	  return false;
+      } while (true);	// eslint-disable-line no-constant-condition
+    }
+  return true;
+  // TODO: equals_recursively() busy loops for object reference cycles
+}
+
+if (AUTOTEST)
+  {
+    function eqr (a, b) { return equals_recursively (a, b) && equals_recursively (b, a); }
+    const a = [ 0, 2, 3, 4, 5, 70, {a:null} ], b = [ 1, 2, 3, 4, 5, 70, {a:null} ]; console.assert (!eqr (a, b)); a[0] = 1; console.assert (eqr (a, b));
+    a.x = 9; console.assert (!eqr (a, b)); b.x = 9.0; console.assert (eqr (a, b));
+    const as = new Set (a), bs = new Set (b); console.assert (eqr (as, bs));
+    bs.add (99); console.assert (!eqr (as, bs)); bs.delete (99); console.assert (eqr (as, bs));
+    // TODO: a[999] = b; b[999] = a; console.assert (eqr (a, b));
+    console.assert (eqr (/a/, /a/) && !eqr (/b/i, /b/));
+    console.assert (eqr (clamp, clamp) && !eqr (clamp, eqr));
+  }
 
 /** Return @a x clamped into @a min and @a max. */
 export function clamp (x, min, max) {
