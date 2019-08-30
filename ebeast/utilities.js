@@ -265,15 +265,25 @@ vue_directives['inlineblur'] = {
   }
 };
 
-/** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
+/** This Vue mixin sets up reactive `data` from `data_tmpl` and non-reactive data from `priv_tmpl` */
 vue_mixins.data_tmpl = {
   beforeCreate: function () {
-    // Automatically create `data` (via cloning) from `data_tmpl`
+    // Add non-reactive data from `priv_tmpl`
+    if (this.$options.priv_tmpl)
+      {
+	Object.assign (this, copy_recursively (this.$options.priv_tmpl));
+      }
+    // Create reactive `data` (via cloning) from `data_tmpl`
     if (this.$options.data_tmpl)
-      this.$options.data = Object.assign ({}, this.$options.data_tmpl,
-					  typeof this.$options.data === 'function' ?
-					  this.$options.data.call (this) :
-					  this.$options.data);
+      {
+	const data = copy_recursively (this.$options.data_tmpl);
+	// merge data={} into the copy of data_tmpl={}
+	if (typeof this.$options.data === 'function')
+	  Object.assign (data, this.$options.data.call (this));
+	else if (this.$options.data)
+	  Object.assign (data, this.$options.data);
+	this.$options.data = data;
+      }
     if (this.$options.tmpl_data)
       console.warn ("Object has `tmpl_data` member, did you mean `data_tmpl`?", this);
   },
