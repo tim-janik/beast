@@ -72,8 +72,8 @@
     <div class="b-track-view-control">
       <span class="b-track-view-label"
 	    @dblclick="nameedit_++" >
-	<span class="b-track-view-label-el">{{ adata.trackname }}</span>
-	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="adata.trackname"
+	<span class="b-track-view-label-el">{{ tdata.name }}</span>
+	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="tdata.name"
 	       type="text" @change="$event.target.cancelled || track.set_name ($event.target.value.trim())" />
       </span>
       <div class="b-track-view-meter">
@@ -138,60 +138,43 @@
 const mindb = -48.0; // -96.0;
 const maxdb =  +6.0; // +12.0;
 
-class AData {
-  static async create (track, vm) {
-    const adata = new AData();
-    await adata.init_ (track, vm);
-    return adata;
-  }
-  async init_ (track, vm) {
-    console.assert (!this.deleters && !this.update);
-    this.deleters = [];
-    this.update = () => vm.$forceUpdate();
-    this.track = track;
-    // create signal monitors and query properties
-    this.lmonitor = track.create_signal_monitor (0);		this.deleters.push (() => Util.discard_remote (this.lmonitor));
-    this.rmonitor = track.create_signal_monitor (1);		this.deleters.push (() => Util.discard_remote (this.rmonitor));
-    this.trackname = track.get_name();
-    this.mc = track.midi_channel();
-    // monitor properties
-    let notifyclear = track.on ("notify:uname", async (e) => {
-      this.trackname = await track.get_name(); this.update();
-    });								this.deleters.push (notifyclear);
-    notifyclear = track.on ("notify:midi_channel", async (e) => {
-      this.mc = await track.midi_channel(); this.update();
-    });								this.deleters.push (notifyclear);
-    // request dB SPL updates
-    const pf = new Bse.ProbeFeatures();
-    pf.probe_energy = true;
-    this.lmonitor = await this.lmonitor;
-    this.lmonitor.set_probe_features (pf);			this.deleters.push (() => this.lmonitor.set_probe_features ({}));
-    this.rmonitor = await this.rmonitor;
-    this.rmonitor.set_probe_features (pf);			this.deleters.push (() => this.rmonitor.set_probe_features ({}));
-    // resolve queries
-    this.trackname = await this.trackname;
-    this.mc = await this.mc;
-    // fetch shared memory offsets (all returns are promises)
-    let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
-	ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
-	rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
-	rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
-    lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
-    rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
-    // subscribe to shared memory updates
-    this.sub_lspl = Util.shm_subscribe (lspl_offset, 4);	this.deleters.push (() => Util.shm_unsubscribe (this.sub_lspl));
-    this.sub_ltip = Util.shm_subscribe (ltip_offset, 4);  	this.deleters.push (() => Util.shm_unsubscribe (this.sub_ltip));
-    this.sub_rspl = Util.shm_subscribe (rspl_offset, 4);  	this.deleters.push (() => Util.shm_unsubscribe (this.sub_rspl));
-    this.sub_rtip = Util.shm_subscribe (rtip_offset, 4);  	this.deleters.push (() => Util.shm_unsubscribe (this.sub_rtip));
-  }
-  destroy() {
-    this.update = () => undefined;
-    if (this.deleters)
-      while (this.deleters.length)
-        this.deleters.pop() ();
-    for (const key in this)
-      this[key] = undefined;
-  }
+async function channel_moniotr (ch, addcleanup) {
+  const mon = {};
+  // create signal monitor, needs await like all other BSE calls
+  mon.signmon = this.track.create_signal_monitor (ch);
+  // request dB SPL updates
+  const pf = new Bse.ProbeFeatures();
+  pf.probe_energy = true;
+  // retrieve SHM locations
+  mon.signmon = await mon.signmon;
+  let spl_offset = mon.signmon.get_shm_offset (Bse.MonitorField.F32_DB_SPL);
+  let tip_offset = mon.signmon.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
+  mon.signmon.set_probe_features (pf);
+  // subscribe to SHM updates
+  spl_offset = await spl_offset;
+  tip_offset = await tip_offset;
+  mon.sub_spl = Util.shm_subscribe (spl_offset, 4);
+  mon.sub_tip = Util.shm_subscribe (tip_offset, 4);
+  // register cleanups
+  const dtor = () => {
+    Util.shm_unsubscribe (mon.sub_spl);
+    Util.shm_unsubscribe (mon.sub_tip);
+    mon.signmon.set_probe_features ({});
+    Util.discard_remote (mon.signmon);
+  };
+  addcleanup (dtor);
+  // return value
+  return mon;
+}
+
+function track_data () {
+  const tdata = {
+    name: { getter: c => this.track.get_name(),     notify: n => this.track.on ("notify:uname", n), },
+    mc:   { getter: c => this.track.midi_channel(), notify: n => this.track.on ("notify:midi_channel", n), },
+    lmon: { getter: c => channel_moniotr.call (this, 0, c), },
+    rmon: { getter: c => channel_moniotr.call (this, 1, c), },
+  };
+  return this.observable_from_getters (tdata, () => this.track);
 }
 
 module.exports = {
@@ -201,36 +184,14 @@ module.exports = {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
   },
-  data_tmpl: {
+  data() { return {
     nameedit_: 0,
-  },
+    tdata: track_data.call (this),
+  }; },
   priv_tmpl: {
     framehandlerclear: () => 0,
-    // setup dummy adata for the first render() calls
-    adata: { destroy: () => 0, },
   },
   methods: {
-    async setup_adata() {	// setup .adata from .track
-      if (this.track === (this.adata && this.adata.track))
-	return;
-      const adata = await AData.create (this.track, this);
-      if (this.$dom_updates.destroying) // dom_destroy() can occour during `await`
-	{
-	  adata.destroy();
-	  return;
-	}
-      this.adata && this.adata.destroy();
-      this.adata = adata;
-      this.rdbspl = this.adata.sub_rspl[0] / 4;
-      this.rdbtip = this.adata.sub_rtip[0] / 4;
-      this.ldbspl = this.adata.sub_lspl[0] / 4;
-      this.ldbtip = this.adata.sub_ltip[0] / 4;
-      this.framehandlerclear();
-      // trigger frequent screen updates
-      this.framehandlerclear = Util.add_frame_handler (this.dom_animate.bind (this));
-      // re-render after adata changes, since it's not-reactive
-      this.adata.update();
-    },
     dom_update() {
       // setup level gradient based on mindb..maxdb
       const levelbg = this.$refs['levelbg'];
@@ -238,18 +199,31 @@ module.exports = {
       // cache level width in pxiels to avoid expensive recalculations in fps handler
       this.level_width = levelbg.getBoundingClientRect().width;
       // update async data, fetched from track
-      this.setup_adata();
+      if (this.framehandlerclear)
+	{
+	  this.framehandlerclear();
+	  this.framehandlerclear = undefined;
+	}
+      if (this.track && this.tdata.lmon && this.tdata.rmon)
+	{
+	  // trigger frequent screen updates
+	  this.ldbspl = this.tdata.lmon.sub_spl[0] / 4;
+	  this.ldbtip = this.tdata.lmon.sub_tip[0] / 4;
+	  this.rdbspl = this.tdata.rmon.sub_spl[0] / 4;
+	  this.rdbtip = this.tdata.rmon.sub_tip[0] / 4;
+	  this.framehandlerclear = Util.add_frame_handler (this.dom_animate.bind (this));
+	}
       console.assert (!this.$dom_updates.destroying);
     },
     dom_destroy() {
-      this.adata.destroy();
-      this.framehandlerclear();
+      if (this.framehandlerclear)
+	this.framehandlerclear();
     },
     dom_animate (active) {
       update_levels.call (this, active);
     },
     mcc: function (n) { // midi_channel character
-      if (n == this.adata.mc)
+      if (n == this.tdata.mc)
 	return '√';
       else
 	return ' ';
