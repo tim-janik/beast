@@ -13,8 +13,8 @@
   <div class="b-track-list" >
     <div class="b-track-list-tracks" >
       <b-track-view class="b-track-list-row"
-		     v-for="(pair, tindex) in tracks" :key="pair[1]"
-		     :song="song" :track="pair[0]" :trackindex="tindex"></b-track-view>
+		    v-for="(pair, tindex) in tracks" :key="pair[1]"
+		    :track="pair[0]" :trackindex="tindex"></b-track-view>
       <div class="b-track-scrollbar-spacer"></div>
     </div>
     <div class="b-track-list-parts" >
