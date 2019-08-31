@@ -1386,3 +1386,66 @@ const utilresizeobserver = new UtilResizeObserver();
 export function resize_observer (owner, callback) {
   return utilresizeobserver.add_owner (owner, callback);
 }
+
+/** Create an observable binding for the fields in `tmpl`.
+ * Once the expression `watchee` changes, the `getter` of each field in `tmpl` is called, resolved and assigned
+ * to the corresponding field in the observable binding returned from this function.
+ * Optionally, fields may provide a `notify` setup handler to install a notification callback that re-invokes
+ * the `getter`. A destructor can be returned from `notify` that is executed during cleanup phases.
+ * The `default` of each field in `tmpl` may provide an initial value before `getter` is called the first time.
+ * The first argument to a `getter` is a function that can be used to register cleanup code for the getter result.
+ */
+export function vue_observable_from_getters (tmpl, watchee) { // `this` is Vue instance
+  const monitoring_getters = [];
+  const getter_cleanups = {};
+  const notify_cleanups = {};
+  let odata; // Vue.observable
+  for (const key in tmpl)
+    {
+      const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify;
+      const getter = async () => {
+	let newcleaner = undefined;
+	const result = await async_getter (c => newcleaner = c);
+	if (getter_cleanups[key])
+	  {
+	    const cleaner = getter_cleanups[key];
+	    getter_cleanups[key] = undefined;
+	    odata[key] = undefined;
+	    cleaner();
+	  }
+	odata[key] = result;
+	if (newcleaner)
+	  getter_cleanups[key] = newcleaner;
+      };
+      const getter_and_reconnect = () => {
+	const oldcleanup = notify_cleanups[key];
+	if (async_notify)
+	  {
+	    const notifycleanup = async_notify (getter);
+	    if (notifycleanup)
+	      console.assert (notifycleanup instanceof Function);
+	    notify_cleanups[key] = notifycleanup;
+	  }
+	getter ();
+	if (oldcleanup)
+	  oldcleanup();
+      };
+      monitoring_getters.push (getter_and_reconnect);
+      tmpl[key] = tmpl[key].default;
+    }
+  odata = Vue.observable (tmpl);
+  const run_monitoring_getters = () => monitoring_getters.forEach (f => f());
+  // cleanup notifiers on `destroyed`
+  const run_notify_cleanups = () => {
+    for (const key in notify_cleanups)
+      if (notify_cleanups[key])
+	notify_cleanups[key] ();
+    for (const key in getter_cleanups)
+      if (getter_cleanups[key])
+	getter_cleanups[key] ();
+  };
+  this.$once ('hook:destroyed', run_notify_cleanups);
+  // update monitoring getters once predicate `watchee` changes
+  this.$watch (watchee, run_monitoring_getters, { immediate: true });
+  return odata;
+}
