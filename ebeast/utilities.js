@@ -1029,8 +1029,10 @@ function delay (timeout, value) {
   return new Promise (resolve => {
     if (timeout >= 0)
       setTimeout (resolve.bind (null, value), timeout);
-    else
+    else if (window.setImmediate)
       setImmediate (resolve.bind (null, value));
+    else
+      setTimeout (resolve.bind (null, value), 0);
   });
 }
 
