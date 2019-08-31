@@ -365,7 +365,7 @@ vue_mixins.dom_updates = {
 		{
 		  // Note, async dom_update() looses reactivity…
 		  result.then (resolve);
-		  // console.warn ('dom_update() should not return Promise:', this);
+		  console.warn ('dom_update() returned Promise, async functions are not reactive', this);
 		}
 	      else
 		resolve();
