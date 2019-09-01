@@ -13,36 +13,6 @@
   : Retrieve the *Bse.Part* set via the `part` property.
 </docs>
 
-<template>
-
-  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;">
-    <div style="display: flex; width: 100%; flex-shrink: 0;">
-      <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
-	<button >I</button>
-	<button >m</button>
-	<button >q</button>
-	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
-      </div>
-      <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
-    </div>
-    <div ref="scrollcontainer" style="overflow-y: scroll" >
-      <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
-	<div :style="{
-		     display: 'flex',
-		     'flex-direction': 'row',
-		     height: piano_roll_cssheight + 'px',
-		     width: '100%',
-		     'background-color': 'blue',
-		     }" >
-	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	</div>
-      </div>
-    </div>
-  </div>
-
-</template>
-
 <style lang="scss">
   @import 'styles.scss';
   .b-piano-roll {
@@ -82,6 +52,36 @@
   .b-piano-roll-notes {
   }
 </style>
+
+<template>
+
+  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;">
+    <div style="display: flex; width: 100%; flex-shrink: 0;">
+      <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
+	<button >I</button>
+	<button >m</button>
+	<button >q</button>
+	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
+      </div>
+      <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
+    </div>
+    <div ref="scrollcontainer" style="overflow-y: scroll" >
+      <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
+	<div :style="{
+		     display: 'flex',
+		     'flex-direction': 'row',
+		     height: piano_roll_cssheight + 'px',
+		     width: '100%',
+		     'background-color': 'blue',
+		     }" >
+	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	</div>
+      </div>
+    </div>
+  </div>
+
+</template>
 
 <script>
 const floor = Math.floor, round = Math.round;
