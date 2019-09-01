@@ -1423,7 +1423,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
       const getter = async () => {
 	let newcleaner = undefined;
-	const result = await async_getter (c => newcleaner = c);
+	const result = async_getter ? await async_getter (c => newcleaner = c) : default_value;
 	if (getter_cleanups[key])
 	  {
 	    const cleaner = getter_cleanups[key];
