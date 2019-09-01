@@ -104,9 +104,6 @@ module.exports = {
   data() { return {
     sdata: song_data.call (this),
   }; },
-  priv_tmpl: {
-    framehandlerclear: () => 0,
-  },
   methods:  {
     bclick (method, e) {
       let project = Shell.project(), m = project[method], message;
@@ -122,22 +119,14 @@ module.exports = {
     },
     dom_update() {
       this.last_tickpos = -1;
-      if (this.framehandlerclear)
-	{
-	  this.framehandlerclear();
-	  this.framehandlerclear = undefined;
-	}
+      this.dom_trigger_animate_playback (false);
       if (this.song && this.sdata.tmon)
 	{
 	  this.i32tickpos = this.sdata.tmon.sub_i32tickpos[0] / 4;
-	  this.framehandlerclear = Util.add_frame_handler (this.dom_animate.bind (this));
+	  this.dom_trigger_animate_playback (true);
 	}
     },
-    dom_destroy() {
-      if (this.framehandlerclear)
-	this.framehandlerclear();
-    },
-    dom_animate (active) {
+    dom_animate_playback (active) {
       const tickpointer = this.$refs['tickpointer'];
       if (tickpointer && this.i32tickpos)
 	{
