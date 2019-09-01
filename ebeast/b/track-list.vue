@@ -4,8 +4,8 @@
   # B-TRACK-LIST
   A container for vertical display of Bse.Track instances.
   ## Props:
-  *project*
-  : The *Bse.project* containing playback tracks.
+  *song*
+  : The *Bse.Song* containing playback tracks.
 </docs>
 
 <template>
@@ -13,13 +13,13 @@
   <div class="b-track-list" >
     <div class="b-track-list-tracks" >
       <b-track-view class="b-track-list-row"
-		    v-for="(pair, tindex) in tracks" :key="pair[1]"
+		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
 		    :track="pair[0]" :trackindex="tindex"></b-track-view>
       <div class="b-track-scrollbar-spacer"></div>
     </div>
     <div class="b-track-list-parts" >
       <b-part-list class="b-track-list-row"
-		    v-for="(pair, tindex) in tracks" :key="pair[1]"
+		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
 		    :track="pair[0]" :trackindex="tindex"></b-part-list>
       <span class="b-track-list-pointer" ref="tickpointer"></span>
     </div>
@@ -64,28 +64,48 @@
 </style>
 
 <script>
+async function list_tracks () {
+  const items = await this.song.list_children();
+  let tracks = items.filter (item => item instanceof Bse.Track);
+  tracks = tracks.map (item => [item, item.$id]);
+  return tracks; // [ [track,uniqnum], ...]
+}
+
+async function tick_moniotr (addcleanup) {
+  const mon = {};
+  // retrieve SHM locations
+  let tickpos_offset = this.song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
+  // subscribe to SHM updates
+  tickpos_offset = await tickpos_offset;
+  mon.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
+  // register cleanups
+  const dtor = () => {
+    Util.shm_unsubscribe (mon.sub_i32tickpos);
+  };
+  addcleanup (dtor);
+  // return value
+  return mon;
+}
+
+function song_data () {
+  const sdata = {
+    tracks: { getter: c => list_tracks.call (this), notify: n => this.song.on ("treechange", n), },
+    tmon:   { getter: c => tick_moniotr.call (this, c), },
+  };
+  return this.observable_from_getters (sdata, () => this.song);
+}
+
 module.exports = {
   name: 'b-track-list',
   mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song }
   },
-  data_tmpl: {
-    tracks: [],	// [[track,uniqid], ...]
-  },
-  watch: {
-    song: async function (song) {
-      this.clear_dom_handlers();
-      this.tracks = null;
-      const tickpos_offset = await song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
-      this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
-      this.i32tickpos = this.sub_i32tickpos[0] / 4;
-      let items = await song.list_children();
-      let tracks = items.filter (item => item instanceof Bse.Track);
-      tracks = tracks.map (async item => [item, await item.unique_id()]);
-      tracks = await Promise.all (tracks);
-      this.tracks = tracks;
-    },
+  data() { return {
+    sdata: song_data.call (this),
+  }; },
+  priv_tmpl: {
+    framehandlerclear: () => 0,
   },
   methods:  {
     bclick (method, e) {
@@ -100,32 +120,26 @@ module.exports = {
 	message = method + ': unimplemented';
       Shell.status (message);
     },
-    async dom_update() {
-      if (!this.song) return;
+    dom_update() {
       this.last_tickpos = -1;
-      if (!this.remove_frame_handler)
-	this.remove_frame_handler = Util.add_frame_handler (this.update_tick_pointer);
+      if (this.framehandlerclear)
+	{
+	  this.framehandlerclear();
+	  this.framehandlerclear = undefined;
+	}
+      if (this.song && this.sdata.tmon)
+	{
+	  this.i32tickpos = this.sdata.tmon.sub_i32tickpos[0] / 4;
+	  this.framehandlerclear = Util.add_frame_handler (this.dom_animate.bind (this));
+	}
     },
     dom_destroy() {
-      this.clear_dom_handlers();
+      if (this.framehandlerclear)
+	this.framehandlerclear();
     },
-    clear_dom_handlers() {
-      if (this.remove_frame_handler)
-	{
-	  this.remove_frame_handler();
-	  this.remove_frame_handler = null;
-	}
-      if (this.sub_i32tickpos)
-	{
-	  Util.shm_unsubscribe (this.sub_i32tickpos);
-	  this.sub_i32tickpos = null;
-	  this.i32tickpos = -1;
-	}
-      this.last_tickpos = -1;
-    },
-    update_tick_pointer (active) {
+    dom_animate (active) {
       const tickpointer = this.$refs['tickpointer'];
-      if (tickpointer && this.sub_i32tickpos)
+      if (tickpointer && this.i32tickpos)
 	{
 	  const tickpos = Util.shm_array_int32[this.i32tickpos];
 	  if (this.last_tickpos != tickpos)
@@ -141,7 +155,6 @@ module.exports = {
   },
 };
 
-// i18n example
 if (window.__undefined__)
-  _("Audio");
+  _("Audio");	// FIXME: i18n example
 </script>
