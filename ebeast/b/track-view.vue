@@ -188,9 +188,6 @@ module.exports = {
     nameedit_: 0,
     tdata: track_data.call (this),
   }; },
-  priv_tmpl: {
-    framehandlerclear: () => 0,
-  },
   methods: {
     dom_update() {
       // setup level gradient based on mindb..maxdb
@@ -199,11 +196,7 @@ module.exports = {
       // cache level width in pxiels to avoid expensive recalculations in fps handler
       this.level_width = levelbg.getBoundingClientRect().width;
       // update async data, fetched from track
-      if (this.framehandlerclear)
-	{
-	  this.framehandlerclear();
-	  this.framehandlerclear = undefined;
-	}
+      this.dom_trigger_animate_playback (false);
       if (this.track && this.tdata.lmon && this.tdata.rmon)
 	{
 	  // trigger frequent screen updates
@@ -211,17 +204,11 @@ module.exports = {
 	  this.ldbtip = this.tdata.lmon.sub_tip[0] / 4;
 	  this.rdbspl = this.tdata.rmon.sub_spl[0] / 4;
 	  this.rdbtip = this.tdata.rmon.sub_tip[0] / 4;
-	  this.framehandlerclear = Util.add_frame_handler (this.dom_animate.bind (this));
+	  this.dom_trigger_animate_playback (true);
 	}
       console.assert (!this.$dom_updates.destroying);
     },
-    dom_destroy() {
-      if (this.framehandlerclear)
-	this.framehandlerclear();
-    },
-    dom_animate (active) {
-      update_levels.call (this, active);
-    },
+    dom_animate_playback: update_levels,
     mcc: function (n) { // midi_channel character
       if (n == this.tdata.mc)
 	return '√';
