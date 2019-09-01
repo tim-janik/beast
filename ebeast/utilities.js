@@ -331,6 +331,7 @@ vue_mixins.dom_updates = {
       // members
       promise: Promise.resolve(),
       destroying: false,
+      // animateplaybackclear: undefined,
       pending: false,	// dom_update pending
       unwatch: null,
       // methods
@@ -414,8 +415,25 @@ vue_mixins.dom_updates = {
   beforeDestroy: function () {
     console.assert (this.$dom_updates);
     this.$dom_updates.destroying = true;
+    this.dom_trigger_animate_playback (false);
     if (this.dom_destroy)
       this.$dom_updates.chain_await (() => this.dom_destroy());
+  },
+  methods: {
+    dom_trigger_animate_playback (flag) {
+      if (flag === undefined)
+	return !!this.$dom_updates.animateplaybackclear;
+      if (flag && !this.$dom_updates.animateplaybackclear)
+	{
+	  console.assert (this.dom_animate_playback);
+	  this.$dom_updates.animateplaybackclear = Util.add_frame_handler (this.dom_animate_playback.bind (this));
+	}
+      else if (!flag && this.$dom_updates.animateplaybackclear)
+	{
+	  this.$dom_updates.animateplaybackclear();
+	  this.$dom_updates.animateplaybackclear = undefined;
+	}
+    },
   },
 };
 
