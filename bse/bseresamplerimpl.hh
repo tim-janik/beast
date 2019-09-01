@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <bse/bseresampler.hh>
+#include <bse/bseblockutils.hh>
 #include <bse/sfi.hh>
 #include <math.h>
 #include <string.h>
@@ -296,7 +297,7 @@ public:
   void
   process_block (const float *input,
                  guint        n_input_samples,
-		 float       *output)
+		 float       *output) override
   {
     const uint history_todo = min (n_input_samples, ORDER - 1);
 
@@ -320,14 +321,19 @@ public:
    * Returns the FIR filter order.
    */
   guint
-  order() const
+  order() const override
   {
     return ORDER;
   }
   double
-  delay() const
+  delay() const override
   {
     return order() - 1;
+  }
+  void
+  reset() override
+  {
+    Bse::Block::fill (history.size(), &history[0], 0.0);
   }
 };
 
@@ -435,7 +441,7 @@ public:
   void
   process_block (const float *input,
                  guint        n_input_samples,
-		 float       *output)
+		 float       *output) override
   {
     BSE_ASSERT_RETURN ((n_input_samples & 1) == 0);
 
@@ -497,14 +503,20 @@ public:
    * Returns the filter order.
    */
   guint
-  order() const
+  order() const override
   {
     return ORDER;
   }
   double
-  delay() const
+  delay() const override
   {
     return order() / 2 - 0.5;
+  }
+  void
+  reset() override
+  {
+    Bse::Block::fill (history_even.size(), &history_even[0], 0.0);
+    Bse::Block::fill (history_odd.size(), &history_odd[0], 0.0);
   }
 };
 

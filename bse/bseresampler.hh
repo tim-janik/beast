@@ -83,6 +83,10 @@ public:
    * output[10] and output[11], and the second input sample equates output[11].
    */
   virtual double      delay() const = 0;
+  /**
+   * clear internal history, reset resampler state to zero values
+   */
+  virtual void        reset() = 0;
 protected:
   static const double halfband_fir_linear_coeffs[2];
   static const double halfband_fir_48db_coeffs[16];
