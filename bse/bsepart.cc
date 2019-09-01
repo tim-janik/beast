@@ -339,6 +339,7 @@ part_update_last_tick (BsePart *self)
   self->last_tick_SL = last_tick;
   BSE_SEQUENCER_UNLOCK ();
   g_object_notify ((GObject*) self, "last-tick");
+  self->as<Bse::PartImpl*>()->emit_event ("notify:last_tick");
   bse_part_links_changed (self);
 }
 
@@ -357,7 +358,10 @@ range_changed_notify_handler (gpointer data)
       self->range_min_note = BSE_MAX_NOTE;
       self->range_max_note = 0;
       if (min_note <= max_note)
-	g_signal_emit (self, signal_range_changed, 0, tick, duration, min_note, max_note);
+        {
+          g_signal_emit (self, signal_range_changed, 0, tick, duration, min_note, max_note);
+          self->as<Bse::PartImpl*>()->emit_event ("noteschanged");
+        }
     }
   handler_id_range_changed = 0;
 
@@ -427,6 +431,7 @@ links_changed_notify_handler (gpointer data)
       BsePart *self = (BsePart*) sfi_ring_pop_head (&plist_links_changed);
       self->links_queued = FALSE;
       g_signal_emit (self, signal_links_changed, 0);
+      self->as<Bse::PartImpl*>()->emit_event ("linkschanged");
     }
   handler_id_links_changed = 0;
 
