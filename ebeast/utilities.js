@@ -904,9 +904,10 @@ export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) 
    * resizes in the absence of other constraints. So to render at screen pixel size, we
    * always have to assign canvas.style.{width|height}.
    */
+  const devicepixelratio = window.devicePixelRatio;
   const cw = Math.round (csswidth), ch = Math.round (cssheight);
-  const pw = Math.round (window.devicePixelRatio * cw);
-  const ph = Math.round (window.devicePixelRatio * ch);
+  const pw = Math.round (devicepixelratio * cw);
+  const ph = Math.round (devicepixelratio * ch);
   if (cw != canvas.style.width || ch != canvas.style.height ||
       pw != canvas.width || ph != canvas.height || fill_style) {
     canvas.style.width = cw + 'px';
@@ -920,9 +921,8 @@ export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) 
       ctx.fillStyle = fill_style;
       ctx.fillRect (0, 0, canvas.width, canvas.height);
     }
-    return true;
   }
-  return false;
+  return devicepixelratio;
 }
 
 /** Draw a horizontal line from (x,y) of width `w` with dashes `d` */
