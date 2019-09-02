@@ -57,7 +57,8 @@
 
 <template>
 
-  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;" tabindex="0" >
+  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;"
+       tabindex="0" @keydown="keydown">
     <div style="display: flex; width: 100%; flex-shrink: 0;">
       <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
 	<button >I</button>
@@ -77,7 +78,8 @@
 		     'background-color': 'blue',
 		     }" >
 	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" @click="$forceUpdate()" >
+	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" @click="notes_click"
+		  :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" >
 	  </canvas>
 	</div>
       </div>
@@ -196,8 +198,87 @@ module.exports = {
     piano_layout: piano_layout,
     render_piano: render_piano,
     render_notes: render_notes,
+    tick_from_canvas_x: tick_from_canvas_x,
+    midinote_from_canvas_y: midinote_from_canvas_y,
+    keydown (event) {
+      const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
+      const idx = find_note (this.adata.pnotes, n => this.adata.focus_noteid == n.id);
+      let note = idx >= 0 ? this.adata.pnotes[idx] : {};
+      const big = 9e12; // assert: big * 1000 + 999 < Number.MAX_SAFE_INTEGER
+      let nextdist = +Number.MAX_VALUE, nextid = -1, pred, score;
+      switch (event.keyCode) {
+	case RIGHT:
+	  if (idx < 0)
+	    note = { id: -1, tick: -1, note: -1, duration: 0 };
+	  pred  = n => n.tick > note.tick || (n.tick == note.tick && n.note >= note.note);
+	  score = n => (n.tick - note.tick) * 1000 + n.note;
+	  // nextid = idx >= 0 && idx + 1 < this.adata.pnotes.length ? this.adata.pnotes[idx + 1].id : -1;
+	  break;
+	case LEFT:
+	  if (idx < 0)
+	    note = { id: -1, tick: +big, note: 1000, duration: 0 };
+	  pred  = n => n.tick < note.tick || (n.tick == note.tick && n.note <= note.note);
+	  score = n => (note.tick - n.tick) * 1000 + 1000 - n.note;
+	  // nextid = idx > 0 ? this.adata.pnotes[idx - 1].id : -1;
+	  break;
+	case DOWN:
+	  if (note.id)
+	    {
+	      this.part.change_note (note.id, note.tick, note.duration, Math.max (note.note - 1, 0), note.fine_tune, note.velocity);
+	      event.preventDefault();
+	    }
+	  break;
+	case UP:
+	  if (note.id)
+	    {
+	      this.part.change_note (note.id, note.tick, note.duration, Math.min (note.note + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
+	      event.preventDefault();
+	    }
+	  break;
+      }
+      if (note.id && pred && score)
+	{
+	  this.adata.pnotes.forEach (n => {
+	    if (n.id != note.id && pred (n))
+	      {
+		const dist = score (n);
+		if (dist < nextdist)
+		  {
+		    nextdist = dist;
+		    nextid = n.id;
+		  }
+	      }
+	  });
+	}
+      if (nextid > 0)
+	{
+	  this.adata.focus_noteid = nextid;
+	  event.preventDefault();
+	}
+    },
+    notes_click (event) {
+      const tick = this.tick_from_canvas_x (event.offsetX);
+      const midinote = this.midinote_from_canvas_y (event.offsetY);
+      const idx = find_note (this.adata.pnotes,
+			     n => tick >= n.tick && tick < n.tick + n.duration && n.note == midinote);
+      if (idx >= 0)
+	{
+	  const note = this.adata.pnotes[idx];
+	  this.adata.focus_noteid = note.id;
+	}
+    },
   },
 };
+
+function find_note (allnotes, predicate) {
+  for (let i = 0; i < allnotes.length; ++i)
+    {
+      const n = allnotes[i];
+      if (predicate (n))
+	return i;
+    }
+  return -1;
+}
 
 function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   /* By design, each octave consists of 12 aligned rows that are used for note placement.
@@ -273,6 +354,37 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     layout.bkeys.push ([key_start, key_end - key_start]);
   }
   return Object.freeze (layout); // effectively 'const'
+}
+
+function tick_from_canvas_x (x) {
+  const layout = this.layout;
+  const xp = x * layout.pixelratio;
+  const tick = Math.round ((layout.xscroll + xp) / layout.tickscale);
+  return tick;
+}
+
+function midinote_from_canvas_y (y) {
+  const layout = this.layout;
+  const yp = y * layout.pixelratio;
+  const nthoct = 0| (layout.yoffset - yp) / layout.oct_length;
+  const inoct = (layout.yoffset - yp) - nthoct * layout.oct_length;
+  let octkey = 0;
+  for (let i = layout.bkeys.length - 1; i >= 0; --i)
+    if (inoct >= layout.bkeys[i][0] && inoct < layout.bkeys[i][0] + layout.bkeys[i][1])
+      {
+	octkey = layout.black2midi[i];
+	break;
+      }
+  if (!octkey)
+    for (let i = layout.wkeys.length - 1; i >= 0; --i)
+      if (inoct >= layout.wkeys[i][0] && inoct < layout.wkeys[i][0] + layout.wkeys[i][1])
+	{
+	  octkey = layout.white2midi[i];
+	  break;
+	}
+  const midioct = nthoct - 1;
+  const midinote = (midioct + 1) * 12 + octkey;
+  return midinote; // [ midioct, octkey, midinote ]
 }
 
 function render_piano (canvas, cstyle, layout) {
