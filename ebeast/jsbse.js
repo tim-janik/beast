@@ -40,9 +40,8 @@ Bse.ObjectIface.prototype.on = function (eventselector, callback) {
 };
 
 // Connect and fetch Bse.server on startup
-export const server = new Bse.Server (undefined);
-Object.defineProperty (server, '$promise', { writable: true });
-server['$promise'] = new Promise ((resolve, reject) => {
+export let server = { $promise: null };
+server.$promise = new Promise ((resolve, reject) => {
   const hostport = window.location.href.replace (/.*:\/\/([^\/]+).*/, '$1');
   const ws_url = 'ws://' + hostport;
   const url = new URL (window.location);
@@ -51,7 +50,7 @@ server['$promise'] = new Promise ((resolve, reject) => {
     result => {
       if (result instanceof Bse.Server)
 	{
-	  Object.defineProperty (server, '$id', { value: result['$id'], configurable: true });
+	  server = new Bse.Server (result['$id']);
 	  resolve (server);
 	  if (server == "unimplemented") // FIXME: run unit tests again
 	    ebeast_test_bse_basics();
@@ -61,6 +60,7 @@ server['$promise'] = new Promise ((resolve, reject) => {
     },
     error => reject (error));
 });
+Object.freeze (server);
 
 // Handle binary messages for shm updates
 import * as Util from './utilities.js';

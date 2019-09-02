@@ -28,7 +28,7 @@
   .b-projectshell { }
   .b-projectshell-part-area {
     background-color: $b-button-border;
-    height: 350px; }
+    height: 350px; padding: $b-focus-outline-width; }
 </style>
 
 <script>

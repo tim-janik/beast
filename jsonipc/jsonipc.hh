@@ -591,7 +591,8 @@ private:
             if (jsprinter_extends)
               out_ += "super ($id); ";
             else
-              out_ += "Object.defineProperty (this, '$id', { value: $id, configurable: true }); ";
+              out_ += "Object.defineProperty (this, '$id', { value: $id }); ";
+            out_ += "if (new.target === " + jsclass_ + ") Object.freeze (this); ";
             out_ += "}\n";
           }
         else if (tag_ == ENUMS)

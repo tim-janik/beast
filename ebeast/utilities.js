@@ -437,6 +437,14 @@ vue_mixins.dom_updates = {
   },
 };
 
+/// Extract the promise `p` state as one of: 'pending', 'fulfilled', 'rejected'
+export function promise_state (p) {
+  const t = {}; // dummy, acting as fulfilled
+  return Promise.race ([p, t])
+		.then (v => v === t ? 'pending' : 'fulfilled',
+		       v => 'rejected');
+}
+
 /** VueifyObject - turn a regular object into a Vue instance.
  * The *object* passed in is used as the Vue `data` object. Properties
  * with a getter (and possibly setter) are turned into Vue `computed`
@@ -1032,7 +1040,7 @@ canvas_ink_vspan.cache = [];
 export function midi_label (numish) {
   function one_label (num) {
     const letter = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
-    const oct = Math.floor (num / letter.length) - 1;
+    const oct = Math.floor (num / letter.length) - 2;
     const key = num % letter.length;
     return letter[key] + oct;
   }
@@ -1275,8 +1283,8 @@ export function keyboard_click (element)
   return false;
 }
 
-/// Check if an element can be found in a given array.
-function in_array (element, array)
+/** Check whether `element` is contained in `array` */
+export function in_array (element, array)
 {
   return array.indexOf (element) >= 0;
 }

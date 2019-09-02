@@ -97,6 +97,7 @@
   Vue.prototype.$log = window.$log;
   Vue.prototype.assert = window.assert;
   Vue.prototype.CONFIG = CONFIG;
+  Vue.options.inheritAttrs = false; // Add non-props attributes to $attrs (default in Vue-3)
   // utilities.js
   import * as Util from './utilities.js'; // depends on Vue
   window.Util = Util;
