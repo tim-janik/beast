@@ -16,7 +16,7 @@
 <style lang="scss">
   @import 'styles.scss';
   .b-piano-roll {
-    border: 1px solid red;
+    border: 1px solid #111;
   }
   .b-piano-roll-buttons {
     font: $b-piano-roll-buttons-font;
@@ -42,6 +42,8 @@
     --piano-roll-key-font-color: 	#{$b-piano-roll-key-font-color};
     --piano-roll-note-font:    		#{$b-piano-roll-note-font};
     --piano-roll-note-font-color:	#{$b-piano-roll-note-font-color};
+    --piano-roll-note-focus-color:	#{$b-piano-roll-note-focus-color};
+    --piano-roll-note-focus-border:	#{$b-piano-roll-note-focus-border};
   }
   .b-piano-roll-piano {
     --piano-roll-font: #{$b-piano-roll-font};
@@ -55,7 +57,7 @@
 
 <template>
 
-  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;">
+  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;" tabindex="0" >
     <div style="display: flex; width: 100%; flex-shrink: 0;">
       <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
 	<button >I</button>
@@ -70,12 +72,13 @@
 	<div :style="{
 		     display: 'flex',
 		     'flex-direction': 'row',
-		     height: piano_roll_cssheight + 'px',
+		     height: PIANO_ROLL_CSSHEIGHT + 'px',
 		     width: '100%',
 		     'background-color': 'blue',
 		     }" >
-	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" @click="$forceUpdate()" >
+	  </canvas>
 	</div>
       </div>
     </div>
@@ -85,19 +88,20 @@
 
 <script>
 const floor = Math.floor, round = Math.round;
-const piano_roll_cssheight = 841;
+const PIANO_KEYS = 120;
+const PIANO_ROLL_CSSHEIGHT = 84  * PIANO_KEYS / 12 + 1;
 
 function observable_part_data () {
   const data = {
     qnpt:          { default:   4, },	// quarter notes per tact
     tpqn:          { default: 384, },	// ticks per quarter note
-    min_last_tick: { default: 384, },
     vzoom:         { default: 1.0, },
     hzoom:         { default: 1.0, },
     auto_scrollto: { default:  -2, },
+    focus_noteid:  { default: -1, },
     last_tick:     { getter: c => this.part.get_last_tick(), notify: n => this.part.on ("notify:last_tick", n), },
     pnotes:        { default: [],                            notify: n => this.part.on ("noteschanged", n),
-                     getter: c => this.part.list_notes_crossing (0, CONFIG.MAXINT), },
+                     getter: async c => Object.freeze (await this.part.list_notes_crossing (0, CONFIG.MAXINT)), },
   };
   return this.observable_from_getters (data, () => this.part);
 }
@@ -108,12 +112,18 @@ module.exports = {
   props: {
     part: [Bse.Part],
   },
-  data() { const PIANO_KEYS = 120;
+  priv_tmpl: {
+    layout: undefined,
+  },
+  data() {
     return { piano_keys:   PIANO_KEYS,
 	     piano_height: 84 * floor ((PIANO_KEYS + 12 - 1) / 12) + 1,
 	     adata:        observable_part_data.call (this) }; },
   watch: {
-    part (nv, ov) { this.sync_scrollpos (nv, ov); },
+    part (nv, ov) {
+      this.adata.focus_noteid = 0;
+      this.sync_scrollpos (nv, ov);
+    },
   },
   mounted () {
     // keep vertical scroll position for each part, non-reactive
@@ -140,6 +150,7 @@ module.exports = {
 	}
     },
     dom_update() {
+      this.layout = undefined;
       // Guard against the initial VNode Vue.render() call, after which DOM elements are created and assigned to $el and $ref
       if (!this.$el) // we need a second Vue.render() call for canvas drawing
 	return this.$forceUpdate();
@@ -160,10 +171,10 @@ module.exports = {
       // canvas setup
       const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
       const notes_canvas = this.$refs['notes-canvas'], notes_style = getComputedStyle (notes_canvas);
-      const layout = this.piano_layout (piano_canvas, piano_style, notes_canvas, notes_style);
+      this.layout = this.piano_layout (piano_canvas, piano_style, notes_canvas, notes_style);
       // render piano first, it fills some caches that render_notes utilizes
-      this.render_piano (piano_canvas, piano_style, layout);
-      this.render_notes (notes_canvas, notes_style, layout);
+      this.render_piano (piano_canvas, piano_style, this.layout);
+      this.render_notes (notes_canvas, notes_style, this.layout);
       // scrollto an area with visible notes
       if (this.adata.auto_scrollto !== undefined) {
 	const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
@@ -195,17 +206,19 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
    * The corresponding white and black keys are also always pixel aligned, variations in
    * mapping the key sizes to screen coordinates are distributed over the widths of the keys.
    */
-  let layout = {
-    cssheight:		piano_roll_cssheight,
+  const layout = {
+    pixelratio:		1,
+    cssheight:		PIANO_ROLL_CSSHEIGHT,
     piano_csswidth:	0,			// derived from white_width
     notes_csswidth:	0,			// display width, determined by parent
     virt_width:		0,			// virtual width in CSS pixels, derived from last_tick
     oct_length:		84,			// initially css pixels, = 12 * 7
     octaves:		0,			// number of octaves to display
     thickness:		1,			// if ratio in [0..2]
-    yoffset:		piano_roll_cssheight,	// y coordinate of lowest octave
+    yoffset:		PIANO_ROLL_CSSHEIGHT,	// y coordinate of lowest octave
     xscroll:		0,			// horizontal scroll position
     beat_pixels:	50,			// pixels per quarter note
+    tickscale:		50 / 384,
     row:		7,
     bkeys:		[], 			// [ [offset,size] * 5 ]
     wkeys:		[], 			// [ [offset,size] * 7 ]
@@ -213,25 +226,30 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     white_width:	54,			// length of white keys, --piano-roll-key-length
     black_width:	0.55,			// length of black keys (pre-init factor)
     label_keys:		1,			// 0=none, 1=roots, 2=whites
+    black2midi:         [   1,  3,     6,  8,  10,  ],
+    white2midi:         [ 0,  2,  4, 5,  7,  9,  11 ],
   };
   const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84px octave
   const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84px octave
   const key_length = parseFloat (piano_style.getPropertyValue ('--piano-roll-key-length'));
+  const min_last_tick = 384;
+  const last_tick = Math.max (this.adata.last_tick || 0, min_last_tick);
   // scale layout
   const sbr = this.$refs.scrollarea.getBoundingClientRect();
-  const ratio = window.devicePixelRatio;
-  const layout_height = round (ratio * layout.cssheight);
+  layout.pixelratio = window.devicePixelRatio;
+  const layout_height = round (layout.pixelratio * layout.cssheight);
   layout.white_width = key_length || layout.white_width; // allow CSS override
   layout.piano_csswidth = layout.white_width;
   layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width - layout.piano_csswidth);
-  layout.beat_pixels = round (layout.beat_pixels * ratio * this.adata.hzoom);
-  layout.virt_width = floor (384 * floor (this.adata.last_tick / 384));
+  layout.beat_pixels = round (layout.beat_pixels * layout.pixelratio * this.adata.hzoom);
+  layout.tickscale = layout.beat_pixels / 384;
+  layout.virt_width = floor (384 * floor (last_tick / 384));
   layout.octaves = round (layout.cssheight / layout.oct_length);
-  layout.thickness = Math.max (round (ratio * 0.5), 1);
+  layout.thickness = Math.max (round (layout.pixelratio * 0.5), 1);
   layout.yoffset = layout_height - layout.thickness;		// leave a pixel for overlapping piano key borders
-  layout.row = round (ratio * layout.row * this.adata.vzoom);
+  layout.row = round (layout.pixelratio * layout.row * this.adata.vzoom);
   layout.oct_length = layout.row * 12;
-  layout.white_width = round (layout.white_width * ratio);
+  layout.white_width = round (layout.white_width * layout.pixelratio);
   layout.black_width = round (layout.white_width * layout.black_width);
   // hscrollbar setup
   if (this.$refs.hscrollbar)
@@ -324,7 +342,6 @@ function render_piano (canvas, cstyle, layout) {
     // draw names
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    const white2midi = [ 0, 2, 4,   5, 7, 9, 11 ];
     // TODO: use actualBoundingBoxAscent once measureText() becomes more sophisticated
     for (let oct = 0; oct < layout.octaves; oct++) {
       const oy = layout.yoffset - oct * layout.oct_length;
@@ -336,7 +353,7 @@ function render_piano (canvas, cstyle, layout) {
 	const p = layout.wkeys[k];
 	const x = 0, y = oy - p[0];
 	const w = layout.white_width, h = p[1];
-	const midi_key = oct * 12 + white2midi[k];
+	const midi_key = oct * 12 + layout.white2midi[k];
 	const label = midi_labels[midi_key], vspan = label_spans[midi_key];
 	const twidth = ctx.measureText (label).width;
 	const tx = x + w - 2 * (th + 1) - twidth, ty = y - h + (h - vspan[1]) / 2 - vspan[0];
@@ -374,7 +391,7 @@ function render_notes (canvas, cstyle, layout) {
   // draw half octave separators
   const semitone6 = csp ('--piano-roll-semitone6');
   ctx.fillStyle = semitone6;
-  const stipple = round (3 * window.devicePixelRatio), stipple2 = 2 * stipple;
+  const stipple = round (3 * layout.pixelratio), stipple2 = 2 * stipple;
   const qy = layout.wkeys[3][0]; // separator between F|G
   for (let oct = 0; oct < layout.octaves; oct++) {
     const oy = layout.yoffset - oct * layout.oct_length;
@@ -410,20 +427,32 @@ function render_notes (canvas, cstyle, layout) {
   // paint notes
   if (!this.adata.pnotes)
     return;
+  const tickscale = layout.tickscale;
   const note_font = csp ('--piano-roll-note-font');
   const note_font_color = csp ('--piano-roll-note-font-color');
+  const note_focus_color = csp ('--piano-roll-note-focus-color');
+  const focus_noteid = this.adata.focus_noteid;
   const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
   const fpx = layout.row - 2;
   ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
+  ctx.lineWidth = layout.pixelratio; // layout.thickness;
   ctx.fillStyle = note_font_color;
+  ctx.strokeStyle = csp ('--piano-roll-note-focus-border');
   // draw notes
-  const tickscale = layout.beat_pixels / 384;
   for (const note of this.adata.pnotes)
     {
       const oct = floor (note.note / 12), key = note.note - oct * 12;
       const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
       const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
-      ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
+      if (note.id == focus_noteid)
+	{
+	  ctx.fillStyle = note_focus_color;
+	  ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
+	  ctx.strokeRect (nx - lsx, ny - layout.row, nw, layout.row);
+	  ctx.fillStyle = note_font_color;
+	}
+      else
+	ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
     }
 }
 
