@@ -1,6 +1,8 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 'use strict';
 
+const AUTOTEST = true;
+
 export const vue_mixins = {};
 export const vue_directives = {};
 
@@ -74,6 +76,114 @@ export function* range (bound, end, step = 1) {
   for (; bound < end; bound += step)
     yield bound;
 }
+
+/** Create a new object that has the same properties and Array values as `src` */
+export function copy_recursively (src = {}) {
+  let o;
+  if (Array.isArray (src))
+    {
+      o = Array.prototype.slice.call (src, 0);	// copy array cells, not properties
+      for (const k in src)                      // loop over index and property keys
+	{
+	  let v = o[k];
+	  if (v === undefined)                  // empty cell?
+	    {
+	      v = src[k];
+	      if (v !== undefined)              // no, missing property
+		o[k] = v instanceof Object && k !== '__proto__' ? copy_recursively (v) : v;
+	    }
+	  else if (v instanceof Object)         // Object cell
+	    o[k] = copy_recursively (v);
+	}
+    }
+  else if (src instanceof Object && !(src instanceof Function))
+    {
+      o = Object.assign ({}, src);		// reseve slots and copy properties
+      for (const k in o)
+	{
+	  const v = o[k];
+	  if (v instanceof Object &&            // Object/Array property
+	      k !== '__proto__')
+	    o[k] = copy_recursively (v);
+	}
+    }
+  else // primitive or Function
+    o = src;
+  return o;
+}
+
+/** Check if `a == b`, recursively if the arguments are of type Array or Object */
+export function equals_recursively (a, b) {
+  // compare primitives
+  if (a === b)
+    return true;
+  if (typeof a != typeof b)
+    return false;
+  if (typeof a == 'number' && isNaN (a) && isNaN (b))
+    return true;
+  // check Objects, note: typeof null === 'object' && null instanceof Object === false
+  if (!(a instanceof Object && b instanceof Object))
+    return false;
+  if (a.constructor !== b.constructor)
+    return false;
+  // functions must be exactly equal, due to scoping
+  if (a instanceof Function)
+    return false;
+  // compare Array lengths
+  if (Array.isArray (a) && a.length != b.length)
+    return false;
+  // compare RegExp
+  if (a instanceof RegExp)
+    return a.source == b.source && a.flags == b.flags && a.lastIndex  == b.lastIndex;
+  // compare Object properties
+  for (const k in a)
+    {
+      const av = a[k], bv = b[k];
+      if (av === bv || equals_recursively (av, bv))
+	continue;
+      return false;
+    }
+  for (const k in b)
+    {
+      if (a.hasOwnProperty (k))
+	continue;	// compared above
+      const av = a[k], bv = b[k];
+      if (av === bv || equals_recursively (av, bv))
+	continue;	// compare inherited props
+      return false;
+    }
+  // compare non-Array iterables (e.g. Set)
+  if (!Array.isArray (a) && typeof a[Symbol.iterator] == 'function')
+    {
+      const itera = a[Symbol.iterator]();
+      const iterb = b[Symbol.iterator]();
+      do {
+	const { value: va, done: da } = itera.next();
+	const { value: vb, done: db } = iterb.next();
+	if (da !== db)
+	  return false;
+	else if (da)
+	  break;
+	if (!(va === vb || equals_recursively (va, vb)))
+	  return false;
+      } while (true);	// eslint-disable-line no-constant-condition
+    }
+  return true;
+  // TODO: equals_recursively() busy loops for object reference cycles
+}
+
+if (AUTOTEST)
+  {
+    function eqr (a, b) { return equals_recursively (a, b) && equals_recursively (b, a); }
+    const a = [ 0, 2, 3, 4, 5, 70, {a:null} ], b = [ 1, 2, 3, 4, 5, 70, {a:null} ]; console.assert (!eqr (a, b)); a[0] = 1; console.assert (eqr (a, b));
+    a.x = 9; console.assert (!eqr (a, b)); b.x = 9.0; console.assert (eqr (a, b));
+    const c = copy_recursively (a); console.assert (eqr (a, c)); c[6].q = 'q'; console.assert (!eqr (a, c));
+    const as = new Set (a), bs = new Set (b); console.assert (eqr (as, bs));
+    bs.add (99); console.assert (!eqr (as, bs)); bs.delete (99); console.assert (eqr (as, bs));
+    // TODO: a[999] = b; b[999] = a; console.assert (eqr (a, b));
+    console.assert (eqr (/a/, /a/) && !eqr (/b/i, /b/));
+    console.assert (eqr (clamp, clamp) && !eqr (clamp, eqr));
+  }
 
 /** Return @a x clamped into @a min and @a max. */
 export function clamp (x, min, max) {
@@ -155,15 +265,25 @@ vue_directives['inlineblur'] = {
   }
 };
 
-/** Vue mixin to allow automatic `data` construction (cloning) from `data_tmpl` */
+/** This Vue mixin sets up reactive `data` from `data_tmpl` and non-reactive data from `priv_tmpl` */
 vue_mixins.data_tmpl = {
   beforeCreate: function () {
-    // Automatically create `data` (via cloning) from `data_tmpl`
+    // Add non-reactive data from `priv_tmpl`
+    if (this.$options.priv_tmpl)
+      {
+	Object.assign (this, copy_recursively (this.$options.priv_tmpl));
+      }
+    // Create reactive `data` (via cloning) from `data_tmpl`
     if (this.$options.data_tmpl)
-      this.$options.data = Object.assign ({}, this.$options.data_tmpl,
-					  typeof this.$options.data === 'function' ?
-					  this.$options.data.call (this) :
-					  this.$options.data);
+      {
+	const data = copy_recursively (this.$options.data_tmpl);
+	// merge data={} into the copy of data_tmpl={}
+	if (typeof this.$options.data === 'function')
+	  Object.assign (data, this.$options.data.call (this));
+	else if (this.$options.data)
+	  Object.assign (data, this.$options.data);
+	this.$options.data = data;
+      }
     if (this.$options.tmpl_data)
       console.warn ("Object has `tmpl_data` member, did you mean `data_tmpl`?", this);
   },
@@ -194,55 +314,126 @@ export function hyphenate (string) {
 }
 
 /** Vue mixin to provide a `dom_create`, `dom_update`, `dom_destroy` hooks.
- * This mixin allowes async instance method callbacks for DOM element creation
- * (`this.dom_create()`), updates (`this.dom_update()`, also called right after
- * `this.dom_create()`) and destruction (`this.dom_destroy()`). It is ensured
- * that invocation of asnyc callbacks is serialized, so `dom_create` needs to
- * finish before `dom_update`, which in turn has to finish before subsequent
- * calls to `dom_update` or `dom_destroy`.
- * The Boolean member `this.dom_present` indicates whether DOM elements are
- * still accessible (e.g. via `this.$el` or `this.$refs`), which can change
- * at any `await` point in an async function.
- * The Boolean member `this.dom_destroying` indicates wether DOM elements are
- * being destroyed intermittingly, which can happen at any `await` point in
- * an async function.
+ * This mixin calls instance method callbacks for DOM element creation
+ * (`this.dom_create()`), updates (`this.dom_update()`,
+ * and destruction (`this.dom_destroy()`).
+ * If `dom_create` is an async function or returns a Promise, `dom_update`
+ * calls are deferred until the returned Promise is resolved.
+ *
+ * Access to reactive properties during `dom_update` are tracked as dependencies,
+ * watched by Vue, so future changes cause rerendering of the Vue component.
  */
 vue_mixins.dom_updates = {
   beforeCreate: function () {
-    console.assert (this.dom_handler_promise == undefined);
-    this.dom_handler_promise = null;
-    this.dom_present = false;
-    this.dom_destroying = false;
-  },
+    console.assert (this.$dom_updates == undefined);
+    // install $dom_updates helper on Vue instance
+    this.$dom_updates = {
+      // members
+      promise: Promise.resolve(),
+      destroying: false,
+      // animateplaybackclear: undefined,
+      pending: false,	// dom_update pending
+      unwatch: null,
+      // methods
+      chain_await: (promise_or_function) => {
+	const result = promise_or_function instanceof Function ? promise_or_function() : promise_or_function;
+	if (result instanceof Promise)
+	  this.$dom_updates.promise =
+	    this.$dom_updates.promise.then (async () => await result);
+      },
+      call_update: (resolve) => {
+	/* Here we invoke `dom_update` with dependency tracking through $watch. In case
+	 * it is implemented as an async function, we await the returned promise to
+	 * serialize with future `dom_update` or `dom_destroy` calls. Note that
+	 * dependencies cannot be tracked beyond the first await point in `dom_update`.
+	 */
+	// Clear old $watch if any
+	if (this.$dom_updates.unwatch)
+	  {
+	    this.$dom_updates.unwatch();
+	    this.$dom_updates.unwatch = null;
+	  }
+	/* Note, if vm._watcher is triggered before the $watch from below, it'll re-render
+	 * the VNodes and then our watcher is triggered, which causes $forceUpdate() and the
+	 * VNode tree is rendered *again*. This causes multiple calles to updated(), too.
+	 */
+	let once = 0;
+	const update_expr = vm => {
+	  if (once == 0)
+	    {
+	      const result = this.dom_update (this);
+	      if (result instanceof Promise)
+		{
+		  // Note, async dom_update() looses reactivity…
+		  result.then (resolve);
+		  console.warn ('dom_update() returned Promise, async functions are not reactive', this);
+		}
+	      else
+		resolve();
+	    }
+	  return ++once; // always change return value and guard against subsequent calls
+	};
+	/* A note on $watch. Its `expOrFn` is called immediately, the retrun value and
+	 * dependencies are recorded. Later, once a dependency changes, its `expOrFn`
+	 * is called again, also recording return value and new dependencies.
+	 * If the return value changes, `callback` is invoked.
+	 * What we need for updating DOM elements, is:
+	 * a) the initial call with dependency recording which we use for (expensive) updating,
+	 * b) trigger $forceUpdate() once a dependency changes, without intermediate expensive updating.
+	 */
+	this.$dom_updates.unwatch = this.$watch (update_expr, this.$forceUpdate);
+      },
+    };
+  }, // beforeCreate
   mounted: function () {
-    this.dom_present = true;
-    console.assert (this.dom_handler_promise == null);
-    this.dom_handler_promise = (async () => {
-      if (this.dom_create)
-	await this.dom_create();
-    }) ();
-    if (this.dom_update)
-      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
-	if (this.dom_present)
-	  await this.dom_update();
-      });
+    console.assert (this.$dom_updates);
+    if (this.dom_create)
+      this.$dom_updates.chain_await (this.dom_create());
+    this.$forceUpdate();  // always trigger `dom_update` after `dom_create`
   },
   updated: function () {
-    console.assert (this.dom_handler_promise);
-    if (this.dom_update)
-      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
-	if (this.dom_present)
-	  await this.dom_update();
-      });
+    console.assert (this.$dom_updates);
+    /* If multiple $watch() instances are triggered by an update, Vue may re-render
+     * and call updated() several times in a row. To avoid expensive intermediate
+     * updates, we use this.$dom_updates.pending as guard.
+     */
+    if (this.dom_update && !this.$dom_updates.pending)
+      {
+	this.$dom_updates.chain_await (new Promise (resolve => {
+	  // Wrap call_update() into a chained promise to serialize with dom_destroy
+	  this.$nextTick (() => {
+	    this.$dom_updates.pending = false;
+	    if (this.$dom_updates.destroying)
+	      resolve(); // No need for updates during destruction
+	    else
+	      this.$dom_updates.call_update (resolve);
+	  });
+	}));
+	this.$dom_updates.pending = true;
+      }
   },
   beforeDestroy: function () {
-    this.dom_present = false;
-    this.dom_destroying = true;
-    console.assert (this.dom_handler_promise);
+    console.assert (this.$dom_updates);
+    this.$dom_updates.destroying = true;
+    this.dom_trigger_animate_playback (false);
     if (this.dom_destroy)
-      this.dom_handler_promise = this.dom_handler_promise.then (async () => {
-	await this.dom_destroy();
-      });
+      this.$dom_updates.chain_await (() => this.dom_destroy());
+  },
+  methods: {
+    dom_trigger_animate_playback (flag) {
+      if (flag === undefined)
+	return !!this.$dom_updates.animateplaybackclear;
+      if (flag && !this.$dom_updates.animateplaybackclear)
+	{
+	  console.assert (this.dom_animate_playback);
+	  this.$dom_updates.animateplaybackclear = Util.add_frame_handler (this.dom_animate_playback.bind (this));
+	}
+      else if (!flag && this.$dom_updates.animateplaybackclear)
+	{
+	  this.$dom_updates.animateplaybackclear();
+	  this.$dom_updates.animateplaybackclear = undefined;
+	}
+    },
   },
 };
 
@@ -713,9 +904,10 @@ export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) 
    * resizes in the absence of other constraints. So to render at screen pixel size, we
    * always have to assign canvas.style.{width|height}.
    */
+  const devicepixelratio = window.devicePixelRatio;
   const cw = Math.round (csswidth), ch = Math.round (cssheight);
-  const pw = Math.round (window.devicePixelRatio * cw);
-  const ph = Math.round (window.devicePixelRatio * ch);
+  const pw = Math.round (devicepixelratio * cw);
+  const ph = Math.round (devicepixelratio * ch);
   if (cw != canvas.style.width || ch != canvas.style.height ||
       pw != canvas.width || ph != canvas.height || fill_style) {
     canvas.style.width = cw + 'px';
@@ -729,9 +921,8 @@ export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) 
       ctx.fillStyle = fill_style;
       ctx.fillRect (0, 0, canvas.width, canvas.height);
     }
-    return true;
   }
-  return false;
+  return devicepixelratio;
 }
 
 /** Draw a horizontal line from (x,y) of width `w` with dashes `d` */
@@ -914,6 +1105,10 @@ export function add_frame_handler (handlerfunc) {
   if (!frame_handler_callback_id) // ensure handlerfunc is called at least once
     frame_handler_callback_id = window.requestAnimationFrame (call_frame_handlers);
   return function() { remove_frame_handler (handler_id); };
+}
+
+export function discard_remote (bseobject) {
+  console.log ("FIXME: Bse/discard:", bseobject);
 }
 
 let shm_array_active = false;
@@ -1208,4 +1403,79 @@ const utilresizeobserver = new UtilResizeObserver();
 /// Create a ResizeObserver object
 export function resize_observer (owner, callback) {
   return utilresizeobserver.add_owner (owner, callback);
+}
+
+/** Create an observable binding for the fields in `tmpl`.
+ * Once the expression `predicate` changes and becomes true-ish, the `getter` of each field in `tmpl` is
+ * called, resolved and assigned to the corresponding field in the observable binding returned from this function.
+ * Optionally, fields may provide a `notify` setup handler to install a notification callback that re-invokes
+ * the `getter`. A destructor can be returned from `notify` that is executed during cleanup phases.
+ * The `default` of each field in `tmpl` may provide an initial value before `getter` is called the first time.
+ * The first argument to a `getter` is a function that can be used to register cleanup code for the getter result.
+ */
+export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue instance
+  const monitoring_getters = [];
+  const getter_cleanups = {};
+  const notify_cleanups = {};
+  let odata; // Vue.observable
+  for (const key in tmpl)
+    {
+      const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
+      const getter = async () => {
+	let newcleaner = undefined;
+	const result = async_getter ? await async_getter (c => newcleaner = c) : default_value;
+	if (getter_cleanups[key])
+	  {
+	    const cleaner = getter_cleanups[key];
+	    getter_cleanups[key] = undefined;
+	    cleaner();
+	  }
+	odata[key] = result;
+	if (newcleaner)
+	  getter_cleanups[key] = newcleaner;
+      };
+      const getter_and_reconnect = (reset) => {
+	const oldcleanup = notify_cleanups[key];
+	if (async_notify && reset)
+	  notify_cleanups[key] = undefined;
+	else if (async_notify)
+	  {
+	    const notifycleanup = async_notify (getter);
+	    if (notifycleanup)
+	      console.assert (notifycleanup instanceof Function);
+	    notify_cleanups[key] = notifycleanup;
+	  }
+	if (!reset)
+	  getter ();
+	else
+	  {
+	    if (getter_cleanups[key])
+	      {
+		const cleaner = getter_cleanups[key];
+		getter_cleanups[key] = undefined;
+		cleaner();
+	      }
+	    odata[key] = default_value;
+	  }
+	if (oldcleanup)
+	  oldcleanup();
+      };
+      monitoring_getters.push (getter_and_reconnect);
+      tmpl[key] = default_value;
+    }
+  odata = Vue.observable (tmpl);
+  const run_monitoring_getters = (reset) => monitoring_getters.forEach (f => f (reset));
+  // cleanup notifiers on `destroyed`
+  const run_notify_cleanups = () => {
+    for (const key in notify_cleanups)
+      if (notify_cleanups[key])
+	notify_cleanups[key] ();
+    for (const key in getter_cleanups)
+      if (getter_cleanups[key])
+	getter_cleanups[key] ();
+  };
+  this.$once ('hook:destroyed', run_notify_cleanups);
+  // update monitoring getters once `predicate` changes
+  this.$watch (predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
+  return odata;
 }

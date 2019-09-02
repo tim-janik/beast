@@ -16,7 +16,7 @@
       <b-track-list :song="song"></b-track-list>
     </div>
     <div class="b-projectshell-part-area" style="display: flex; overflow: hidden;" >
-      <b-piano-roll :piano-part="piano_roll_part" ></b-piano-roll>
+      <b-piano-roll :part="piano_roll_part" ></b-piano-roll>
     </div>
     <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
     <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
@@ -40,7 +40,7 @@ module.exports = {
     show_preferences_dialog: false,
     project: undefined,
     song: undefined,
-    notifyid: 0,
+    notifynameclear: () => 0,
   },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
@@ -59,6 +59,9 @@ module.exports = {
     // provide default project
     this.load_project (Bse.server.last_project());
     // load_project() also forces an update with new Shell properties in place
+  },
+  destroyed() {
+    this.notifynameclear();
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
@@ -113,7 +116,7 @@ module.exports = {
       // shut down old project
       if (this.project)
 	{
-	  this.project.off (this.notifyid);
+	  this.notifynameclear();
 	  this.open_part_edit (undefined);
 	  this.project.stop();
 	  Bse.server.destroy_project (this.project);
@@ -125,7 +128,7 @@ module.exports = {
 	const name = this.project ? await this.project.get_name_or_type() : undefined;
 	document.title = Util.format_title ('Beast', name);
       };
-      this.notifyid = await this.project.on ("notify:uname", update_title);
+      this.notifynameclear = this.project.on ("notify:uname", update_title);
       update_title();
       this.$forceUpdate();
       return Bse.Error.NONE;

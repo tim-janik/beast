@@ -30,6 +30,17 @@
 
 <script>
 const tick_quant = 384; // FIXME
+
+function observable_part_data () {
+  const data = {
+    partname: { getter: c => this.part.get_name(),      notify: n => this.part.on ("notify:uname", n), },
+    lasttick: { getter: c => this.part.get_last_tick(), notify: n => this.part.on ("notify:last_tick", n), },
+    allnotes: { default: [],                            notify: n => this.part.on ("noteschanged", n),
+		getter: async c => Object.freeze (await this.part.list_notes_crossing (0, CONFIG.MAXINT)), },
+  };
+  return this.observable_from_getters (data, () => this.part);
+}
+
 module.exports = {
   name: 'b-part-thumb',
   mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
@@ -39,29 +50,10 @@ module.exports = {
     index: { type: Number, },
     trackindex: { type: Number, },
   },
-  data_tmpl: { partname: "",
-	       allnotes: [],
-	       lasttick: 0,
-  },
-  watch: {
-    part: { immediate: true, async handler (n, o) {
-      // first send out async queries in parallel
-      let partname = this.part.get_name();
-      let lasttick = this.part.get_last_tick();
-      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
-      // then, await results in batch
-      partname = await partname;
-      lasttick = await lasttick;
-      allnotes = await allnotes;
-      // finally, assign Vue-reactive data without further suspension (await)
-      this.partname = partname;
-      this.lasttick = lasttick;
-      this.allnotes = allnotes;
-    } },
-  },
+  data() { return observable_part_data.call (this); },
   computed: {
-    tickscale: function() { return 10 / 384.0; }, // FIXME
-    pxoffset: function() { return this.tick * 10 / 384.0; }, // FIXME
+    tickscale:    function() { return 10 / 384.0; }, // FIXME
+    pxoffset:     function() { return this.tick * this.tickscale; }, // FIXME
     canvas_width: function() {
       return this.tickscale * Math.floor ((this.lasttick + tick_quant - 1) / tick_quant) * tick_quant;
     },
@@ -77,10 +69,10 @@ module.exports = {
 function render_canvas () {
   // canvas setup
   const canvas = this.$refs['canvas'];
-  Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
+  const pixelratio = Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
   const ctx = canvas.getContext ('2d'), cstyle = getComputedStyle (canvas), csp = cstyle.getPropertyValue.bind (cstyle);
   const width = canvas.width, height = canvas.height;
-  const tickscale = this.tickscale * window.devicePixelRatio;
+  const tickscale = this.tickscale * pixelratio;
   //const width = canvas.clientWidth, height = canvas.clientHeight;
   //canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
@@ -110,7 +102,7 @@ function render_canvas () {
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
   for (const note of pnotes) {
-    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * window.devicePixelRatio);
+    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * pixelratio);
   }
 }
 

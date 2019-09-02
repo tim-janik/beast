@@ -72,8 +72,8 @@
     <div class="b-track-view-control">
       <span class="b-track-view-label"
 	    @dblclick="nameedit_++" >
-	<span class="b-track-view-label-el">{{ trackname }}</span>
-	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="trackname"
+	<span class="b-track-view-label-el">{{ tdata.name }}</span>
+	<input v-if="nameedit_" v-inlineblur="() => nameedit_ = 0" :value="tdata.name"
 	       type="text" @change="$event.target.cancelled || track.set_name ($event.target.value.trim())" />
       </span>
       <div class="b-track-view-meter">
@@ -107,27 +107,27 @@
       <b-menuitem uc="Ｓ"               role="solo-track" >     Solo Track		</b-menuitem>
       <b-menuseparator style="margin: 7px" />
       <b-menutitle> MIDI Channel </b-menutitle>
-      <b-menuitem role="mc-0"    :uc="mc ==  0 ?c:n" > Internal Channel </b-menuitem>
+      <b-menuitem   role="mc-0"  :uc="mcc( 0)" > Internal Channel </b-menuitem>
       <b-menurow noturn>
-	<b-menuitem role="mc-1"  :uc="mc ==  1 ?c:n" >  1 </b-menuitem>
-	<b-menuitem role="mc-2"  :uc="mc ==  2 ?c:n" >  2 </b-menuitem>
-	<b-menuitem role="mc-3"  :uc="mc ==  3 ?c:n" >  3 </b-menuitem>
-	<b-menuitem role="mc-4"  :uc="mc ==  4 ?c:n" >  4 </b-menuitem>
+	<b-menuitem role="mc-1"  :uc="mcc(1)"  >  1 </b-menuitem>
+	<b-menuitem role="mc-2"  :uc="mcc(2)"  >  2 </b-menuitem>
+	<b-menuitem role="mc-3"  :uc="mcc(3)"  >  3 </b-menuitem>
+	<b-menuitem role="mc-4"  :uc="mcc(4)"  >  4 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-5"  :uc="mc ==  5 ?c:n" >  5 </b-menuitem>
-	<b-menuitem role="mc-6"  :uc="mc ==  6 ?c:n" >  6 </b-menuitem>
-	<b-menuitem role="mc-7"  :uc="mc ==  7 ?c:n" >  7 </b-menuitem>
-	<b-menuitem role="mc-8"  :uc="mc ==  8 ?c:n" >  8 </b-menuitem>
+	<b-menuitem role="mc-5"  :uc="mcc(5)"  >  5 </b-menuitem>
+	<b-menuitem role="mc-6"  :uc="mcc(6)"  >  6 </b-menuitem>
+	<b-menuitem role="mc-7"  :uc="mcc(7)"  >  7 </b-menuitem>
+	<b-menuitem role="mc-8"  :uc="mcc(8)"  >  8 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-9"  :uc="mc ==  9 ?c:n" >  9 </b-menuitem>
-	<b-menuitem role="mc-10" :uc="mc == 10 ?c:n" > 10 </b-menuitem>
-	<b-menuitem role="mc-11" :uc="mc == 11 ?c:n" > 11 </b-menuitem>
-	<b-menuitem role="mc-12" :uc="mc == 12 ?c:n" > 12 </b-menuitem>
+	<b-menuitem role="mc-9"  :uc="mcc(9)"  >  9 </b-menuitem>
+	<b-menuitem role="mc-10" :uc="mcc(10)" > 10 </b-menuitem>
+	<b-menuitem role="mc-11" :uc="mcc(11)" > 11 </b-menuitem>
+	<b-menuitem role="mc-12" :uc="mcc(12)" > 12 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-13" :uc="mc == 13 ?c:n" > 13 </b-menuitem>
-	<b-menuitem role="mc-14" :uc="mc == 14 ?c:n" > 14 </b-menuitem>
-	<b-menuitem role="mc-15" :uc="mc == 15 ?c:n" > 15 </b-menuitem>
-	<b-menuitem role="mc-16" :uc="mc == 16 ?c:n" > 16 </b-menuitem>
+	<b-menuitem role="mc-13" :uc="mcc(13)" > 13 </b-menuitem>
+	<b-menuitem role="mc-14" :uc="mcc(14)" > 14 </b-menuitem>
+	<b-menuitem role="mc-15" :uc="mcc(15)" > 15 </b-menuitem>
+	<b-menuitem role="mc-16" :uc="mcc(16)" > 16 </b-menuitem>
       </b-menurow>
     </b-contextmenu>
 
@@ -138,6 +138,45 @@
 const mindb = -48.0; // -96.0;
 const maxdb =  +6.0; // +12.0;
 
+async function channel_moniotr (ch, addcleanup) {
+  const mon = {};
+  // create signal monitor, needs await like all other BSE calls
+  mon.signmon = this.track.create_signal_monitor (ch);
+  // request dB SPL updates
+  const pf = new Bse.ProbeFeatures();
+  pf.probe_energy = true;
+  // retrieve SHM locations
+  mon.signmon = await mon.signmon;
+  let spl_offset = mon.signmon.get_shm_offset (Bse.MonitorField.F32_DB_SPL);
+  let tip_offset = mon.signmon.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
+  mon.signmon.set_probe_features (pf);
+  // subscribe to SHM updates
+  spl_offset = await spl_offset;
+  tip_offset = await tip_offset;
+  mon.sub_spl = Util.shm_subscribe (spl_offset, 4);
+  mon.sub_tip = Util.shm_subscribe (tip_offset, 4);
+  // register cleanups
+  const dtor = () => {
+    Util.shm_unsubscribe (mon.sub_spl);
+    Util.shm_unsubscribe (mon.sub_tip);
+    mon.signmon.set_probe_features ({});
+    Util.discard_remote (mon.signmon);
+  };
+  addcleanup (dtor);
+  // return value
+  return mon;
+}
+
+function track_data () {
+  const tdata = {
+    name: { getter: c => this.track.get_name(),     notify: n => this.track.on ("notify:uname", n), },
+    mc:   { getter: c => this.track.midi_channel(), notify: n => this.track.on ("notify:midi_channel", n), },
+    lmon: { getter: c => channel_moniotr.call (this, 0, c), },
+    rmon: { getter: c => channel_moniotr.call (this, 1, c), },
+  };
+  return this.observable_from_getters (tdata, () => this.track);
+}
+
 module.exports = {
   name: 'b-track-view',
   mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
@@ -145,36 +184,37 @@ module.exports = {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
   },
-  data_tmpl: {
-    trackname: "",
-    mc: -1, c: '√', n: ' ',
+  data() { return {
     nameedit_: 0,
-    notifyid_: 0,
-  },
-  watch: {
-    track: { immediate: true,
-	     async handler (newtrack, oldtrack) {
-	       if (this.notifyid_)
-		 oldtrack.off (this.notifyid_);
-	       this.notifyid_ = 0;
-	       this.trackname = "";
-	       this.mc = -1;
-	       if (this.track)
-		 {
-		   this.notifyid_ = await this.track.on ("notify", async e => {
-		     this.trackname = await this.track.get_name();
-		     this.mc = await this.track.midi_channel();
-		   });
-		   this.trackname = await this.track.get_name();
-		   this.mc = await this.track.midi_channel();
-		 }
-	     } },
-  },
-  destroyed() {
-    if (this.notifyid_)
-      this.track.off (this.notifyid_);
-  },
+    tdata: track_data.call (this),
+  }; },
   methods: {
+    dom_update() {
+      // setup level gradient based on mindb..maxdb
+      const levelbg = this.$refs['levelbg'];
+      levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
+      // cache level width in pxiels to avoid expensive recalculations in fps handler
+      this.level_width = levelbg.getBoundingClientRect().width;
+      // update async data, fetched from track
+      this.dom_trigger_animate_playback (false);
+      if (this.track && this.tdata.lmon && this.tdata.rmon)
+	{
+	  // trigger frequent screen updates
+	  this.ldbspl = this.tdata.lmon.sub_spl[0] / 4;
+	  this.ldbtip = this.tdata.lmon.sub_tip[0] / 4;
+	  this.rdbspl = this.tdata.rmon.sub_spl[0] / 4;
+	  this.rdbtip = this.tdata.rmon.sub_tip[0] / 4;
+	  this.dom_trigger_animate_playback (true);
+	}
+      console.assert (!this.$dom_updates.destroying);
+    },
+    dom_animate_playback: update_levels,
+    mcc: function (n) { // midi_channel character
+      if (n == this.tdata.mc)
+	return '√';
+      else
+	return ' ';
+    },
     menuactivation (role) {
       console.log ("menuactivation:", role);
       // close popup to remove focus guards
@@ -202,48 +242,6 @@ module.exports = {
 	return true;
       return false;
     },
-    async dom_update() { // note, `this.dom_present` may change at await points
-      if (this.track) {
-	// setup level gradient based on mindb..maxdb
-	const levelbg = this.$refs['levelbg'];
-	levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
-	// request dB SPL updates
-	this.lmonitor = await this.track.create_signal_monitor (0);
-	this.rmonitor = await this.track.create_signal_monitor (1);
-	let pf = new Bse.ProbeFeatures();
-	pf.probe_energy = true;
-	this.lmonitor.set_probe_features (pf);
-	this.rmonitor.set_probe_features (pf);
-	// fetch shared memory offsets (all returns are promises)
-	let lspl_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
-	    ltip_offset = this.lmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP),
-	    rspl_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_SPL),
-	    rtip_offset = this.rmonitor.get_shm_offset (Bse.MonitorField.F32_DB_TIP);
-	lspl_offset = await lspl_offset; ltip_offset = await ltip_offset;
-	rspl_offset = await rspl_offset; rtip_offset = await rtip_offset;
-	// subscribe to shared memory updates
-	this.sub_lspl = Util.shm_subscribe (lspl_offset, 4);
-	this.sub_ltip = Util.shm_subscribe (ltip_offset, 4);
-	this.sub_rspl = Util.shm_subscribe (rspl_offset, 4);
-	this.sub_rtip = Util.shm_subscribe (rtip_offset, 4);
-	this.rdbspl = this.sub_rspl[0] / 4;
-	this.rdbtip = this.sub_rtip[0] / 4;
-	this.ldbspl = this.sub_lspl[0] / 4;
-	this.ldbtip = this.sub_ltip[0] / 4;
-	// cache level width in pxiels to avoid expensive recalculations in fps handler
-	this.level_width = levelbg.getBoundingClientRect().width;
-	// trigger frequent screen updates
-	if (!this.remove_frame_handler && this.dom_present)
-	  this.remove_frame_handler = Util.add_frame_handler (this.update_levels);
-      }
-    },
-    async dom_destroy() {
-      if (this.remove_frame_handler) {
-	this.remove_frame_handler();
-	this.remove_frame_handler = undefined;
-      }
-    },
-    update_levels: update_levels,
   },
 };
 

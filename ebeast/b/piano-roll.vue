@@ -4,44 +4,14 @@
   # B-PIANO-ROLL
   A Vue template to display a Bse.part as a piano roll.
   ## Props:
-  *piano-part*
+  *part*
   : The Bse.Part to display.
   ## Data:
   *hscrollbar*
   : The horizontal scrollbar component, used to provide the virtual scrolling position for the notes canvas.
   *part*
-  : Retrieve the *Bse.Part* set via the `piano-part` property.
+  : Retrieve the *Bse.Part* set via the `part` property.
 </docs>
-
-<template>
-
-  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;" >
-    <div style="display: flex; width: 100%; flex-shrink: 0;">
-      <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
-	<button >I</button>
-	<button >m</button>
-	<button >q</button>
-	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
-      </div>
-      <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
-    </div>
-    <div ref="scrollcontainer" style="overflow-y: scroll" >
-      <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
-	<div :style="{
-		     display: 'flex',
-		     'flex-direction': 'row',
-		     height: piano_roll_cssheight + 'px',
-		     width: '100%',
-		     'background-color': 'blue',
-		     }" >
-	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
-	</div>
-      </div>
-    </div>
-  </div>
-
-</template>
 
 <style lang="scss">
   @import 'styles.scss';
@@ -54,6 +24,7 @@
   .b-piano-roll canvas {
     display: block;
     image-rendering: pixelated /*ff: crisp-edges*/;
+    //* Make scss variables available to JS via getComputedStyle() */
     --piano-roll-light-row:    		#{$b-piano-roll-light-row};
     --piano-roll-dark-row:     		#{$b-piano-roll-dark-row};
     --piano-roll-semitone12:   		#{$b-piano-roll-semitone12};
@@ -82,87 +53,110 @@
   }
 </style>
 
+<template>
+
+  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;">
+    <div style="display: flex; width: 100%; flex-shrink: 0;">
+      <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
+	<button >I</button>
+	<button >m</button>
+	<button >q</button>
+	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
+      </div>
+      <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
+    </div>
+    <div ref="scrollcontainer" style="overflow-y: scroll" >
+      <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
+	<div :style="{
+		     display: 'flex',
+		     'flex-direction': 'row',
+		     height: piano_roll_cssheight + 'px',
+		     width: '100%',
+		     'background-color': 'blue',
+		     }" >
+	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" :style="{ height: piano_roll_cssheight + 'px', }" @click="$forceUpdate()" ></canvas>
+	</div>
+      </div>
+    </div>
+  </div>
+
+</template>
+
 <script>
 const floor = Math.floor, round = Math.round;
 const piano_roll_cssheight = 841;
+
+function observable_part_data () {
+  const data = {
+    qnpt:          { default:   4, },	// quarter notes per tact
+    tpqn:          { default: 384, },	// ticks per quarter note
+    min_last_tick: { default: 384, },
+    vzoom:         { default: 1.0, },
+    hzoom:         { default: 1.0, },
+    auto_scrollto: { default:  -2, },
+    last_tick:     { getter: c => this.part.get_last_tick(), notify: n => this.part.on ("notify:last_tick", n), },
+    pnotes:        { default: [],                            notify: n => this.part.on ("noteschanged", n),
+                     getter: c => this.part.list_notes_crossing (0, CONFIG.MAXINT), },
+  };
+  return this.observable_from_getters (data, () => this.part);
+}
 
 module.exports = {
   name: 'b-piano-roll',
   mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
   props: {
-    'piano-part': [Bse.Part],
+    part: [Bse.Part],
   },
-  data_tmpl: {
-    qnpt:		4,	// quarter notes per tact
-    tpqn:		384,	// ticks per quarter note
-    last_tick:		384,
-    vzoom:		1.0,
-    hzoom:		1.0,
-    auto_scrollto:	-2,
-    hscrollbar:		undefined,
-    part_:		undefined,
+  data() { const PIANO_KEYS = 120;
+    return { piano_keys:   PIANO_KEYS,
+	     piano_height: 84 * floor ((PIANO_KEYS + 12 - 1) / 12) + 1,
+	     adata:        observable_part_data.call (this) }; },
+  watch: {
+    part (nv, ov) { this.sync_scrollpos (nv, ov); },
   },
-  computed: {
-    piano_keys: function() { return 120; }, // FIXME
-    piano_height: function() { return 84 * floor ((this.piano_keys + 12 - 1) / 12) + 1; }, // FIXME
-    part:		function () {
-      const piano_part = this['piano-part'];
-      if (!this.auto_scrolls)
-	this.auto_scrolls = {};
-      if (piano_part !== this.part_) {
-	if (this.part_ && this.$refs.scrollarea) {
-	  const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
-	  const sbr = this.$refs.scrollarea.getBoundingClientRect();
-	  if (sbr.height > vbr.height)
-	    this.auto_scrolls[this.part_.unique_id()] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
-	}
-	this.part_ = piano_part;
-	if (this.part_)
-	  this.auto_scrollto = this.auto_scrolls[this.part_.unique_id()];
-	if (this.auto_scrollto === undefined)
-	  this.auto_scrollto = -1;
-      }
-      return this.part_;
-    },
+  mounted () {
+    // keep vertical scroll position for each part, non-reactive
+    this.auto_scrolls = {};
+    // observer to watch for canvas size changes
+    this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
   },
-  beforeDestroy() {
-    if (this.resize_observer)
-      this.resize_observer.disconnect();
-    if (this.unwatch_render_canvas) {
-      this.unwatch_render_canvas();
-      this.unwatch_render_canvas = undefined;
-    }
+  destroyed() {
+    this.resize_observer.disconnect();
   },
   methods: {
-    piano_layout: piano_layout,
-    render_piano: render_piano,
-    render_notes: render_notes,
-    dom_update() {
-      if (!this.resize_observer)
-	this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
-      if (this.resizable_scrollarea != this.$refs.scrollarea) {
-	if (this.resizable_scrollarea)
-	  this.resize_observer.unobserve (this.resizable_scrollarea);
-	this.resizable_scrollarea = this.$refs.scrollarea;
-	this.resize_observer.observe (this.resizable_scrollarea);
-      }
-      if (this.hscrollbar != this.$refs.hscrollbar) {
-	this.hscrollbar = this.$refs.hscrollbar;
-	this.$forceUpdate(); // setup hscrollbar percentage
-      }
-      /* DOM and $el is in place, now:
-       * a) render into the canvases, we call render_canvas() for this;
-       * b) re-render the canvases if anything changes, for this we install a watcher
-       */
-      if (!this.unwatch_render_canvas)
-	this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
-      if (!this.scroller) {
-	this.scroller = {};
-	this.$refs.scrollarea.addEventListener ('wheel', e => this.$refs.hscrollbar.wheel_event (e));
-      }
-      this.render_canvas();
+    sync_scrollpos (newpart, oldpart) {
+      if (!this.$refs.scrollarea)
+	return;
+      this.$refs.hscrollbar.value = 0;
+      const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
+      const sbr = this.$refs.scrollarea.getBoundingClientRect();
+      if (oldpart && sbr.height > vbr.height)
+	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
+      if (newpart)
+	{
+	  const auto_scrollto = this.auto_scrolls[newpart.$id];
+	  this.adata.auto_scrollto = auto_scrollto == undefined ? -1 : auto_scrollto;
+	}
     },
-    render_canvas () {
+    dom_update() {
+      // Guard against the initial VNode Vue.render() call, after which DOM elements are created and assigned to $el and $ref
+      if (!this.$el) // we need a second Vue.render() call for canvas drawing
+	return this.$forceUpdate();
+      // DOM, $el and $refs are in place now
+      if (this.resizable_scrollarea != this.$refs.scrollarea)
+	{
+	  if (this.resizable_scrollarea)
+	    this.resize_observer.unobserve (this.resizable_scrollarea);
+	  this.resizable_scrollarea = this.$refs.scrollarea;
+	  this.resize_observer.observe (this.resizable_scrollarea);
+	}
+      // make sure scroll events in the canvas are forwarded to the scrollbar
+      if (!this.$refs.scrollarea.forwarding_wheel)
+	{
+	  this.$refs.scrollarea.addEventListener ('wheel', e => this.$refs.hscrollbar.wheel_event (e));
+	  this.$refs.scrollarea.forwarding_wheel = true;
+	}
       // canvas setup
       const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
       const notes_canvas = this.$refs['notes-canvas'], notes_style = getComputedStyle (notes_canvas);
@@ -171,28 +165,30 @@ module.exports = {
       this.render_piano (piano_canvas, piano_style, layout);
       this.render_notes (notes_canvas, notes_style, layout);
       // scrollto an area with visible notes
-      if (this.auto_scrollto !== undefined) {
+      if (this.adata.auto_scrollto !== undefined) {
 	const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
 	const sbr = this.$refs.scrollarea.getBoundingClientRect();
 	if (sbr.height > vbr.height) {
 	  let scroll_top, scroll_behavior = 'smooth';
-	  if (this.auto_scrollto >= 0)
-	    scroll_top = (sbr.height - vbr.height) * this.auto_scrollto;
+	  if (this.adata.auto_scrollto >= 0)
+	    scroll_top = (sbr.height - vbr.height) * this.adata.auto_scrollto;
 	  else {
 	    scroll_top = (sbr.height - vbr.height) / 2;
-	    if (this.auto_scrollto < -1)
+	    if (this.adata.auto_scrollto < -1)
 	      scroll_behavior = 'auto'; // initial scroll pos, avoid animation
 	  }
 	  this.$refs.scrollarea.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
 	}
-	this.auto_scrollto = undefined;
+	this.adata.auto_scrollto = undefined;
       }
     },
+    piano_layout: piano_layout,
+    render_piano: render_piano,
+    render_notes: render_notes,
   },
 };
 
 function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
-  this.last_tick = Math.max (this.last_tick, this.part ? this.part.get_last_tick() : 0);
   /* By design, each octave consists of 12 aligned rows that are used for note placement.
    * Each row is always pixel aligned. Consequently, the pixel area assigned to an octave
    * can only shrink or grow in 12 screen pixel intervalls.
@@ -228,21 +224,22 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   layout.white_width = key_length || layout.white_width; // allow CSS override
   layout.piano_csswidth = layout.white_width;
   layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width - layout.piano_csswidth);
-  layout.beat_pixels = round (layout.beat_pixels * ratio * this.hzoom);
-  layout.virt_width = floor (384 * floor (this.last_tick / 384));
+  layout.beat_pixels = round (layout.beat_pixels * ratio * this.adata.hzoom);
+  layout.virt_width = floor (384 * floor (this.adata.last_tick / 384));
   layout.octaves = round (layout.cssheight / layout.oct_length);
   layout.thickness = Math.max (round (ratio * 0.5), 1);
   layout.yoffset = layout_height - layout.thickness;		// leave a pixel for overlapping piano key borders
-  layout.row = round (ratio * layout.row * this.vzoom);
+  layout.row = round (ratio * layout.row * this.adata.vzoom);
   layout.oct_length = layout.row * 12;
   layout.white_width = round (layout.white_width * ratio);
   layout.black_width = round (layout.white_width * layout.black_width);
   // hscrollbar setup
-  if (this.hscrollbar) {
-    if (this.hscrollbar.percentage !== undefined)
-      this.hscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
-    layout.xscroll = this.hscrollbar.value * layout.virt_width;
-  }
+  if (this.$refs.hscrollbar)
+    {
+      if (this.$refs.hscrollbar.percentage !== undefined)
+	this.$refs.hscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
+      layout.xscroll = this.$refs.hscrollbar.value * layout.virt_width;
+    }
   // assign white key positions and aligned sizes
   let last = layout.oct_length;
   for (let i = white_offsets.length - 1; i >= 0; i--) {
@@ -411,24 +408,23 @@ function render_notes (canvas, cstyle, layout) {
   }
 
   // paint notes
+  if (!this.adata.pnotes)
+    return;
   const note_font = csp ('--piano-roll-note-font');
   const note_font_color = csp ('--piano-roll-note-font-color');
-  const part = this.part;
-  if (part) {
-    const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
-    const fpx = layout.row - 2;
-    ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
-    ctx.fillStyle = note_font_color;
-    // draw notes
-    const pnotes = part.list_notes_crossing (0, CONFIG.MAXINT);
-    const tickscale = layout.beat_pixels / 384;
-    for (const note of pnotes) {
+  const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+  const fpx = layout.row - 2;
+  ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
+  ctx.fillStyle = note_font_color;
+  // draw notes
+  const tickscale = layout.beat_pixels / 384;
+  for (const note of this.adata.pnotes)
+    {
       const oct = floor (note.note / 12), key = note.note - oct * 12;
       const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
       const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
       ctx.fillRect (nx - lsx, ny - layout.row, nw, layout.row);
     }
-  }
 }
 
 </script>
