@@ -30,7 +30,8 @@ $b-glow-control:		#0080ff !default;
 $b-switch-inactive:		#999999 !default;
 $b-switch-active:		#2080f0 !default;
 $b-switch-knob:		$b-button-foreground !default;
-$b-focus-outline:		1px solid $b-glow-control !default;	// suitable for rectangular outlines
+$b-focus-outline-width:		1px !default;
+$b-focus-outline:		$b-focus-outline-width solid $b-glow-control !default;	// suitable for rectangular outlines
 $b-focus-box-shadow:		0 0 0 1px $b-glow-control !default;	// suitable for rounded outlines
 $b-boxshadow-color:		fade(#000000, 30%) !default;
 $b-scrollbar-thickness:	7px !default;
@@ -65,7 +66,9 @@ $b-piano-roll-black-border: 	#222222 !default;		// border around black piano key
 $b-piano-roll-key-font:     	bold 9px $b-theme-font-family !default;   	// the '9px' part is dynamically resized
 $b-piano-roll-key-font-color:  #221111 !default;
 $b-piano-roll-note-font:      	normal 9px $b-theme-font-family !default; 	// the '9px' part is dynamically resized
-$b-piano-roll-note-font-color:	#88cc88 !default;
+$b-piano-roll-note-font-color:	#88cc88b0 !default;
+$b-piano-roll-note-focus-color:	#aafe !default;
+$b-piano-roll-note-focus-border: #fff !default;
 $b-piano-roll-key-length:	88px !default;
 $b-piano-roll-buttons-font:	normal 9px $b-theme-font-family !default;	// size must fit into b-piano-roll-key-length
 
