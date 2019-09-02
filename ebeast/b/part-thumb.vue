@@ -36,7 +36,7 @@ function observable_part_data () {
     partname: { getter: c => this.part.get_name(),      notify: n => this.part.on ("notify:uname", n), },
     lasttick: { getter: c => this.part.get_last_tick(), notify: n => this.part.on ("notify:last_tick", n), },
     allnotes: { default: [],                            notify: n => this.part.on ("noteschanged", n),
-		getter: c => this.part.list_notes_crossing (0, CONFIG.MAXINT), },
+		getter: async c => Object.freeze (await this.part.list_notes_crossing (0, CONFIG.MAXINT)), },
   };
   return this.observable_from_getters (data, () => this.part);
 }
@@ -69,10 +69,10 @@ module.exports = {
 function render_canvas () {
   // canvas setup
   const canvas = this.$refs['canvas'];
-  Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
+  const pixelratio = Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
   const ctx = canvas.getContext ('2d'), cstyle = getComputedStyle (canvas), csp = cstyle.getPropertyValue.bind (cstyle);
   const width = canvas.width, height = canvas.height;
-  const tickscale = this.tickscale * window.devicePixelRatio;
+  const tickscale = this.tickscale * pixelratio;
   //const width = canvas.clientWidth, height = canvas.clientHeight;
   //canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
@@ -102,7 +102,7 @@ function render_canvas () {
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
   for (const note of pnotes) {
-    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * window.devicePixelRatio);
+    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * pixelratio);
   }
 }
 
