@@ -452,13 +452,6 @@ fnv1a_consthash64 (const Num *const data, size_t length, uint64_t hash)
   return length ? fnv1a_consthash64 (data + 1, length - 1, 0x100000001b3 * (hash ^ uint8_t (data[0]))) : hash;
 }
 
-/// Variant of fnv1a_consthash64() for std::string.
-extern inline constexpr uint64_t
-fnv1a_consthash64 (const std::string &str, uint64_t hash = 0xcbf29ce484222325)
-{
-  return fnv1a_consthash64 (str.data(), str.size(), hash);
-}
-
 /** Hash function based on the PCG family of random number generators (RNG).
  * This function is based on the paper [PCG: A Family of Simple Fast
  * Space-Efficient Statistically Good Algorithms for Random Number
