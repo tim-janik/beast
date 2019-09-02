@@ -88,7 +88,7 @@
 
 <script>
 const floor = Math.floor, round = Math.round;
-const PIANO_KEYS = 120;
+const PIANO_KEYS = 132;
 const PIANO_ROLL_CSSHEIGHT = 84  * PIANO_KEYS / 12 + 1;
 
 function observable_part_data () {

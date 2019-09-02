@@ -1040,7 +1040,7 @@ canvas_ink_vspan.cache = [];
 export function midi_label (numish) {
   function one_label (num) {
     const letter = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
-    const oct = Math.floor (num / letter.length) - 1;
+    const oct = Math.floor (num / letter.length) - 2;
     const key = num % letter.length;
     return letter[key] + oct;
   }
