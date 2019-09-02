@@ -174,7 +174,7 @@ $(call tests/audio/template,							\
 	tests/audio/sum-diff-test.bse tests/audio/sum-diff-test.ref,		\
 	--seconds 25,								\
 	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy, ,	\
-	99.99)
+	99.80)
 
 # == tests/audio/syndrum ==
 $(call tests/audio/template,							\
