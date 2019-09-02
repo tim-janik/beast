@@ -44,7 +44,7 @@ struct BseSong : BseSNet {
   guint64           sequencer_start_SL; /* playback start */
   guint64           sequencer_done_SL;
   gdouble	    delta_stamp_SL;	/* start + delta_stamp => tick */
-  guint		    tick_SL;		/* tick at stamp_SL */
+  uint		   *tick_SL;		/* tick at stamp_SL */
   guint             sequencer_owns_refcount_SL : 1;
   guint             sequencer_underrun_detected_SL : 1;
   guint		    loop_enabled_SL : 1;
@@ -67,6 +67,7 @@ BseTrack*  bse_song_find_first_track   (BseSong *self, BsePart *part);
 namespace Bse {
 
 class SongImpl : public SNetImpl, public virtual SongIface {
+  SharedBlock               shm_block_;
 protected:
   virtual void              post_init               () override;
   virtual                  ~SongImpl                ();
@@ -103,6 +104,7 @@ public:
   virtual TrackIfaceP       find_track_for_part     (PartIface &part) override;
   virtual BusIfaceP         get_master_bus          () override;
   virtual void              synthesize_note         (TrackIface &track, int duration, int note, int fine_tune, double velocity) override;
+  virtual int64_t           get_shm_offset          (SongTelemetry fld) override;
 };
 
 } // Bse

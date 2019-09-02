@@ -12,6 +12,7 @@
 #include "bsecsynth.hh"
 #include "bsesequencer.hh"
 #include "bsesubsynth.hh"
+#include "bseserver.hh"
 #include "bseengine.hh"	// FIXME: for bse_engine_sample_freq()
 #include "bsecxxplugin.hh"
 #include "bse/internal.hh"
@@ -334,10 +335,10 @@ song_position_handler (gpointer data)
 {
   BseSong *self = BSE_SONG (data);
 
-  if (uint (self->last_position) != self->tick_SL)
+  if (uint (self->last_position) != *self->tick_SL)
     {
       BSE_SEQUENCER_LOCK ();
-      self->last_position = self->tick_SL;
+      self->last_position = *self->tick_SL;
       BSE_SEQUENCER_UNLOCK ();
       g_signal_emit (self, signal_pointer_changed, 0, self->last_position);
     }
@@ -618,13 +619,16 @@ namespace Bse {
 
 SongImpl::SongImpl (BseObject *bobj) :
   SNetImpl (bobj)
-{}
+{
+  shm_block_ = BSE_SERVER.allocate_shared_block (ptrdiff_t (SongTelemetry::BYTECOUNT));
+}
 
 void
 SongImpl::post_init()
 {
   this->SNetImpl::post_init(); // must chain
   BseSong *self = as<BseSong*>();
+  self->tick_SL = (uint*) (((char*) shm_block_.mem_start) + ptrdiff_t (SongTelemetry::I32_TICK_POINTER));
   /* post processing slot */
   self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
   bse_snet_intern_child (self, self->postprocess);
@@ -642,7 +646,17 @@ SongImpl::post_init()
 }
 
 SongImpl::~SongImpl ()
-{}
+{
+  BseSong *self = as<BseSong*>();
+  self->tick_SL = nullptr;
+  BSE_SERVER.release_shared_block (shm_block_);
+}
+
+int64_t
+SongImpl::get_shm_offset (SongTelemetry fld)
+{
+  return shm_block_.mem_offset + ptrdiff_t (fld);
+}
 
 TrackIfaceP
 SongImpl::find_any_track_for_part (PartIface &part)
@@ -970,7 +984,7 @@ SongImpl::tick_pointer() const
 {
   BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
 
-  return self->tick_SL;
+  return *self->tick_SL;
 }
 
 void
@@ -978,12 +992,12 @@ SongImpl::tick_pointer (int tick)
 {
   BseSong *self = as<BseSong*>();
 
-  if (uint (tick) != self->tick_SL)
+  if (uint (tick) != *self->tick_SL)
     {
       // this property has no undo
 
       BSE_SEQUENCER_LOCK ();
-      self->tick_SL = tick;
+      *self->tick_SL = tick;
       for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
         {
           BseTrack *track = (BseTrack*) ring->data;

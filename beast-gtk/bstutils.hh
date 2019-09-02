@@ -37,7 +37,7 @@ public:
   inline double& f64           (Bse::MonitorField mf) const   { return f64_[size_t (mf) / 8]; }
 };
 
-MonitorFieldU monitor_fields_from_shm (int64 shm_id, uint32_t shm_offset);
+MonitorFieldU monitor_fields_from_shm (uint32_t shm_offset);
 
 } // Bst
 

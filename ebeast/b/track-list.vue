@@ -21,6 +21,7 @@
       <b-part-list class="b-track-list-row"
 		    v-for="(pair, tindex) in tracks" :key="pair[1]"
 		    :track="pair[0]" :trackindex="tindex"></b-part-list>
+      <span class="b-track-list-pointer" ref="tickpointer"></span>
     </div>
   </div>
 
@@ -28,6 +29,7 @@
 
 <style lang="scss">
   @import 'styles.scss';
+  $b-track-list-arranger-lpad: 3px;
   .b-track-list {
     display: flex;
     background-color: $b-button-border;
@@ -45,16 +47,26 @@
     background-color: grey;
   }
   .b-track-list-parts {
+    position: relative;
     display: flex;
+    padding-left: $b-track-list-arranger-lpad;
     flex-direction: column;
     white-space: nowrap; overflow-x: scroll;
     width: 100%;
+  }
+  .b-track-list-pointer {
+    position: absolute; height: 100%; display: flex;
+    transform: translateX(0px);
+    left: $b-track-list-arranger-lpad - 3px;
+    /* width: 1px; background: #fff8; border: 1px solid #0008; box-sizing: content-box; */
+    width: 3px; background: linear-gradient(to right, #0f00, #0f08 80%, #0f0f);
   }
 </style>
 
 <script>
 module.exports = {
   name: 'b-track-list',
+  mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song }
   },
@@ -85,8 +97,43 @@ module.exports = {
 	message = method + ': unimplemented';
       Shell.status (message);
     },
+    async dom_update() {
+      if (!this.song) return;
+      this.last_tickpos = -1;
+      if (!this.remove_frame_handler)
+	this.remove_frame_handler = Util.add_frame_handler (this.update_tick_pointer);
+      // beware, we use await below, this ends reactive dependency tracking
+      if (!this.sub_i32tickpos)
+	{
+	  const tickpos_offset = await this.song.get_shm_offset (Bse.SongTelemetry.I32_TICK_POINTER);
+	  this.sub_i32tickpos = Util.shm_subscribe (tickpos_offset, 4);
+	  this.i32tickpos = this.sub_i32tickpos[0] / 4;
+	}
+    },
+    dom_destroy() {
+      if (this.remove_frame_handler)
+	this.remove_frame_handler();
+      if (this.sub_i32tickpos)
+	Util.shm_unsubscribe (this.sub_i32tickpos);
+    },
+    update_tick_pointer (active) {
+      const tickpointer = this.$refs['tickpointer'];
+      if (tickpointer && this.sub_i32tickpos)
+	{
+	  const tickpos = Util.shm_array_int32[this.i32tickpos];
+	  if (this.last_tickpos != tickpos)
+	    {
+	      const tickscale = 10 / 384.0; // FIXME
+	      const transform = 'translateX(+' + Math.round (tickpos * tickscale) + 'px)';
+	      if (transform != tickpointer.style.getPropertyValue ('transform')) // reduce style recalculations
+		tickpointer.style.setProperty ('transform', transform);
+	      this.last_tickpos = tickpos;
+	    }
+	}
+    },
   },
 };
+
 // i18n example
 if (window.__undefined__)
   _("Audio");

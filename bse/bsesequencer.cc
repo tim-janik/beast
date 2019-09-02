@@ -252,7 +252,7 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
   song->sequencer_start_SL = 0;
   song->sequencer_done_SL = 0;
   song->delta_stamp_SL = 0;
-  song->tick_SL = 0;
+  *song->tick_SL = 0;
   SfiRing *ring;
   for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
     {
@@ -401,7 +401,7 @@ Sequencer::process_song_unlooped_SL (BseSong *song, uint n_ticks, bool force_act
   gdouble current_stamp = song->sequencer_start_SL + song->delta_stamp_SL;
   gdouble stamps_per_tick = 1.0 / song->tpsi_SL;
   guint64 next_stamp = bse_dtoull (current_stamp + n_ticks * stamps_per_tick);
-  guint tick_bound = song->tick_SL + n_ticks;
+  guint tick_bound = *song->tick_SL + n_ticks;
   guint n_done_tracks = 0, n_tracks = 0;
   SfiRing *ring;
   for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
@@ -411,13 +411,13 @@ Sequencer::process_song_unlooped_SL (BseSong *song, uint n_ticks, bool force_act
       if (!track->track_done_SL || force_active_tracks)
 	{
 	  track->track_done_SL = FALSE;
-	  process_track_SL (song, track, current_stamp, song->tick_SL, tick_bound, stamps_per_tick, midi_receiver);
+	  process_track_SL (song, track, current_stamp, *song->tick_SL, tick_bound, stamps_per_tick, midi_receiver);
 	}
       if (track->track_done_SL)
 	n_done_tracks++;
     }
   bse_midi_receiver_process_events (midi_receiver, next_stamp);
-  song->tick_SL += n_ticks;
+  *song->tick_SL += n_ticks;
   song->delta_stamp_SL += n_ticks * stamps_per_tick;
   return n_done_tracks != n_tracks;
 }
@@ -426,17 +426,17 @@ void
 Sequencer::process_song_SL (BseSong *song, uint n_ticks)
 {
   gboolean tracks_active = TRUE;
-  if (song->loop_enabled_SL && (gint64) song->tick_SL <= song->loop_right_SL)
+  if (song->loop_enabled_SL && int64_t (*song->tick_SL) <= song->loop_right_SL)
     do
       {
-	guint tdiff = song->loop_right_SL - song->tick_SL;
+	guint tdiff = song->loop_right_SL - *song->tick_SL;
 	tdiff = MIN (tdiff, n_ticks);
 	if (tdiff)
 	  process_song_unlooped_SL (song, tdiff, true);
 	n_ticks -= tdiff;
-	if ((gint64) song->tick_SL >= song->loop_right_SL)
+	if (int64_t (*song->tick_SL) >= song->loop_right_SL)
 	  {
-	    song->tick_SL = song->loop_left_SL;
+	    *song->tick_SL = song->loop_left_SL;
 	  }
       }
     while (n_ticks);

@@ -786,7 +786,6 @@ sequence FloatSeq {
 /// Descriptor for a shared memory region.
 record SharedMemory {
   int64  shm_creator;   ///< IPC id of the shared memory creator process.
-  int64  shm_id;        ///< Identifier for the associated shared memory area.
   int64  shm_start;     ///< Shared memory area location.
   int64  shm_length;    ///< Shared memory area length in bytes
 };
@@ -805,8 +804,7 @@ interface SignalMonitor {
   int32         get_ochannel       ();                  ///< Retrieve output channel the SignalMonitor is connected to.
   int64         get_mix_freq       ();                  ///< Mix frequency at which monitor values are calculated.
   int64         get_frame_duration ();                  ///< Frame duration in µseconds for the calculation of monitor values.
-  int64         get_shm_id         ();                  ///< Identifier for the associated shared memory area.
-  int64         get_shm_offset     (MonitorField fld);  ///< Offset into shm_id for MonitorField values of `ochannel`.
+  int64         get_shm_offset     (MonitorField fld);  ///< Offset into shared memory for MonitorField values of `ochannel`.
   void          set_probe_features (ProbeFeatures pf);  ///< Configure probe features.
   ProbeFeatures get_probe_features ();                  ///< Get configured probe features.
 };
@@ -1020,6 +1018,12 @@ interface Bus : SubSynth {
   };
 };
 
+/// Offsets for signal monitoring fields in bytes, field type and size is used as prefix.
+enum SongTelemetry {
+  I32_TICK_POINTER      =       0 * 4,  ///< Current song position pointer.
+  BYTECOUNT             =       1 * 4,  ///< Total length of all fields.
+};
+
 /// Interface for Track and Part objects, as well as meta data for sequencing.
 interface Song : SNet {
   SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
@@ -1036,6 +1040,7 @@ interface Song : SNet {
   Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
   /// Synthesize a note on a song of an active project.
   void       synthesize_note         (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity);
+  int64      get_shm_offset          (SongTelemetry fld);   ///< Offset into SharedMemory for SongTelemetry fields.
   // signal void   pointer_changed (int32 a);
   // group _("MIDI Instrument") {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
@@ -1321,10 +1326,9 @@ interface Server : Container {
   AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
   Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.
   SampleFileInfo sample_file_info  (String file_name); ///< Load sample file info from file.
-  void           broadcast_shm_fragments (int64  shm_id,
-                                          ShmFragmentSeq plan,
+  void           broadcast_shm_fragments (ShmFragmentSeq plan,
                                           int32 interval_ms);   ///< Broadcast shared memory fragments to the current Jsonipc connection.
-  SharedMemory   get_shared_memory       (int64 id);            ///< Retrieve SharedMemory from id.
+  SharedMemory   get_shared_memory       ();                    ///< Retrieve global SharedMemory information.
   Configuration  get_config_defaults     ();                    ///< Retrieve Bse::Configuration setting defaults.
   void           set_config    (Configuration configuration);   ///< Assign updated Bse::Configuration settings.
   Configuration  get_config    ();                              ///< Retrieve Bse::Configuration settings.

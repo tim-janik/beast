@@ -856,6 +856,7 @@ let frame_handler_id = 0x200000,
     frame_handler_array = undefined;
 
 function call_frame_handlers () {
+  frame_handler_callback_id = undefined;
   const active = frame_handler_active && shm_array_active;
   frame_handler_max = frame_handler_array.length;
   for (frame_handler_cur = 0; frame_handler_cur < frame_handler_max; frame_handler_cur++) {
@@ -915,48 +916,6 @@ export function add_frame_handler (handlerfunc) {
   return function() { remove_frame_handler (handler_id); };
 }
 
-let bse_server_shared_arrays = [];
-
-/// Retrieve shared memory arrays from BSE shared memory ids.
-export function array_fields_from_shm (shm_id, shm_offset) {
-  if (bse_server_shared_arrays[shm_id] === undefined) {
-    // FIXME: const array_buffer = Bse.server.create_shared_memory_array_buffer (shm_id);
-    const array_buffer = new ArrayBuffer (65536);
-    console.assert (array_buffer.byteLength > 0);
-    bse_server_shared_arrays[shm_id] = {
-      'array_buffer':  array_buffer,
-      'int32_array':   new Int32Array (array_buffer),
-      'float32_array': new Float32Array (array_buffer),
-      'float64_array': new Float64Array (array_buffer),
-    };
-  }
-  console.assert ((shm_offset & 0xf) == 0);
-  let afields = Object.assign ({}, bse_server_shared_arrays[shm_id]);
-  afields.int32_offset = shm_offset / afields.int32_array.BYTES_PER_ELEMENT; // 4
-  afields.float32_offset = shm_offset / afields.float32_array.BYTES_PER_ELEMENT; // 4
-  afields.float64_offset = shm_offset / afields.float64_array.BYTES_PER_ELEMENT; // 8
-  return afields;
-}
-
-/// Access int32 subarray within arrays returned from array_fields_from_shm().
-export function array_fields_i32 (afields, byte_offset) {
-  console.assert ((byte_offset & 0x3) == 0); // 4 - 1
-  return afields.int32_array.subarray (afields.int32_offset + byte_offset / afields.int32_array.BYTES_PER_ELEMENT);
-}
-
-/// Access float32 subarray within arrays returned from array_fields_from_shm().
-export function array_fields_f32 (afields, byte_offset) {
-  console.assert ((byte_offset & 0x3) == 0); // 4 - 1
-  return afields.float32_array.subarray (afields.float32_offset + byte_offset / afields.float32_array.BYTES_PER_ELEMENT);
-}
-
-/// Access float64 subarray within arrays returned from array_fields_from_shm().
-export function array_fields_f64 (afields, byte_offset) {
-  console.assert ((byte_offset & 0x7) == 0); // 8 - 1
-  return afields.float64_array.subarray (afields.float64_offset + byte_offset / afields.float64_array.BYTES_PER_ELEMENT);
-}
-
-let shm_array_shmid = 0;
 let shm_array_active = false;
 let shm_array_entries = []; // { bpos, blength, shmoffset, usecount, }
 let shm_array_binary_size = 8;
@@ -977,14 +936,7 @@ export function shm_receive (arraybuffer) {
   shm_array_float64 = new Float64Array (shm_array_buffer, 0, shm_array_buffer.byteLength / 8 ^0);
 }
 
-export function shm_subscribe (shmid, byteoffset, bytelength) {
-  if (shm_array_shmid == 0)
-    shm_array_shmid = shmid;
-  else if (shmid != shm_array_shmid)
-    {
-      console.assert (shmid == shm_array_shmid);
-      return;
-    }
+export function shm_subscribe (byteoffset, bytelength) {
   const lalignment = 4;
   bytelength = (((bytelength + lalignment-1) / lalignment) ^0) * lalignment;
   // reuse existing region
@@ -1028,7 +980,7 @@ export function shm_subscribe (shmid, byteoffset, bytelength) {
 }
 
 export function shm_unsubscribe (subscription_tuple) {
-  const e = shm_array_entries[subscription_tuple[0]];
+  const e = shm_array_entries[subscription_tuple[1]];
   console.assert (e.usecount > 0);
   if (e.usecount)
     {
@@ -1044,15 +996,44 @@ export function shm_unsubscribe (subscription_tuple) {
   return false;
 }
 
-async function shm_reschedule() {
-  if (frame_handler_active)
-    await Bse.server.broadcast_shm_fragments (shm_array_shmid, shm_array_entries, 33);
-  else
-    {
-      const promise = Bse.server.broadcast_shm_fragments (shm_array_shmid, [], 0);
-      shm_receive (null);
-      await promise;
-    }
+function shm_reschedule() {
+  if (pending_shm_reschedule_promise)
+    return;
+  pending_shm_reschedule_promise = delay (-1); // Vue.nextTick();
+  pending_shm_reschedule_promise.then (async () => {
+    pending_shm_reschedule_promise = null; // allow new shm_reschedule() calls
+    if (frame_handler_active)
+      {
+	const entries = copy_recursively (shm_array_entries);
+	for (let i = entries.length - 1; i >= 0; i--)
+	  {
+	    if (entries[i].usecount == 0)
+	      entries.splice (i, 1);
+	    else
+	      delete entries[i].usecount;
+	  }
+	await Bse.server.broadcast_shm_fragments (entries, 33);
+      }
+    else
+      {
+	const promise = Bse.server.broadcast_shm_fragments ([], 0);
+	shm_receive (null);
+	await promise;
+      }
+  });
+}
+let pending_shm_reschedule_promise = null;
+
+/// Create a promise that resolves after the given `timeout` with `value`.
+function delay (timeout, value) {
+  return new Promise (resolve => {
+    if (timeout >= 0)
+      setTimeout (resolve.bind (null, value), timeout);
+    else if (window.setImmediate)
+      setImmediate (resolve.bind (null, value));
+    else
+      setTimeout (resolve.bind (null, value), 0);
+  });
 }
 
 // Format window titles

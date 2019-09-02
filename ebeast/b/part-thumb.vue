@@ -22,7 +22,7 @@
   .b-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: $b-track-list-row-height;
-    border-radius: $b-theme-border-radius;
+    border-radius: $b-theme-border-radius * 0.66;
     --part-thumb-font-color: #{$b-part-thumb-font-color}; --part-thumb-font: #{$b-part-thumb-font};
     --part-thumb-note-color: #{$b-part-thumb-note-color}; --part-thumb-colors: #{$b-part-thumb-colors};
   }
@@ -39,56 +39,53 @@ module.exports = {
     index: { type: Number, },
     trackindex: { type: Number, },
   },
-  data_tmpl: { partname: "", allnotes: [] },
+  data_tmpl: { partname: "",
+	       allnotes: [],
+	       lasttick: 0,
+  },
   watch: {
     part: { immediate: true, async handler (n, o) {
-      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
+      // first send out async queries in parallel
       let partname = this.part.get_name();
-      this.allnotes = await allnotes;
-      this.partname = await partname;
+      let lasttick = this.part.get_last_tick();
+      let allnotes = this.part.list_notes_crossing (0, CONFIG.MAXINT);
+      // then, await results in batch
+      partname = await partname;
+      lasttick = await lasttick;
+      allnotes = await allnotes;
+      // finally, assign Vue-reactive data without further suspension (await)
+      this.partname = partname;
+      this.lasttick = lasttick;
+      this.allnotes = allnotes;
     } },
   },
   computed: {
     tickscale: function() { return 10 / 384.0; }, // FIXME
     pxoffset: function() { return this.tick * 10 / 384.0; }, // FIXME
     canvas_width: function() {
-      const part = this.part;
-      let last_tick = part ? part.get_last_tick() : 0;
-      return this.tickscale * Math.floor ((last_tick + tick_quant - 1) / tick_quant) * tick_quant;
+      return this.tickscale * Math.floor ((this.lasttick + tick_quant - 1) / tick_quant) * tick_quant;
     },
   },
   methods: {
-    render_canvas: render_canvas,
     dom_update() {
-      this.render_canvas();
+      if (this.lasttick)
+	render_canvas.call (this);
     },
-  },
-  mounted() {
-    /* DOM and $el is in place, now:
-     * a) render into the canvas, we call render_canvas() for this;
-     * b) re-render the canvases if anything changes, for this we install a watcher
-     */
-    if (!this.unwatch_render_canvas)
-      this.unwatch_render_canvas = this.$watch (this.render_canvas, () => this.$forceUpdate());
-    this.render_canvas();
-  },
-  beforeDestroy() {
-    if (this.unwatch_render_canvas) {
-      this.unwatch_render_canvas();
-      this.unwatch_render_canvas = undefined;
-    }
   },
 };
 
 function render_canvas () {
   // canvas setup
-  const canvas = this.$refs['canvas'], ctx = canvas.getContext ('2d');
-  const style = getComputedStyle (canvas);
-  const width = canvas.clientWidth, height = canvas.clientHeight;
-  canvas.width = width; canvas.height = height;
+  const canvas = this.$refs['canvas'];
+  Util.resize_canvas (canvas, canvas.clientWidth, canvas.clientHeight, true);
+  const ctx = canvas.getContext ('2d'), cstyle = getComputedStyle (canvas), csp = cstyle.getPropertyValue.bind (cstyle);
+  const width = canvas.width, height = canvas.height;
+  const tickscale = this.tickscale * window.devicePixelRatio;
+  //const width = canvas.clientWidth, height = canvas.clientHeight;
+  //canvas.width = width; canvas.height = height;
   ctx.clearRect (0, 0, width, height);
   // color setup
-  const colors = Util.split_comma (style.getPropertyValue ('--part-thumb-colors'));
+  const colors = Util.split_comma (csp ('--part-thumb-colors'));
   let cindex;
   cindex = this.trackindex;			// - color per track
   cindex = (cindex + 1013904223) * 1664557;	//   LCG randomization step
@@ -99,19 +96,21 @@ function render_canvas () {
   ctx.fillStyle = bgcol;
   ctx.fillRect (0, 0, width, height);
   // draw name
-  ctx.font = style.getPropertyValue ('--part-thumb-font');
-  ctx.fillStyle = style.getPropertyValue ('--part-thumb-font-color');
+  const fpx = height / 3;
+  const note_font = csp ('--part-thumb-font');
+  const fpx_parts = note_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
+  ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
+  ctx.fillStyle = csp ('--part-thumb-font-color');
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
   ctx.fillText (this.partname, 1.5, .5);
   // paint notes
-  ctx.fillStyle = style.getPropertyValue ('--part-thumb-note-color');
+  ctx.fillStyle = csp ('--part-thumb-note-color');
   const pnotes = this.allnotes; // await part.list_notes_crossing (0, MAXINT);
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
-  const tickscale = this.tickscale;
   for (const note of pnotes) {
-    ctx.fillRect (note.tick * tickscale, (note.note - noteoffset) * notescale, note.duration * tickscale, 1);
+    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * window.devicePixelRatio);
   }
 }
 

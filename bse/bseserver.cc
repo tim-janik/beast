@@ -1415,11 +1415,9 @@ validate_shm_fragments (const SharedMemory &smem, const ShmFragmentSeq &plan, si
 }
 
 void
-ServerImpl::broadcast_shm_fragments (int64 shm_id, const ShmFragmentSeq &plan, int interval_ms)
+ServerImpl::broadcast_shm_fragments (const ShmFragmentSeq &plan, int interval_ms)
 {
-  assert_return (shm_id != 0);
-  SharedMemory sm = get_shared_memory (shm_id);
-  assert_return (sm.shm_id != 0); // shm_id must be valid
+  SharedMemory sm = get_shared_memory();
   IpcHandler *ipch = get_ipc_handler();
   const ptrdiff_t conid = ipch ? ipch->current_connection_id() : 0;
   assert_return (conid != 0);
@@ -1464,24 +1462,21 @@ ServerImpl::broadcast_shm_fragments (int64 shm_id, const ShmFragmentSeq &plan, i
   broad.timerid = exec_timeout (broadcast_timer_func, std::max (interval_ms, 16));
 }
 
-#define SHARED_MEMORY_AREA_SIZE (4 * 1024 * 1024)
+static constexpr size_t SHARED_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
+static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 
-static std::vector<uint32> shared_memory_area_ids;
+static const MemoryArea&
+server_shared_memory_area()
+{
+  static MemoryArea shm_area = create_memory_area (SHARED_MEMORY_AREA_SIZE, 2 * BSE_CACHE_LINE_ALIGNMENT);
+  return shm_area;
+}
 
 SharedMemory
-ServerImpl::get_shared_memory (int64 shm_id)
+ServerImpl::get_shared_memory()
 {
+  const MemoryArea &ma = server_shared_memory_area();
   SharedMemory sm;
-  bool found_shm_id = false;
-  for (auto id : shared_memory_area_ids)
-    if (id == shm_id)
-      {
-        found_shm_id = true;
-        break;
-      }
-  assert_return (found_shm_id, sm);
-  MemoryArea ma = find_memory_area (shm_id);
-  sm.shm_id = ma.mem_id;
   sm.shm_start = ma.mem_start;
   sm.shm_length = ma.mem_length;
   sm.shm_creator = this_thread_getpid();
@@ -1494,33 +1489,39 @@ ServerImpl::allocate_shared_block (int64 length)
   SharedBlock sb;
   assert_return (length <= SHARED_MEMORY_AREA_SIZE, sb);
   return_unless (length > 0, sb);
-  AlignedBlock ab;
-  for (size_t i = 0; i < shared_memory_area_ids.size(); i++)
-    {
-      ab = allocate_aligned_block (shared_memory_area_ids[i], length);
-      if (ab.block_start)
-        break;
-    }
+  const MemoryArea &ma = server_shared_memory_area();
+  AlignedBlock ab = allocate_aligned_block (ma.mem_id, length);
   if (!ab.block_start)
     {
-      shared_memory_area_ids.push_back (create_memory_area (SHARED_MEMORY_AREA_SIZE, 2 * BSE_CACHE_LINE_ALIGNMENT).mem_id);
-      ab = allocate_aligned_block (shared_memory_area_ids.back(), length);
+      // Generally, this should not happen, if it does, we need to increase the area size
+      // and possibly deal with fragmentation better.
+      fatal_error ("Failed to allocate from shared memory (reserved=%d, used=%d, needed=%d), please report to upstream",
+                   SHARED_MEMORY_AREA_SIZE, SHARED_MEMORY_AREA_SIZE - current_shared_memory_area_size, length);
     }
-  assert_return (ab.block_start != NULL, sb);
-  sb.shm_id = ab.mem_id;
+  const size_t prev_shared_memory_area_size = current_shared_memory_area_size;
+  current_shared_memory_area_size -= length;
+  if (prev_shared_memory_area_size >= SHARED_MEMORY_AREA_SIZE / 2 &&
+      current_shared_memory_area_size < SHARED_MEMORY_AREA_SIZE / 2)
+    {
+      // There should always be plenty of space, we need to increase the area if not
+      warning ("Available shared memory dropped below 50%% (reserved=%d, used=%d, needed=%d), please report to upstream",
+               SHARED_MEMORY_AREA_SIZE, SHARED_MEMORY_AREA_SIZE - current_shared_memory_area_size, length);
+    }
   sb.mem_length = ab.block_length;
   sb.mem_start = ab.block_start;
-  sb.mem_offset = uint64 (sb.mem_start) - find_memory_area (sb.shm_id).mem_start;
+  sb.mem_offset = uint64 (sb.mem_start) - ma.mem_start;
   return sb;
 }
 
 void
 ServerImpl::release_shared_block (const SharedBlock &sb)
 {
-  assert_return (sb.shm_id == uint32 (sb.shm_id));
   assert_return (sb.mem_length == int32 (sb.mem_length));
-  AlignedBlock ab { uint32 (sb.shm_id), uint32 (sb.mem_length), sb.mem_start };
+  const MemoryArea &ma = server_shared_memory_area();
+  AlignedBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
   release_aligned_block (ab);
+  assert_return (current_shared_memory_area_size + ab.block_length <= SHARED_MEMORY_AREA_SIZE);
+  current_shared_memory_area_size += ab.block_length;
 }
 
 IpcHandler::~IpcHandler()
@@ -1568,27 +1569,32 @@ BSE_INTEGRITY_TEST (bse_server_test_allocator);
 static void
 bse_server_test_allocator()
 {
-  const ssize_t mb = 1024 * 1024;
-  SharedBlock sb1 = BSE_SERVER.allocate_shared_block (mb);
+  const ssize_t block = 512 * 1024;
+  SharedBlock sb1 = BSE_SERVER.allocate_shared_block (block);
   assert_return (sb1.mem_start);
-  SharedBlock sb2 = BSE_SERVER.allocate_shared_block (mb);
+  SharedBlock sb2 = BSE_SERVER.allocate_shared_block (block);
   assert_return (sb2.mem_start);
-  SharedBlock sb3 = BSE_SERVER.allocate_shared_block (mb * 3);
+  SharedBlock sb3 = BSE_SERVER.allocate_shared_block (block * 2);
   assert_return (sb3.mem_start);
-  assert_return (sb3.shm_id != sb1.shm_id);     // 1mb + 1mb + 3mb won't fit into 4mb area
+  // assert_return (sb3.shm_id == sb1.shm_id);     // 1mb + 1mb + 2mb barely fit into 4mb area
   BSE_SERVER.release_shared_block (sb3);
   BSE_SERVER.release_shared_block (sb2);
-  sb3 = BSE_SERVER.allocate_shared_block (mb * 3);
+  sb3 = BSE_SERVER.allocate_shared_block (block * 3);
   assert_return (sb3.mem_start);
-  assert_return (sb3.shm_id == sb1.shm_id);     // now sb1 and sb3 fit the same area
-  sb2 = BSE_SERVER.allocate_shared_block (1);
-  assert_return (sb2.mem_start);
-  assert_return (sb2.shm_id != sb3.shm_id);     // but nothing else
-  assert_return (BSE_SERVER.get_shared_memory (sb2.shm_id).shm_id == sb2.shm_id); // is shared?
-  assert_return (BSE_SERVER.get_shared_memory (sb3.shm_id).shm_id == sb3.shm_id); // is shared?
+  if (0) // this triggers the 50% warning
+    {
+      sb2 = BSE_SERVER.allocate_shared_block (1);
+      assert_return (sb2.mem_start);
+      BSE_SERVER.release_shared_block (sb2);
+    }
+  // assert_return (sb2.shm_id != sb3.shm_id);     // but nothing else
+  // assert_return (BSE_SERVER.get_shared_memory (sb2.shm_id).shm_id == sb2.shm_id); // is shared?
+  // assert_return (BSE_SERVER.get_shared_memory (sb3.shm_id).shm_id == sb3.shm_id); // is shared?
   BSE_SERVER.release_shared_block (sb3);
-  BSE_SERVER.release_shared_block (sb2);
   BSE_SERVER.release_shared_block (sb1);
+  sb2 = BSE_SERVER.allocate_shared_block (4 * block);   // 50% of maximum
+  assert_return (sb2.mem_start);
+  BSE_SERVER.release_shared_block (sb2);
 }
 
 } // Anon
