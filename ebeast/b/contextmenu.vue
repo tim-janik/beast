@@ -91,7 +91,7 @@ module.exports = {
     this.checkitems();
   },
   beforeDestroy () {
-    this.resize_observer.disconnect();
+    this.resize_observer.destroy();
     this.resize_observer = undefined;
     if (this.resize_timer)
       clearTimeout (this.resize_timer);
