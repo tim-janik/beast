@@ -20,10 +20,10 @@
   : Additional space is evenly distributed between the children and half a spacing around the edges.
   *space-evenly*
   : Children will have additional space evenly distributed around them and the edges.
-  *grow*:
-  : Grow space for this element if additional space is available.
-  *shrink*
-  : Shrink space for this element if space is too tight.
+  *grow0* *grow1* *grow2* *grow3* *grow4* *grow5* *grow6* *grow7* *grow8* *grow9*
+  : Grow space for this element if additional space is available with the given strength (0 = none).
+  *shrink0* *shrink1* *shrink2* *shrink3* *shrink4* *shrink5* *shrink6* *shrink7* *shrink8* *shrink9*
+  : Shrink space for this element if space is too tight with the given strength (0 = none).
   *wrap*
   : Layout of the flexbox children may wrap if the elements use more than 100%.
   *wrap-reverse*
@@ -35,41 +35,46 @@
 <style lang="scss">
   @import 'styles.scss';
   .b-flex {
-    display: flex; flex-grow: 0; flex-shrink: 0; flex-basis: auto;
+    display: flex; flex-basis: auto;
     flex-wrap: nowrap;
     justify-content: space-evenly;	//* distribute extra main-axis space */
     align-items: stretch;		//* distribute extra cross-axis space */
     align-content: stretch;		//* distribute extra cross-axis space for multi-line layouts */
-    &.inline	{ display: inline-flex; }
     &.flex-row {
       flex-direction: row;
-      &.reverse	{ flex-direction: row-reverse; } }
+      .b-flex-reverse	{ flex-direction: row-reverse; } }
     &.flex-column {
       flex-direction: column;
-      &.reverse	{ flex-direction: column-reverse; } }
-    &.shrink		{ flex-shrink: 1; flex-grow: 0; }
-    &.grow		{ flex-grow: 1; }
-    &.wrap		{ flex-wrap: wrap; }
-    &.wrap-reverse	{ flex-wrap: wrap-reverse; }
+      .b-flex-reverse	{ flex-direction: column-reverse; } }
   }
+  .b-flex-inline	{ display: inline-flex; }
   .b-flex-start		{ justify-content: flex-start; }
   .b-flex-end		{ justify-content: flex-end; }
   .b-flex-center	{ justify-content: center; }
   .b-flex-space-between	{ justify-content: space-between; }
   .b-flex-space-around	{ justify-content: space-around; }
   .b-flex-space-evenly	{ justify-content: space-evenly; }
+  .b-flex-wrap		{ flex-wrap: wrap; }
+  .b-flex-wrap-reverse	{ flex-wrap: wrap-reverse; }
+  .b-flex-grow1 { flex-grow: 1; } .b-flex-grow2 { flex-grow: 2; } .b-flex-grow3 { flex-grow: 3; }
+  .b-flex-grow4 { flex-grow: 4; } .b-flex-grow5 { flex-grow: 5; } .b-flex-grow6 { flex-grow: 6; }
+  .b-flex-grow7 { flex-grow: 7; } .b-flex-grow8 { flex-grow: 8; } .b-flex-grow9 { flex-grow: 9; }
+  .b-flex-grow0 { flex-grow: 0; }
+  .b-flex-shrink1 { flex-shrink: 1; } .b-flex-shrink2 { flex-shrink: 2; } .b-flex-shrink3 { flex-shrink: 3; }
+  .b-flex-shrink4 { flex-shrink: 4; } .b-flex-shrink5 { flex-shrink: 5; } .b-flex-shrink6 { flex-shrink: 6; }
+  .b-flex-shrink7 { flex-shrink: 7; } .b-flex-shrink8 { flex-shrink: 8; } .b-flex-shrink9 { flex-shrink: 9; }
+  .b-flex-shrink0 { flex-shrink: 0; }
 </style>
 
 <template>
-  <div
-      class="b-flex"
-      :class="classlist()"
+  <div class="b-flex" :class="classlist()"
   ><slot></slot></div>
 </template>
 
 <script>
 module.exports = {
   name: 'b-flex',
+  inheritAttrs: true,	// v-bind="$attrs"
   methods: {
     classlist() {
       let cl = [];
@@ -80,13 +85,16 @@ module.exports = {
 	'start',
 	'end',
 	'center',
+	'inline',
 	'space-between',
 	'space-around',
 	'space-evenly',
-	'grow', 'shrink',
-	'wrap', 'wrap-reverse',
-	'inline',
+	'grow0', 'grow1', 'grow2', 'grow3', 'grow4',
+	'grow5', 'grow6', 'grow7', 'grow8', 'grow9',
 	'reverse',
+	'shrink0', 'shrink1', 'shrink2', 'shrink3', 'shrink4',
+	'shrink5', 'shrink6', 'shrink7', 'shrink8', 'shrink9',
+	'wrap', 'wrap-reverse',
       ];
       for (let cssclass of classnames)
 	if (this.$attrs[cssclass] == "" || this.$attrs[cssclass])
