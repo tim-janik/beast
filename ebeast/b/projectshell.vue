@@ -23,6 +23,7 @@
       </b-vflex>
 
       <b-hflex ref="sidebar" class="b-projectshell-sidebar">
+	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
 	<b-vflex style="flex-grow: 1; flex-shrink: 1; overflow: hidden; justify-content: flex-start" >
 	  <b-treeselector @close="show_tree_selector = false"></b-treeselector>
 	</b-vflex>
@@ -38,10 +39,23 @@
   @import 'styles.scss';
   .b-projectshell {
     border: 5px solid #322;
+    --b-resize-handle-thickness: #{$b-resize-handle-thickness};
+    --b-transition-fast-slide: #{$b-transition-fast-slide};
   }
   .b-projectshell-part-area {
     background-color: $b-button-border;
     padding: $b-focus-outline-width; }
+  .b-projectshell-resizer {
+    width: var(--b-resize-handle-thickness);
+    background: $b-resize-handle-bgcolor;
+    border-left: $b-resize-handle-border;
+    border-right: $b-resize-handle-border;
+    cursor: col-resize;
+  }
+  html.b-projectshell-during-drag .b-root {
+    .b-projectshell-resizer { background: $b-resize-handle-hvcolor; }
+    * { cursor: col-resize !important; user-select: none !important; }
+  }
 </style>
 
 <script>
@@ -78,6 +92,42 @@ module.exports = {
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
+    sidebar_mouse (e) {
+      const sidebar = this.$refs.sidebar.$el;
+      console.assert (sidebar);
+      const html_classes = document.documentElement.classList;
+      if (e.type == 'mousedown' && !this.listening)
+	{
+	  this.listening = this.sidebar_mouse.bind (this);
+	  document.addEventListener ('mousemove', this.listening);
+	  document.addEventListener ('mouseup', this.listening);
+	  this.startx = e.clientX; //  - e.offsetX;
+	  this.startwidth = sidebar.getBoundingClientRect().width;
+	  html_classes.add ('b-projectshell-during-drag');
+	}
+      if (this.listening && e.type == 'mouseup')
+	{
+	  document.removeEventListener ('mousemove', this.listening);
+	  document.removeEventListener ('mouseup', this.listening);
+	  this.listening = undefined;
+	  html_classes.remove ('b-projectshell-during-drag');
+	}
+      let newwidth = this.startwidth - (e.clientX - this.startx);
+      const pwidth = sidebar.parentElement.getBoundingClientRect().width;
+      const maxwidth = pwidth * 0.6 |0, minwidth = 120;
+      if (newwidth < minwidth / 2)
+	{
+	  const cs = getComputedStyle (sidebar);
+	  newwidth = parseInt (cs.getPropertyValue ('--b-resize-handle-thickness'), 10);
+	}
+      else
+	newwidth = Util.clamp (newwidth, minwidth, maxwidth);
+      sidebar.style.transition = newwidth > minwidth ? "" : "width var(--b-transition-fast-slide)";
+      const stylewidth = (newwidth / pwidth) * 100 + '%';
+      if (stylewidth != sidebar.style.width)
+	sidebar.style.width = stylewidth;
+      e.preventDefault();
+    },
     open_part_edit (part) {
       assert (part == undefined || part instanceof Bse.Part);
       this.piano_roll_part = part;
