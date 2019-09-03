@@ -9,32 +9,39 @@
 </docs>
 
 <template>
-  <div class="b-projectshell">
+  <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
     <b-playcontrols :project="project"> </b-playcontrols>
-    <b-hflex>
-      <b-vflex style="flex-grow: 1">
-	<div class="b-projectshell-track-area">
-	  <b-track-list :song="song"></b-track-list>
-	</div>
-	<b-hflex class="b-projectshell-part-area" style="overflow: hidden;" >
-	  <b-piano-roll :part="piano_roll_part" ></b-piano-roll>
+
+    <b-hflex grow1>
+      <b-vflex grow1 shrink1>
+	<b-hflex class="b-projectshell-track-area" style="height: 50%">
+	  <b-track-list class="grow1" :song="song"></b-track-list>
+	</b-hflex>
+	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
+	  <b-piano-roll class="grow1" :part="piano_roll_part" ></b-piano-roll>
 	</b-hflex>
       </b-vflex>
-      <b-vflex style="justify-content: flex-start" >
-	<b-treeselector @close="show_tree_selector = false"></b-treeselector>
-      </b-vflex>
+
+      <b-hflex ref="sidebar" class="b-projectshell-sidebar">
+	<b-vflex style="flex-grow: 1; flex-shrink: 1; overflow: hidden; justify-content: flex-start" >
+	  <b-treeselector @close="show_tree_selector = false"></b-treeselector>
+	</b-vflex>
+      </b-hflex>
     </b-hflex>
+
     <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
     <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
-  </div>
+  </b-vflex>
 </template>
 
 <style lang="scss">
   @import 'styles.scss';
-  .b-projectshell { }
+  .b-projectshell {
+    border: 5px solid #322;
+  }
   .b-projectshell-part-area {
     background-color: $b-button-border;
-    height: 350px; padding: $b-focus-outline-width; }
+    padding: $b-focus-outline-width; }
 </style>
 
 <script>
