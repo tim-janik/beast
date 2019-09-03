@@ -10,7 +10,7 @@
 
 <template>
 
-  <div class="b-track-list" >
+  <b-hflex class="b-track-list" >
     <div class="b-track-list-tracks" >
       <b-track-view class="b-track-list-row"
 		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
@@ -23,7 +23,7 @@
 		    :track="pair[0]" :trackindex="tindex"></b-part-list>
       <span class="b-track-list-pointer" ref="tickpointer"></span>
     </div>
-  </div>
+  </b-hflex>
 
 </template>
 
@@ -31,7 +31,6 @@
   @import 'styles.scss';
   $b-track-list-arranger-lpad: 3px;
   .b-track-list {
-    display: flex;
     background-color: $b-button-border;
     border: 1px solid $b-button-border; }
   .b-track-list-row {
