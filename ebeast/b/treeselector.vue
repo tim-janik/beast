@@ -81,8 +81,7 @@ module.exports = {
       console.log ("CODE:", event.keyCode);
       if (event.keyCode != UP && event.keyCode != DOWN)
 	return;
-      const fs = '[tabindex]:not([tabindex="-1"]):not([disabled]):not([display="none"])';
-      const nodes = document.querySelectorAll (fs); // selector for focussable elements
+      const nodes = Util.list_focusables (this.$el); // selector for focussable elements
       const array1 = [].slice.call (nodes);
       // filter elements with display:none parents
       const array = array1.filter (element => element.offsetWidth > 0 && element.offsetHeight > 0);
