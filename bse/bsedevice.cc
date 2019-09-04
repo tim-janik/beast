@@ -88,6 +88,15 @@ bse_device_open (BseDevice      *self,
   assert_return (BSE_IS_DEVICE (self), Bse::Error::INTERNAL);
   assert_return (!BSE_DEVICE_OPEN (self), Bse::Error::INTERNAL);
   Bse::Error error = Bse::Error::DEVICE_NOT_AVAILABLE;
+  if (!arg_string)
+    {
+      /* if the user didn't specify a device, we use the default device of the
+       * driver (if the driver has a default device) - for ALSA this typically
+       * means we will use "default" as arg_string
+       */
+      if (BSE_DEVICE_GET_CLASS (self)->default_device)
+        arg_string = BSE_DEVICE_GET_CLASS (self)->default_device (self);
+    }
   if (arg_string)
     error = device_open_args (self, need_readable, need_writable, arg_string);
   else

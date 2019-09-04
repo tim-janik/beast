@@ -51,6 +51,7 @@ struct BseDeviceClass : BseObjectClass {
   void                (*post_open)     (BseDevice    *device);
   void                (*pre_close)     (BseDevice    *device);
   void                (*close)         (BseDevice    *device);
+  const char*         (*default_device) (BseDevice   *device);
 };
 struct BseDeviceEntry {
   BseDevice      *device;
