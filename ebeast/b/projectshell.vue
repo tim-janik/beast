@@ -10,8 +10,11 @@
 
 <template>
   <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
-    <b-playcontrols :project="project"> </b-playcontrols>
-    <b-positionview> </b-positionview>
+    <b-hflex center style="margin: 5px">
+      <b-playcontrols :project="project"> </b-playcontrols>
+      <span style="width: 3em"><!-- spacer --></span>
+      <b-positionview :song="song"> </b-positionview>
+    </b-hflex>
 
     <b-hflex grow1 style="overflow-y: hidden">
       <b-vflex grow1 shrink1>
