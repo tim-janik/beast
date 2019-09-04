@@ -24,15 +24,16 @@
       cursor: pointer; user-select: none;
       position: relative;
       &::before {
-	content: "\25B6";
+	content: "\25B8";
 	position: absolute;
-	left: -1em;
+	left: -0.8em;
 	color: white;
 	display: inline;
 	transition: all .3s ease;
       }
     }
     .b-treeselector-active > .b-treeselector-caret::before {
+      content: "\25B9";
       transform: rotate(90deg);
     }
     .b-treeselector-nested { display: none; }
