@@ -189,6 +189,25 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
   return ring;
 }
 
+static const char *
+bse_pcm_device_alsa_default_device (BseDevice *device)
+{
+  /* we check if the "default" device is available */
+  SfiRing *entries = nullptr;
+  entries = list_pcm_devices (device, entries, "Duplex");
+  entries = list_pcm_devices (device, entries, "Output");
+
+  const char *default_device = nullptr;
+  for (SfiRing *node = entries; node; node = sfi_ring_walk (node, entries))
+    {
+      BseDeviceEntry *entry = (BseDeviceEntry*) node->data;
+      if (strcmp (entry->device_args, "default") == 0)
+        default_device = "default";
+    }
+  bse_device_entry_list_free (entries);
+  return default_device;
+}
+
 static void
 silent_error_handler (const char *file,
                       int         line,
@@ -576,6 +595,7 @@ bse_pcm_device_alsa_class_init (BsePcmDeviceALSAClass *klass)
   gobject_class->finalize = bse_pcm_device_alsa_finalize;
 
   device_class->list_devices = bse_pcm_device_alsa_list_devices;
+  device_class->default_device = bse_pcm_device_alsa_default_device;
   const gchar *name = "alsa";
   const gchar *syntax = _("PLUGIN:CARD,DEV,SUBDEV");
   const gchar *info = g_intern_format (/* TRANSLATORS: keep this text to 70 chars in width */
