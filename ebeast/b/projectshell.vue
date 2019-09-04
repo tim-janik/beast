@@ -22,10 +22,10 @@
 	</b-hflex>
       </b-vflex>
 
-      <b-hflex ref="sidebar" class="b-projectshell-sidebar">
+      <b-hflex ref="sidebarcontainer" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
-	<b-vflex style="flex-grow: 1; flex-shrink: 1; overflow: hidden; justify-content: flex-start" >
-	  <b-treeselector @close="show_tree_selector = false"></b-treeselector>
+	<b-vflex class="b-projectshell-sidebar" style="flex-grow: 1; flex-shrink: 1; overflow: hidden; justify-content: flex-start" >
+	  <b-treeselector></b-treeselector>
 	</b-vflex>
       </b-hflex>
     </b-hflex>
@@ -45,6 +45,9 @@
   .b-projectshell-part-area {
     background-color: $b-button-border;
     padding: $b-focus-outline-width; }
+  .b-projectshell-sidebar {
+    padding: 3px;
+  }
   .b-projectshell-resizer {
     width: var(--b-resize-handle-thickness);
     background: $b-resize-handle-bgcolor;
@@ -93,7 +96,7 @@ module.exports = {
   provide () { return { 'b-projectshell': this }; },
   methods: {
     sidebar_mouse (e) {
-      const sidebar = this.$refs.sidebar.$el;
+      const sidebar = this.$refs.sidebarcontainer.$el;
       console.assert (sidebar);
       const html_classes = document.documentElement.classList;
       if (e.type == 'mousedown' && !this.listening)
