@@ -11,7 +11,7 @@ collectors = ('void', 'sum', 'last', 'until0', 'while0')
 keywords = ('TRUE', 'FALSE',
             'Const', 'interface', 'record', 'sequence', 'String', 'Any',
             # Python/Cython
-            'True', 'False', 'type',
+            'True', 'False', # 'type',
             # C++
             'alignas', 'alignof', 'and', 'and_eq', 'asm', 'auto', 'bitand', 'bitor', 'bool', 'break',
             'case', 'catch', 'char', 'char16_t', 'char32_t', 'class', 'compl', 'const', 'const_cast', 'constexpr', 'continue',
