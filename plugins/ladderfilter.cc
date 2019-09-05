@@ -23,7 +23,7 @@ class LadderFilter : public LadderFilterBase {
       resonance = params->resonance / 100; /* percent */
 
       LadderVCFMode m = LadderVCFMode::LP4;
-      switch (params->filter)
+      switch (params->filter_type)
       {
         case LADDER_FILTER_LP4: m = LadderVCFMode::LP4; break;
         case LADDER_FILTER_LP3: m = LadderVCFMode::LP3; break;

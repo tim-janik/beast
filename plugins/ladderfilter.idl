@@ -24,14 +24,19 @@ interface LadderFilter : Effect {
   OStream audio_out1 = Stream (_("Audio Out1"), _("Filtered audio output 1"));
   OStream audio_out2 = Stream (_("Audio Out2"), _("Filtered audio output 2"));
 
-  group _("Parameters") {
-    LadderFilterType filter = SfiEnum (_("Ladder Filter Type"), _("The filter type for the ladder filter"), LADDER_FILTER_LP4, STANDARD);
-    Real cutoff           = Freq (_("Cutoff"), _("Cutoff Frequency"), 440.0, STANDARD);
+  group _("Filter") {
+    LadderFilterType filter_type = SfiEnum (_("Filter Type"), _("The filter type for the ladder filter"), LADDER_FILTER_LP4, STANDARD);
+  };
+  group _("Cutoff Frequency") {
+    Real cutoff           = Freq (_("Cutoff [Hz]"), _("Cutoff Frequency"), 440.0, STANDARD);
     Real freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, -5.0, 5.0, 0.01, STANDARD ":f:scale");
     Real key_tracking = Perc (_("Key Tracking [%]"), _("Set the key tracking amount in percent"), 50, STANDARD);
-
+  };
+  group _("Resonance") {
     Real resonance  = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 25, STANDARD);
     Real resonance_mod = (_("Resonance Mod [%]"), _("Resonance modulation in percent"), 10, -100.0, 100.0, 0.1, STANDARD ":scale");
+  };
+  group _("Drive") {
     Real drive_db   = Gain (_("Drive [dB]"), _("Set pre-filter gain to drive filter to saturation"), 0, -24, 36, 1, STANDARD ":scale");
   };
 };
