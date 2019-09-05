@@ -12,7 +12,7 @@
   <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
     <b-playcontrols :project="project"> </b-playcontrols>
 
-    <b-hflex grow1>
+    <b-hflex grow1 style="overflow-y: hidden">
       <b-vflex grow1 shrink1>
 	<b-hflex class="b-projectshell-track-area" style="height: 50%">
 	  <b-track-list class="grow1" :song="song"></b-track-list>
@@ -22,9 +22,9 @@
 	</b-hflex>
       </b-vflex>
 
-      <b-hflex ref="sidebarcontainer" >
+      <b-hflex ref="sidebarcontainer" style="width:15%" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
-	<b-vflex class="b-projectshell-sidebar" style="flex-grow: 1; flex-shrink: 1; overflow: hidden; justify-content: flex-start" >
+	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
 	  <b-treeselector></b-treeselector>
 	</b-vflex>
       </b-hflex>
@@ -47,6 +47,8 @@
     padding: $b-focus-outline-width; }
   .b-projectshell-sidebar {
     padding: 3px;
+    overflow: hidden scroll;
+    &, * { text-overflow: ellipsis; white-space: nowrap; }
   }
   .b-projectshell-resizer {
     width: var(--b-resize-handle-thickness);
