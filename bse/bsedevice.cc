@@ -3,6 +3,8 @@
 #include "bse/internal.hh"
 #include <bse/gbsearcharray.hh>
 
+#define SNDDEBUG(...)   Bse::debug ("snd", __VA_ARGS__)
+
 /* --- functions --- */
 static void
 bse_device_init (BseDevice *self)
@@ -99,6 +101,7 @@ bse_device_open (BseDevice      *self,
           if (!entry->device_error)
             {
               error = device_open_args (self, need_readable, need_writable, entry->device_args);
+              SNDDEBUG ("%s: %s: %s: %s", __func__, G_OBJECT_TYPE_NAME (self), entry->device_args, bse_error_blurb (error));
               if (error == 0)
                 break;
             }
