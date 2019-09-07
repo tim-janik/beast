@@ -32,7 +32,7 @@ struct _SfiRStore
   gint           close_fd;
   gpointer       parser_this;
   SfiNum         bin_offset;
-  char          *memfree_;
+  char          *textstart_;
 };
 
 

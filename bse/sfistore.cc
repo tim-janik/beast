@@ -374,7 +374,7 @@ sfi_rstore_new_open (const gchar *fname)
   rstore->fname = g_strdup (fname);
   rstore->scanner->input_name = rstore->fname;
   rstore->scanner->parse_errors = 0;
-  rstore->memfree_ = text;
+  rstore->textstart_ = text;
   g_scanner_input_text (rstore->scanner, text, length);
   return rstore;
 }
@@ -387,8 +387,8 @@ sfi_rstore_destroy (SfiRStore *rstore)
   if (rstore->close_fd >= 0)
     close (rstore->close_fd);
   g_scanner_destroy (rstore->scanner);
-  if (rstore->memfree_)
-    Bse::Path::memfree (rstore->memfree_);
+  if (rstore->textstart_)
+    Bse::Path::memfree (rstore->textstart_);
   g_free (rstore->fname);
   g_free (rstore);
 }
@@ -581,48 +581,16 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
 {
   if (rstore->bin_offset < 0)
     {
-      guint8 sdata[8192], *p;
-      off_t sc_offset, zero_offset;
-      ssize_t l;
-      gboolean seen_zero = FALSE;
-      gint fd = rstore->scanner->input_fd;
-
-      /* save current scanning offset */
-      g_scanner_sync_file_offset (rstore->scanner);
-      g_scanner_sync_file_offset (rstore->scanner);
-      do
-	sc_offset = lseek (fd, 0, SEEK_CUR);
-      while (sc_offset < 0 && errno == EINTR);
-      if (sc_offset < 0)
-	return FALSE;
-
-      /* seek to literal '\0' */
-      zero_offset = sc_offset;
-      do
-	{
-	  do
-	    l = read (fd, sdata, sizeof (sdata));
-	  while (l < 0 && errno == EINTR);
-	  if (l < 0)
-	    return FALSE;
-
-	  p = (uint8*) memchr (sdata, 0, l);
-	  seen_zero = p != NULL;
-	  zero_offset += seen_zero ? p - sdata : l;
-	}
-      while (!seen_zero && l);
+      assert_return (rstore->scanner->input_fd < 0 && rstore->textstart_, false); // input is always in memory
+      // find first literal '\0'
+      const char *p = (const char*) memchr (rstore->textstart_, 0, rstore->scanner->text_end - rstore->textstart_);
+      const bool seen_zero = p != NULL;
       if (!seen_zero)
-	return FALSE;
-
-      /* restore scanning offset */
+	return false;
+      const off_t zero_offset = p - rstore->textstart_;
       rstore->bin_offset = zero_offset + 1;
-      do
-	l = lseek (fd, sc_offset, SEEK_SET);
-      while (l < 0 && errno == EINTR);
-      if (l != sc_offset)
-	return FALSE;
     }
-  return TRUE;
+  return true;
 }
 
 GTokenType
