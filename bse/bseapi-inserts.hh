@@ -6,9 +6,9 @@ struct DUMMY { // dummy class for auto indentation
 
 interface_scope:Object:
   BSE_USE_RESULT
-  ::Aida::IfaceEventConnection on  (const ::std::string &type, ::Aida::EventHandlerF handler)   { return this->ImplicitBase::__attach__ (type, handler); }
+  ::Aida::IfaceEventConnection on  (const ::std::string &type, ::Aida::EventHandlerF handler)   { return this->__attach__ (type, handler); }
   BSE_USE_RESULT
-  ::Aida::IfaceEventConnection on  (const ::std::string &type, ::std::function<void()> vfunc)   { return this->ImplicitBase::__attach__ (type, [vfunc] (const ::Aida::Event&) { vfunc(); }); }
+  ::Aida::IfaceEventConnection on  (const ::std::string &type, ::std::function<void()> vfunc)   { return this->__attach__ (type, [vfunc] (const ::Aida::Event&) { vfunc(); }); }
   void     off (::Aida::IfaceEventConnection &hcon)                                             { hcon.disconnect(); }
   void     off (::Aida::IfaceEventConnection *hcon)                                             { hcon->disconnect(); *hcon = ::Aida::IfaceEventConnection();  }
   // as<BseObjectPtr>()
