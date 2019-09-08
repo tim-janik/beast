@@ -1468,7 +1468,7 @@ static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 static const MemoryArea&
 server_shared_memory_area()
 {
-  static MemoryArea shm_area = create_memory_area (SHARED_MEMORY_AREA_SIZE, 2 * BSE_CACHE_LINE_ALIGNMENT);
+  static MemoryArea shm_area = create_memory_area (current_shared_memory_area_size, 2 * BSE_CACHE_LINE_ALIGNMENT);
   return shm_area;
 }
 
@@ -1499,7 +1499,7 @@ ServerImpl::allocate_shared_block (int64 length)
                    SHARED_MEMORY_AREA_SIZE, SHARED_MEMORY_AREA_SIZE - current_shared_memory_area_size, length);
     }
   const size_t prev_shared_memory_area_size = current_shared_memory_area_size;
-  current_shared_memory_area_size -= length;
+  current_shared_memory_area_size -= ab.block_length;
   if (prev_shared_memory_area_size >= SHARED_MEMORY_AREA_SIZE / 2 &&
       current_shared_memory_area_size < SHARED_MEMORY_AREA_SIZE / 2)
     {
@@ -1516,7 +1516,7 @@ ServerImpl::allocate_shared_block (int64 length)
 void
 ServerImpl::release_shared_block (const SharedBlock &sb)
 {
-  assert_return (sb.mem_length == int32 (sb.mem_length));
+  assert_return (sb.mem_length == uint32 (sb.mem_length));
   const MemoryArea &ma = server_shared_memory_area();
   AlignedBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
   release_aligned_block (ab);

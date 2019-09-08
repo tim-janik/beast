@@ -570,9 +570,8 @@ event_roll_handle_drag (GxkScrollCanvas     *scc,
 static void
 event_roll_range_changed (BstEventRoll *self)
 {
-  guint max_ticks;
-  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
-  bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
+  guint max_ticks = self->part.last_tick();
+  bst_event_roll_hsetup (self, self->ppqn, self->qnpt, max_ticks, self->hzoom);
 }
 
 static void
@@ -611,8 +610,8 @@ bst_event_roll_set_part (BstEventRoll *self, Bse::PartH part)
   if (self->part)
     {
       self->part.on ("dispose", [self] () { bst_event_roll_set_part (self); });
+      self->part.on ("notify:last_tick", [self]() { event_roll_range_changed (self); });
       bse_proxy_connect (self->part.proxy_id(),
-                         "swapped-signal::property-notify::last-tick", event_roll_range_changed, self,
 			 "swapped-signal::range-changed", event_roll_update, self,
 			 NULL);
       event_roll_range_changed (self);

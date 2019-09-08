@@ -42,7 +42,7 @@ struct _BstPatternView
 {
   GxkScrollCanvas    parent_instance;
 
-  Bse::PartH         part;
+  Bse::PartS         part;
 
   /* vertical layout */
   guint              row_height;

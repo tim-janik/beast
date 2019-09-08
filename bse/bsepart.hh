@@ -164,7 +164,6 @@ BsePartEventType   bse_part_query_event         (BsePart           *self,
 
 
 /* --- implementation details --- */
-#define BSE_PART_MAX_CHANNELS           (0x1024)
 #define BSE_PART_MAX_TICK               (0x7fffffff)
 #define BSE_PART_INVAL_TICK_FLAG        (0x80000000)
 #define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == Bse::MidiSignal::VELOCITY || \
@@ -269,6 +268,10 @@ protected:
   virtual               ~PartImpl               ();
 public:
   explicit               PartImpl               (BseObject*);
+  virtual int            last_tick              () const override;
+  virtual void           last_tick              (int val) override;
+  virtual int            n_channels             () const override;
+  virtual void           n_channels             (int val) override;
   virtual PartNoteSeq    list_notes_crossing    (int tick, int duration) override;
   virtual PartNoteSeq    list_notes_within      (int channel, int tick, int duration) override;
   virtual PartNoteSeq    list_selected_notes    () override;
