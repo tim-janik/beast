@@ -754,6 +754,9 @@ bse_object_notify_icon_changed (BseObject *object)
   assert_return (BSE_IS_OBJECT (object));
 
   g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
+  Bse::ObjectImpl *self = object->as<Bse::ObjectImpl*>();
+  if (self)
+    self->notify ("icon");
 }
 
 Bse::Icon
