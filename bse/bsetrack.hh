@@ -15,9 +15,10 @@
 #define BSE_TRACK_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_TRACK, BseTrackClass))
 
 struct BseTrackEntry {
-  guint    tick;
-  guint    id;
-  BsePart *part;
+  uint    tick = 0;
+  uint    id = 0;
+  BsePart *part = nullptr;
+  Aida::IfaceEventConnection *c1 = nullptr;
 };
 struct BseTrack : BseContextMerger {
   guint            channel_id;

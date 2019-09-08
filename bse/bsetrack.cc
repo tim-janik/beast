@@ -169,6 +169,7 @@ track_add_entry (BseTrack *self,
     assert_return (self->entries_SL[index - 1].tick < tick, NULL);
   if (index < self->n_entries_SL)
     assert_return (self->entries_SL[index].tick > tick, NULL);
+  auto timpl = self->as<Bse::TrackImpl*>();
 
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL++;
@@ -183,8 +184,9 @@ track_add_entry (BseTrack *self,
   BSE_SEQUENCER_UNLOCK ();
   bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
   XREF_DEBUG ("cross-link: %p %p", self, part);
-  bse_object_proxy_notifies (part, self, "changed");
-  bse_object_reemit_signal (part, "notify::last-tick", self, "changed");
+  auto pimpl = part->as<Bse::PartImpl*>();
+  Aida::IfaceEventConnection con = pimpl->on ("notify:last_tick", [timpl] (const Aida::Event &event) { timpl->emit_event ("changed"); });
+  self->entries_SL[index].c1 = new Aida::IfaceEventConnection (con);
   return self->entries_SL + index;
 }
 
@@ -195,8 +197,9 @@ track_delete_entry (BseTrack *self,
   assert_return (index < self->n_entries_SL);
 
   BsePart *part = self->entries_SL[index].part;
-  bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
-  bse_object_unproxy_notifies (part, self, "changed");
+  self->entries_SL[index].c1->disconnect();
+  delete self->entries_SL[index].c1;
+  self->entries_SL[index].c1 = NULL;
   XREF_DEBUG ("cross-unlink: %p %p", self, part);
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
   BSE_SEQUENCER_LOCK ();
