@@ -242,34 +242,6 @@ run_tests (const char *run_type, uint p)
 }
 
 static void
-test_c_api (const char *run_type)
-{
-  // TSTART ("Resampler C API (%s)", run_type);
-  BseResampler2 *resampler = bse_resampler2_create (BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_96DB);
-  const int INPUT_SIZE = 1024, OUTPUT_SIZE = 2048;
-  float in[INPUT_SIZE];
-  float out[OUTPUT_SIZE];
-  double error = 0;
-  int i;
-
-  for (i = 0; i < INPUT_SIZE; i++)
-    in[i] = sin (i * 440 * 2 * M_PI / 44100) * bse_window_blackman ((double) (i * 2 - INPUT_SIZE) / INPUT_SIZE);
-
-  bse_resampler2_process_block (resampler, in, INPUT_SIZE, out);
-
-  int delay = bse_resampler2_delay (resampler);
-  for (i = 0; i < 2048; i++)
-    {
-      double expected = sin ((i - delay) * 220 * 2 * M_PI / 44100)
-	              * bse_window_blackman ((double) ((i - delay) * 2 - OUTPUT_SIZE) / OUTPUT_SIZE);
-      error = MAX (error, fabs (out[i] - expected));
-    }
-  double error_db = bse_db_from_factor (error, -200);
-  bse_resampler2_destroy (resampler);
-  TCHECK (error_db < -95, "C API delta below epsilon: %f < -95\n", error_db);
-  // TDONE();
-}
-static void
 test_delay_compensation (const char *run_type)
 {
   struct TestParameters {
@@ -448,16 +420,6 @@ test_state_length (const char *run_type)
   }
   // TDONE();
 }
-
-static void
-test_resample_handle_c_api()
-{
-  Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
-  Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name());
-  test_c_api ("SSE");
-}
-TEST_ADD (test_resample_handle_c_api);
 
 static void
 test_resample_delay_compensation()
