@@ -36,6 +36,10 @@ public:
   static Resampler2* create (BseResampler2Mode      mode,
 			     BseResampler2Precision precision);
   /**
+   * test internal filter implementation
+   */
+  static bool        test_filter_impl (bool verbose);
+  /**
    * finds a precision which is appropriate for at least the specified number of bits
    */
   static BseResampler2Precision find_precision_for_bits (guint bits);

@@ -60,7 +60,6 @@ float   bse_block_calc_float_range_and_square_sum (guint          n_values,
 	                                           float         *max_value);
 
 #ifdef  __cplusplus
-#include <bse/bseresampler.hh>
 namespace Bse {
 
 /* --- C++ API --- */
@@ -111,15 +110,6 @@ public:
 					      float&          min_value,
 					      float&          max_value)     { return singleton->range_and_square_sum (n_values, ivalues, min_value, max_value); }
 
-  typedef Resampler::Resampler2 Resampler2;
-  static inline
-  Resampler2*           create_resampler2    (BseResampler2Mode      mode,
-                                              BseResampler2Precision precision)	  { return singleton->create_resampler2 (mode, precision); }
-  static inline
-  bool                  test_resampler2	     (bool                   verbose)	  { return singleton->test_resampler2 (verbose); }
-
-
-
   class Impl {
   protected:
     virtual      ~Impl                  ();
@@ -155,10 +145,6 @@ public:
                                          const float    *ivalues,
 					 float&          min_value,
 					 float&          max_value) = 0;
-    virtual
-    Resampler2*   create_resampler2     (BseResampler2Mode      mode,
-                                         BseResampler2Precision precision) = 0;
-    virtual bool  test_resampler2	(bool			verbose) = 0;
   friend class Block;
     static  void  substitute            (Impl           *substitute_impl);
   };

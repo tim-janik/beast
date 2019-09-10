@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseblockutils.hh"
-#include "bseresampler.hh"
-#include "bseresamplerimpl.hh"
 #include "bse/internal.hh"
 
 namespace {
@@ -133,29 +131,6 @@ class BlockImpl : virtual public Bse::Block::Impl {
     min_value = minv;
     max_value = maxv;
     return square_sum;
-  }
-  virtual Bse::Resampler::Resampler2*
-  create_resampler2 (BseResampler2Mode      mode,
-                     BseResampler2Precision precision)
-  {
-    struct FPUResampler2 : public Bse::Resampler::Resampler2 {
-      static inline Resampler2*
-      create_resampler (BseResampler2Mode      mode,
-                        BseResampler2Precision precision)
-      {
-        return create_impl<false> (mode, precision);
-      }
-    };
-    return FPUResampler2::create_resampler (mode, precision);
-  }
-  virtual bool
-  test_resampler2 (bool verbose)
-  {
-    /* there is currently only a test for the SSE filter code, so in the
-     * non-SSE-case we simply always return true
-     */
-    Bse::printout ("SSE filter implementation not tested: no SSE support available\n");
-    return true;
   }
 };
 static BlockImpl default_block_impl;
