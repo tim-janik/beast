@@ -3,8 +3,7 @@
 #define __BSE_RESAMPLER_HH__
 
 #include <bse/bsecxxutils.hh>
-
-typedef struct BseResampler2 BseResampler2;
+#include <vector>
 
 typedef enum /*< skip >*/
 {
@@ -22,20 +21,6 @@ typedef enum /*< skip >*/
   BSE_RESAMPLER2_PREC_144DB = 24
 } BseResampler2Precision;
 
-BseResampler2* bse_resampler2_create        (BseResampler2Mode      mode,
-                                             BseResampler2Precision precision);
-void           bse_resampler2_destroy       (BseResampler2         *resampler);
-void	       bse_resampler2_process_block (BseResampler2         *resampler,
-                                             const float           *input,
-                                             uint                   n_input_samples,
-					     float                 *output);
-guint	       bse_resampler2_order         (BseResampler2         *resampler);
-double	       bse_resampler2_delay         (BseResampler2         *resampler);
-/* precision <-> bits conversion */
-BseResampler2Precision	bse_resampler2_find_precision_for_bits (guint		       bits);
-const char*		bse_resampler2_precision_name	       (BseResampler2Precision precision);
-#ifdef __cplusplus
-#include <vector>
 namespace Bse {
 
 /// The Resampler namespace contains interfaces for factor 2 resampling.
@@ -127,7 +112,5 @@ protected:
 } /* namespace Resampler */
 
 } /* namespace Bse */
-
-#endif /* __cplusplus */
 
 #endif /* __BSE_RESAMPLER_HH__ */
