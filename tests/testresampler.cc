@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <bse/bseblockutils.hh>
 #include <bse/testing.hh>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
@@ -314,7 +313,7 @@ Options::parse (int   *argc_p,
 static int
 test_filter_impl()
 {
-  bool filter_ok = Bse::Block::test_resampler2 (options.filter_impl_verbose);
+  bool filter_ok = Bse::Resampler::Resampler2::test_filter_impl (options.filter_impl_verbose);
 
   if (filter_ok)
     verbose_output += "filter implementation ok.\n";
