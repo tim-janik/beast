@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseresampler.hh"
-#include "bseblockutils.hh"
+#include "bseresamplerimpl.hh"
 
 namespace Bse {
 namespace Resampler {
@@ -10,7 +10,15 @@ Resampler2*
 Resampler2::create (BseResampler2Mode      mode,
                     BseResampler2Precision precision)
 {
-  return Block::create_resampler2 (mode, precision);
+  /* FIXME: handle SSE case */
+  return create_impl<false> (mode, precision);
+}
+
+bool
+Resampler2::test_filter_impl (bool verbose)
+{
+  /* FIXME: handle non-SSE case */
+  return Bse::Resampler::fir_test_filter_sse (verbose);
 }
 
 Resampler2::~Resampler2()
