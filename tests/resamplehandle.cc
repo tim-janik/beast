@@ -3,7 +3,7 @@
 #include <bse/bsemain.hh>
 #include <bse/testing.hh>
 #include <bse/gsldatautils.hh>
-#include <bse/bseblockutils.hh>
+#include <bse/bseresampler.hh>
 #include "bse/internal.hh"
 #include <stdlib.h>
 #include <vector>
