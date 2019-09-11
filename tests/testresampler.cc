@@ -48,32 +48,19 @@ static ResampleType resample_type = RES_UPSAMPLE;
 static TestType test_type = TEST_NONE;
 
 struct Options {
-  guint			  block_size;
-  double		  frequency;
-  double		  freq_min;
-  double		  freq_max;
-  double		  freq_inc;
-  bool                    freq_scan_verbose;
-  double                  max_threshold_db;
-  BseResampler2Precision  precision;
-  bool                    filter_impl_verbose;
-  bool                    verbose;
-  string		  program_name;
+  uint                    block_size          = 128;
+  double                  frequency           = 440.0;
+  double                  freq_min            = -1;
+  double                  freq_max            = -1;
+  double                  freq_inc            = 0;
+  bool                    freq_scan_verbose   = false;
+  double                  max_threshold_db    = 0;
+  BseResampler2Precision  precision           = BSE_RESAMPLER2_PREC_96DB;
+  bool                    filter_impl_verbose = false;
+  bool                    verbose             = false;
+  bool                    use_sse             = false;
+  string                  program_name        = "testresampler";
 
-  Options() :
-    block_size (128),
-    frequency (440.0),
-    freq_min (-1),
-    freq_max (-1),
-    freq_inc (0),
-    freq_scan_verbose (false),
-    max_threshold_db (0),
-    precision (BSE_RESAMPLER2_PREC_96DB),
-    filter_impl_verbose (false),
-    verbose (false),
-    program_name ("testresampler")
-  {
-  }
   void parse (int *argc_p, char **argv_p[]);
 } options;
 
@@ -349,8 +336,11 @@ perform_test()
    *  - we can not provide optimal compiler flags (-funroll-loops -O3 is good for the resampler)
    *    which makes things even more slow
    */
-  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision);
-  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision);
+  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision, options.use_sse);
+  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision, options.use_sse);
+
+  TASSERT (options.use_sse == ups->sse_enabled());
+  TASSERT (options.use_sse == downs->sse_enabled());
 
   F4Vector in_v[block_size / 2 + 3], out_v[block_size / 2 + 3], out2_v[block_size / 2 + 3];
   float *input = &in_v[0].f[0], *output = &out_v[0].f[0], *output2 = &out2_v[0].f[0]; /* ensure aligned data */
@@ -630,7 +620,7 @@ perform_test()
 template <int TEST> int
 perform_test()
 {
-  const char *instruction_set = Bse::Block::impl_name();
+  const char *instruction_set = options.use_sse ? "SSE" : "FPU";
 
   switch (resample_type)
     {
@@ -650,6 +640,7 @@ perform_test()
 static int
 perform_test()
 {
+  verbose_output = "";
   switch (test_type)
     {
     case TEST_PERFORMANCE:    verbose_output += "performance test "; return perform_test<TEST_PERFORMANCE> ();
@@ -775,7 +766,7 @@ run_testresampler (TestType tt)
 }
 
 static void
-run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, double finc, double threshold)
+run_accuracy (ResampleType rtype, bool use_sse_if_available, int precision, double fmin, double fmax, double finc, double threshold)
 {
   test_type = TEST_ACCURACY;
   resample_type = rtype;
@@ -788,6 +779,7 @@ run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, doubl
   if (options.max_threshold_db > 0)
     options.max_threshold_db = -options.max_threshold_db;
   //options.verbose = true;
+  options.use_sse = Resampler2::sse_available() && use_sse_if_available;
   const int result = perform_test();
   if (options.verbose)
     printf ("%s", verbose_output.c_str());
@@ -797,28 +789,35 @@ run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, doubl
 static void
 run_perf (ResampleType rtype, int precision)
 {
-  test_type = TEST_PERFORMANCE;
-  resample_type = rtype;
-  options.precision = static_cast<BseResampler2Precision> (precision);
-  options.verbose = true;
-  const int result = perform_test();
-  if (options.verbose)
-    printf ("%s", verbose_output.c_str());
-  TASSERT (result == 0);
+  const int runs = Resampler2::sse_available() ? 2 : 1; // run test twice if we have both: FPU and SSE support
+
+  for (int r = 0; r < runs; r++)
+    {
+      test_type = TEST_PERFORMANCE;
+      resample_type = rtype;
+      options.precision = static_cast<BseResampler2Precision> (precision);
+      options.verbose = true;
+      options.use_sse = r;
+
+      const int result = perform_test();
+      if (options.verbose)
+        printf ("%s", verbose_output.c_str());
+      TASSERT (result == 0);
+    }
 }
 
 static void testresampler_check_filter_impl()           { run_testresampler (TEST_FILTER_IMPL); }
 TEST_ADD (testresampler_check_filter_impl);
 
-static void testresampler_check_precision_up8()         { run_accuracy (RES_UPSAMPLE, 8, 180, 18000, 1979, 45); }
+static void testresampler_check_precision_up8()         { run_accuracy (RES_UPSAMPLE, true, 8, 180, 18000, 1979, 45); }
 TEST_ADD (testresampler_check_precision_up8);
-static void testresampler_check_precision_down12()      { run_accuracy (RES_DOWNSAMPLE, 12, 90, 9000, 997, 72); }
+static void testresampler_check_precision_down12()      { run_accuracy (RES_DOWNSAMPLE, true, 12, 90, 9000, 997, 72); }
 TEST_ADD (testresampler_check_precision_down12);
-static void testresampler_check_precision_up16()        { run_accuracy (RES_UPSAMPLE, 16, 180, 18000, 1453, 89.5); }
-TEST_ADD (testresampler_check_precision_up16); // --bse-force-fpu
-static void testresampler_check_precision_over20()      { run_accuracy (RES_OVERSAMPLE, 20, 180, 18000, 1671, 113.5); }
-TEST_ADD (testresampler_check_precision_over20); // --bse-force-fpu
-static void testresampler_check_precision_sub24()       { run_accuracy (RES_SUBSAMPLE, 24, 90, 9000, 983, 126); }
+static void testresampler_check_precision_up16()        { run_accuracy (RES_UPSAMPLE, true, 16, 180, 18000, 1453, 89.5); }
+TEST_ADD (testresampler_check_precision_up16);
+static void testresampler_check_precision_over20()      { run_accuracy (RES_OVERSAMPLE, false, 20, 180, 18000, 1671, 113.5); }
+TEST_ADD (testresampler_check_precision_over20);
+static void testresampler_check_precision_sub24()       { run_accuracy (RES_SUBSAMPLE, false, 24, 90, 9000, 983, 126); }
 TEST_ADD (testresampler_check_precision_sub24);
 
 #if 0 // lengthy and verbose performance tests
