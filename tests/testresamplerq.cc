@@ -40,8 +40,8 @@ public:
   double max_error;
 
   void  check_spectrum (const vector<float>& impulse_response, int p);
-  void  check_resampler_up (BseResampler2Precision precision);
-  void  check_resampler_down (BseResampler2Precision precision);
+  void  check_resampler_up (BseResampler2Precision precision, bool use_sse);
+  void  check_resampler_down (BseResampler2Precision precision, bool use_sse);
 };
 
 void
@@ -72,13 +72,14 @@ ResamplerTest::check_spectrum (const vector<float>& impulse_response, int p)
 }
 
 void
-ResamplerTest::check_resampler_up (BseResampler2Precision precision)
+ResamplerTest::check_resampler_up (BseResampler2Precision precision, bool use_sse)
 {
-  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, precision);
+  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, precision, use_sse);
   AlignedArray<float,16> input (options.test_size);
   AlignedArray<float,16> output (options.test_size * 2);
   vector< vector<float> > results;
 
+  TASSERT (ups->sse_enabled() == use_sse);
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
@@ -112,13 +113,14 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
 }
 
 void
-ResamplerTest::check_resampler_down (BseResampler2Precision precision)
+ResamplerTest::check_resampler_down (BseResampler2Precision precision, bool use_sse)
 {
-  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, precision);
+  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, precision, use_sse);
   AlignedArray<float,16> input (options.test_size * 2);
   AlignedArray<float,16> output (options.test_size);
   vector< vector<float> > results;
 
+  TASSERT (downs->sse_enabled() == use_sse);
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
@@ -181,7 +183,7 @@ band_err (BseResampler2Precision p)
 }
 
 static void
-run_tests (const char *label)
+run_tests (bool use_sse)
 {
   BseResampler2Precision p = BSE_RESAMPLER2_PREC_96DB;  // should not be equal to the first resampler precision
 
@@ -193,7 +195,7 @@ run_tests (const char *label)
           p = new_p;
 
           ResamplerTest rt_up;
-          rt_up.check_resampler_up (p);
+          rt_up.check_resampler_up (p, use_sse);
 
           TASSERT (bse_db_from_factor (rt_up.max_error, -200) < -125);
           TASSERT (bse_db_from_factor (rt_up.passband_err, -200) < band_err (p));
@@ -203,7 +205,7 @@ run_tests (const char *label)
                                                     //bse_db_from_factor (rt_up.passband_err, -200),
                                                     //bse_db_from_factor (rt_up.stopband_err, -200));
           ResamplerTest rt_down;
-          rt_down.check_resampler_down (p);
+          rt_down.check_resampler_down (p, use_sse);
 
           TASSERT (bse_db_from_factor (rt_up.max_error, -200) < -125);
           TASSERT (bse_db_from_factor (rt_up.passband_err, -200) < band_err (p));
@@ -212,7 +214,7 @@ run_tests (const char *label)
           //printf ("## DOWN %d %.17g %.17g %.17g\n", p, bse_db_from_factor (rt_down.max_error, -200),
                                                     //bse_db_from_factor (rt_down.passband_err, -200),
                                                     //bse_db_from_factor (rt_down.stopband_err, -200));
-          printout ("  OK       Resampler %s Precision %d\n", label, p);
+          printout ("  OK       Resampler %s Precision %d\n", use_sse ? "SSE" : "FPU", p);
         }
     }
 }
@@ -240,16 +242,8 @@ test_resampler_variants()
   assert_return (options.rand_samples <= options.test_size / 2);
   assert_return (options.test_size >= 128);
   TNOTE ("Resampler test parameters: test_size=%zd rand_samples=%zd", options.test_size, options.rand_samples);
-  run_tests ("FPU");
-
-#if 0
-  /* load plugins */
-  diag_abort_hook (NULL); // hack to allow test reinitialization
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
-  /* check for possible specialization */
-  if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
-    return 0;   /* nothing changed */
-  run_tests ("SSE");
-#endif
+  run_tests (false);
+  if (Resampler2::sse_available())
+    run_tests (true);
 }
 TEST_ADD (test_resampler_variants);
