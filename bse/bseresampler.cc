@@ -8,17 +8,42 @@ namespace Resampler {
 /* --- Resampler2 methods --- */
 Resampler2*
 Resampler2::create (BseResampler2Mode      mode,
-                    BseResampler2Precision precision)
+                    BseResampler2Precision precision,
+                    bool                   use_sse_if_available)
 {
-  /* FIXME: handle SSE case */
-  return create_impl<false> (mode, precision);
+  if (sse_available() && use_sse_if_available)
+    {
+      return create_impl<true> (mode, precision);
+    }
+  else
+    {
+      return create_impl<false> (mode, precision);
+    }
+}
+
+bool
+Resampler2::sse_available()
+{
+#ifdef __SSE__
+  return true;
+#else
+  return false;
+#endif
 }
 
 bool
 Resampler2::test_filter_impl (bool verbose)
 {
-  /* FIXME: handle non-SSE case */
-  return Bse::Resampler::fir_test_filter_sse (verbose);
+  if (sse_available())
+    {
+      return Bse::Resampler::fir_test_filter_sse (verbose);
+    }
+  else
+    {
+      if (verbose)
+        Bse::printout ("SSE filter implementation not tested: no SSE support available\n");
+      return true;
+    }
 }
 
 Resampler2::~Resampler2()
