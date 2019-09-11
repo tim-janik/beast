@@ -22,7 +22,7 @@ using std::max;
 using std::copy;
 
 /* see: http://ds9a.nl/gcc-simd/ */
-union F4Vector 
+union F4Vector
 {
   float f[4];
 #ifdef __SSE__
@@ -37,7 +37,7 @@ union F4Vector
  * and can be computed by convolution of the input signal with that finite
  * impulse response.
  *
- * Thus, we use this for computing the output of the FIR filter 
+ * Thus, we use this for computing the output of the FIR filter
  *
  * output = input[0] * taps[0] + input[1] * taps[1] + ... + input[N-1] * taps[N-1]
  *
@@ -335,6 +335,11 @@ public:
   {
     Bse::Block::fill (history.size(), &history[0], 0.0);
   }
+  bool
+  sse_enabled() const override
+  {
+    return USE_SSE;
+  }
 };
 
 /**
@@ -517,6 +522,11 @@ public:
   {
     Bse::Block::fill (history_even.size(), &history_even[0], 0.0);
     Bse::Block::fill (history_odd.size(), &history_odd[0], 0.0);
+  }
+  bool
+  sse_enabled() const override
+  {
+    return USE_SSE;
   }
 };
 

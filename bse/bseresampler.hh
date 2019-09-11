@@ -34,7 +34,12 @@ public:
    * creates a resampler instance fulfilling a given specification
    */
   static Resampler2* create (BseResampler2Mode      mode,
-			     BseResampler2Precision precision);
+			     BseResampler2Precision precision,
+                             bool                   use_sse_if_available = true);
+  /**
+   * returns true if an optimized SSE version of the Resampler is available
+   */
+  static bool        sse_available();
   /**
    * test internal filter implementation
    */
@@ -76,6 +81,10 @@ public:
    * clear internal history, reset resampler state to zero values
    */
   virtual void        reset() = 0;
+  /**
+   * return whether the resampler is using sse optimized code
+   */
+  virtual bool        sse_enabled() const = 0;
 protected:
   static const double halfband_fir_linear_coeffs[2];
   static const double halfband_fir_48db_coeffs[16];
