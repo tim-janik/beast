@@ -18,6 +18,7 @@ using std::max;
 using std::min;
 using std::map;
 using namespace Bse::Test;
+using Bse::Resampler::Resampler2;
 
 static void
 read_through (GslDataHandle *handle)
@@ -242,7 +243,7 @@ run_tests (const char *run_type, uint p)
 }
 
 static void
-test_delay_compensation (const char *run_type)
+test_delay_compensation (bool use_sse)
 {
   struct TestParameters {
     double error_db;
@@ -262,8 +263,8 @@ test_delay_compensation (const char *run_type)
     { 134, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_144DB },
     { -1, }
   };
+  const char *run_type = use_sse ? "SSE" : "FPU";
 
-  using Bse::Resampler::Resampler2;
   // TSTART ("Resampler Delay Compensation (%s)", run_type);
 
   for (guint p = 0; params[p].error_db > 0; p++)
@@ -278,7 +279,9 @@ test_delay_compensation (const char *run_type)
 
       /* up/downsample test signal */
       Resampler2 *resampler = Resampler2::create (params[p].mode,
-                                                  params[p].precision);
+                                                  params[p].precision,
+                                                  use_sse);
+      TASSERT (resampler->sse_enabled() == use_sse);
       resampler->process_block (&in[0], INPUT_SIZE, &out[0]);
 
       /* setup increments for comparision loop */
@@ -312,7 +315,7 @@ test_delay_compensation (const char *run_type)
 
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
-      TCHECK (error_db < -params[p].error_db, "Resampler Delay Compensation delta below epsilon: %f < %f\n", error_db, -params[p].error_db);
+      TCHECK (error_db < -params[p].error_db, "Resampler %s Delay Compensation delta below epsilon: %f < %f\n", run_type, error_db, -params[p].error_db);
     }
   // TDONE();
 }
@@ -424,7 +427,9 @@ test_state_length (const char *run_type)
 static void
 test_resample_delay_compensation()
 {
-  test_delay_compensation ("SSE");
+  test_delay_compensation (false);
+  if (Resampler2::sse_available())
+    test_delay_compensation (true);
 }
 TEST_ADD (test_resample_delay_compensation);
 
