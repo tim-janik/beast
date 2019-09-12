@@ -28,10 +28,10 @@ UPDATE_DESKTOP_DATABASE	:= /usr/bin/update-desktop-database
 UPDATE_MIME_DATABASE	:= /usr/bin/update-mime-database
 
 # Check for fast linker
-ifeq ($(MODE),release)
+ifeq ($(MODE),production)
 useld_fast		::= # keep default linker
 useld_fast+vs		::= # keep default linker
-# Keep the default linker for release mode, as usually, bfd optimizes better than lld,
+# Keep the default linker for production mode, as usually, bfd optimizes better than lld,
 # and lld optimizes better than gold in terms of resulting binary size.
 else
 # Generally, ld.gold is faster than ld.bfd, and ld.lld is often faster than ld.gold for linking

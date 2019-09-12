@@ -391,7 +391,7 @@ $(call INSTALL_DATA_RULE,			\
 	bse/headers,				\
 	$(DESTDIR)$(bse/include.headerdir),	\
 	$(bse/include.headers) $(bse/libbse.deps))
-$(call $(if $(filter release, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
+$(call $(if $(filter production, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
 
 # == bseapi.idl rules ==

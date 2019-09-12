@@ -27,7 +27,7 @@ LDMODEFLAGS	  =
 
 ifeq ($(MODE),quick)
 MODEFLAGS	::= -O0
-else ifeq ($(MODE),release)
+else ifeq ($(MODE),production)
 MODEFLAGS	::= -O3 -DNDEBUG
 else ifeq ($(MODE),debug)
 MODEFLAGS	::= -O0 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -ggdb3 -DG_ENABLE_DEBUG -fverbose-asm

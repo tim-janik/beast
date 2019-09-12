@@ -16,9 +16,9 @@ S +=
 # determine build mode
 MODE.origin ::= $(origin MODE) # before overriding, remember if MODE came from command line
 override MODE !=  case "$(MODE)" in \
-		    p*|pr*|pro*|prod*|produ*|produc*|product*)		MODE=release ;; \
-		    producti*|productio*|production)			MODE=release ;; \
-		    r*|re*|rel*|rele*|relea*|releas*|release)		MODE=release ;; \
+		    p*|pr*|pro*|prod*|produ*|produc*|product*)		MODE=production ;; \
+		    producti*|productio*|production)			MODE=production ;; \
+		    r*|re*|rel*|rele*|relea*|releas*|release)		MODE=production ;; \
 		    d*|de*|deb*|debu*|debug|dbg)			MODE=debug ;; \
 		    dev*|deve*|devel*|develo*|develop*|developm*)	MODE=debug ;; \
 		    developme*|developmen*|development)			MODE=debug ;; \
@@ -160,8 +160,8 @@ help: FORCE
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
 	@echo '  make O=DIR      - Create all output files in DIR'
 	@echo '  make DESTDIR=/  - Absolute path prepended to all install/uninstall locations'
-	@echo "  make MODE=...   - Optimize build to be 'quick' or for 'release' mode binaries."
-	@echo '                    Posible debug modes: debug, asan, lsan, tsan, ubsan'
+	@echo "  make MODE=...   - Optimize build to be 'quick' or for 'production' mode binaries."
+	@echo '                    Posible modes for debugging: debug, asan, lsan, tsan, ubsan'
 
 # == all rules ==
 all: $(ALL_TARGETS) $(ALL_TESTS)
