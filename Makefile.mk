@@ -27,7 +27,7 @@ override MODE !=  case "$(MODE)" in \
 		    t*|ts*|tsa*|tsan)					MODE=tsan ;; \
 		    l*|ls*|lsa*|lsan)					MODE=lsan ;; \
 		    q*|qu*|qui*|quic*|quick)				MODE=quick ;; \
-		    *)							MODE=debug ;; \
+		    *)							MODE=production ;; \
 		  esac ; echo "$$MODE"
 .config.defaults += MODE
 $(info $S MODE     $(MODE))
