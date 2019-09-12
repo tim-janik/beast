@@ -125,8 +125,8 @@ $>/app/bseapi_jsonipc.js: jsonipc/head.js $(lib/BeastSoundEngine) bse/bseapi.idl
 
 # == $>/app/assets/ ==
 ebeast/inter-typeface-downloads ::= \
-  5f310d16c579ab3b1e9e8cb3298e14bb935ed7e802e1b23c35bd1819307d6c59 \
-    https://github.com/rsms/inter/raw/v3.5/docs/font-files/Inter-Medium.woff2
+  9cd56084faa8cc5ee75bf6f3d01446892df88928731ee9321e544a682aec55ef \
+    https://github.com/rsms/inter/raw/v3.10/docs/font-files/Inter-Medium.woff2
 $>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
 	$(QGEN)
 	$Q cd $(@D) \
