@@ -120,3 +120,29 @@ plaintext, listing, xmp,
 .slashed-zero				{ font-variant-numeric: slashed-zero; }
 .tabular-nums				{ font-variant-numeric: tabular-nums; }
 .tabular-nums.slashed-zero		{ font-variant-numeric: tabular-nums slashed-zero; }
+
+/* == Flex Layout == */
+.hflex         { display: flex; flex-flow: row; flex-basis: auto; flex-wrap: nowrap;
+		 justify-content: space-evenly; align-items: stretch; align-content: stretch; }
+.vflex         { display: flex; flex-flow: column; flex-basis: auto; flex-wrap: nowrap;
+		 justify-content: space-evenly; align-items: stretch; align-content: stretch; }
+.grow0         { flex-grow: 0; }
+.grow1         { flex-grow: 1; }
+.grow2         { flex-grow: 2; }
+.grow3         { flex-grow: 3; }
+.grow4         { flex-grow: 4; }
+.grow5         { flex-grow: 5; }
+.grow6         { flex-grow: 6; }
+.grow7         { flex-grow: 7; }
+.grow8         { flex-grow: 8; }
+.grow9         { flex-grow: 9; }
+.shrink0       { flex-shrink: 0; }
+.shrink1       { flex-shrink: 1; }
+.shrink2       { flex-shrink: 2; }
+.shrink3       { flex-shrink: 3; }
+.shrink4       { flex-shrink: 4; }
+.shrink5       { flex-shrink: 5; }
+.shrink6       { flex-shrink: 6; }
+.shrink7       { flex-shrink: 7; }
+.shrink8       { flex-shrink: 8; }
+.shrink9       { flex-shrink: 9; }

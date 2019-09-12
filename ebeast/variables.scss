@@ -27,3 +27,12 @@ $b-menu-box-shadow: 		0 0 13px 1px #0005;
 $b-default-background-color:	$b-main-background;	// #rrggbb needed
 $b-default-font-size:		14px;          		// int px needed
 $b-default-monospace-font-size: 13px;			// int px needed
+
+// == Animations ==
+$b-transition-fast-slide: 0.15s !default;
+
+// == Handles ==
+$b-resize-handle-thickness: 5px !default;
+$b-resize-handle-bgcolor:   #555 !default;
+$b-resize-handle-hvcolor:   #bbb !default;
+$b-resize-handle-border:    1.5px solid #111 !default;

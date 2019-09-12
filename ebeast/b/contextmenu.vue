@@ -1,4 +1,4 @@
-<!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
+<!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
   # B-CONTEXTMENU
@@ -91,7 +91,7 @@ module.exports = {
     this.checkitems();
   },
   beforeDestroy () {
-    this.resize_observer.disconnect();
+    this.resize_observer.destroy();
     this.resize_observer = undefined;
     if (this.resize_timer)
       clearTimeout (this.resize_timer);

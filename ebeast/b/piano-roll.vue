@@ -1,4 +1,4 @@
-<!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
+<!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
   # B-PIANO-ROLL
@@ -21,45 +21,40 @@
   .b-piano-roll-buttons {
     font: $b-piano-roll-buttons-font;
   }
-  .b-piano-roll canvas {
-    display: block;
-    image-rendering: pixelated /*ff: crisp-edges*/;
+  .b-piano-roll {
+    canvas { image-rendering: pixelated /*ff: crisp-edges*/; }
     //* Make scss variables available to JS via getComputedStyle() */
-    --piano-roll-light-row:    		#{$b-piano-roll-light-row};
-    --piano-roll-dark-row:     		#{$b-piano-roll-dark-row};
-    --piano-roll-semitone12:   		#{$b-piano-roll-semitone12};
-    --piano-roll-semitone6:    		#{$b-piano-roll-semitone6};
-    --piano-roll-grid-main1:   		#{$b-piano-roll-grid-main1};
-    --piano-roll-grid-sub1:    		#{$b-piano-roll-grid-sub1};
-    --piano-roll-white-base:   		#{$b-piano-roll-white-base};
-    --piano-roll-white-glint:  		#{$b-piano-roll-white-glint};
-    --piano-roll-white-border: 		#{$b-piano-roll-white-border};
-    --piano-roll-black-base:   		#{$b-piano-roll-black-base};
-    --piano-roll-black-glint:  		#{$b-piano-roll-black-glint};
-    --piano-roll-black-shine:  		#{$b-piano-roll-black-shine};
-    --piano-roll-black-border: 		#{$b-piano-roll-black-border};
-    --piano-roll-key-font:     		#{$b-piano-roll-key-font};
-    --piano-roll-key-font-color: 	#{$b-piano-roll-key-font-color};
-    --piano-roll-note-font:    		#{$b-piano-roll-note-font};
-    --piano-roll-note-font-color:	#{$b-piano-roll-note-font-color};
-    --piano-roll-note-focus-color:	#{$b-piano-roll-note-focus-color};
-    --piano-roll-note-focus-border:	#{$b-piano-roll-note-focus-border};
+    --piano-roll-light-row:             #{$b-piano-roll-light-row};
+    --piano-roll-dark-row:              #{$b-piano-roll-dark-row};
+    --piano-roll-semitone12:            #{$b-piano-roll-semitone12};
+    --piano-roll-semitone6:             #{$b-piano-roll-semitone6};
+    --piano-roll-grid-main1:            #{$b-piano-roll-grid-main1};
+    --piano-roll-grid-sub1:             #{$b-piano-roll-grid-sub1};
+    --piano-roll-white-base:            #{$b-piano-roll-white-base};
+    --piano-roll-white-glint:           #{$b-piano-roll-white-glint};
+    --piano-roll-white-border:          #{$b-piano-roll-white-border};
+    --piano-roll-black-base:            #{$b-piano-roll-black-base};
+    --piano-roll-black-glint:           #{$b-piano-roll-black-glint};
+    --piano-roll-black-shine:           #{$b-piano-roll-black-shine};
+    --piano-roll-black-border:          #{$b-piano-roll-black-border};
+    --piano-roll-key-font:              #{$b-piano-roll-key-font};
+    --piano-roll-key-font-color:        #{$b-piano-roll-key-font-color};
+    --piano-roll-note-font:             #{$b-piano-roll-note-font};
+    --piano-roll-note-font-color:       #{$b-piano-roll-note-font-color};
+    --piano-roll-note-focus-color:      #{$b-piano-roll-note-focus-color};
+    --piano-roll-note-focus-border:     #{$b-piano-roll-note-focus-border};
+    --piano-roll-font:                  #{$b-piano-roll-font};
+    --piano-roll-font-color:            #{$b-piano-roll-font-color};
+    --piano-roll-key-length:            #{$b-piano-roll-key-length};
   }
-  .b-piano-roll-piano {
-    --piano-roll-font: #{$b-piano-roll-font};
-    --piano-roll-font-color: #{$b-piano-roll-font-color};
-    --piano-roll-key-length: #{$b-piano-roll-key-length};
-    width: $b-piano-roll-key-length;
-  }
-  .b-piano-roll-notes {
-  }
+  .b-piano-roll-key-width { width: $b-piano-roll-key-length; }
 </style>
 
 <template>
 
-  <div class="b-piano-roll" style="display: flex; flex-direction: column; width: 100%;"
-       tabindex="0" @keydown="keydown">
-    <div style="display: flex; width: 100%; flex-shrink: 0;">
+  <b-vflex class="b-piano-roll" style="width: 100%; border-top: 3px solid blue"
+	   tabindex="0" @keydown.native="keydown">
+    <b-hflex class="shrink0" style="width: 100%">
       <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
 	<button >I</button>
 	<button >m</button>
@@ -67,24 +62,19 @@
 	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
       </div>
       <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
-    </div>
-    <div ref="scrollcontainer" style="overflow-y: scroll" >
-      <div ref="scrollarea" style="display: flex; flex-direction: column; overflow: hidden;" >
-	<div :style="{
-		     display: 'flex',
-		     'flex-direction': 'row',
-		     height: PIANO_ROLL_CSSHEIGHT + 'px',
-		     width: '100%',
-		     'background-color': 'blue',
-		     }" >
-	  <canvas ref="piano-canvas" class="b-piano-roll-piano tabular-nums" :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" @click="$forceUpdate()" ></canvas>
-	  <canvas ref="notes-canvas" class="b-piano-roll-notes tabular-nums" @click="notes_click"
-		  :style="{ height: PIANO_ROLL_CSSHEIGHT + 'px', }" >
-	  </canvas>
-	</div>
-      </div>
-    </div>
-  </div>
+    </b-hflex>
+
+    <b-vflex class="grow1" style="overflow-x: hidden; overflow-y: scroll" >
+      <b-hflex ref="scrollarea" style="position: relative; overflow: visible; height: 100%" >
+	<canvas class="b-piano-roll-piano tabular-nums" @click="$forceUpdate()"
+		style="position: absolute; left: 0"
+		ref="piano-canvas" ></canvas>
+	<canvas class="b-piano-roll-notes tabular-nums" @click="notes_click"
+		style="position: absolute; left: var(--piano-roll-key-length)"
+		ref="notes-canvas" ></canvas>
+      </b-hflex>
+    </b-vflex>
+  </b-vflex>
 
 </template>
 
@@ -134,17 +124,17 @@ module.exports = {
     this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
   },
   destroyed() {
-    this.resize_observer.disconnect();
+    this.resize_observer.destroy();
   },
   methods: {
     sync_scrollpos (newpart, oldpart) {
       if (!this.$refs.scrollarea)
 	return;
       this.$refs.hscrollbar.value = 0;
-      const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
-      const sbr = this.$refs.scrollarea.getBoundingClientRect();
+      const vbr = this.$refs.scrollarea.$el.parentElement.getBoundingClientRect();
+      const sbr = this.$refs['notes-canvas'].getBoundingClientRect();
       if (oldpart && sbr.height > vbr.height)
-	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
+	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.$el.parentElement.scrollTop / (sbr.height - vbr.height);
       if (newpart)
 	{
 	  const auto_scrollto = this.auto_scrolls[newpart.$id];
@@ -157,18 +147,18 @@ module.exports = {
       if (!this.$el) // we need a second Vue.render() call for canvas drawing
 	return this.$forceUpdate();
       // DOM, $el and $refs are in place now
-      if (this.resizable_scrollarea != this.$refs.scrollarea)
+      if (this.scrollarea_element != this.$refs.scrollarea.$el)
 	{
-	  if (this.resizable_scrollarea)
-	    this.resize_observer.unobserve (this.resizable_scrollarea);
-	  this.resizable_scrollarea = this.$refs.scrollarea;
-	  this.resize_observer.observe (this.resizable_scrollarea);
+	  if (this.scrollarea_element)
+	    this.resize_observer.unobserve (this.scrollarea_element);
+	  this.scrollarea_element = this.$refs.scrollarea.$el;
+	  this.resize_observer.observe (this.scrollarea_element);
 	}
       // make sure scroll events in the canvas are forwarded to the scrollbar
-      if (!this.$refs.scrollarea.forwarding_wheel)
+      if (!this.scrollarea_element.forwarding_wheel)
 	{
-	  this.$refs.scrollarea.addEventListener ('wheel', e => this.$refs.hscrollbar.wheel_event (e));
-	  this.$refs.scrollarea.forwarding_wheel = true;
+	  this.scrollarea_element.addEventListener ('wheel', e => this.$refs.hscrollbar.wheel_event (e));
+	  this.scrollarea_element.forwarding_wheel = true;
 	}
       // canvas setup
       const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
@@ -179,8 +169,8 @@ module.exports = {
       this.render_notes (notes_canvas, notes_style, this.layout);
       // scrollto an area with visible notes
       if (this.adata.auto_scrollto !== undefined) {
-	const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
-	const sbr = this.$refs.scrollarea.getBoundingClientRect();
+	const vbr = this.scrollarea_element.parentElement.getBoundingClientRect();
+	const sbr = notes_canvas.getBoundingClientRect();
 	if (sbr.height > vbr.height) {
 	  let scroll_top, scroll_behavior = 'smooth';
 	  if (this.adata.auto_scrollto >= 0)
@@ -190,7 +180,7 @@ module.exports = {
 	    if (this.adata.auto_scrollto < -1)
 	      scroll_behavior = 'auto'; // initial scroll pos, avoid animation
 	  }
-	  this.$refs.scrollarea.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
+	  this.scrollarea_element.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
 	}
 	this.adata.auto_scrollto = undefined;
       }
@@ -316,7 +306,7 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   const min_last_tick = 384;
   const last_tick = Math.max (this.adata.last_tick || 0, min_last_tick);
   // scale layout
-  const sbr = this.$refs.scrollarea.getBoundingClientRect();
+  const sbr = this.scrollarea_element.getBoundingClientRect();
   layout.pixelratio = window.devicePixelRatio;
   const layout_height = round (layout.pixelratio * layout.cssheight);
   layout.white_width = key_length || layout.white_width; // allow CSS override

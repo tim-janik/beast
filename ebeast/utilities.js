@@ -1362,27 +1362,28 @@ class UtilResizeObserver {
     this.listening = false;
   }
   add_owner (owner, callback) {
+    const utilresizeobserver = this;
     if (!this.have_ResizeObserver && !this.listening)
       {
 	window.addEventListener ('resize', () => this.resized());
 	this.listening = true;
       }
-    let wrs = undefined;
-    if (window.ResizeObserver != undefined)
-      wrs = new window.ResizeObserver (() => callback());
+    let rso = undefined;
+    if (this.have_ResizeObserver)
+      rso = new window.ResizeObserver (() => callback());
     const new_observer = {
-      callback: callback,
+      callback: callback.bind (owner),
       elements: [],
-      wrs: wrs,
+      rso: rso,
       observe (ele) {
-	if (this.wrs)
-	  this.wrs.observe (ele);
+	if (this.rso)
+	  this.rso.observe (ele);
 	else
 	  this.elements.push (ele);
       },
       unobserve (ele) {
-	if (this.wrs)
-	  this.wrs.unobserve (ele);
+	if (this.rso)
+	  this.rso.unobserve (ele);
 	else
 	  {
 	    const i = this.elements.indexOf (ele);
@@ -1391,19 +1392,23 @@ class UtilResizeObserver {
 	  }
       },
       disconnect() {
-	if (this.wrs)
-	  this.wrs.disconnect();
+	if (this.rso)
+	  this.rso.disconnect();
 	else
 	  this.elements = [];
+      },
+      destroy() {
+	this.disconnect();
+	utilresizeobserver.observers.delete (owner);
       }
     };
-    this.observers[owner] = new_observer;
+    this.observers.set (owner, new_observer);
     return new_observer;
   }
   resized() {
-    for (let o in this.observers)
-      if (this.observers[o].elements.length)
-	this.observers[o].callback (o);
+    for (let o of this.observers)
+      if (o[1].elements.length)
+	o[1].callback (o);
   }
 }
 const utilresizeobserver = new UtilResizeObserver();

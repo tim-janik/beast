@@ -1,4 +1,4 @@
-<!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
+<!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
   # B-PROJECTSHELL
@@ -9,26 +9,56 @@
 </docs>
 
 <template>
-  <div class="b-projectshell">
-    <div class="b-projectshell-track-area">
-      Project Shell:
-      <b-playcontrols :project="project"> </b-playcontrols>
-      <b-track-list :song="song"></b-track-list>
-    </div>
-    <div class="b-projectshell-part-area" style="display: flex; overflow: hidden;" >
-      <b-piano-roll :part="piano_roll_part" ></b-piano-roll>
-    </div>
+  <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
+    <b-playcontrols :project="project"> </b-playcontrols>
+
+    <b-hflex grow1>
+      <b-vflex grow1 shrink1>
+	<b-hflex class="b-projectshell-track-area" style="height: 50%">
+	  <b-track-list class="grow1" :song="song"></b-track-list>
+	</b-hflex>
+	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
+	  <b-piano-roll class="grow1" :part="piano_roll_part" ></b-piano-roll>
+	</b-hflex>
+      </b-vflex>
+
+      <b-hflex ref="sidebarcontainer" >
+	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
+	<b-vflex class="b-projectshell-sidebar" style="flex-grow: 1; flex-shrink: 1; overflow: hidden; justify-content: flex-start" >
+	  <b-treeselector></b-treeselector>
+	</b-vflex>
+      </b-hflex>
+    </b-hflex>
+
     <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
     <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
-  </div>
+  </b-vflex>
 </template>
 
 <style lang="scss">
   @import 'styles.scss';
-  .b-projectshell { }
+  .b-projectshell {
+    border: 5px solid #322;
+    --b-resize-handle-thickness: #{$b-resize-handle-thickness};
+    --b-transition-fast-slide: #{$b-transition-fast-slide};
+  }
   .b-projectshell-part-area {
     background-color: $b-button-border;
-    height: 350px; padding: $b-focus-outline-width; }
+    padding: $b-focus-outline-width; }
+  .b-projectshell-sidebar {
+    padding: 3px;
+  }
+  .b-projectshell-resizer {
+    width: var(--b-resize-handle-thickness);
+    background: $b-resize-handle-bgcolor;
+    border-left: $b-resize-handle-border;
+    border-right: $b-resize-handle-border;
+    cursor: col-resize;
+  }
+  html.b-projectshell-during-drag .b-root {
+    .b-projectshell-resizer { background: $b-resize-handle-hvcolor; }
+    * { cursor: col-resize !important; user-select: none !important; }
+  }
 </style>
 
 <script>
@@ -65,6 +95,42 @@ module.exports = {
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
+    sidebar_mouse (e) {
+      const sidebar = this.$refs.sidebarcontainer.$el;
+      console.assert (sidebar);
+      const html_classes = document.documentElement.classList;
+      if (e.type == 'mousedown' && !this.listening)
+	{
+	  this.listening = this.sidebar_mouse.bind (this);
+	  document.addEventListener ('mousemove', this.listening);
+	  document.addEventListener ('mouseup', this.listening);
+	  this.startx = e.clientX; //  - e.offsetX;
+	  this.startwidth = sidebar.getBoundingClientRect().width;
+	  html_classes.add ('b-projectshell-during-drag');
+	}
+      if (this.listening && e.type == 'mouseup')
+	{
+	  document.removeEventListener ('mousemove', this.listening);
+	  document.removeEventListener ('mouseup', this.listening);
+	  this.listening = undefined;
+	  html_classes.remove ('b-projectshell-during-drag');
+	}
+      let newwidth = this.startwidth - (e.clientX - this.startx);
+      const pwidth = sidebar.parentElement.getBoundingClientRect().width;
+      const maxwidth = pwidth * 0.6 |0, minwidth = 120;
+      if (newwidth < minwidth / 2)
+	{
+	  const cs = getComputedStyle (sidebar);
+	  newwidth = parseInt (cs.getPropertyValue ('--b-resize-handle-thickness'), 10);
+	}
+      else
+	newwidth = Util.clamp (newwidth, minwidth, maxwidth);
+      sidebar.style.transition = newwidth > minwidth ? "" : "width var(--b-transition-fast-slide)";
+      const stylewidth = (newwidth / pwidth) * 100 + '%';
+      if (stylewidth != sidebar.style.width)
+	sidebar.style.width = stylewidth;
+      e.preventDefault();
+    },
     open_part_edit (part) {
       assert (part == undefined || part instanceof Bse.Part);
       this.piano_roll_part = part;
