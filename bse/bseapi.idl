@@ -1282,6 +1282,42 @@ sequence CategorySeq {
   Category cats;
 };
 
+enum DeviceOrigin {
+  NONE                  = 0,
+  STANDARD_LIBRARY      = 1,
+  PACKAGE_LIBRARY       = 2,
+  SYSTEM_LIBRARY        = 3,
+  USER_LIBRARY          = 4,
+  USER_DOWNLOADS        = 5,
+  FAVORITES             = 6,
+};
+
+enum DeviceEntryType {
+  NONE                  = 0,
+  DIRECTORY             = 1,
+  FILE                  = 2,
+  SOUNDFONT             = 3,
+  PRESET                = 4,
+};
+
+record DeviceEntry;
+sequence DeviceEntrySeq {
+  DeviceEntry entries;
+};
+record DeviceEntry {
+  DeviceEntryType type;
+  String          label;
+  String          identifier;
+  int64           size;
+  bool            favorite;
+  DeviceEntrySeq  entries;
+};
+
+interface DeviceCrawler {
+  DeviceEntry list_device_origin (DeviceOrigin origin);
+};
+
+
 /// Fragment description for interesting bits of shared memory.
 record ShmFragment {
   int64 shmoffset;
@@ -1336,6 +1372,7 @@ interface Server : Container {
   void           set_config    (Configuration configuration);   ///< Assign updated Bse::Configuration settings.
   Configuration  get_config    ();                              ///< Retrieve Bse::Configuration settings.
   bool           locked_config ();      ///< Returns whether `Configuration` is in use and locked against modifications.
+  DeviceCrawler  get_device_crawler();
 
   // properties
   group "Misc" {

@@ -139,6 +139,9 @@ class SNetImpl;
 class ProjectImpl;
 class ServerImpl;
 
+class DeviceCrawlerImpl;
+typedef std::shared_ptr<DeviceCrawlerImpl> DeviceCrawlerImplP;
+
 } // Bse
 
 #endif /* __BSE_DEFS_H__ */

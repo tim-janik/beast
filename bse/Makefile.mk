@@ -106,6 +106,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsewaverepo.hh		\
 	bse/cxxaux.hh			\
 	bse/datalist.hh			\
+	bse/devicecrawler.hh		\
 	bse/effectbase.hh		\
 	bse/entropy.hh			\
 	bse/formatter.hh		\
@@ -266,6 +267,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsewaveosc.cc		\
 	bse/bsewaverepo.cc		\
 	bse/datalist.cc			\
+	bse/devicecrawler.cc		\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\
@@ -384,7 +386,7 @@ $(call BUILD_SHARED_LIB_XDBG, \
 	$(lib/libbse.so), \
 	$(bse/libbse.objects), \
 	bse/ldscript.map | $>/lib/, \
-	$(BSEDEPS_LIBS))
+	$(BSEDEPS_LIBS) -lstdc++fs)
 $(call INSTALL_DATA_RULE,			\
 	bse/headers,				\
 	$(DESTDIR)$(bse/include.headerdir),	\

@@ -166,6 +166,6 @@
 .../t302-fail.idl:110:45: error: Exception: Enum value out of range: 9223372036854775808
 >  enum TooBig { VALUE = +9223372036854775808 }; // number too large
 >                                              ^
-.../t302-fail.idl:112:22: error: NameError: expected identifier, not keyword: type
->  record R { int32 type; }; // invalid field name
+.../t302-fail.idl:112:22: error: NameError: expected identifier, not keyword: goto
+>  record R { int32 goto; }; // invalid field name
 >                       ^

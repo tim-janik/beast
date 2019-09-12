@@ -69,18 +69,27 @@ const tree_data = {
   ]
 };
 
+async function create_data() {
+  const crawler = await Bse.server.get_device_crawler();
+  const result = await crawler.list_device_origin ('user-downloads');
+  return result;
+}
+
 module.exports = {
   name: 'b-treeselector',
-  data: function() { return { tree: tree_data, }; },
+  data: function() {
+    create_data().then (r => this.tree = r);
+    return { tree: tree_data, };
+  },
   methods: {
     dummy (method, e) {
     },
     focus_updown (event) {
       const UP = 38;
       const DOWN = 40;
-      console.log ("CODE:", event.keyCode);
       if (event.keyCode != UP && event.keyCode != DOWN)
 	return;
+      event.preventDefault();
       const nodes = Util.list_focusables (this.$el); // selector for focussable elements
       const array1 = [].slice.call (nodes);
       // filter elements with display:none parents

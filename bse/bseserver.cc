@@ -12,6 +12,7 @@
 #include "gsldatahandle-mad.hh"
 #include "gslvorbis-enc.hh"
 #include "bseladspa.hh"
+#include "devicecrawler.hh"
 #include "bse/internal.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -1539,6 +1540,12 @@ IpcHandler*
 ServerImpl::get_ipc_handler ()
 {
   return server_ipc_handler;
+}
+
+DeviceCrawlerIfaceP
+ServerImpl::get_device_crawler ()
+{
+  return DeviceCrawlerImpl::instance_p();
 }
 
 int

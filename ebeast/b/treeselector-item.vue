@@ -9,7 +9,7 @@
   @import 'styles.scss';
   .b-treeselector-item {
     user-select: none;
-    & > span:focus { outline: $b-focus-outline; }
+    & > span div:focus { outline: $b-focus-outline; }
   }
   .b-treeselector ul { // /* beware, adds styles via parent */
     list-style-type: none;
@@ -19,6 +19,7 @@
     .b-treeselector-leaf {
       cursor: pointer; user-select: none;
       margin-left: 0;
+      div { text-overflow: ellipsis; white-space: nowrap; overflow-x: hidden; }
     }
     .b-treeselector-caret {
       cursor: pointer; user-select: none;
@@ -47,15 +48,14 @@
       class="b-treeselector-item"
       :class="{ 'b-treeselector-active': is_active }" >
     <span class="b-treeselector-leaf"
-	  tabindex="0"
-	  @click="leaf_click1" @dblclick="leaf_click2"
-	  v-if="!(entries && entries.length)">{{ label }}</span>
+	  v-if="!(entries && entries.length)">
+      <div tabindex="0" @click="leaf_click1" @dblclick="leaf_click2" @keydown="leaf_keydown"
+      >{{ label }}</div></span>
     <span class="b-treeselector-caret"
-	  tabindex="0"
-	  @click="caret_click"
-	  @keydown="caret_keydown"
-	  v-if="entries && entries.length" >{{ label }}</span>
-    <ul class="b-treeselector-nested"
+	  v-if="entries && entries.length" @click="caret_click" >
+      <div tabindex="0" @click="caret_click" @keydown="caret_keydown"
+      >{{ label }}</div></span>
+    <ul class="b-treeselector-nested" ref="nested"
 	v-if="entries && entries.length" >
       <b-treeselector-item
 	  v-for="entry in entries"
@@ -73,13 +73,49 @@ module.exports = {
   props: [ 'label', 'entries' ],
   data: function() { return { is_active: false, }; },
   methods: {
+    caret_keydown: function (event) {
+      if (Util.match_key_event (event, 'right'))
+	{
+	  if (!this.is_active)
+	    this.is_active = true;
+	  else if (this.$refs.nested)
+	    {
+	      const nodes = Util.list_focusables (this.$refs.nested); // selector for focussable elements
+	      if (nodes && nodes.length)
+		nodes[0].focus();
+	    }
+	  event.preventDefault();
+	}
+      if (Util.match_key_event (event, 'left'))
+	{
+	  if (this.is_active)
+	    {
+	      this.is_active = false;
+	      event.preventDefault();
+	    }
+	  else
+	    this.leaf_keydown (event);
+	}
+    },
+    leaf_keydown (event) {
+      if (Util.match_key_event (event, 'left'))
+	{
+	  if (this.$el.parentElement && this.$el.parentElement.tagName == 'UL' &&
+	      this.$el.parentElement.parentElement && this.$el.parentElement.parentElement.tagName == 'LI' &&
+	      this.$el.parentElement.parentElement.parentElement &&
+	      this.$el.parentElement.parentElement.parentElement.tagName == 'UL')
+	    {
+	      const nodes = Util.list_focusables (this.$el.parentElement.parentElement); // parent LI
+	      if (nodes && nodes.length)
+		nodes[0].focus();
+	    }
+	  event.preventDefault();
+	}
+    },
     caret_click: function() {
       this.is_active = !this.is_active;
-    },
-    caret_keydown: function (event) {
-      if ((!this.is_active && Util.match_key_event (event, 'right')) ||
-	  (this.is_active && Util.match_key_event (event, 'left')))
-	this.is_active = !this.is_active;
+      event.preventDefault();
+      event.stopPropagation();
     },
     leaf_click1: function (event) {
       // trigger via focus/keyboard activation

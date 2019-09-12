@@ -200,6 +200,7 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 #include "bsepcmwriter.hh"
 #include "bseproject.hh"
 #include "bseserver.hh"
+#include "devicecrawler.hh"
 #include "bsesnet.hh"
 #include "bsesong.hh"
 #include "bsesong.hh"
