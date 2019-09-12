@@ -36,6 +36,7 @@ const vue_components = [
   require ('./playcontrols.vue'),
   require ('./preferencesdialog.vue'),
   require ('./projectshell.vue'),
+  require ('./positionview.vue'),
   require ('./track-list.vue'),
   require ('./track-view.vue'),
   require ('./treeselector.vue'),

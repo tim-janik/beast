@@ -1492,3 +1492,17 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   this.$watch (predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
   return odata;
 }
+
+/** Pad `string` with `fill` until its length is `len` */
+export function strpad (string, len, fill = ' ') {
+  if (typeof string !== 'string')
+    string = '' + string;
+  if (string.length < len)
+    {
+      const d = len - string.length;
+      while (fill.length < d)
+	fill = fill + fill;
+      string = fill.substr (0, d) + string;
+    }
+  return string;
+}

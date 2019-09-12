@@ -25,6 +25,8 @@
     border-radius: $b-theme-border-radius * 0.66;
     --part-thumb-font-color: #{$b-part-thumb-font-color}; --part-thumb-font: #{$b-part-thumb-font};
     --part-thumb-note-color: #{$b-part-thumb-note-color}; --part-thumb-colors: #{$b-part-thumb-colors};
+    background-color: #222;
+    box-shadow: inset 0px 0 1px #fff9, inset -1px 0 1px #000;
   }
 </style>
 
