@@ -5,11 +5,18 @@
 uname_S		::= $(shell uname -s 2>/dev/null || echo None)
 uname_M		::= $(shell uname -m 2>/dev/null || echo None)
 uname_R		::= $(shell uname -r 2>/dev/null || echo None)
-CXXKIND		 != case $$($(CXX) --version 2>&1) in *"Free Software Foundation"*) echo gcc;; *clang*) echo clang;; *) echo UNKNOWN;; esac
+CXXVERSION	 != $(CXX) --version 2>&1
+CXXKIND		 != case '$(CXXVERSION)' in *"Free Software Foundation"*) echo gcc;; *clang*) echo clang;; *) echo UNKNOWN;; esac
 HAVE_GCC	::= $(if $(findstring $(CXXKIND), gcc),1,)
 HAVE_CLANG	::= $(if $(findstring $(CXXKIND), clang),1,)
 ifeq ($(HAVE_GCC)$(HAVE_CLANG),)		# do we HAVE_ *any* recognized compiler?
 $(error Compiler '$(CXX)' not recognized, version identifier: $(CXXKIND))
+endif
+ifneq ($(and $(HAVE_GCC),$(filter 4.% 5.% 6.% 7.%, $(CXXVERSION))),)
+GCC_OLDVERSION	 != echo ' $(CXXVERSION)' | egrep -o ' [34567]\.[0-9]+\.[0-9]+\b'
+ifneq ($(GCC_OLDVERSION),)
+$(error Compiler 'CXX=$(CXX)' version $(firstword $(GCC_OLDVERSION)) is too old, gcc/g++ >= 8.3.0 is required)
+endif
 endif
 CCACHE		 ?= $(if $(CCACHE_DIR), ccache)
 
