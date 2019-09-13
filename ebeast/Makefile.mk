@@ -55,7 +55,8 @@ app/generated 		::= $(strip	\
 )
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.deps ::= $>/ebeast/npm.rules
-NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
+NODE_MODULES.dir  ::= $>/ebeast/node_modules
+NODE_MODULES.bin  ::= $(NODE_MODULES.dir)/.bin/
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
@@ -74,7 +75,18 @@ $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 	$Q $(CP) -a $>/app/node_modules $>/app/package.json $>/ebeast/
 	$Q cd $>/ebeast/ \
 	  && $(NPM_INSTALL)
+	$Q : $(eval export EBEAST_VUEIFY_DIFF) \
+	&& echo "$$EBEAST_VUEIFY_DIFF" > $>/ebeast_vueify.diff \
+	&& patch -p0 < $>/ebeast_vueify.diff \
+	&& rm $>/ebeast_vueify.diff
 	$Q echo >$@
+define EBEAST_VUEIFY_DIFF
+--- $(NODE_MODULES.dir)/vueify/lib/compiler.js
++++ $(NODE_MODULES.dir)/vueify/lib/compiler.js
+@@ -195,1 +195,1 @@ compiler.compile = function (content, filePath, cb) {
+-    var generatedOffset = (output ? output.split(splitRE).length : 0) + 1
++    var generatedOffset = (output ? output.split(splitRE).length : 0)
+endef
 
 # == linting ==
 ebeast/sed.uncommentjs ::= sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
