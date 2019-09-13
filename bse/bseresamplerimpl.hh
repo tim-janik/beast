@@ -365,10 +365,10 @@ class Downsampler2 : public Resampler2 {
 
     fir_process_4samples_sse (input_even, &sse_taps[0], ORDER, &output[0], &output[1], &output[2], &output[3]);
 
-    output[0] += 0.5 * input_odd[H * ODD_STEPPING];
-    output[1] += 0.5 * input_odd[(H + 1) * ODD_STEPPING];
-    output[2] += 0.5 * input_odd[(H + 2) * ODD_STEPPING];
-    output[3] += 0.5 * input_odd[(H + 3) * ODD_STEPPING];
+    output[0] += 0.5f * input_odd[H * ODD_STEPPING];
+    output[1] += 0.5f * input_odd[(H + 1) * ODD_STEPPING];
+    output[2] += 0.5f * input_odd[(H + 2) * ODD_STEPPING];
+    output[3] += 0.5f * input_odd[(H + 3) * ODD_STEPPING];
   }
   /* slow convolution */
   template<int ODD_STEPPING> float
@@ -377,7 +377,7 @@ class Downsampler2 : public Resampler2 {
   {
     const guint H = (ORDER / 2) - 1; /* half the filter length */
 
-    return fir_process_one_sample<float> (&input_even[0], &taps[0], ORDER) + 0.5 * input_odd[H * ODD_STEPPING];
+    return fir_process_one_sample<float> (&input_even[0], &taps[0], ORDER) + 0.5f * input_odd[H * ODD_STEPPING];
   }
   template<int ODD_STEPPING> void
   process_block_aligned (const float *input_even,
