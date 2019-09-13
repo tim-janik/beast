@@ -158,10 +158,15 @@ template<class T> using IsRemoteHandleDerived = ::std::integral_constant<bool, :
 /// IsImplicitBaseDerived<T> - Check if @a T derives from Aida::ImplicitBase.
 template<class T> using IsImplicitBaseDerived = ::std::integral_constant<bool, ::std::is_base_of<ImplicitBase, T>::value>;
 
-/// Has__accept__<T,Visitor> - Check if @a T provides a member template __accept__<>(Visitor).
-template<class, class, class = void> struct Has__accept__ : std::false_type {};
-template<class T, class V>
-struct Has__accept__<T, V, void_t< decltype (std::declval<T>().template __accept__<V> (*(V*) NULL)) >> : std::true_type {};
+/// Helper structure to implement Has___visit__
+struct HasHelper : std::true_type {
+  static constexpr auto visitor_lambda = [] (auto, const char*) {};
+};
+/// Has___visit__<T> - Check if @a T provides a @a __visit__(Visitor) method template.
+template<class, class = void> struct
+Has___visit__ : std::false_type {};
+template<class T> struct
+Has___visit__<T, void_t< decltype (std::declval<T&>().__visit__ (HasHelper::visitor_lambda)) > > : std::true_type {};
 
 /// Has__accept_accessor__<T,Visitor> - Check if @a T provides a member template __accept_accessor__<>(Visitor).
 template<class, class, class = void> struct Has__accept_accessor__ : std::false_type {};

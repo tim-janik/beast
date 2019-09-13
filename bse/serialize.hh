@@ -87,16 +87,8 @@ template<class, class = void> struct
 Has_serialize_content : std::false_type {};
 template<class T> struct
 Has_serialize_content<T, void_t< decltype (serialize_content (std::declval<T&>(), std::declval<SerializeContext&>())) > > : std::true_type {};
-/// Helper structure to implement Has___visit__
-struct HasHelper : std::true_type {
-  static constexpr auto visitor_lambda = [] (auto, const char*) {};
-};
 /// Has___visit__<T> - Check if @a T provides a @a __visit__(Visitor) method template.
-template<class, class = void> struct
-Has___visit__ : std::false_type {};
-template<class T> struct
-Has___visit__<T, void_t< decltype (std::declval<T&>().__visit__ (HasHelper::visitor_lambda)) > > : std::true_type {};
-
+using Aida::Has___visit__;
 /// Has__iface__<T> - Check if @a T provides a @a __iface__() method.
 template<class, class = void> struct
 Has__iface__ : std::false_type {};

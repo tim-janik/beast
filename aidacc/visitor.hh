@@ -42,24 +42,24 @@ public:
   { return derived()->visit_enum (a, n); }
 
   template<class A,
-           REQUIRES< (!Has__accept__<A, DerivedVisitor>::value &&
+           REQUIRES< (!Has___visit__<A>::value &&
                       DerivesString<A>::value) > = true> void
   operator() (A &a, Name n)
   { return derived()->visit_string (a, n); }
 
   template<class A,
-           REQUIRES< (!Has__accept__<A, DerivedVisitor>::value &&
+           REQUIRES< (!Has___visit__<A>::value &&
                       DerivesVector<A>::value) > = true> void
   operator() (A &a, Name n)
   { return derived()->visit_vector (a, n); }
 
   template<class A,
-           REQUIRES< Has__accept__<A, DerivedVisitor>::value > = true> void
+           REQUIRES< Has___visit__<A>::value > = true> void
   operator() (A &a, Name n)
   { return derived()->visit_visitable (a, n); }
 
   template<class A,
-           REQUIRES< (!Has__accept__<A, DerivedVisitor>::value &&
+           REQUIRES< (!Has___visit__<A>::value &&
                       !DerivesString<A>::value &&
                       !DerivesVector<A>::value &&
                       std::is_class<A>::value) > = true> void
@@ -141,7 +141,7 @@ public:
   }
 
   template<class Klass, class Value, // Value can be Record
-           REQUIRES< Has__accept__<Value, DerivedVisitor>::value > = true> void
+           REQUIRES< Has___visit__<Value>::value > = true> void
   operator() (Klass &instance, Name n, void (Klass::*setter) (const Value&), Value (Klass::*getter) () const)
   {
     Value v = (instance .* getter) (), tmp = v;
@@ -302,7 +302,7 @@ any_from_visitable (Visitable &visitable)
 {
   Any::AnyRec fields;
   ToAnyFieldsVisitor visitor (fields);
-  static_assert (Has__accept__<Visitable, ToAnyFieldsVisitor>::value, "Visitable provies __accept__");
+  static_assert (Has___visit__<Visitable>::value, "Visitable provies __accept__");
   visitable.__accept__ (visitor);
   Any any;
   any.set (fields);
@@ -314,7 +314,7 @@ any_to_visitable (const Any &any, Visitable &visitable)
 {
   const Any::AnyRec &fields = any.get<const Any::AnyRec&>();
   FromAnyFieldsVisitor visitor (fields);
-  static_assert (Has__accept__<Visitable, FromAnyFieldsVisitor>::value, "Visitable provies __accept__");
+  static_assert (Has___visit__<Visitable>::value, "Visitable provies __accept__");
   visitable.__accept__ (visitor);
 }
 
