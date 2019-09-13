@@ -393,7 +393,7 @@ class Generator:
     s = ''
     # __typedata__
     s += 'const Aida::StringVector&\n%s::__typedata__()\n{\n' % self.C (tp)
-    s += '  static const Aida::StringVector sv = Aida::Introspection::find_type ("%s");\n' % type_identifier
+    s += '  static const Aida::StringVector &sv = Aida::Introspection::find_type ("%s");\n' % type_identifier
     s += '  return sv;\n'
     s += '}\n'
     return s
