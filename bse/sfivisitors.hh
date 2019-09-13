@@ -168,7 +168,7 @@ public:
   {
     SfiRec *field_rec = sfi_rec_new();
     ToRecVisitor rec_visitor (field_rec);
-    a.__accept__ (rec_visitor);
+    a.__visit__ (rec_visitor);
     sfi_rec_set_rec (rec_, name, field_rec);
     sfi_rec_unref (field_rec);
   }
@@ -223,7 +223,7 @@ public:
     if (field_rec)
       {
         FromRecVisitor rec_visitor (field_rec);
-        a.__accept__ (rec_visitor);
+        a.__visit__ (rec_visitor);
       }
   }
   template<class A> void
@@ -288,7 +288,7 @@ sfi_rec_new_from_visitable (Visitable &visitable)
 {
   SfiRec *rec = sfi_rec_new();
   ToRecVisitor rec_visitor (rec);
-  visitable.__accept__ (rec_visitor);
+  visitable.__visit__ (rec_visitor);
   return rec;
 }
 
@@ -296,7 +296,7 @@ template<class Visitable> void
 sfi_rec_to_visitable (SfiRec *rec, Visitable &visitable)
 {
   FromRecVisitor rec_visitor (rec);
-  visitable.__accept__ (rec_visitor);
+  visitable.__visit__ (rec_visitor);
 }
 
 template<class Visitable> SfiRecFields
@@ -307,7 +307,7 @@ sfi_pspecs_rec_fields_from_visitable (Visitable &visitable)
     return rec_fields;
   std::vector<GParamSpec*> pspecs;
   PspecVisitor pspec_visitor (pspecs, visitable.__typedata__());
-  visitable.__accept__ (pspec_visitor);
+  visitable.__visit__ (pspec_visitor);
   rec_fields.n_fields = pspecs.size();
   rec_fields.fields = g_new0 (GParamSpec*, rec_fields.n_fields);
   for (size_t i = 0; i < rec_fields.n_fields; i++)
