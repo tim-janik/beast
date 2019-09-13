@@ -1616,7 +1616,7 @@ EventFd::open ()
 {
   if (opened())
     return 0;
-  long nflags;
+  BSE_UNUSED long nflags;
 #ifdef HAVE_SYS_EVENTFD_H
   do
     fds[0] = eventfd (0 /*initval*/, EFD_CLOEXEC | EFD_NONBLOCK);

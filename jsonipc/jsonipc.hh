@@ -64,7 +64,7 @@ constexpr_equals (const char *a, const char *b, size_t n)
  * This function uses abi::__cxa_demangle() from <cxxabi.h> to demangle C++ type names,
  * which works for g++, libstdc++, clang++, libc++.
  */
-std::string
+static inline std::string
 string_demangle_cxx (const char *mangled_identifier)
 {
   int status = 0;
@@ -822,8 +822,9 @@ private:
 
 // == Helper for known derived classes by RTTI typename ==
 using WrapObjectFromBase = size_t (const std::string&, void*, bool*);
-WrapObjectFromBase*
-can_wrap_object_from_base (const std::string &rttiname, WrapObjectFromBase *handler = NULL)
+
+static inline WrapObjectFromBase*
+can_wrap_object_from_base (const std::string &rttiname, WrapObjectFromBase *handler = nullptr)
 {
   static std::map<std::string, WrapObjectFromBase*> downcastwrappers;
   if (handler)

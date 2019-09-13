@@ -1,13 +1,8 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "devicecrawler.hh"
 
-#if __has_include(<filesystem>)         // clang++ 6.0.0
 #include <filesystem>
 namespace Fs = std::filesystem;
-#else                                   // g++ 7.4.0
-#include <experimental/filesystem>
-namespace Fs = std::experimental::filesystem;
-#endif
 
 namespace Bse {
 

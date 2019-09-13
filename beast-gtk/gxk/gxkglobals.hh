@@ -2,7 +2,11 @@
 #ifndef __GXK_GLOBALS_H__
 #define __GXK_GLOBALS_H__
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses"
 #include <gtk/gtk.h>
+#pragma GCC diagnostic pop
+
 #include <bse/bcore.hh>
 
 /* --- i18n and gettext helpers --- */

@@ -261,27 +261,6 @@ public:
   bool                          operator!=   (const XFooRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<XFooRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (single_bool, "single_bool");
-    _visitor_ (single_num, "single_num");
-    _visitor_ (num64, "num64");
-    _visitor_ (single_float, "single_float");
-    _visitor_ (single_string, "single_string");
-    _visitor_ (sibling1, "sibling1");
-    _visitor_ (sibling2, "sibling2");
-    _visitor_ (multi1, "multi1");
-    _visitor_ (multi2, "multi2");
-    _visitor_ (multi3, "multi3");
-    _visitor_ (multi4, "multi4");
-    _visitor_ (enum_field, "enum_field");
-    _visitor_ (iface1, "iface1");
-    _visitor_ (iface2, "iface2");
-    _visitor_ (iface3, "iface3");
-    _visitor_ (any1, "any1");
-    _visitor_ (any2, "any2");
-    _visitor_ (any3, "any3");
-  }
 };
 
 class XFooSequence : public std::vector<bool>
@@ -428,11 +407,6 @@ public:
   bool                          operator!=   (const NestedTypesRec &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NestedTypesRec*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (rec, "rec");
-    _visitor_ (seq, "seq");
-  }
 };
 
 class NestedTypesSeq : public std::vector<NestedTypesRec>
@@ -466,13 +440,6 @@ public:
   bool                          operator!=   (const NewRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NewRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (i, "i");
-    _visitor_ (enum1, "enum1");
-    _visitor_ (xfs, "xfs");
-    _visitor_ (ntr, "ntr");
-  }
 };
 
 namespace Inner {
@@ -493,12 +460,6 @@ public:
   bool                          operator!=   (const InnerRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<InnerRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (x, "x");
-    _visitor_ (y, "y");
-    _visitor_ (rec, "rec");
-  }
 };
 } // Inner
 
@@ -516,10 +477,6 @@ public:
   bool                          operator!=   (const Refer2Inner &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<Refer2Inner*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (r, "r");
-  }
 };
 } // MandatoryNamespace
 
@@ -542,13 +499,6 @@ public:
   bool                          operator!=   (const SomeRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<SomeRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (r1, "r1");
-    _visitor_ (r2, "r2");
-    _visitor_ (r3, "r3");
-    _visitor_ (r4, "r4");
-  }
 };
 } // OtherNamespace
 
@@ -572,14 +522,6 @@ public:
   bool                          operator!=   (const RecordWithAuxdata &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordWithAuxdata*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (aux_bool, "aux_bool");
-    _visitor_ (aux32, "aux32");
-    _visitor_ (aux64, "aux64");
-    _visitor_ (auxf64, "auxf64");
-    _visitor_ (aux_str, "aux_str");
-  }
 };
 } // Auxdata
 
@@ -716,11 +658,6 @@ public:
   bool                          operator!=   (const QuickRecord &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<QuickRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (int1, "int1");
-    _visitor_ (int2, "int2");
-  }
 };
 
 class QuickSequence : public std::vector<double>
@@ -1041,14 +978,6 @@ public:
   bool                          operator!=   (const RecordForGroups &other) const { return !operator== (other); }
   operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordForGroups*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
   template<class Visitor> void  __visit__    (Visitor &&_visitor_);
-  template<class Visitor> void  __accept__  (Visitor &_visitor_)
-  {
-    _visitor_ (i, "i");
-    _visitor_ (ratio, "ratio");
-    _visitor_ (ordinary_bool, "ordinary_bool");
-    _visitor_ (threshold1, "threshold1");
-    _visitor_ (threshold2, "threshold2");
-  }
 };
 
 class SoundModuleHandle : public virtual Aida::RemoteHandle
