@@ -1463,7 +1463,7 @@ ServerImpl::broadcast_shm_fragments (const ShmFragmentSeq &plan, int interval_ms
   broad.timerid = exec_timeout (broadcast_timer_func, std::max (interval_ms, 16));
 }
 
-static constexpr size_t SHARED_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
+static constexpr ssize_t SHARED_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
 static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 
 static const MemoryArea&
@@ -1517,7 +1517,7 @@ ServerImpl::allocate_shared_block (int64 length)
 void
 ServerImpl::release_shared_block (const SharedBlock &sb)
 {
-  assert_return (sb.mem_length == uint32 (sb.mem_length));
+  assert_return (sb.mem_length >= 0);
   const MemoryArea &ma = server_shared_memory_area();
   AlignedBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
   release_aligned_block (ab);
