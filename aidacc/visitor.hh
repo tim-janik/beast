@@ -302,8 +302,8 @@ any_from_visitable (Visitable &visitable)
 {
   Any::AnyRec fields;
   ToAnyFieldsVisitor visitor (fields);
-  static_assert (Has___visit__<Visitable>::value, "Visitable provies __accept__");
-  visitable.__accept__ (visitor);
+  static_assert (Has___visit__<Visitable>::value, "Visitable provies __visit__");
+  visitable.__visit__ (visitor);
   Any any;
   any.set (fields);
   return any;
@@ -314,8 +314,8 @@ any_to_visitable (const Any &any, Visitable &visitable)
 {
   const Any::AnyRec &fields = any.get<const Any::AnyRec&>();
   FromAnyFieldsVisitor visitor (fields);
-  static_assert (Has___visit__<Visitable>::value, "Visitable provies __accept__");
-  visitable.__accept__ (visitor);
+  static_assert (Has___visit__<Visitable>::value, "Visitable provies __visit__");
+  visitable.__visit__ (visitor);
 }
 
 template<class Vector> Any
