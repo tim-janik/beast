@@ -89,6 +89,22 @@ rtti_typename (T &o)
   return string_demangle_cxx (typeid (o).name());
 }
 
+/// Has___typename__<T> - Check if @a T provides a @a __typename__() method.
+template<class, class = void> struct Has___typename__ : std::false_type {};
+template<typename T>          struct Has___typename__<T, std::void_t< decltype (std::declval<const T&>().__typename__()) > > : std::true_type {};
+
+/// Provide the __typename__() of @a object, or its rtti_typename().
+template<typename T, REQUIRES< Has___typename__<T>::value > = true> static std::string
+get___typename__ (const T &o)
+{
+  return o.__typename__();
+}
+template<typename T, REQUIRES< !Has___typename__<T>::value > = true> static std::string
+get___typename__ (const T &o)
+{
+  return rtti_typename (o);
+}
+
 // == Scope ==
 class Scope {
   static std::vector<Scope*>& stack() { static thread_local std::vector<Scope*> stack_; return stack_; }
@@ -741,6 +757,7 @@ struct Convert<T, REQUIRESv< std::is_enum<T>::value > > {
 };
 
 // == Serializable ==
+/// Jsonipc wrapper type for objects that support field-wise serialization to/from JSON.
 template<typename T>
 struct Serializable : TypeInfo {
   virtual ClassPrinter* create_printer () override { return new ClassPrinter (ClassPrinter::SERIALIZABLE); }
@@ -802,6 +819,7 @@ private:
     // implement serialize_to_json by calling all getters
     SerializeToJson stj = [] (const T &object, JsonAllocator &allocator) -> JsonValue {
       JsonValue jobject (rapidjson::kObjectType);               // serialized result
+      jobject.AddMember ("__typename__", JsonValue (get___typename__ (object).c_str(), allocator), allocator);
       AccessorMap &amap = accessormap();
       for (auto &it : amap)
         {
