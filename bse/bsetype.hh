@@ -60,7 +60,7 @@ void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
  * .c files. they identify builtin type functions for magic post
  * processing and help resolving runtime type id retrival.
  */
-#define	BSE_TYPE_ID(BseTypeName)	(bse_type_builtin_id_##BseTypeName)
+#define	BSE_TYPE_ID(BseTypeName)	bse_type_builtin_id_##BseTypeName
 #ifdef BSE_COMPILATION
 #  define BSE_BUILTIN_PROTO(BseTypeName) GType bse_type_builtin_register_##BseTypeName (void)
 #  define BSE_BUILTIN_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); BSE_BUILTIN_PROTO (BseTypeName)
