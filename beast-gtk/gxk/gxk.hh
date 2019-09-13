@@ -2,8 +2,7 @@
 #ifndef __GXK_H__
 #define __GXK_H__
 
-#include <gtk/gtk.h>
-#include <bse/bcore.hh>
+#include <gxk/gxkglobals.hh>
 
 #include <gxk/glewidgets.h>
 #include <gxk/gxkaction.hh>
@@ -14,7 +13,6 @@
 #include <gxk/gxkdialog.hh>
 #include <gxk/gxkradget.hh>
 #include <gxk/gxkradgetfactory.hh>
-#include <gxk/gxkglobals.hh>
 #include <gxk/gxkled.hh>
 #include <gxk/gxklistwrapper.hh>
 #include <gxk/gxkmenubutton.hh>
