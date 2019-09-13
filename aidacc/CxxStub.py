@@ -282,15 +282,6 @@ class Generator:
       s += '  return s;\n'
       s += '}\n'
     return s
-  def generate_recseq_accept (self, type_info):
-    s = ''
-    s += '  template<class Visitor> void  __accept__  (Visitor &_visitor_)\n'
-    s += '  {\n'
-    if type_info.storage == Decls.RECORD:
-      for fname, ftype in type_info.fields:
-        s += '    _visitor_ (%s, "%s");\n' % (fname, fname)
-    s += '  }\n'
-    return s
   def generate_recseq_decl (self, type_info):
     s = '\n'
     classC = self.C (type_info)
@@ -336,7 +327,6 @@ class Generator:
       s += '  ' + self.F ('bool') + 'operator!=   (const %s &other) const { return !operator== (other); }\n' % classC
       s += '  ' + self.F ('operator') + 'Aida::AnyRec () const { Aida::AnyRec r; const_cast<%s*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }\n' % classC
       s += '  ' + self.F ('template<class Visitor> void') + '__visit__    (Visitor &&_visitor_);\n'
-      s += self.generate_recseq_accept (type_info)
     if self.gen_mode == G4STUB:
       s += self.insertion_text ('handle_scope:' + type_info.name)
     if self.gen_mode == G4SERVANT:
