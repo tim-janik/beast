@@ -1306,7 +1306,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_X
 const Aida::StringVector&
 XFooRecord::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooRecord");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooRecord");
   return sv;
 }
 bool
@@ -1341,7 +1341,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_X
 const Aida::StringVector&
 XFooSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_IntSequence_ = {
@@ -1353,7 +1353,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_I
 const Aida::StringVector&
 IntSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.IntSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.IntSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_FloatSequence_ = {
@@ -1365,7 +1365,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_F
 const Aida::StringVector&
 FloatSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.FloatSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.FloatSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_StringSequence_ = {
@@ -1377,7 +1377,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_S
 const Aida::StringVector&
 StringSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.StringSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.StringSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnumSequence_ = {
@@ -1389,7 +1389,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_E
 const Aida::StringVector&
 ExtensiveEnumSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.ExtensiveEnumSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.ExtensiveEnumSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_RecordSequence_ = {
@@ -1401,7 +1401,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_R
 const Aida::StringVector&
 RecordSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.RecordSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.RecordSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_SequenceSequence_ = {
@@ -1413,7 +1413,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_S
 const Aida::StringVector&
 SequenceSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.SequenceSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.SequenceSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_InterfaceSequence_ = {
@@ -1425,7 +1425,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_I
 const Aida::StringVector&
 InterfaceSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.InterfaceSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.InterfaceSequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_AnySequence_ = {
@@ -1437,7 +1437,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_A
 const Aida::StringVector&
 AnySequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.AnySequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.AnySequence");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesRec_ = {
@@ -1450,7 +1450,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_N
 const Aida::StringVector&
 NestedTypesRec::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesRec");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesRec");
   return sv;
 }
 bool
@@ -1469,7 +1469,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_N
 const Aida::StringVector&
 NestedTypesSeq::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesSeq");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesSeq");
   return sv;
 }
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NewRecord_ = {
@@ -1484,7 +1484,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_N
 const Aida::StringVector&
 NewRecord::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.NewRecord");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.NewRecord");
   return sv;
 }
 bool
@@ -1509,7 +1509,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_I
 const Aida::StringVector&
 InnerRecord::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.Inner.InnerRecord");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.Inner.InnerRecord");
   return sv;
 }
 bool
@@ -1530,7 +1530,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_R
 const Aida::StringVector&
 Refer2Inner::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("MandatoryNamespace.Refer2Inner");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.Refer2Inner");
   return sv;
 }
 bool
@@ -1554,7 +1554,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__OtherNamespace_SomeR
 const Aida::StringVector&
 SomeRecord::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("OtherNamespace.SomeRecord");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("OtherNamespace.SomeRecord");
   return sv;
 }
 bool
@@ -1602,7 +1602,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__Auxdata_RecordWithAu
 const Aida::StringVector&
 RecordWithAuxdata::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("Auxdata.RecordWithAuxdata");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("Auxdata.RecordWithAuxdata");
   return sv;
 }
 bool
@@ -1756,7 +1756,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_Quick
 const Aida::StringVector&
 QuickRecord::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickRecord");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("InterfaceTests.QuickRecord");
   return sv;
 }
 bool
@@ -1775,7 +1775,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_Quick
 const Aida::StringVector&
 QuickSequence::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("InterfaceTests.QuickSequence");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("InterfaceTests.QuickSequence");
   return sv;
 }
 QuickIfaceHandle::QuickIfaceHandle ()
@@ -2171,7 +2171,7 @@ static const Aida::IntrospectionRegistry __aida__aux__data__BseTest_RecordForGro
 const Aida::StringVector&
 RecordForGroups::__typedata__()
 {
-  static const Aida::StringVector sv = Aida::Introspection::find_type ("BseTest.RecordForGroups");
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("BseTest.RecordForGroups");
   return sv;
 }
 bool

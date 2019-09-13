@@ -28,6 +28,7 @@ public:
   virtual Any           get_prop    (const std::string &name) override;
   virtual StringSeq     find_prop   (const std::string &name) override;
   virtual StringSeq     list_props  () override;
+  virtual StringSeq     find_typedata (const std::string &type_name) override;
   virtual BseObject*                    as_bse_object            () override { return gobject_; }
   virtual Aida::ExecutionContext&       __execution_context_mt__ () const override;
   virtual Aida::IfaceEventConnection    __attach__               (const String &eventselector, EventHandlerF handler) override;

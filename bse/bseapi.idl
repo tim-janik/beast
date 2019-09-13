@@ -656,6 +656,7 @@ interface Object {
   Any           get_prop        (String name);                  ///< Get value of dynamic property `name`.
   StringSeq     find_prop       (String name);                  ///< Query `key=value` meta info for dynamic property `name`.
   StringSeq     list_props      ();                             ///< List names of all dynamic properties.
+  StringSeq     find_typedata   (String type_name);             ///< Query `key=value` meta info for type `type_name`.
 };
 
 /// A list of Item or derived objects.

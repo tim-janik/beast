@@ -491,7 +491,7 @@ find_normalized_type (const std::string &abstypename, std::string *kind)
   if (it != aux_data_map().end())
     {
       IntrospectionEntry &info = it->second;
-      if (!info.entries.size())
+      if (!info.entries.size() && info.auxentries && info.length)
         {
           static std::mutex mutex;
           std::lock_guard<std::mutex> locker (mutex);

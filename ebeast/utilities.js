@@ -56,7 +56,7 @@ export function array_remove (array, item) {
   return array;
 }
 
-/// Generate map by splittoing the key=value pairs in `kvarray`
+/// Generate map by splitting the key=value pairs in `kvarray`
 export function map_from_kvpairs (kvarray) {
   let o = {};
   for (let kv of kvarray) {
@@ -609,6 +609,17 @@ export function compute_style_properties (el, obj) {
   return props;
 }
 
+/** Check if `element` or any parentElement has `display:none` */
+export function inside_display_none (element) {
+  while (element)
+    {
+      if (element.style.display == "none")
+	return true;
+      element = element.parentElement;
+    }
+  return false;
+}
+
 /** List all elements that can take focus and are descendants of `element` or the document. */
 export function list_focusables (element)
 {
@@ -633,11 +644,48 @@ export function list_focusables (element)
   const array1 = [].slice.call (nodes);
   // filter out non-taabable elements
   const array = array1.filter (element => {
-    if (element.offsetWidth <= 0 || element.offsetHeight <= 0) // with display:none parents
+    if (element.offsetWidth <= 0 &&     // browsers can focus 0x0 sized elements
+	element.offsetHeight <= 0 &&
+	inside_display_none (element))  // but not within display:none
       return false;
     return true;
   });
   return array;
+}
+
+/** Check if `element` supports step up/down operations */
+export function is_updown_input (element) {
+  const steppable_elements = [
+    'date',
+    'datetime-local',
+    'month',
+    'number',
+    'range',
+    'time',
+    'week',
+  ];
+  if (element.stepUp && element.stepDown && element.tagName == "INPUT" &&
+      in_array (element.type, steppable_elements))
+    return true;
+  return false;
+}
+
+/** Check if `element` behaves like a button */
+export function is_button_input (element) {
+  const button_like_elements = [
+    'button',
+    'checkbox',
+    'color',
+    'image',
+    'radio',
+    'range',
+    'reset',
+    'submit',
+  ];
+  if (element.tagName == 'BUTTON' || (element.tagName == "INPUT" &&
+				      in_array (element.type, button_like_elements)))
+    return true;
+  return false;
 }
 
 /** Install a FocusGuard to allow only a restricted set of elements to get focus. */
@@ -708,7 +756,9 @@ class FocusGuard {
     const home = event.keyCode == KeyCode.HOME;
     const end = event.keyCode == KeyCode.END;
     if (this.focus_root_list.length == 0 || !this.updown_focus ||
-	!(up || down || home || end))
+	!(up || down || home || end) ||
+	(document.activeElement.tagName == "INPUT" &&
+	 !is_button_input (document.activeElement)))
       return false; // not interfering
     const root = this.focus_root_list[0][0];
     const focuslist = list_focusables (root);
