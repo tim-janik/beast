@@ -609,6 +609,17 @@ export function compute_style_properties (el, obj) {
   return props;
 }
 
+/** Check if `element` or any parentElement has `display:none` */
+export function inside_display_none (element) {
+  while (element)
+    {
+      if (element.style.display == "none")
+	return true;
+      element = element.parentElement;
+    }
+  return false;
+}
+
 /** List all elements that can take focus and are descendants of `element` or the document. */
 export function list_focusables (element)
 {
@@ -633,7 +644,9 @@ export function list_focusables (element)
   const array1 = [].slice.call (nodes);
   // filter out non-taabable elements
   const array = array1.filter (element => {
-    if (element.offsetWidth <= 0 || element.offsetHeight <= 0) // with display:none parents
+    if (element.offsetWidth <= 0 &&     // browsers can focus 0x0 sized elements
+	element.offsetHeight <= 0 &&
+	inside_display_none (element))  // but not within display:none
       return false;
     return true;
   });
