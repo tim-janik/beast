@@ -54,96 +54,111 @@
 	<td style="text-align: right" :title="field[3].blurb">
 	  <component :is="field[1]" v-bind="field[3]"
 		     :value="field[4][field[0]]" @input="field[5]"></component></td>
-	<td><button class="b-fed-object-clear" onfocus="this.blur()" @click="clear_field (field[0])"> ⊗  </button></td>
+	<td><button class="b-fed-object-clear" tabindex="-1" @click="clear_field (field[0])"> ⊗  </button></td>
       </tr>
     </template>
   </table>
 </template>
 
 <script>
+
+async function editable_object () {
+  // provide an editable and reactive clone of this.value
+  let o = {}, td;
+  for (const p in this.value)
+    if (p[0] != '_' && typeof (this.value[p]) != "function")
+      o[p] = this.value[p];
+  // determine typedata
+  if (Array.isArray (this.value.__typedata__))
+    td = Util.map_from_kvpairs (this.value.__typedata__);
+  else if (typeof (this.value.__typedata__) == "function")
+    td = Util.map_from_kvpairs (this.value.__typedata__());
+  else if (typeof (this.value.__typedata__) == "object")
+    {
+      td = {};
+      Util.assign_forin (td, this.value.__typedata__);
+    }
+  else
+    {
+      const fields = [];
+      for (let p in o)
+	fields.push (p);
+      td = { fields: fields.join (';'), };
+    }
+  o.__typedata__ = td;
+  return o;
+}
+
+function component_data () {
+  const data = {
+    object: { getter: c => editable_object.call (this, c), },
+  };
+  return this.observable_from_getters (data, () => this.value);
+}
+
 module.exports = {
   name: 'b-fed-object',
+  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  data() { return component_data.call (this); },
   props: {
     readonly:	{ default: false, },
     debounce:	{ default: 0, },
     value:	{ required: true, },
-    default:	{ },
-    typedata:	{ },
-  },
-  data_tmpl: {
-    object_:	undefined,
-    typedata_:	undefined,
+    default:	{},
   },
   methods: {
-    editable_object() {
-      if (this.object_ == undefined) {
-	// edit a reactive clone of this.value
-	let o = {}, td;
-	for (let p in this.value)
-	  if (p[0] != '_' && typeof (o[p]) != "function")
-	    o[p] = this.value[p];
-	this.object_ = o; // Vue makes o reactive
-	// determine typedata
-	if (typeof (this.value.__typedata__) == "object") {
-	  td = {};
-	  Util.assign_forin (td, this.value.__typedata__);
-	}
-	else if (typeof (this.value.__typedata__) == "function")
-	  td = Util.map_from_kvpairs (this.value.__typedata__());
-	else {
-	  td = { fields: [] };
-	  for (let p in o)
-	    td.fields.push (p);
-	  td.fields = td.fields.join (';');
-	}
-	this.typedata_ = td;
-      }
-      return [ this.object_, this.typedata_ ];
-    },
     list_fields() {
-      const [o, td] = this.editable_object();
+      if (!this.object)
+	return [];
+      const o = this.object, td = o.__typedata__;
       const field_typedata = unfold_properties (td); // { foo: { label: 'Foo' }, bar: { step: '5' }, etc }
-      const fields = td.fields.split (';');
+      const fields = td.fields ? td.fields.split (';') : [];
       const groupmap = {};
       const grouplist = [];
-      for (let f of fields) {
-	const field_data = field_typedata[f];
-	const attrs = {};
-	for (let p of ['min', 'max', 'step'])
-	  if (field_data[p] != undefined)
-	    attrs[p] = field_data[p];
-	if (this.readonly || (':' + field_data.hints + ':').indexOf ('ro') >= 0)
-	  attrs.readonly = true;
-	const handler = (v) => this.apply_field (f, v);
-	let ct = '';			// component type
-	const ft = typeof (o[f]); // FIXME: use td
-	if (ft == "number") {		ct = 'b-fed-number';
-	  if (o[f] != 0|o[f]) // not int // FIXME: use td
-	    attrs.allowfloat = true;
-	  // min max
-	}
-	else if (ft == "boolean")	ct = 'b-fed-switch';
-	else if (ft == "string")	ct = 'b-fed-text';
-	let label = td[f + '.label'] || f;
-	if (ct)
-	  {
-	    const group = field_data.group || "Settings";
-	    let groupfields;
-	    if (groupmap[group] == undefined) {
-	      groupfields = [];
-	      const newgroup = [ group, groupfields ];
-	      groupmap[group] = newgroup;
-	      grouplist.push (newgroup);
-	    } else {
-	      groupfields = groupmap[group][1];
+      for (let f of fields)
+	{
+	  const field_data = field_typedata[f];
+	  const attrs = {};
+	  for (let p of ['min', 'max', 'step'])
+	    if (field_data[p] != undefined)
+	      attrs[p] = field_data[p];
+	  if (this.readonly || (':' + field_data.hints + ':').indexOf ('ro') >= 0)
+	    attrs.readonly = true;
+	  const handler = (v) => this.apply_field (f, v);
+	  let ct = '';			// component type
+	  const ft = typeof (o[f]); // FIXME: use td
+	  if (ft == "number")
+	    {
+	      ct = 'b-fed-number';
+	      if (o[f] != 0|o[f]) // not int // FIXME: use td
+		attrs.allowfloat = true;
+	      // min max
 	    }
-	    groupfields.push ([ f, ct, label, attrs, o, handler ]);
-	  }
-      }
+	  else if (ft == "boolean")
+	    ct = 'b-fed-switch';
+	  else if (ft == "string")
+	    ct = 'b-fed-text';
+	  let label = td[f + '.label'] || f;
+	  if (ct)
+	    {
+	      const group = field_data.group || "Settings";
+	      let groupfields;
+	      if (groupmap[group] == undefined)
+		{
+		  groupfields = [];
+		  const newgroup = [ group, groupfields ];
+		  groupmap[group] = newgroup;
+		  grouplist.push (newgroup);
+		}
+	      else
+		groupfields = groupmap[group][1];
+	      groupfields.push ([ f, ct, label, attrs, o, handler ]);
+	    }
+	}
       return grouplist; // [ [ 'Group', [ field1, field2 ], [ 'Other', [ field3, field4 ] ] ]
     },
     clear_field (fieldname) {
-      const [o] = this.editable_object();
+      const o = this.object;
       const old = o[fieldname];
       const ft = typeof (old);
       const dflt = this['default'] != undefined ? this['default'][fieldname] : undefined;
@@ -155,13 +170,10 @@ module.exports = {
       this.apply_field (fieldname, cvalue);
     },
     apply_field (fieldname, value) {
-      const [o] = this.editable_object();
+      const o = this.object;
       Vue.set (o, fieldname, value);
       if (this.emit_update_ == undefined)
-	this.emit_update_ = Util.debounce (this.debounce, function () {
-	  const [o] = this.editable_object();
-	  this.$emit ('input', o);
-	});
+	this.emit_update_ = Util.debounce (this.debounce, () => this.$emit ('input', this.object));
       this.emit_update_();
     },
   },
