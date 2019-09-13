@@ -7,6 +7,7 @@
 #include "bsestartup.hh"
 #include "bsemain.hh"
 #include "bse/internal.hh"
+#include <algorithm>
 #include <string.h>
 
 #define LDEBUG(...)     Bse::debug ("leaks", __VA_ARGS__)
@@ -213,6 +214,16 @@ ObjectImpl::list_props ()
   };
   __access__ ("", collector);
   return props;
+}
+
+StringSeq
+ObjectImpl::find_typedata (const std::string &type_name)
+{
+  const Aida::StringVector &sv = Aida::Introspection::find_type (type_name);
+  StringSeq kvinfo;
+  kvinfo.reserve (sv.size());
+  std::copy (sv.begin(), sv.end(), std::back_inserter (kvinfo));
+  return kvinfo;
 }
 
 void
