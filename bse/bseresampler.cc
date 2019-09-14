@@ -6,18 +6,17 @@ namespace Bse {
 namespace Resampler {
 
 /* --- Resampler2 methods --- */
-Resampler2*
-Resampler2::create (BseResampler2Mode      mode,
-                    BseResampler2Precision precision,
-                    bool                   use_sse_if_available)
+Resampler2::Resampler2 (BseResampler2Mode      mode,
+                        BseResampler2Precision precision,
+                        bool                   use_sse_if_available)
 {
   if (sse_available() && use_sse_if_available)
     {
-      return create_impl<true> (mode, precision);
+      impl.reset (create_impl<true> (mode, precision));
     }
   else
     {
-      return create_impl<false> (mode, precision);
+      impl.reset (create_impl<false> (mode, precision));
     }
 }
 
@@ -45,9 +44,6 @@ Resampler2::test_filter_impl (bool verbose)
       return true;
     }
 }
-
-Resampler2::~Resampler2()
-{}
 
 BseResampler2Precision
 Resampler2::find_precision_for_bits (guint bits)

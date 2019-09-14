@@ -29,13 +29,31 @@ namespace Resampler {
  * Interface for factor 2 resampling classes
  */
 class Resampler2 {
+  class Impl
+  {
+  public:
+    virtual void   process_block (const float *input, uint n_input_samples, float *output) = 0;
+    virtual uint   order() const = 0;
+    virtual double delay() const = 0;
+    virtual void   reset() = 0;
+    virtual bool   sse_enabled() const = 0;
+    virtual
+    ~Impl()
+    {
+    }
+  };
+  std::unique_ptr<Impl> impl;
 public:
   /**
    * creates a resampler instance fulfilling a given specification
    */
-  static Resampler2* create (BseResampler2Mode      mode,
-			     BseResampler2Precision precision,
-                             bool                   use_sse_if_available = true);
+  Resampler2 (BseResampler2Mode      mode,
+              BseResampler2Precision precision,
+              bool                   use_sse_if_available = true);
+  static Resampler2 *create (BseResampler2Mode mode, BseResampler2Precision precision, bool use_sse_if_available = true)
+  {
+    return new Resampler2 (mode, precision, use_sse_if_available); // FIXME: compat
+  }
   /**
    * returns true if an optimized SSE version of the Resampler is available
    */
@@ -53,17 +71,21 @@ public:
    */
   static const char  *precision_name (BseResampler2Precision precision);
   /**
-   * virtual destructor for abstract class
-   */
-  virtual	      ~Resampler2();
-  /**
    * resample a data block
    */
-  virtual void	      process_block (const float *input, uint n_input_samples, float *output) = 0;
+  void
+  process_block (const float *input, uint n_input_samples, float *output)
+  {
+    impl->process_block (input, n_input_samples, output);
+  }
   /**
    * return FIR filter order
    */
-  virtual guint	      order() const = 0;
+  uint
+  order() const
+  {
+    return impl->order();
+  }
   /**
    * Return the delay introduced by the resampler. This delay is guaranteed to
    * be >= 0.0, and for factor 2 resampling always a multiple of 0.5 (1.0 for
@@ -76,15 +98,27 @@ public:
    * 10.5 means that the first input sample would be found by interpolating
    * output[10] and output[11], and the second input sample equates output[11].
    */
-  virtual double      delay() const = 0;
+  double
+  delay() const
+  {
+    return impl->delay();
+  }
   /**
    * clear internal history, reset resampler state to zero values
    */
-  virtual void        reset() = 0;
+  void
+  reset()
+  {
+    impl->reset();
+  }
   /**
    * return whether the resampler is using sse optimized code
    */
-  virtual bool        sse_enabled() const = 0;
+  bool
+  sse_enabled() const
+  {
+    return impl->sse_enabled();
+  }
 protected:
   static const double halfband_fir_linear_coeffs[2];
   static const double halfband_fir_48db_coeffs[16];
@@ -98,7 +132,7 @@ protected:
    * Since up- and downsamplers use different (scaled) coefficients, its possible
    * to specify a scaling factor. Usually 2 for upsampling and 1 for downsampling.
    */
-  template<class Filter> static inline Resampler2*
+  template<class Filter> static inline Impl*
   create_impl_with_coeffs (const double *d,
 	                   guint         order,
 	                   double        scaling)
@@ -107,7 +141,7 @@ protected:
     for (guint i = 0; i < order; i++)
       taps[i] = d[i] * scaling;
 
-    Resampler2 *filter = new Filter (taps);
+    Resampler2::Impl *filter = new Filter (taps);
     BSE_ASSERT_RETURN (order == filter->order(), NULL);
     return filter;
   }
@@ -117,7 +151,7 @@ protected:
    * Don't use this directly - it's only to be used by
    * bseblockutils.cc's anonymous Impl classes.
    */
-  template<bool USE_SSE> static inline Resampler2*
+  template<bool USE_SSE> static inline Impl*
   create_impl (BseResampler2Mode      mode,
 	       BseResampler2Precision precision);
 };
