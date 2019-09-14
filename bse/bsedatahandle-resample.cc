@@ -6,7 +6,6 @@
 #include <vector>
 
 namespace Bse {
-using Resampler::Resampler2;
 using std::vector;
 
 class DataHandleResample2;
@@ -120,7 +119,7 @@ protected:
   }
 
   /* implemented by upsampling and downsampling datahandle */
-  virtual BseResampler2Mode mode	() const = 0;
+  virtual Resampler2::Mode  mode	() const = 0;
   virtual int64		    read_frame  (int64 frame) = 0;
 
 public:
@@ -137,20 +136,20 @@ public:
     *setup = m_src_handle->setup; /* copies setup.xinfos by pointer */
     switch (mode())
       {
-      case BSE_RESAMPLER2_MODE_UPSAMPLE:    setup->mix_freq *= 2.0;
-					    setup->n_values *= 2;
-					    break;
-      case BSE_RESAMPLER2_MODE_DOWNSAMPLE:  setup->mix_freq /= 2.0;
-					    setup->n_values = (setup->n_values + 1) / 2;
-					    break;
-      default:				    assert_return_unreached (Bse::Error::INTERNAL);
+      case Resampler2::UP:    setup->mix_freq *= 2.0;
+			      setup->n_values *= 2;
+			      break;
+      case Resampler2::DOWN:  setup->mix_freq /= 2.0;
+			      setup->n_values = (setup->n_values + 1) / 2;
+			      break;
+      default:		      assert_return_unreached (Bse::Error::INTERNAL);
       }
 
     m_frame_size = 1024 * setup->n_channels;
     m_pcm_frame = -2;
     m_pcm_data.resize (m_frame_size);
 
-    BseResampler2Precision precision = Resampler2::find_precision_for_bits (m_precision_bits);
+    Resampler2::Precision precision = Resampler2::find_precision_for_bits (m_precision_bits);
     for (guint i = 0; i < setup->n_channels; i++)
       {
 	m_resamplers.emplace_back (Resampler2 (mode(), precision));
@@ -162,7 +161,7 @@ public:
      * compensate by shifting the input samples to enable seeking, thus the
      * factor 2
      */
-    if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
+    if (mode() == Resampler2::UP)
       {
 	m_filter_delay = (int) round (m_resamplers[0].delay());
 
@@ -222,7 +221,7 @@ public:
     // m_src_handle must be opened and have valid state size
     assert_return (source_state_length >= 0, 0);  
 
-    if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
+    if (mode() == Resampler2::UP)
       source_state_length *= 2;
     else
       source_state_length = (source_state_length + 1) / 2;
@@ -310,10 +309,10 @@ public:
     if (m_init_ok)
       m_dhandle.name = g_strconcat (m_src_handle->name, "// #upsample2 /", NULL);
   }
-  BseResampler2Mode
+  Resampler2::Mode
   mode() const
   {
-    return BSE_RESAMPLER2_MODE_UPSAMPLE;
+    return Resampler2::UP;
   }
   int64
   prepare_filter_history (int64 frame)
@@ -385,10 +384,10 @@ public:
     DataHandleResample2 (src_handle, precision_bits)
   {
   }
-  BseResampler2Mode
+  Resampler2::Mode
   mode() const
   {
-    return BSE_RESAMPLER2_MODE_DOWNSAMPLE;
+    return Resampler2::DOWN;
   }
   int64
   prepare_filter_history (int64 frame)

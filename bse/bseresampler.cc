@@ -5,8 +5,7 @@
 #include <xmmintrin.h>
 #endif
 
-namespace Bse {
-namespace Resampler {
+using namespace Bse;
 
 /* see: http://ds9a.nl/gcc-simd/ */
 union F4Vector
@@ -22,9 +21,9 @@ using std::max;
 using std::copy;
 
 /* --- Resampler2 methods --- */
-Resampler2::Resampler2 (BseResampler2Mode      mode,
-                        BseResampler2Precision precision,
-                        bool                   use_sse_if_available)
+Resampler2::Resampler2 (Mode      mode,
+                        Precision precision,
+                        bool      use_sse_if_available)
 {
   if (sse_available() && use_sse_if_available)
     {
@@ -46,40 +45,42 @@ Resampler2::sse_available()
 #endif
 }
 
-BseResampler2Precision
-Resampler2::find_precision_for_bits (guint bits)
+Resampler2::Precision
+Resampler2::find_precision_for_bits (uint bits)
 {
   if (bits <= 1)
-    return BSE_RESAMPLER2_PREC_LINEAR;
+    return PREC_LINEAR;
   if (bits <= 8)
-    return BSE_RESAMPLER2_PREC_48DB;
+    return PREC_48DB;
   if (bits <= 12)
-    return BSE_RESAMPLER2_PREC_72DB;
+    return PREC_72DB;
   if (bits <= 16)
-    return BSE_RESAMPLER2_PREC_96DB;
+    return PREC_96DB;
   if (bits <= 20)
-    return BSE_RESAMPLER2_PREC_120DB;
+    return PREC_120DB;
 
   /* thats the best precision we can deliver (and by the way also close to
    * the best precision possible with floats anyway)
    */
-  return BSE_RESAMPLER2_PREC_144DB;
+  return PREC_144DB;
 }
 
 const char *
-Resampler2::precision_name (BseResampler2Precision precision)
+Resampler2::precision_name (Precision precision)
 {
   switch (precision)
   {
-  case BSE_RESAMPLER2_PREC_LINEAR:  return "linear interpolation";
-  case BSE_RESAMPLER2_PREC_48DB:    return "8 bit (48dB)";
-  case BSE_RESAMPLER2_PREC_72DB:    return "12 bit (72dB)";
-  case BSE_RESAMPLER2_PREC_96DB:    return "16 bit (96dB)";
-  case BSE_RESAMPLER2_PREC_120DB:   return "20 bit (120dB)";
-  case BSE_RESAMPLER2_PREC_144DB:   return "24 bit (144dB)";
+  case PREC_LINEAR:  return "linear interpolation";
+  case PREC_48DB:    return "8 bit (48dB)";
+  case PREC_72DB:    return "12 bit (72dB)";
+  case PREC_96DB:    return "16 bit (96dB)";
+  case PREC_120DB:   return "20 bit (120dB)";
+  case PREC_144DB:   return "24 bit (144dB)";
   default:			    return "unknown precision enum value";
   }
 }
+
+namespace { // Anon
 
 /* --- coefficient sets for Resampler2 --- */
 /* halfband FIR filter for factor 2 resampling, created with octave
@@ -91,7 +92,7 @@ Resampler2::precision_name (BseResampler2Precision precision)
  *          alpha = 0.75
  *
  * design criteria (44100 Hz => 88200 Hz):
- * 
+ *
  *       passband = [     0, 18000 ]  1 - 2^-16 <= H(z) <= 1+2^-16
  *     transition = [ 18000, 26100 ]
  *       stopband = [ 26100, 44100 ]  | H(z) | <= -96 dB
@@ -107,7 +108,7 @@ Resampler2::precision_name (BseResampler2Precision precision)
  * (no stopband ripple > -95 dB)
  */
 
-const double Resampler2::halfband_fir_96db_coeffs[32] =
+static const double halfband_fir_96db_coeffs[32] =
 {
   -3.48616530828033e-05,
   0.000112877490936198,
@@ -148,7 +149,7 @@ const double Resampler2::halfband_fir_96db_coeffs[32] =
  *             x0 = 1.013
  *          alpha = 0.2
  */
-const double Resampler2::halfband_fir_48db_coeffs[16] =
+static const double halfband_fir_48db_coeffs[16] =
 {
   -0.00270578824181636,
   0.00566964586625895,
@@ -173,7 +174,7 @@ const double Resampler2::halfband_fir_48db_coeffs[16] =
  *             x0 = 1.0105
  *          alpha = 0.93
  */
-const double Resampler2::halfband_fir_72db_coeffs[24] =
+static const double halfband_fir_72db_coeffs[24] =
 {
   -0.0002622341634289771,
   0.0007380549701258316,
@@ -206,7 +207,7 @@ const double Resampler2::halfband_fir_72db_coeffs[24] =
  *             x0 = 1.0106
  *          alpha = 0.8
  */
-const double Resampler2::halfband_fir_120db_coeffs[42] = {
+static const double halfband_fir_120db_coeffs[42] = {
   2.359361930421347e-06,
   -9.506281154947505e-06,
   2.748456705299089e-05,
@@ -256,7 +257,7 @@ const double Resampler2::halfband_fir_120db_coeffs[42] = {
  *             x0 = 1.0104
  *          alpha = 0.8
  */
-const double Resampler2::halfband_fir_144db_coeffs[52] = {
+static const double halfband_fir_144db_coeffs[52] = {
   -1.841826652087099e-07,
   8.762360674826639e-07,
   -2.867933918842901e-06,
@@ -315,7 +316,7 @@ const double Resampler2::halfband_fir_144db_coeffs[52] = {
 /* linear interpolation coefficients; barely useful for actual audio use,
  * but useful for testing
  */
-const double Resampler2::halfband_fir_linear_coeffs[2] = {
+static const double halfband_fir_linear_coeffs[2] = {
   0.25,
   /* here, a 0.5 coefficient will be used */
   0.25,
@@ -339,10 +340,10 @@ const double Resampler2::halfband_fir_linear_coeffs[2] = {
 template<class Accumulator> static inline Accumulator
 fir_process_one_sample (const float *input,
                         const float *taps, /* [0..order-1] */
-			const guint  order)
+			const uint   order)
 {
   Accumulator out = 0;
-  for (guint i = 0; i < order; i++)
+  for (uint i = 0; i < order; i++)
     out += input[i] * taps[i];
   return out;
 }
@@ -360,7 +361,7 @@ fir_process_one_sample (const float *input,
 static inline void
 fir_process_4samples_sse (const float *input,
                           const float *sse_taps,
-			  const guint  order,
+			  const uint   order,
 			  float       *out0,
 			  float       *out1,
 			  float       *out2,
@@ -377,7 +378,7 @@ fir_process_4samples_sse (const float *input,
   out2_v.v = _mm_mul_ps (input_v[0].v, sse_taps_v[2].v);
   out3_v.v = _mm_mul_ps (input_v[0].v, sse_taps_v[3].v);
 
-  for (guint i = 1; i < (order + 6) / 4; i++)
+  for (uint i = 1; i < (order + 6) / 4; i++)
     {
       out0_v.v = _mm_add_ps (out0_v.v, _mm_mul_ps (input_v[i].v, sse_taps_v[i * 4 + 0].v));
       out1_v.v = _mm_add_ps (out1_v.v, _mm_mul_ps (input_v[i].v, sse_taps_v[i * 4 + 1].v));
@@ -439,17 +440,17 @@ fir_compute_sse_taps (const vector<float>& taps)
  * order to be tested can be optionally specified as argument.
  */
 static inline bool
-fir_test_filter_sse (bool        verbose,
-                     const guint max_order = 64)
+fir_test_filter_sse (bool       verbose,
+                     const uint max_order = 64)
 {
   int errors = 0;
   if (verbose)
     printf ("testing SSE filter implementation:\n\n");
 
-  for (guint order = 0; order < max_order; order++)
+  for (uint order = 0; order < max_order; order++)
     {
       vector<float> taps (order);
-      for (guint i = 0; i < order; i++)
+      for (uint i = 0; i < order; i++)
 	taps[i] = i + 1;
 
       AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
@@ -467,7 +468,7 @@ fir_test_filter_sse (bool        verbose,
 	}
 
       AlignedArray<float,16> random_mem (order + 4);
-      for (guint i = 0; i < order + 4; i++)
+      for (uint i = 0; i < order + 4; i++)
 	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
 
       /* FIXME: the problem with this test is that we explicitely test SSE code
@@ -503,7 +504,7 @@ fir_test_filter_sse (bool        verbose,
  *   ORDER     number of resampling filter coefficients
  *   USE_SSE   whether to use SSE (vectorized) instructions or not
  */
-template<guint ORDER, bool USE_SSE>
+template<uint ORDER, bool USE_SSE>
 class Upsampler2 : public Resampler2::Impl {
   vector<float>          taps;
   AlignedArray<float,16> history;
@@ -514,7 +515,7 @@ protected:
   process_4samples_aligned (const float *input /* aligned */,
                             float       *output)
   {
-    const guint H = (ORDER / 2); /* half the filter length */
+    const uint H = (ORDER / 2); /* half the filter length */
 
     output[1] = input[H];
     output[3] = input[H + 1];
@@ -528,13 +529,13 @@ protected:
   process_sample_unaligned (const float *input,
                             float       *output)
   {
-    const guint H = (ORDER / 2); /* half the filter length */
+    const uint H = (ORDER / 2); /* half the filter length */
     output[0] = fir_process_one_sample<float> (&input[0], &taps[0], ORDER);
     output[1] = input[H];
   }
   void
   process_block_aligned (const float *input,
-                         guint        n_input_samples,
+                         uint         n_input_samples,
 			 float       *output)
   {
     uint i = 0;
@@ -554,7 +555,7 @@ protected:
   }
   void
   process_block_unaligned (const float *input,
-                           guint        n_input_samples,
+                           uint         n_input_samples,
 			   float       *output)
   {
     uint i = 0;
@@ -587,7 +588,7 @@ public:
    */
   void
   process_block (const float *input,
-                 guint        n_input_samples,
+                 uint         n_input_samples,
 		 float       *output) override
   {
     const uint history_todo = min (n_input_samples, ORDER - 1);
@@ -611,7 +612,7 @@ public:
   /*
    * Returns the FIR filter order.
    */
-  guint
+  uint
   order() const override
   {
     return ORDER;
@@ -640,7 +641,7 @@ public:
  *   ORDER    number of resampling filter coefficients
  *   USE_SSE  whether to use SSE (vectorized) instructions or not
  */
-template<guint ORDER, bool USE_SSE>
+template<uint ORDER, bool USE_SSE>
 class Downsampler2 : public Resampler2::Impl {
   vector<float>        taps;
   AlignedArray<float,16> history_even;
@@ -652,7 +653,7 @@ class Downsampler2 : public Resampler2::Impl {
                             const float *input_odd,
 			    float       *output)
   {
-    const guint H = (ORDER / 2) - 1; /* half the filter length */
+    const uint H = (ORDER / 2) - 1; /* half the filter length */
 
     fir_process_4samples_sse (input_even, &sse_taps[0], ORDER, &output[0], &output[1], &output[2], &output[3]);
 
@@ -666,7 +667,7 @@ class Downsampler2 : public Resampler2::Impl {
   process_sample_unaligned (const float *input_even,
                             const float *input_odd)
   {
-    const guint H = (ORDER / 2) - 1; /* half the filter length */
+    const uint H = (ORDER / 2) - 1; /* half the filter length */
 
     return fir_process_one_sample<float> (&input_even[0], &taps[0], ORDER) + 0.5f * input_odd[H * ODD_STEPPING];
   }
@@ -674,7 +675,7 @@ class Downsampler2 : public Resampler2::Impl {
   process_block_aligned (const float *input_even,
                          const float *input_odd,
 			 float       *output,
-			 guint        n_output_samples)
+			 uint         n_output_samples)
   {
     uint i = 0;
     if (USE_SSE)
@@ -695,7 +696,7 @@ class Downsampler2 : public Resampler2::Impl {
   process_block_unaligned (const float *input_even,
                            const float *input_odd,
 			   float       *output,
-			   guint        n_output_samples)
+			   uint         n_output_samples)
   {
     uint i = 0;
     if (USE_SSE)
@@ -710,7 +711,7 @@ class Downsampler2 : public Resampler2::Impl {
   }
   void
   deinterleave2 (const float *data,
-                 guint        n_data_values,
+                 uint         n_data_values,
 		 float       *output)
   {
     for (uint i = 0; i < n_data_values; i += 2)
@@ -736,7 +737,7 @@ public:
    */
   void
   process_block (const float *input,
-                 guint        n_input_samples,
+                 uint         n_input_samples,
 		 float       *output) override
   {
     BSE_ASSERT_RETURN ((n_input_samples & 1) == 0);
@@ -798,7 +799,7 @@ public:
   /*
    * Returns the filter order.
    */
-  guint
+  uint
   order() const override
   {
     return ORDER;
@@ -821,32 +822,34 @@ public:
   }
 };
 
+} // Anon
+
 template<bool USE_SSE> Resampler2::Impl*
-Resampler2::create_impl (BseResampler2Mode      mode,
-	                 BseResampler2Precision precision)
+Resampler2::create_impl (Mode      mode,
+	                 Precision precision)
 {
-  if (mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+  if (mode == UP)
     {
       switch (precision)
 	{
-	case BSE_RESAMPLER2_PREC_LINEAR: return create_impl_with_coeffs <Upsampler2<2, USE_SSE> > (halfband_fir_linear_coeffs, 2, 2.0);
-	case BSE_RESAMPLER2_PREC_48DB:   return create_impl_with_coeffs <Upsampler2<16, USE_SSE> > (halfband_fir_48db_coeffs, 16, 2.0);
-	case BSE_RESAMPLER2_PREC_72DB:   return create_impl_with_coeffs <Upsampler2<24, USE_SSE> > (halfband_fir_72db_coeffs, 24, 2.0);
-	case BSE_RESAMPLER2_PREC_96DB:   return create_impl_with_coeffs <Upsampler2<32, USE_SSE> > (halfband_fir_96db_coeffs, 32, 2.0);
-	case BSE_RESAMPLER2_PREC_120DB:  return create_impl_with_coeffs <Upsampler2<42, USE_SSE> > (halfband_fir_120db_coeffs, 42, 2.0);
-	case BSE_RESAMPLER2_PREC_144DB:  return create_impl_with_coeffs <Upsampler2<52, USE_SSE> > (halfband_fir_144db_coeffs, 52, 2.0);
+	case PREC_LINEAR: return create_impl_with_coeffs <Upsampler2<2, USE_SSE> > (halfband_fir_linear_coeffs, 2, 2.0);
+	case PREC_48DB:   return create_impl_with_coeffs <Upsampler2<16, USE_SSE> > (halfband_fir_48db_coeffs, 16, 2.0);
+	case PREC_72DB:   return create_impl_with_coeffs <Upsampler2<24, USE_SSE> > (halfband_fir_72db_coeffs, 24, 2.0);
+	case PREC_96DB:   return create_impl_with_coeffs <Upsampler2<32, USE_SSE> > (halfband_fir_96db_coeffs, 32, 2.0);
+	case PREC_120DB:  return create_impl_with_coeffs <Upsampler2<42, USE_SSE> > (halfband_fir_120db_coeffs, 42, 2.0);
+	case PREC_144DB:  return create_impl_with_coeffs <Upsampler2<52, USE_SSE> > (halfband_fir_144db_coeffs, 52, 2.0);
 	}
     }
-  else if (mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE)
+  else if (mode == DOWN)
     {
       switch (precision)
 	{
-	case BSE_RESAMPLER2_PREC_LINEAR: return create_impl_with_coeffs <Downsampler2<2, USE_SSE> > (halfband_fir_linear_coeffs, 2, 1.0);
-	case BSE_RESAMPLER2_PREC_48DB:   return create_impl_with_coeffs <Downsampler2<16, USE_SSE> > (halfband_fir_48db_coeffs, 16, 1.0);
-	case BSE_RESAMPLER2_PREC_72DB:   return create_impl_with_coeffs <Downsampler2<24, USE_SSE> > (halfband_fir_72db_coeffs, 24, 1.0);
-	case BSE_RESAMPLER2_PREC_96DB:   return create_impl_with_coeffs <Downsampler2<32, USE_SSE> > (halfband_fir_96db_coeffs, 32, 1.0);
-	case BSE_RESAMPLER2_PREC_120DB:  return create_impl_with_coeffs <Downsampler2<42, USE_SSE> > (halfband_fir_120db_coeffs, 42, 1.0);
-	case BSE_RESAMPLER2_PREC_144DB:  return create_impl_with_coeffs <Downsampler2<52, USE_SSE> > (halfband_fir_144db_coeffs, 52, 1.0);
+	case PREC_LINEAR: return create_impl_with_coeffs <Downsampler2<2, USE_SSE> > (halfband_fir_linear_coeffs, 2, 1.0);
+	case PREC_48DB:   return create_impl_with_coeffs <Downsampler2<16, USE_SSE> > (halfband_fir_48db_coeffs, 16, 1.0);
+	case PREC_72DB:   return create_impl_with_coeffs <Downsampler2<24, USE_SSE> > (halfband_fir_72db_coeffs, 24, 1.0);
+	case PREC_96DB:   return create_impl_with_coeffs <Downsampler2<32, USE_SSE> > (halfband_fir_96db_coeffs, 32, 1.0);
+	case PREC_120DB:  return create_impl_with_coeffs <Downsampler2<42, USE_SSE> > (halfband_fir_120db_coeffs, 42, 1.0);
+	case PREC_144DB:  return create_impl_with_coeffs <Downsampler2<52, USE_SSE> > (halfband_fir_144db_coeffs, 52, 1.0);
 	}
     }
   return 0;
@@ -857,7 +860,7 @@ Resampler2::test_filter_impl (bool verbose)
 {
   if (sse_available())
     {
-      return Bse::Resampler::fir_test_filter_sse (verbose);
+      return fir_test_filter_sse (verbose);
     }
   else
     {
@@ -866,6 +869,3 @@ Resampler2::test_filter_impl (bool verbose)
       return true;
     }
 }
-
-} // Resampler
-} // Bse
