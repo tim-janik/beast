@@ -23,7 +23,7 @@ protected:
   CDataHandleResample2	m_dhandle;
   GslDataHandle	       *m_src_handle;
   int                   m_precision_bits;
-  vector<Resampler2 *>  m_resamplers;
+  vector<Resampler2>    m_resamplers;
   int64			m_pcm_frame;
   vector<float>		m_pcm_data;
   int64			m_frame_size;
@@ -153,13 +153,10 @@ public:
     BseResampler2Precision precision = Resampler2::find_precision_for_bits (m_precision_bits);
     for (guint i = 0; i < setup->n_channels; i++)
       {
-	Resampler2 *resampler = Resampler2::create (mode(), precision);
-	assert_return (resampler, Bse::Error::INTERNAL);
-
-	m_resamplers.push_back (resampler);
+	m_resamplers.emplace_back (Resampler2 (mode(), precision));
       }
     assert_return (!m_resamplers.empty(), Bse::Error::INTERNAL); /* n_channels is always > 0 */
-    m_filter_order = m_resamplers[0]->order();
+    m_filter_order = m_resamplers[0].order();
 
     /* Resampler2::delay() is defined in output samples, but we need to
      * compensate by shifting the input samples to enable seeking, thus the
@@ -167,7 +164,7 @@ public:
      */
     if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
       {
-	m_filter_delay = (int) round (m_resamplers[0]->delay());
+	m_filter_delay = (int) round (m_resamplers[0].delay());
 
 	// dividing this value may erase half a sample delay (if m_filter_delay is odd)
 	// this half sample delay is compensated on the input
@@ -176,7 +173,7 @@ public:
       }
     else
       {
-	m_filter_delay = (int) round (m_resamplers[0]->delay() * 2);
+	m_filter_delay = (int) round (m_resamplers[0].delay() * 2);
 	m_filter_delay_input = 0;
       }
     return Bse::Error::NONE;
@@ -184,9 +181,6 @@ public:
   void
   close()
   {
-    for (guint i = 0; i < m_dhandle.setup.n_channels; i++)
-      delete m_resamplers[i];
-
     m_resamplers.clear();
     m_pcm_data.clear();
 
@@ -240,7 +234,7 @@ public:
      * affects samples 10 and 11, and thus the state length we assume for
      * that case is 11.
      */
-    int64 per_channel_state = ceil (m_resamplers[0]->delay());
+    int64 per_channel_state = ceil (m_resamplers[0].delay());
     return source_state_length + per_channel_state * m_dhandle.setup.n_channels;
   }
   static GslDataHandle*
@@ -342,7 +336,7 @@ public:
 	/* we don't need the output, this is just for filling the filter history */
 	float output[n_input_samples * 2];
 
-	m_resamplers[ch]->process_block (input + ch * n_input_samples, n_input_samples, output);
+	m_resamplers[ch].process_block (input + ch * n_input_samples, n_input_samples, output);
       }
     return 1;
   }
@@ -374,7 +368,7 @@ public:
 	const int64 output_per_channel = m_frame_size / m_dhandle.setup.n_channels;
 	const int64 input_per_channel = output_per_channel / 2;
 
-	m_resamplers[ch]->process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
+	m_resamplers[ch].process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
       }
     interleave (output, &m_pcm_data[0], m_frame_size);
 
@@ -417,7 +411,7 @@ public:
 	/* we don't need the output, this is just for filling the filter history */
 	float output[n_input_samples / 2];
 
-	m_resamplers[ch]->process_block (input + ch * n_input_samples, n_input_samples, output);
+	m_resamplers[ch].process_block (input + ch * n_input_samples, n_input_samples, output);
       }
     return 1;
   }
@@ -449,7 +443,7 @@ public:
 	const int64 output_per_channel = m_frame_size / m_dhandle.setup.n_channels;
 	const int64 input_per_channel = output_per_channel * 2;
 
-	m_resamplers[ch]->process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
+	m_resamplers[ch].process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
       }
     interleave (output, &m_pcm_data[0], m_frame_size);
 
