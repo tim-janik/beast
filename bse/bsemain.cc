@@ -7,6 +7,7 @@
 #include "bsecategories.hh"
 #include "bsemidireceiver.hh"
 #include "bsemathsignal.hh"
+#include "driver.hh"
 #include "gsldatacache.hh"
 #include "bsepcmdevice.hh"
 #include "bsemididevice.hh"
@@ -137,7 +138,15 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   // dump device list
   if (bse_main_args->dump_driver_list)
     {
+      Bse::Driver::EntryVec entries;
       printerr ("%s", _("\nAvailable PCM drivers:\n"));
+      entries = Bse::Driver::list_drivers (Bse::Driver::Type::PCM);
+      for (const auto &entry : entries)
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s\t%s\n", entry.devid + ":",
+                  entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
+                  entry.priority, entry.name,
+                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
+                  entry.blurb);
       bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
       printerr ("%s", _("\nAvailable MIDI drivers:\n"));
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
