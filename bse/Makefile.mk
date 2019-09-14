@@ -270,6 +270,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/datalist.cc			\
 	bse/devicecrawler.cc		\
 	bse/driver.cc			\
+	bse/driver-alsa.cc		\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\
@@ -388,7 +389,7 @@ $(call BUILD_SHARED_LIB_XDBG, \
 	$(lib/libbse.so), \
 	$(bse/libbse.objects), \
 	bse/ldscript.map | $>/lib/, \
-	$(BSEDEPS_LIBS) -lstdc++fs)
+	$(BSEDEPS_LIBS) $(ALSA_LIBS) -lstdc++fs)
 $(call INSTALL_DATA_RULE,			\
 	bse/headers,				\
 	$(DESTDIR)$(bse/include.headerdir),	\
