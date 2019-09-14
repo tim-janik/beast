@@ -5,26 +5,8 @@
 #include <bse/bsecxxutils.hh>
 #include <vector>
 
-typedef enum /*< skip >*/
-{
-  BSE_RESAMPLER2_MODE_UPSAMPLE,
-  BSE_RESAMPLER2_MODE_DOWNSAMPLE
-} BseResampler2Mode;
-
-typedef enum /*< skip >*/
-{
-  BSE_RESAMPLER2_PREC_LINEAR = 1,     /* linear interpolation */
-  BSE_RESAMPLER2_PREC_48DB = 8,
-  BSE_RESAMPLER2_PREC_72DB = 12,
-  BSE_RESAMPLER2_PREC_96DB = 16,
-  BSE_RESAMPLER2_PREC_120DB = 20,
-  BSE_RESAMPLER2_PREC_144DB = 24
-} BseResampler2Precision;
-
 namespace Bse {
 
-/// The Resampler namespace contains interfaces for factor 2 resampling.
-namespace Resampler {
 /**
  * Interface for factor 2 resampling classes
  */
@@ -44,12 +26,24 @@ class Resampler2 {
   };
   std::unique_ptr<Impl> impl;
 public:
+  enum Mode {
+    UP,
+    DOWN
+  };
+  enum Precision {
+    PREC_LINEAR = 1,     /* linear interpolation */
+    PREC_48DB = 8,
+    PREC_72DB = 12,
+    PREC_96DB = 16,
+    PREC_120DB = 20,
+    PREC_144DB = 24
+  };
   /**
    * creates a resampler instance fulfilling a given specification
    */
-  Resampler2 (BseResampler2Mode      mode,
-              BseResampler2Precision precision,
-              bool                   use_sse_if_available = true);
+  Resampler2 (Mode      mode,
+              Precision precision,
+              bool      use_sse_if_available = true);
   /**
    * returns true if an optimized SSE version of the Resampler is available
    */
@@ -61,11 +55,11 @@ public:
   /**
    * finds a precision which is appropriate for at least the specified number of bits
    */
-  static BseResampler2Precision find_precision_for_bits (guint bits);
+  static Precision   find_precision_for_bits (uint bits);
   /**
    * returns a human-readable name for a given precision
    */
-  static const char  *precision_name (BseResampler2Precision precision);
+  static const char  *precision_name (Precision precision);
   /**
    * resample a data block
    */
@@ -116,13 +110,6 @@ public:
     return impl->sse_enabled();
   }
 protected:
-  static const double halfband_fir_linear_coeffs[2];
-  static const double halfband_fir_48db_coeffs[16];
-  static const double halfband_fir_72db_coeffs[24];
-  static const double halfband_fir_96db_coeffs[32];
-  static const double halfband_fir_120db_coeffs[42];
-  static const double halfband_fir_144db_coeffs[52];
-
   /* Creates implementation from filter coefficients and Filter implementation class
    *
    * Since up- and downsamplers use different (scaled) coefficients, its possible
@@ -130,11 +117,11 @@ protected:
    */
   template<class Filter> static inline Impl*
   create_impl_with_coeffs (const double *d,
-	                   guint         order,
+	                   uint          order,
 	                   double        scaling)
   {
     float taps[order];
-    for (guint i = 0; i < order; i++)
+    for (uint i = 0; i < order; i++)
       taps[i] = d[i] * scaling;
 
     Resampler2::Impl *filter = new Filter (taps);
@@ -148,11 +135,9 @@ protected:
    * bseblockutils.cc's anonymous Impl classes.
    */
   template<bool USE_SSE> static inline Impl*
-  create_impl (BseResampler2Mode      mode,
-	       BseResampler2Precision precision);
+  create_impl (Mode      mode,
+	       Precision precision);
 };
-
-} /* namespace Resampler */
 
 } /* namespace Bse */
 
