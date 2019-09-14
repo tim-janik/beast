@@ -50,10 +50,6 @@ public:
   Resampler2 (BseResampler2Mode      mode,
               BseResampler2Precision precision,
               bool                   use_sse_if_available = true);
-  static Resampler2 *create (BseResampler2Mode mode, BseResampler2Precision precision, bool use_sse_if_available = true)
-  {
-    return new Resampler2 (mode, precision, use_sse_if_available); // FIXME: compat
-  }
   /**
    * returns true if an optimized SSE version of the Resampler is available
    */
