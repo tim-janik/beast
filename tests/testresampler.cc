@@ -23,7 +23,6 @@ using std::vector;
 using std::min;
 using std::max;
 using std::copy;
-using namespace Bse::Resampler;
 
 enum TestType
 {
@@ -66,7 +65,7 @@ struct Options {
   double                  freq_inc            = 0;
   bool                    freq_scan_verbose   = false;
   double                  max_threshold_db    = 0;
-  BseResampler2Precision  precision           = BSE_RESAMPLER2_PREC_96DB;
+  Resampler2::Precision   precision           = Resampler2::PREC_96DB;
   bool                    filter_impl_verbose = false;
   bool                    verbose             = false;
   bool                    use_sse             = false;
@@ -311,7 +310,7 @@ Options::parse (int   *argc_p,
 static int
 test_filter_impl()
 {
-  bool filter_ok = Bse::Resampler::Resampler2::test_filter_impl (options.filter_impl_verbose);
+  bool filter_ok = Resampler2::test_filter_impl (options.filter_impl_verbose);
 
   if (filter_ok)
     verbose_output += "filter implementation ok.\n";
@@ -347,8 +346,8 @@ perform_test()
    *  - we can not provide optimal compiler flags (-funroll-loops -O3 is good for the resampler)
    *    which makes things even more slow
    */
-  Resampler2 ups (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision, options.use_sse);
-  Resampler2 downs (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision, options.use_sse);
+  Resampler2 ups (Resampler2::UP, options.precision, options.use_sse);
+  Resampler2 downs (Resampler2::DOWN, options.precision, options.use_sse);
 
   TASSERT (options.use_sse == ups.sse_enabled());
   TASSERT (options.use_sse == downs.sse_enabled());
@@ -775,11 +774,11 @@ run_testresampler (TestType tt)
 }
 
 static void
-run_accuracy (ResampleType rtype, bool use_sse_if_available, int precision, double fmin, double fmax, double finc, double threshold)
+run_accuracy (ResampleType rtype, bool use_sse_if_available, int bits, double fmin, double fmax, double finc, double threshold)
 {
   test_type = TEST_ACCURACY;
   resample_type = rtype;
-  options.precision = static_cast<BseResampler2Precision> (precision);
+  options.precision = Resampler2::find_precision_for_bits (bits);
   options.freq_min = fmin;
   options.freq_max = fmax;
   options.freq_inc = finc;
@@ -796,7 +795,7 @@ run_accuracy (ResampleType rtype, bool use_sse_if_available, int precision, doub
 }
 
 static void
-run_perf (ResampleType rtype, int precision)
+run_perf (ResampleType rtype, int bits)
 {
   const int runs = Resampler2::sse_available() ? 2 : 1; // run test twice if we have both: FPU and SSE support
 
@@ -804,7 +803,7 @@ run_perf (ResampleType rtype, int precision)
     {
       test_type = TEST_PERFORMANCE;
       resample_type = rtype;
-      options.precision = static_cast<BseResampler2Precision> (precision);
+      options.precision = Resampler2::find_precision_for_bits (bits);
       options.verbose = true;
       options.use_sse = r;
 

@@ -12,7 +12,6 @@
 
 using namespace Bse;
 
-using Bse::Resampler::Resampler2;
 using Bse::AlignedArray;
 using std::vector;
 using std::max;
@@ -40,8 +39,8 @@ public:
   double max_error;
 
   void  check_spectrum (const vector<float>& impulse_response, int p);
-  void  check_resampler_up (BseResampler2Precision precision, bool use_sse);
-  void  check_resampler_down (BseResampler2Precision precision, bool use_sse);
+  void  check_resampler_up (Resampler2::Precision precision, bool use_sse);
+  void  check_resampler_down (Resampler2::Precision precision, bool use_sse);
 };
 
 void
@@ -72,9 +71,9 @@ ResamplerTest::check_spectrum (const vector<float>& impulse_response, int p)
 }
 
 void
-ResamplerTest::check_resampler_up (BseResampler2Precision precision, bool use_sse)
+ResamplerTest::check_resampler_up (Resampler2::Precision precision, bool use_sse)
 {
-  Resampler2 ups (BSE_RESAMPLER2_MODE_UPSAMPLE, precision, use_sse);
+  Resampler2 ups (Resampler2::UP, precision, use_sse);
   AlignedArray<float,16> input (options.test_size);
   AlignedArray<float,16> output (options.test_size * 2);
   vector< vector<float> > results;
@@ -113,9 +112,9 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision, bool use_ss
 }
 
 void
-ResamplerTest::check_resampler_down (BseResampler2Precision precision, bool use_sse)
+ResamplerTest::check_resampler_down (Resampler2::Precision precision, bool use_sse)
 {
-  Resampler2 downs (BSE_RESAMPLER2_MODE_DOWNSAMPLE, precision, use_sse);
+  Resampler2 downs (Resampler2::DOWN, precision, use_sse);
   AlignedArray<float,16> input (options.test_size * 2);
   AlignedArray<float,16> output (options.test_size);
   vector< vector<float> > results;
@@ -164,7 +163,7 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision, bool use_
 }
 
 static double
-band_err (BseResampler2Precision p)
+band_err (Resampler2::Precision p)
 {
   /* the filter design is not always exactly as specified by the precision,
    * so sometimes we achieve a lower db value than requested, and sometimes
@@ -172,24 +171,24 @@ band_err (BseResampler2Precision p)
    */
   switch (p)
     {
-      case BSE_RESAMPLER2_PREC_LINEAR:  return -8.5;
-      case BSE_RESAMPLER2_PREC_48DB:    return -51;
-      case BSE_RESAMPLER2_PREC_72DB:    return -74;
-      case BSE_RESAMPLER2_PREC_96DB:    return -95;
-      case BSE_RESAMPLER2_PREC_120DB:   return -120;
-      case BSE_RESAMPLER2_PREC_144DB:   return -144;
-      default:                          assert_return_unreached (NAN);
+      case Resampler2::PREC_LINEAR:  return -8.5;
+      case Resampler2::PREC_48DB:    return -51;
+      case Resampler2::PREC_72DB:    return -74;
+      case Resampler2::PREC_96DB:    return -95;
+      case Resampler2::PREC_120DB:   return -120;
+      case Resampler2::PREC_144DB:   return -144;
+      default:           assert_return_unreached (NAN);
     }
 }
 
 static void
 run_tests (bool use_sse)
 {
-  BseResampler2Precision p = BSE_RESAMPLER2_PREC_96DB;  // should not be equal to the first resampler precision
+  Resampler2::Precision p = Resampler2::PREC_96DB;  // should not be equal to the first resampler precision
 
   for (int i = 0; i < 32; i++)
     {
-      BseResampler2Precision new_p = Resampler2::find_precision_for_bits (i);
+      Resampler2::Precision new_p = Resampler2::find_precision_for_bits (i);
       if (new_p != p)
         {
           p = new_p;
