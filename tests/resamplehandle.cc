@@ -278,11 +278,9 @@ test_delay_compensation (bool use_sse)
       generate_test_signal (in, INPUT_SIZE, 44100, 440);
 
       /* up/downsample test signal */
-      Resampler2 *resampler = Resampler2::create (params[p].mode,
-                                                  params[p].precision,
-                                                  use_sse);
-      TASSERT (resampler->sse_enabled() == use_sse);
-      resampler->process_block (&in[0], INPUT_SIZE, &out[0]);
+      Resampler2 resampler (params[p].mode, params[p].precision, use_sse);
+      TASSERT (resampler.sse_enabled() == use_sse);
+      resampler.process_block (&in[0], INPUT_SIZE, &out[0]);
 
       /* setup increments for comparision loop */
       size_t iinc = 1, jinc = 1;
@@ -292,7 +290,7 @@ test_delay_compensation (bool use_sse)
 	iinc = 2;
 
       /* compensate resampler delay by incrementing comparision start offset */
-      double delay = resampler->delay();
+      double delay = resampler.delay();
       size_t i = 0, j = (int) round (delay * 2);
       if (j % 2)
 	{
@@ -310,8 +308,6 @@ test_delay_compensation (bool use_sse)
 	  error = MAX (error, fabs (out[j] - in[i]));
 	  i += iinc; j += jinc;
 	}
-
-      delete resampler;
 
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);

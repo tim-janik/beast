@@ -74,16 +74,16 @@ ResamplerTest::check_spectrum (const vector<float>& impulse_response, int p)
 void
 ResamplerTest::check_resampler_up (BseResampler2Precision precision, bool use_sse)
 {
-  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, precision, use_sse);
+  Resampler2 ups (BSE_RESAMPLER2_MODE_UPSAMPLE, precision, use_sse);
   AlignedArray<float,16> input (options.test_size);
   AlignedArray<float,16> output (options.test_size * 2);
   vector< vector<float> > results;
 
-  TASSERT (ups->sse_enabled() == use_sse);
+  TASSERT (ups.sse_enabled() == use_sse);
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
-      ups->process_block (&input[0], input.size(), &output[0]);
+      ups.process_block (&input[0], input.size(), &output[0]);
       input[i] = 0;
       results.push_back (vector<float> (&output[0], &output[output.size()]));
       for (size_t j = 0; j < output.size(); j++)
@@ -97,7 +97,7 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision, bool use_ss
     }
   for (size_t i = 0; i < options.rand_samples; i++)
     input[i] = g_random_double_range (-1, 1);
-  ups->process_block (&input[0], input.size(), &output[0]);
+  ups.process_block (&input[0], input.size(), &output[0]);
 
   max_error = 0;
   for (size_t j = 0; j < output.size(); j++)
@@ -115,16 +115,16 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision, bool use_ss
 void
 ResamplerTest::check_resampler_down (BseResampler2Precision precision, bool use_sse)
 {
-  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, precision, use_sse);
+  Resampler2 downs (BSE_RESAMPLER2_MODE_DOWNSAMPLE, precision, use_sse);
   AlignedArray<float,16> input (options.test_size * 2);
   AlignedArray<float,16> output (options.test_size);
   vector< vector<float> > results;
 
-  TASSERT (downs->sse_enabled() == use_sse);
+  TASSERT (downs.sse_enabled() == use_sse);
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
-      downs->process_block (&input[0], input.size(), &output[0]);
+      downs.process_block (&input[0], input.size(), &output[0]);
       input[i] = 0;
       results.push_back (vector<float> (&output[0], &output[output.size()]));
       for (size_t j = 0; j < output.size(); j++)
@@ -136,7 +136,7 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision, bool use_
     }
   for (size_t i = 0; i < options.rand_samples; i++)
     input[i] = g_random_double_range (-1, 1);
-  downs->process_block (&input[0], input.size(), &output[0]);
+  downs.process_block (&input[0], input.size(), &output[0]);
   max_error = 0;
   for (size_t j = 0; j < output.size(); j++)
     {

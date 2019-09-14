@@ -336,11 +336,11 @@ perform_test()
    *  - we can not provide optimal compiler flags (-funroll-loops -O3 is good for the resampler)
    *    which makes things even more slow
    */
-  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision, options.use_sse);
-  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision, options.use_sse);
+  Resampler2 ups (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision, options.use_sse);
+  Resampler2 downs (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision, options.use_sse);
 
-  TASSERT (options.use_sse == ups->sse_enabled());
-  TASSERT (options.use_sse == downs->sse_enabled());
+  TASSERT (options.use_sse == ups.sse_enabled());
+  TASSERT (options.use_sse == downs.sse_enabled());
 
   F4Vector in_v[block_size / 2 + 3], out_v[block_size / 2 + 3], out2_v[block_size / 2 + 3];
   float *input = &in_v[0].f[0], *output = &out_v[0].f[0], *output2 = &out2_v[0].f[0]; /* ensure aligned data */
@@ -358,15 +358,15 @@ perform_test()
 	{
 	  if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	    {
-	      downs->process_block (input, block_size, output);
+	      downs.process_block (input, block_size, output);
 	      if (RESAMPLE == RES_SUBSAMPLE)
-		ups->process_block (output, block_size / 2, output2);
+		ups.process_block (output, block_size / 2, output2);
 	    }
 	  if (RESAMPLE == RES_UPSAMPLE || RESAMPLE == RES_OVERSAMPLE)
 	    {
-	      ups->process_block (input, block_size, output);
+	      ups.process_block (input, block_size, output);
 	      if (RESAMPLE == RES_OVERSAMPLE)
-		downs->process_block (output, block_size * 2, output2);
+		downs.process_block (output, block_size * 2, output2);
 	    }
 	  k += block_size;
 	}
@@ -438,15 +438,15 @@ perform_test()
 		}
 	      if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 		{
-		  downs->process_block (input + misalign, bs, output);
+		  downs.process_block (input + misalign, bs, output);
 		  if (RESAMPLE == RES_SUBSAMPLE)
-		    ups->process_block (output, bs / 2, output2);
+		    ups.process_block (output, bs / 2, output2);
 		}
 	      if (RESAMPLE == RES_UPSAMPLE || RESAMPLE == RES_OVERSAMPLE)
 		{
-		  ups->process_block (input + misalign, bs, output);
+		  ups.process_block (input + misalign, bs, output);
 		  if (RESAMPLE == RES_OVERSAMPLE)
-		    downs->process_block (output, bs * 2, output2);
+		    downs.process_block (output, bs * 2, output2);
 		}
 
 	      /* validate output */
@@ -458,21 +458,21 @@ perform_test()
 
 	      if (RESAMPLE == RES_UPSAMPLE)
 		{
-		  sin_shift = ups->delay();
+		  sin_shift = ups.delay();
 		  freq_factor = 0.5;
 		  out_bs = bs * 2;
 		  correct_volume = 1;
 		}
 	      else if (RESAMPLE == RES_DOWNSAMPLE)
 		{
-		  sin_shift = downs->delay();
+		  sin_shift = downs.delay();
 		  freq_factor = 2;
 		  out_bs = bs / 2;
 		  correct_volume = (test_frequency < (44100/4)) ? 1 : 0;
 		}
 	      else if (RESAMPLE == RES_OVERSAMPLE)
 		{
-		  sin_shift = ups->delay() * 0.5 + downs->delay();
+		  sin_shift = ups.delay() * 0.5 + downs.delay();
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
@@ -480,7 +480,7 @@ perform_test()
 		}
 	      else if (RESAMPLE == RES_SUBSAMPLE)
 		{
-		  sin_shift = downs->delay() * 2 + ups->delay();
+		  sin_shift = downs.delay() * 2 + ups.delay();
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
@@ -489,7 +489,7 @@ perform_test()
 
 	      for (unsigned int i = 0; i < out_bs; i++, k++)
 		{
-		  if (k > (ups->order() * 4))
+		  if (k > (ups.order() * 4))
 		    {
 		      /* The expected resampler output signal is a sine signal with
 		       * different frequency and is phase shifted a bit.
@@ -594,15 +594,15 @@ perform_test()
 
       if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	{
-	  downs->process_block (input, block_size, output);
+	  downs.process_block (input, block_size, output);
 	  if (RESAMPLE == RES_SUBSAMPLE)
-	    ups->process_block (output, block_size / 2, output2);
+	    ups.process_block (output, block_size / 2, output2);
 	}
       if (RESAMPLE == RES_UPSAMPLE || RESAMPLE == RES_OVERSAMPLE)
 	{
-	  ups->process_block (input, block_size, output);
+	  ups.process_block (input, block_size, output);
 	  if (RESAMPLE == RES_OVERSAMPLE)
-	    downs->process_block (output, block_size * 2, output2);
+	    downs.process_block (output, block_size * 2, output2);
 	}
 
       float *check = output;
@@ -612,8 +612,6 @@ perform_test()
       for (unsigned int i = 0; i < block_size; i++)
 	verbose_output += string_format ("%.17f\n", check[i]);
     }
-  delete ups;
-  delete downs;
   return 0;
 }
 
