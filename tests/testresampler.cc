@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseresampler.hh>
-#include <bse/bseresamplerimpl.hh>
 #include <bse/testing.hh>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
@@ -13,6 +12,9 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#ifdef __SSE__
+#include <xmmintrin.h>
+#endif
 
 using namespace Bse;
 
@@ -43,6 +45,15 @@ enum ResampleType
 };
 
 namespace { // Anon
+
+/* see: http://ds9a.nl/gcc-simd/ */
+union F4Vector
+{
+  float f[4];
+#ifdef __SSE__
+  __m128 v;   // vector of four single floats
+#endif
+};
 
 static ResampleType resample_type = RES_UPSAMPLE;
 static TestType test_type = TEST_NONE;
