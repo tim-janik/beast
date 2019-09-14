@@ -18,7 +18,6 @@ using std::max;
 using std::min;
 using std::map;
 using namespace Bse::Test;
-using Bse::Resampler::Resampler2;
 
 static void
 read_through (GslDataHandle *handle)
@@ -44,7 +43,7 @@ check (const char           *up_down,
        const vector<float>  &input,
        const vector<double> &expected,
        int                   n_channels,
-       BseResampler2Mode     resampler_mode,
+       Resampler2::Mode      resampler_mode,
        int                   precision_bits,
        double                max_db)
 {
@@ -55,7 +54,7 @@ check (const char           *up_down,
 
   GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, input.size(), &input[0], NULL);
   GslDataHandle *rhandle;
-  if (resampler_mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+  if (resampler_mode == Resampler2::UP)
     {
       TASSERT (input.size() * 2 == expected.size());
       rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
@@ -63,7 +62,7 @@ check (const char           *up_down,
   else
     {
       TASSERT (input.size() == expected.size() * 2);
-      rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits); 
+      rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits);
     }
   gsl_data_handle_unref (ihandle);
 
@@ -213,7 +212,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440);
   generate_test_signal (expected, LEN * 2, 88200, 440);
   check ("Up", "M", params[p].bits, run_type,
-         input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
+         input, expected, 1, Resampler2::UP,
          params[p].bits, params[p].mono_upsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
@@ -221,7 +220,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440, 1000);
   generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
   check ("Up", "S", params[p].bits, run_type,
-         input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
+         input, expected, 2, Resampler2::UP,
          params[p].bits, params[p].stereo_upsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
@@ -229,7 +228,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440);
   generate_test_signal (expected, LEN / 2, 22050, 440);
   check ("Dn", "M", params[p].bits, run_type,
-         input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+         input, expected, 1, Resampler2::DOWN,
          params[p].bits, params[p].mono_downsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
@@ -237,7 +236,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440, 1000);
   generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
   check ("Dn", "S", params[p].bits, run_type,
-         input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+         input, expected, 2, Resampler2::DOWN,
          params[p].bits, params[p].stereo_downsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 }
@@ -247,20 +246,20 @@ test_delay_compensation (bool use_sse)
 {
   struct TestParameters {
     double error_db;
-    BseResampler2Mode mode;
-    BseResampler2Precision precision;
+    Resampler2::Mode mode;
+    Resampler2::Precision precision;
   } params[] =
   {
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_48DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_72DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_96DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_120DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_144DB },
-    { 48,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_48DB },
-    { 67,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_72DB },
-    { 96,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_96DB },
-    { 120, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_120DB },
-    { 134, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_144DB },
+    { 200, Resampler2::UP, Resampler2::PREC_48DB },
+    { 200, Resampler2::UP, Resampler2::PREC_72DB },
+    { 200, Resampler2::UP, Resampler2::PREC_96DB },
+    { 200, Resampler2::UP, Resampler2::PREC_120DB },
+    { 200, Resampler2::UP, Resampler2::PREC_144DB },
+    { 48,  Resampler2::DOWN, Resampler2::PREC_48DB },
+    { 67,  Resampler2::DOWN, Resampler2::PREC_72DB },
+    { 96,  Resampler2::DOWN, Resampler2::PREC_96DB },
+    { 120, Resampler2::DOWN, Resampler2::PREC_120DB },
+    { 134, Resampler2::DOWN, Resampler2::PREC_144DB },
     { -1, }
   };
   const char *run_type = use_sse ? "SSE" : "FPU";
@@ -284,7 +283,7 @@ test_delay_compensation (bool use_sse)
 
       /* setup increments for comparision loop */
       size_t iinc = 1, jinc = 1;
-      if (params[p].mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+      if (params[p].mode == Resampler2::UP)
 	jinc = 2;
       else
 	iinc = 2;
@@ -295,7 +294,7 @@ test_delay_compensation (bool use_sse)
       if (j % 2)
 	{
 	  /* implement half a output sample delay (for downsampling only) */
-	  assert_return (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
+	  assert_return (params[p].mode == Resampler2::DOWN);
 	  i++;
 	  j += 2;
 	}
