@@ -107,6 +107,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/cxxaux.hh			\
 	bse/datalist.hh			\
 	bse/devicecrawler.hh		\
+	bse/driver.hh			\
 	bse/effectbase.hh		\
 	bse/entropy.hh			\
 	bse/formatter.hh		\
@@ -268,6 +269,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsewaverepo.cc		\
 	bse/datalist.cc			\
 	bse/devicecrawler.cc		\
+	bse/driver.cc			\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\
