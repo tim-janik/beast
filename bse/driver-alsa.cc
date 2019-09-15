@@ -319,18 +319,12 @@ pcm_class_name (snd_pcm_class_t pcmclass)
     }
 }
 
-static bool
-init_alsa_driver ()
-{
-  int err = snd_output_stdio_attach (&snd_output, stderr, 0);
-  (void) err;
-  return true;
-}
-
 static void
 list_alsa_drivers (Driver::EntryVec &entries)
 {
-  static const bool BSE_USED initialized = init_alsa_driver();
+  static const bool BSE_USED initialized = [] {
+    return snd_output_stdio_attach (&snd_output, stderr, 0);
+  } ();
   // discover virtual (non-hw) devices
   bool seen_plughw = false; // maybe needed to resample at device boundaries
   void **nhints = nullptr;
