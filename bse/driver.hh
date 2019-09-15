@@ -42,6 +42,7 @@ public:
   virtual String devid         () const        { return devid_; }
   virtual Type   type          () const = 0;
   virtual bool   pcm_check_io  (long *timeoutp) = 0;
+  virtual uint   pcm_latency   () const = 0;
   virtual void   close         () = 0;
   // registry
   struct Entry {
