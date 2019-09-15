@@ -505,7 +505,7 @@ fir_test_filter_sse (bool       verbose,
  *   USE_SSE   whether to use SSE (vectorized) instructions or not
  */
 template<uint ORDER, bool USE_SSE>
-class Upsampler2 : public Resampler2::Impl {
+class Upsampler2 final : public Resampler2::Impl {
   vector<float>          taps;
   AlignedArray<float,16> history;
   AlignedArray<float,16> sse_taps;
@@ -642,7 +642,7 @@ public:
  *   USE_SSE  whether to use SSE (vectorized) instructions or not
  */
 template<uint ORDER, bool USE_SSE>
-class Downsampler2 : public Resampler2::Impl {
+class Downsampler2 final : public Resampler2::Impl {
   vector<float>        taps;
   AlignedArray<float,16> history_even;
   AlignedArray<float,16> history_odd;
