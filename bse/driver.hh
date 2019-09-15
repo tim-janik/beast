@@ -71,6 +71,19 @@ public:
 };
 using PcmDriverP = PcmDriver::PcmDriverP;
 
+class MidiDriver : public Driver {
+protected:
+  explicit           MidiDriver      (const String &devid);
+  virtual Bse::Error open            (const DriverConfig &config) = 0;
+public:
+  typedef std::shared_ptr<MidiDriver> MidiDriverP;
+  static MidiDriverP open            (const Entry &entry, const DriverConfig &config, Bse::Error *ep);
+  static EntryVec    list_drivers    ();
+  static uint32      register_driver (const std::function<MidiDriverP (const String&)> &create,
+                                      const std::function<void (EntryVec&, uint32)> &list);
+};
+using MidiDriverP = MidiDriver::MidiDriverP;
+
 } // Bse
 
 #endif  // __BSE_DRIVER_HH__
