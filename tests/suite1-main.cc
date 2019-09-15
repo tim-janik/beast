@@ -188,6 +188,12 @@ main (int argc, char *argv[])
       bench_aida();
       return 0;
     }
+  if (argc >= 2 && argv[1] && std::string ("--resampler") == argv[1])
+    {
+      Bse::init_async (&argc, argv, argv[0], args);
+      extern int test_resampler (int, char **);
+      return test_resampler (argc, argv);
+    }
   // run tests
   return bse_init_and_test (&argc, argv, [&]() { return test_main (argc, argv); }, args);
 }
