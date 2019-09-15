@@ -1,5 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "driver.hh"
+#include "bseengine.hh"
+#include "internal.hh"
 
 #define PDEBUG(...)             Bse::debug ("pcm-alsa", __VA_ARGS__)
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
@@ -12,7 +14,178 @@ static_assert (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__, "endianess unimplement
 
 namespace Bse {
 
-static DriverP alsa_driver_create (const String &devid);
+static void silent_error_handler (const char *file, int line, const char *function, int err, const char *fmt, ...) {}
+
+class AlsaPcmDriver : public Driver {
+  snd_pcm_t    *read_handle_ = nullptr;
+  snd_pcm_t    *write_handle_ = nullptr;
+  uint          mix_freq_ = 0;
+  uint          n_channels_ = 0;
+  uint          n_periods_ = 0;
+  uint          period_size_ = 0;       // count in frames
+  int16        *period_buffer_ = nullptr;
+  uint          read_write_count_ = 0;
+public:
+  explicit      AlsaPcmDriver (const String &devid) : Driver (devid) {}
+  virtual Type  type          () const override       { return Driver::Type::PCM; }
+  static DriverP
+  create (const String &devid)
+  {
+    auto adriverp = std::make_shared<AlsaPcmDriver> (devid);
+    return adriverp;
+  }
+  ~AlsaPcmDriver()
+  {
+    if (read_handle_)
+      snd_pcm_close (read_handle_);
+    if (write_handle_)
+      snd_pcm_close (write_handle_);
+    delete[] period_buffer_;
+  }
+  virtual void
+  close () override
+  {
+    assert_return (opened());
+    if (read_handle_)
+      {
+        snd_pcm_drop (read_handle_);
+        snd_pcm_close (read_handle_);
+        read_handle_ = nullptr;
+      }
+    if (write_handle_)
+      {
+        snd_pcm_nonblock (write_handle_, 0);
+        snd_pcm_drain (write_handle_);
+        snd_pcm_close (write_handle_);
+        write_handle_ = nullptr;
+      }
+    delete[] period_buffer_;
+    period_buffer_ = nullptr;
+    flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+  }
+  virtual Error
+  open (const DriverConfig &config, Error *ep) override
+  {
+    assert_return (!opened(), Error::INTERNAL);
+    int aerror = 0;
+    // setup request
+    flags_ |= Flags::READABLE * config.require_readable;
+    flags_ |= Flags::WRITABLE * config.require_writable;
+    n_channels_ = config.n_channels;
+    // try open
+    snd_lib_error_set_handler (silent_error_handler);
+    if (!aerror && config.require_readable)
+      aerror = snd_pcm_open (&read_handle_, devid_.c_str(), SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
+    if (!aerror && config.require_writable)
+      aerror = snd_pcm_open (&write_handle_, devid_.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+    snd_lib_error_set_handler (NULL);
+    // try setup
+    const uint period_size = config.fragment_length;
+    Error error = !aerror ? Error::NONE : bse_error_from_errno (-aerror, Error::FILE_OPEN_FAILED);
+    uint rh_freq = config.mix_freq, rh_n_periods = 2, rh_period_size = period_size;
+    if (!aerror && read_handle_)
+      error = alsa_device_setup (read_handle_, config.latency_ms, &rh_freq, &rh_n_periods, &rh_period_size);
+    uint wh_freq = config.mix_freq, wh_n_periods = 2, wh_period_size = period_size;
+    if (!aerror && write_handle_)
+      error = alsa_device_setup (write_handle_, config.latency_ms, &wh_freq, &wh_n_periods, &wh_period_size);
+    // check duplex
+    if (error == 0 && read_handle_ && write_handle_ &&
+        (rh_freq != wh_freq || rh_n_periods != wh_n_periods || rh_period_size != wh_period_size))
+      error = Error::DEVICES_MISMATCH;
+    mix_freq_ = read_handle_ ? rh_freq : wh_freq;
+    n_periods_ = read_handle_ ? rh_n_periods : wh_n_periods;
+    period_size_ = read_handle_ ? rh_period_size : wh_period_size;
+    if (error == 0 && read_handle_ && write_handle_ &&
+        snd_pcm_link (read_handle_, write_handle_) < 0)
+      error = Error::DEVICES_MISMATCH;
+    if (error == 0 && snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_) < 0)
+      error = Error::FILE_OPEN_FAILED;
+    // finish opening or shutdown
+    if (error == 0)
+      {
+        period_buffer_ = new int16[period_size_];
+        flags_ |= Flags::OPENED;
+      }
+    else
+      {
+        if (read_handle_)
+          snd_pcm_close (read_handle_);
+        read_handle_ = nullptr;
+        if (write_handle_)
+          snd_pcm_close (write_handle_);
+        write_handle_ = nullptr;
+      }
+    PDEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", devid_, config.require_readable, config.require_writable, bse_error_blurb (error));
+    return error;
+  }
+  Error
+  alsa_device_setup (snd_pcm_t *phandle, uint latency_ms, uint *mix_freq, uint *n_periodsp, uint *period_sizep)
+  {
+    // turn on blocking behaviour since we may end up in read() with an unfilled buffer
+    if (snd_pcm_nonblock (phandle, 0) < 0)
+      return Error::FILE_OPEN_FAILED;
+    // setup hardware configuration
+    snd_pcm_hw_params_t *hparams = alsa_alloca0 (snd_pcm_hw_params);
+    if (snd_pcm_hw_params_any (phandle, hparams) < 0)
+      return Error::FILE_OPEN_FAILED;
+    if (snd_pcm_hw_params_set_channels (phandle, hparams, n_channels_) < 0)
+      return Error::DEVICE_CHANNELS;
+    if (snd_pcm_hw_params_set_access (phandle, hparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0)
+      return Error::DEVICE_FORMAT;
+    if (snd_pcm_hw_params_set_format (phandle, hparams, SND_PCM_FORMAT_S16_LE) < 0)
+      return Error::DEVICE_FORMAT;
+    uint rate = *mix_freq;
+    if (snd_pcm_hw_params_set_rate (phandle, hparams, rate, 0) < 0 || rate != *mix_freq)
+      return Error::DEVICE_FREQUENCY;
+    snd_pcm_uframes_t period_size = *period_sizep;
+    if (snd_pcm_hw_params_set_period_size (phandle, hparams, period_size, 0) < 0)
+      return Error::DEVICE_LATENCY;
+    uint buffer_time_us = latency_ms * 1000;
+    if (snd_pcm_hw_params_set_buffer_time_near (phandle, hparams, &buffer_time_us, NULL) < 0)
+      return Error::DEVICE_LATENCY;
+    if (snd_pcm_hw_params (phandle, hparams) < 0)
+      return Error::FILE_OPEN_FAILED;
+    // verify hardware settings
+    uint nperiods = 0;
+    if (snd_pcm_hw_params_get_periods (hparams, &nperiods, NULL) < 0 || nperiods < 2)
+      return Error::DEVICE_BUFFER;
+    snd_pcm_uframes_t buffer_size = 0;
+    if (snd_pcm_hw_params_get_buffer_size (hparams, &buffer_size) < 0 || buffer_size != nperiods * period_size)
+      return Error::DEVICE_BUFFER;
+    // setup software configuration
+    snd_pcm_sw_params_t *sparams = alsa_alloca0 (snd_pcm_sw_params);
+    if (snd_pcm_sw_params_current (phandle, sparams) < 0)
+      return Error::FILE_OPEN_FAILED;
+    if (snd_pcm_sw_params_set_start_threshold (phandle, sparams, (buffer_size / period_size) * period_size) < 0)
+      return Error::DEVICE_BUFFER;
+    if (snd_pcm_sw_params_set_avail_min (phandle, sparams, period_size) < 0)
+      return Error::DEVICE_LATENCY;
+    snd_pcm_uframes_t boundary = 0;
+    if (snd_pcm_sw_params_get_boundary (sparams, &boundary) < 0)
+      return Error::FILE_OPEN_FAILED;
+    bool stop_on_xrun = false;          // ignore XRUN
+    uint threshold = stop_on_xrun ? buffer_size : MIN (buffer_size * 2, boundary);
+    // constrain boundary for stop_threshold, to work around 64bit alsa lib setting boundary to 0x5000000000000000
+    if (snd_pcm_sw_params_set_stop_threshold (phandle, sparams, threshold) < 0)
+      return Error::DEVICE_BUFFER;
+    if (snd_pcm_sw_params_set_silence_threshold (phandle, sparams, 0) < 0 ||
+        snd_pcm_sw_params_set_silence_size (phandle, sparams, boundary) < 0)    // play silence on XRUN
+      return Error::DEVICE_BUFFER;
+    // if (snd_pcm_sw_params_set_xfer_align (phandle, sparams, 1) < 0) return Error::DEVICE_BUFFER;
+    if (snd_pcm_sw_params (phandle, sparams) < 0)
+      return Error::FILE_OPEN_FAILED;
+    // return values
+    *mix_freq = rate;
+    *n_periodsp = nperiods;
+    *period_sizep = period_size;
+    PDEBUG ("ALSA: setup: w=%d r=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+            phandle == write_handle_, phandle == read_handle_,
+            n_channels_, *mix_freq, *n_periodsp, *period_sizep,
+            nperiods * period_size, buffer_size);
+    // snd_pcm_dump (phandle, snd_output);
+    return Error::NONE;
+  }
+};
 
 static snd_output_t *snd_output = nullptr; // used for debugging
 
@@ -95,7 +268,7 @@ list_alsa_drivers (Driver::EntryVec &entries)
               entry.readonly = "Input" == ioid;
               entry.writeonly = "Output" == ioid;
               entry.priority = Driver::PULSE;
-              entry.create = alsa_driver_create;
+              entry.create = AlsaPcmDriver::create;
               entries.push_back (entry);
             }
         }
@@ -163,7 +336,7 @@ list_alsa_drivers (Driver::EntryVec &entries)
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * pindex;
-          entry.create = alsa_driver_create;
+          entry.create = AlsaPcmDriver::create;
           entries.push_back (entry);
         }
       snd_ctl_close (chandle);
@@ -171,12 +344,6 @@ list_alsa_drivers (Driver::EntryVec &entries)
 }
 
 static bool register_alsa = Driver::register_driver (Driver::Type::PCM, list_alsa_drivers);
-
-static DriverP
-alsa_driver_create (const String &devid)
-{
-  return NULL;
-}
 
 } // Bse
 
