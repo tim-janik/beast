@@ -57,6 +57,7 @@ struct Options {
   bool                    filter_impl_verbose = false;
   bool                    verbose             = false;
   bool                    use_sse             = false;
+  bool                    standalone          = false;
   string                  program_name        = "testresampler";
 
   void parse (int *argc_p, char **argv_p[]);
@@ -122,7 +123,6 @@ usage ()
 
 }
 
-#ifdef STANDALONE
 static bool
 check_arg (uint         argc,
            char        *argv[],
@@ -227,7 +227,7 @@ Options::parse (int   *argc_p,
 	    case 12:
 	    case 16:
 	    case 20:
-	    case 24: precision = static_cast<BseResampler2Precision> (p);
+            case 24: precision = Resampler2::Precision (p);
 	      break;
 	    default: printerr ("testresampler: unsupported precision: %d\n", p);
 		     exit (1);
@@ -235,7 +235,11 @@ Options::parse (int   *argc_p,
 	}
       else if (check_arg (argc, argv, &i, "--precision-linear"))
 	{
-	  precision = BSE_RESAMPLER2_PREC_LINEAR;
+	  precision = Resampler2::PREC_LINEAR;
+	}
+      else if (check_arg (argc, argv, &i, "--fpu"))
+	{
+	  use_sse = false;
 	}
       else if (check_arg (argc, argv, &i, "--freq-scan", &opt_arg))
 	{
@@ -293,7 +297,6 @@ Options::parse (int   *argc_p,
       }
   *argc_p = e;
 }
-#endif // STANDALONE
 
 static int
 test_filter_impl()
@@ -320,7 +323,7 @@ gettime ()
 template <int TEST, int RESAMPLE> int
 perform_test()
 {
-  const int REPETITIONS = 5000; // 500000;
+  const int REPETITIONS = options.standalone ? 500000 : 5000;
   const guint	block_size = (TEST == TEST_IMPULSE) ? 150 /* enough space for all possible tests */
 						    : options.block_size;
   /* Initialize up- and downsampler via bse.
@@ -649,7 +652,6 @@ perform_test()
     }
 }
 
-#ifdef STANDALONE
 static string
 test_title()
 {
@@ -661,7 +663,7 @@ test_title()
     {
       assert_return (test_type == TEST_ACCURACY, "*bad test type*");
 
-      const char *instruction_set = Bse::Block::impl_name();
+      const char *instruction_set = options.use_sse ? "SSE" : "FPU";
       const char *rname = "*bad resample name*";
       switch (resample_type)
         {
@@ -679,15 +681,7 @@ static int standalone (int argc, char **argv) __attribute__((unused));
 static int
 standalone (int argc, char **argv)
 {
-  /* preprocess args: allow using --fpu instead of --bse-force-fpu,
-   * because its a really common use case for the resampler test
-   */
-  for (int i = 0; i < argc; i++)
-    if (strcmp (argv[i], "--fpu") == 0)
-      argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
-
-  /* load plugins */
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
+  options.use_sse = Resampler2::sse_available();
   options.parse (&argc, &argv);
 
   if (argc == 2)
@@ -750,7 +744,6 @@ standalone (int argc, char **argv)
     }
   return result;
 }
-#endif // STANDALONE
 
 // == test collection ==
 static void
@@ -868,10 +861,17 @@ TEST_PERF (testresampler_check_performance_sub24);
 static void testresampler_check_performance_over24()    { run_perf (RES_OVERSAMPLE, 24); }
 TEST_PERF (testresampler_check_performance_over24);
 
-#ifdef STANDALONE
+int test_resampler (int argc, char **argv);
+
 int
-main (int argc, char **argv)
+test_resampler (int argc, char **argv)
 {
-  return standalone (argc, argv);
+  options.standalone = true;
+
+  char first_argv[] = "testresampler";
+  vector<char *> standalone_argv { first_argv };
+  for (int i = 2; i < argc; i++)
+    standalone_argv.push_back (argv[i]);
+
+  return standalone (standalone_argv.size(), standalone_argv.data());
 }
-#endif
