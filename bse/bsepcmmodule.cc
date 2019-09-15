@@ -6,12 +6,12 @@
 /* --- typedefs & structures --- */
 typedef struct
 {
-  guint         n_values;	/* bse_engine_block_size() * 2 (stereo) */
-  gfloat       *buffer;
-  gfloat       *bound;
-  Bse::Driver  *driver;
-  BsePcmWriter *pcm_writer;
-  gboolean      pcm_input_checked;
+  uint             n_values;	/* bse_engine_block_size() * 2 (stereo) */
+  float          *buffer;
+  float          *bound;
+  Bse::PcmDriver *driver;
+  BsePcmWriter   *pcm_writer;
+  bool            pcm_input_checked;
 } BsePCMModuleData;
 enum
 {
@@ -95,7 +95,7 @@ bse_pcm_module_data_free (gpointer        data,
 }
 
 static BseModule*
-bse_pcm_omodule_insert (Bse::Driver *pcm_driver, BsePcmWriter *writer, BseTrans *trans)
+bse_pcm_omodule_insert (Bse::PcmDriver *pcm_driver, BsePcmWriter *writer, BseTrans *trans)
 {
   static const BseModuleClass pcm_omodule_class = {
     0,				/* n_istreams */
@@ -196,7 +196,7 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 }
 
 static BseModule*
-bse_pcm_imodule_insert (Bse::Driver *pcm_driver, BseTrans *trans)
+bse_pcm_imodule_insert (Bse::PcmDriver *pcm_driver, BseTrans *trans)
 {
   static const BseModuleClass pcm_imodule_class = {
     0,				/* n_istreams */

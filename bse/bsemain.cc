@@ -140,7 +140,7 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
     {
       Bse::Driver::EntryVec entries;
       printerr ("%s", _("\nAvailable PCM drivers:\n"));
-      entries = Bse::Driver::list_drivers (Bse::Driver::Type::PCM);
+      entries = Bse::PcmDriver::list_drivers();
       for (const auto &entry : entries)
         printerr ("  %-30s (%s, %08x)\n\t%s\n%s\t%s\n", entry.devid + ":",
                   entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",

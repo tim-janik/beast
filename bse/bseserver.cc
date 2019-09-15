@@ -1482,15 +1482,15 @@ ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint block_size)
   config.mix_freq = mix_freq;
   config.latency_ms = latency;
   config.block_length = block_size;
-  auto entries = Driver::list_drivers (Driver::Type::PCM);
+  auto entries = PcmDriver::list_drivers();
   config.require_readable = true;
   config.require_writable = true;
   if (!entries.empty())
     {
-      pcm_driver_ = Driver::open (entries[0], config, &error);
+      pcm_driver_ = PcmDriver::open (entries[0], config, &error);
       config.require_readable = false;
       if (!pcm_driver_)
-        pcm_driver_ = Driver::open (entries[0], config, &error);
+        pcm_driver_ = PcmDriver::open (entries[0], config, &error);
     }
   if (!pcm_driver_)
     {

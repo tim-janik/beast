@@ -17,7 +17,7 @@ namespace Bse {
 
 static void silent_error_handler (const char *file, int line, const char *function, int err, const char *fmt, ...) {}
 
-class AlsaPcmDriver : public Driver {
+class AlsaPcmDriver : public PcmDriver {
   snd_pcm_t    *read_handle_ = nullptr;
   snd_pcm_t    *write_handle_ = nullptr;
   uint          mix_freq_ = 0;
@@ -27,9 +27,8 @@ class AlsaPcmDriver : public Driver {
   int16        *period_buffer_ = nullptr;
   uint          read_write_count_ = 0;
 public:
-  explicit      AlsaPcmDriver (const String &devid) : Driver (devid) {}
-  virtual Type  type          () const override       { return Driver::Type::PCM; }
-  static DriverP
+  explicit      AlsaPcmDriver (const String &devid) : PcmDriver (devid) {}
+  static PcmDriverP
   create (const String &devid)
   {
     auto adriverp = std::make_shared<AlsaPcmDriver> (devid);
@@ -392,7 +391,7 @@ pcm_class_name (snd_pcm_class_t pcmclass)
 }
 
 static void
-list_alsa_drivers (Driver::EntryVec &entries)
+list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid)
 {
   static const bool BSE_USED initialized = [] {
     return snd_output_stdio_attach (&snd_output, stderr, 0);
@@ -419,7 +418,7 @@ list_alsa_drivers (Driver::EntryVec &entries)
               entry.readonly = "Input" == ioid;
               entry.writeonly = "Output" == ioid;
               entry.priority = Driver::PULSE;
-              entry.create = AlsaPcmDriver::create;
+              entry.driverid = driverid;
               entries.push_back (entry);
             }
         }
@@ -487,14 +486,14 @@ list_alsa_drivers (Driver::EntryVec &entries)
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * pindex;
-          entry.create = AlsaPcmDriver::create;
+          entry.driverid = driverid;
           entries.push_back (entry);
         }
       snd_ctl_close (chandle);
     }
 }
 
-static bool register_alsa = Driver::register_driver (Driver::Type::PCM, list_alsa_drivers);
+static const uint32 alsa_driverid = PcmDriver::register_driver (AlsaPcmDriver::create, list_alsa_drivers);
 
 } // Bse
 

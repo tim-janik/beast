@@ -65,7 +65,7 @@ class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   int32              tc_ = 0;
   bool               log_messages_ = true;
   bool               pcm_input_checked_ = false;
-  DriverP            pcm_driver_;
+  PcmDriverP         pcm_driver_;
 protected:
   virtual            ~ServerImpl            ();
 public:
@@ -76,7 +76,7 @@ public:
   IpcHandler*         get_ipc_handler       ();
   void                require_pcm_input     ();
   Error               open_pcm_driver       (uint mix_freq, uint latency, uint block_size);
-  DriverP             pcm_driver            () const { return pcm_driver_; }
+  PcmDriverP          pcm_driver            () const { return pcm_driver_; }
   void                close_pcm_driver      ();
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
