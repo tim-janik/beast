@@ -323,7 +323,6 @@ gettime ()
 template <int TEST, int RESAMPLE> int
 perform_test()
 {
-  const int REPETITIONS = options.standalone ? 500000 : 5000;
   const guint	block_size = (TEST == TEST_IMPULSE) ? 150 /* enough space for all possible tests */
 						    : options.block_size;
   /* Initialize up- and downsampler via bse.
@@ -348,6 +347,7 @@ perform_test()
 
   if (TEST == TEST_PERFORMANCE)
     {
+      const int REPETITIONS = (options.standalone ? 64'000'000 : 640'000) / block_size;
       const gdouble test_frequency = options.frequency;
 
       for (unsigned int i = 0; i < block_size; i++)
