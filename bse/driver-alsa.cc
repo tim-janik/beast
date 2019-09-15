@@ -213,6 +213,51 @@ public:
       }
     snd_lib_error_set_handler (NULL);
   }
+  virtual bool
+  pcm_check_io (long *timeoutp) override
+  {
+    if (0)
+      {
+        snd_pcm_state_t ws = SND_PCM_STATE_DISCONNECTED, rs = SND_PCM_STATE_DISCONNECTED;
+        snd_pcm_status_t *stat = alsa_alloca0 (snd_pcm_status);
+        if (read_handle_)
+          {
+            snd_pcm_status (read_handle_, stat);
+            rs = snd_pcm_state (read_handle_);
+          }
+        uint rn = snd_pcm_status_get_avail (stat);
+        if (write_handle_)
+          {
+            snd_pcm_status (write_handle_, stat);
+            ws = snd_pcm_state (write_handle_);
+          }
+        uint wn = snd_pcm_status_get_avail (stat);
+        printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
+                  rn, period_size_ * n_periods_, snd_pcm_state_name (rs),
+                  wn, period_size_ * n_periods_, snd_pcm_state_name (ws),
+                  period_size_, rn >= period_size_ ? "true" : "false");
+      }
+    // quick check for data availability
+    int n_frames_avail = snd_pcm_avail_update (read_handle_ ? read_handle_ : write_handle_);
+    if (n_frames_avail < 0 ||   // error condition, probably an underrun (-EPIPE)
+        (n_frames_avail == 0 && // check RUNNING state
+         snd_pcm_state (read_handle_ ? read_handle_ : write_handle_) != SND_PCM_STATE_RUNNING))
+      pcm_retrigger();
+    if (n_frames_avail < period_size_)
+      {
+        // not enough data? sync with hardware pointer
+        snd_pcm_hwsync (read_handle_ ? read_handle_ : write_handle_);
+        n_frames_avail = snd_pcm_avail_update (read_handle_ ? read_handle_ : write_handle_);
+        n_frames_avail = MAX (n_frames_avail, 0);
+      }
+    // check whether data can be processed
+    if (n_frames_avail >= period_size_)
+      return true;      // need processing
+    // calculate timeout until processing is possible or needed
+    const uint diff_frames = period_size_ - n_frames_avail;
+    *timeoutp = diff_frames * 1000 / mix_freq_;
+    return false;
+  }
 };
 
 static snd_output_t *snd_output = nullptr; // used for debugging
