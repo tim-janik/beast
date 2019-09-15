@@ -31,50 +31,25 @@ struct BseServer : BseContainer {
 struct BseServerClass : BseContainerClass
 {};
 
-BseServer*	bse_server_get				(void);
-BseProject*	bse_server_find_project			(BseServer	*server,
-							 const gchar	*name);
-void    	bse_server_stop_recording		(BseServer	*server);
-void            bse_server_start_recording              (BseServer      *server,
-                                                         const char     *wave_file,
-                                                         double          n_seconds);
-Bse::Error	bse_server_open_devices			(BseServer	*server);
-void		bse_server_close_devices		(BseServer	*server);
-void		bse_server_shutdown             	(BseServer	*server);
-BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
-							 BseSource	*source,
-							 const gchar	*uplink_name);
-void		bse_server_discard_pcm_output_module	(BseServer	*server,
-							 BseModule	*module);
-BseModule*	bse_server_retrieve_pcm_input_module	(BseServer	*server,
-							 BseSource	*source,
-							 const gchar	*uplink_name);
-void		bse_server_discard_pcm_input_module	(BseServer	*server,
-							 BseModule	*module);
-void		bse_server_require_pcm_input    	(BseServer	*server);
-BseModule*	bse_server_retrieve_midi_input_module	(BseServer	*server,
-							 const gchar	*downlink_name,
-							 guint		 midi_channel_id,
-							 guint		 nth_note,
-							 guint		 signals[4]);
-void		bse_server_discard_midi_input_module	(BseServer	*server,
-							 BseModule	*module);
-void		bse_server_add_io_watch			(BseServer	*server,
-							 gint		 fd,
-							 GIOCondition	 events,
-							 BseIOWatch	 watch_func,
-							 gpointer	 data);
-void		bse_server_remove_io_watch		(BseServer	*server,
-							 BseIOWatch	 watch_func,
-							 gpointer	 data);
-
-/* --- internal --- */
-void		bse_server_registration			(BseServer          *server,
-							 BseRegistrationType rtype,
-							 const gchar	    *what,
-							 const gchar	    *error);
-void		bse_server_queue_kill_wire		(BseServer	    *server,
-							 SfiComWire	    *wire);
+BseServer*  bse_server_get			  (void);
+BseProject* bse_server_find_project		  (BseServer *server, const char *name);
+void        bse_server_stop_recording             (BseServer *server);
+void        bse_server_start_recording            (BseServer *server, const char *wave_file, double n_seconds);
+Bse::Error  bse_server_open_devices		  (BseServer *server);
+void	    bse_server_close_devices              (BseServer *server);
+void	    bse_server_shutdown                   (BseServer *server);
+BseModule*  bse_server_retrieve_pcm_output_module (BseServer *server, BseSource *source, const char *uplink_name);
+void	    bse_server_discard_pcm_output_module  (BseServer *server, BseModule *module);
+BseModule*  bse_server_retrieve_pcm_input_module  (BseServer *server, BseSource *source, const char *uplink_name);
+void	    bse_server_discard_pcm_input_module   (BseServer *server, BseModule *module);
+void	    bse_server_require_pcm_input          (BseServer *server);
+BseModule*  bse_server_retrieve_midi_input_module (BseServer *server, const char *downlink_name, uint midi_channel_id, uint nth_note, uint signals[4]);
+void	    bse_server_discard_midi_input_module  (BseServer *server, BseModule *module);
+void	    bse_server_add_io_watch		  (BseServer *server, int fd, GIOCondition events, BseIOWatch watch_func, void *data);
+void	    bse_server_remove_io_watch            (BseServer *server, BseIOWatch watch_func, void *data);
+// internal
+void	    bse_server_registration		  (BseServer *server, BseRegistrationType rtype, const char *what, const char *error);
+void	    bse_server_queue_kill_wire            (BseServer *server, SfiComWire *wire);
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
 
