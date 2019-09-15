@@ -22,7 +22,7 @@ protected:
   size_t             flags_ = 0;
   explicit           Driver     (const String &devid);
   virtual           ~Driver     ();
-  virtual Bse::Error open       (const DriverConfig &config, Bse::Error *ep) = 0;
+  virtual Bse::Error open       (const DriverConfig &config) = 0;
 public:
   enum {
     JACK  = 0x01 << 24,
@@ -43,8 +43,9 @@ public:
   virtual Type   type          () const = 0;
   virtual bool   pcm_check_io  (long *timeoutp) = 0;
   virtual uint   pcm_latency   () const = 0;
-  virtual size_t pcm_read      (float *values) = 0;
-  virtual void   pcm_write     (const float *values) = 0;
+  virtual float  pcm_frequency () const = 0;
+  virtual size_t pcm_read      (size_t n, float *values) = 0;
+  virtual void   pcm_write     (size_t n, const float *values) = 0;
   virtual void   close         () = 0;
   // registry
   struct Entry {

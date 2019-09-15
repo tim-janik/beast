@@ -43,6 +43,11 @@ public:
       snd_pcm_close (write_handle_);
     delete[] period_buffer_;
   }
+  virtual float
+  pcm_frequency () const override
+  {
+    return mix_freq_;
+  }
   virtual void
   close () override
   {
@@ -65,7 +70,7 @@ public:
     flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
   }
   virtual Error
-  open (const DriverConfig &config, Error *ep) override
+  open (const DriverConfig &config) override
   {
     assert_return (!opened(), Error::INTERNAL);
     int aerror = 0;
@@ -90,21 +95,23 @@ public:
     if (!aerror && write_handle_)
       error = alsa_device_setup (write_handle_, config.latency_ms, &wh_freq, &wh_n_periods, &wh_period_size);
     // check duplex
-    if (error == 0 && read_handle_ && write_handle_ &&
-        (rh_freq != wh_freq || rh_n_periods != wh_n_periods || rh_period_size != wh_period_size))
-      error = Error::DEVICES_MISMATCH;
+    if (error == 0 && read_handle_ && write_handle_)
+      {
+        const bool linked = snd_pcm_link (read_handle_, write_handle_) == 0;
+        if (rh_freq != wh_freq || rh_n_periods != wh_n_periods || rh_period_size != wh_period_size || !linked)
+          error = Error::DEVICES_MISMATCH;
+        PDEBUG ("ALSA: %s: %s: %f==%f && %d==%d && %d==%d && linked==%d", devid_,
+                error != 0 ? "MISMATCH" : "LINKED", rh_freq, wh_freq, rh_n_periods, wh_n_periods, rh_period_size, wh_period_size, linked);
+      }
     mix_freq_ = read_handle_ ? rh_freq : wh_freq;
     n_periods_ = read_handle_ ? rh_n_periods : wh_n_periods;
     period_size_ = read_handle_ ? rh_period_size : wh_period_size;
-    if (error == 0 && read_handle_ && write_handle_ &&
-        snd_pcm_link (read_handle_, write_handle_) < 0)
-      error = Error::DEVICES_MISMATCH;
     if (error == 0 && snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_) < 0)
       error = Error::FILE_OPEN_FAILED;
     // finish opening or shutdown
     if (error == 0)
       {
-        period_buffer_ = new int16[period_size_];
+        period_buffer_ = new int16[period_size_ * n_channels_];
         flags_ |= Flags::OPENED;
       }
     else
@@ -179,8 +186,8 @@ public:
     *mix_freq = rate;
     *n_periodsp = nperiods;
     *period_sizep = period_size;
-    PDEBUG ("ALSA: setup: w=%d r=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
-            phandle == write_handle_, phandle == read_handle_,
+    PDEBUG ("ALSA: setup: r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+            phandle == read_handle_, phandle == write_handle_,
             n_channels_, *mix_freq, *n_periodsp, *period_sizep,
             nperiods * period_size, buffer_size);
     // snd_pcm_dump (phandle, snd_output);
@@ -272,8 +279,9 @@ public:
     return CLAMP (rdelay, 0, buffer_length) + CLAMP (wdelay, 0, buffer_length);
   }
   virtual size_t
-  pcm_read (float *values) override
+  pcm_read (size_t n, float *values) override
   {
+    assert_return (n == period_size_ * n_channels_, 0);
     float *dest = values;
     size_t n_left = period_size_;
     const size_t n_values = n_left * n_channels_;
@@ -304,8 +312,9 @@ public:
     return n_values;
   }
   virtual void
-  pcm_write (const float *values) override
+  pcm_write (size_t n, const float *values) override
   {
+    assert_return (n == period_size_ * n_channels_);
     if (read_handle_ && read_write_count_ < 1)
       {
         snd_lib_error_set_handler (silent_error_handler); // silence ALSA about -EPIPE
@@ -399,7 +408,7 @@ list_alsa_drivers (Driver::EntryVec &entries)
           name = cxfree (snd_device_name_get_hint (*hint, "NAME"));           // full ALSA device name
           desc = cxfree (snd_device_name_get_hint (*hint, "DESC"));           // card_name + pcm_name + alsa.conf-description
           ioid = cxfree (snd_device_name_get_hint (*hint, "IOID"), "Duplex"); // one of: "Duplex", "Input", "Output"
-          seen_plughw = seen_plughw || strncmp (name.c_str(), "plughw:", 7) == 0;
+          seen_plughw = seen_plughw || 0; // FIXME: strncmp (name.c_str(), "plughw:", 7) == 0;
           if (name == "pulse")
             {
               PDEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
