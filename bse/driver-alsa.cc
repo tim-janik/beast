@@ -15,8 +15,53 @@ static_assert (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__, "endianess unimplement
 
 namespace Bse {
 
-static void silent_error_handler (const char *file, int line, const char *function, int err, const char *fmt, ...) {}
+static String
+chars2string (const char *s)
+{
+  return s ? s : "";
+}
 
+static String
+cxfree (char *mallocedstring, const char *fallback = "")
+{
+  if (mallocedstring)
+    {
+      const String string = mallocedstring;
+      free (mallocedstring);
+      return string;
+    }
+  return fallback;
+}
+
+static std::string
+substitute_string (const std::string &from, const std::string &to, const std::string &input)
+{
+  std::string::size_type l = 0;
+  std::string target;
+  for (std::string::size_type i = input.find (from, 0); i != std::string::npos; l = i + 1, i = input.find (from, l))
+    {
+      target.append (input, l, i - l);
+      target.append (to);
+    }
+  target.append (input, l, input.size() - l);
+  return target;
+}
+
+static void
+silent_error_handler (const char *file, int line, const char *function, int err, const char *fmt, ...)
+{}
+
+static snd_output_t *snd_output = nullptr; // used for debugging
+
+static void
+init_lib_alsa()
+{
+  static const bool BSE_USED initialized = [] {
+    return snd_output_stdio_attach (&snd_output, stderr, 0);
+  } ();
+}
+
+// == AlsaPcmDriver ==
 class AlsaPcmDriver : public PcmDriver {
   snd_pcm_t    *read_handle_ = nullptr;
   snd_pcm_t    *write_handle_ = nullptr;
@@ -343,40 +388,6 @@ public:
   }
 };
 
-static snd_output_t *snd_output = nullptr; // used for debugging
-
-static String
-chars2string (const char *s)
-{
-  return s ? s : "";
-}
-
-static String
-cxfree (char *mallocedstring, const char *fallback = "")
-{
-  if (mallocedstring)
-    {
-      const String string = mallocedstring;
-      free (mallocedstring);
-      return string;
-    }
-  return fallback;
-}
-
-static std::string
-substitute_string (const std::string &from, const std::string &to, const std::string &input)
-{
-  std::string::size_type l = 0;
-  std::string target;
-  for (std::string::size_type i = input.find (from, 0); i != std::string::npos; l = i + 1, i = input.find (from, l))
-    {
-      target.append (input, l, i - l);
-      target.append (to);
-    }
-  target.append (input, l, input.size() - l);
-  return target;
-}
-
 static const char*
 pcm_class_name (snd_pcm_class_t pcmclass)
 {
@@ -391,11 +402,9 @@ pcm_class_name (snd_pcm_class_t pcmclass)
 }
 
 static void
-list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid)
+list_alsa_pcm_drivers (Driver::EntryVec &entries, uint32 driverid)
 {
-  static const bool BSE_USED initialized = [] {
-    return snd_output_stdio_attach (&snd_output, stderr, 0);
-  } ();
+  init_lib_alsa();
   // discover virtual (non-hw) devices
   bool seen_plughw = false; // maybe needed to resample at device boundaries
   void **nhints = nullptr;
@@ -493,7 +502,7 @@ list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid)
     }
 }
 
-static const uint32 alsa_driverid = PcmDriver::register_driver (AlsaPcmDriver::create, list_alsa_drivers);
+static const uint32 alsa_pcm_driverid = PcmDriver::register_driver (AlsaPcmDriver::create, list_alsa_pcm_drivers);
 
 } // Bse
 
