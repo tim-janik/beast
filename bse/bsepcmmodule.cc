@@ -9,7 +9,7 @@ typedef struct
   guint         n_values;	/* bse_engine_block_size() * 2 (stereo) */
   gfloat       *buffer;
   gfloat       *bound;
-  BsePcmHandle *handle;
+  Bse::Driver  *driver;
   BsePcmWriter *pcm_writer;
   gboolean      pcm_input_checked;
 } BsePCMModuleData;
@@ -27,18 +27,6 @@ enum
 };
 
 
-/* --- prototypes --- */
-static BseModule*	bse_pcm_omodule_insert	(BsePcmHandle	*handle,
-						 BsePcmWriter	*writer,
-						 BseTrans	*trans);
-static void		bse_pcm_omodule_remove	(BseModule	*pcm_module,
-						 BseTrans	*trans);
-static BseModule*	bse_pcm_imodule_insert	(BsePcmHandle	*handle,
-						 BseTrans	*trans);
-static void		bse_pcm_imodule_remove	(BseModule	*pcm_module,
-						 BseTrans	*trans);
-
-
 /* --- functions --- */
 static gboolean
 bse_pcm_module_poll (gpointer       data,
@@ -49,8 +37,7 @@ bse_pcm_module_poll (gpointer       data,
 		     gboolean       revents_filled)
 {
   BsePCMModuleData *mdata = (BsePCMModuleData*) data;
-  BsePcmHandle *handle = mdata->handle;
-  return bse_pcm_handle_check_io (handle, timeout_p);
+  return mdata->driver->pcm_check_io (timeout_p);
 }
 
 static void
@@ -91,7 +78,7 @@ bse_pcm_omodule_process (BseModule *module,
       do { *d += *src++; d += 2; } while (d < b);
     }
 
-  bse_pcm_handle_write (mdata->handle, mdata->n_values, mdata->buffer);
+  mdata->driver->pcm_write (mdata->n_values, mdata->buffer);
   if (mdata->pcm_writer)
     bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer,
                           bse_module_tick_stamp (module));
@@ -108,9 +95,7 @@ bse_pcm_module_data_free (gpointer        data,
 }
 
 static BseModule*
-bse_pcm_omodule_insert (BsePcmHandle *handle,
-			BsePcmWriter *writer,
-			BseTrans     *trans)
+bse_pcm_omodule_insert (Bse::Driver *pcm_driver, BsePcmWriter *writer, BseTrans *trans)
 {
   static const BseModuleClass pcm_omodule_class = {
     0,				/* n_istreams */
@@ -120,20 +105,20 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     bse_pcm_module_data_free,	/* free */
-    Bse::ModuleFlag::CHEAP,		/* cost */
+    Bse::ModuleFlag::CHEAP,	/* cost */
   };
   BsePCMModuleData *mdata;
   BseModule *module;
 
-  assert_return (handle != NULL, NULL);
-  assert_return (handle->write != NULL, NULL);
+  assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
+  assert_return (pcm_driver->writable(), NULL);
   assert_return (trans != NULL, NULL);
 
   mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
   mdata->buffer = g_new0 (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
-  mdata->handle = handle;
+  mdata->driver = pcm_driver;
   mdata->pcm_writer = writer;
   module = bse_module_new (&pcm_omodule_class, mdata);
 
@@ -164,8 +149,8 @@ bse_pcm_omodule_remove (BseModule *pcm_module,
 static gboolean
 pcm_imodule_check_input (gpointer data)         /* UserThread */
 {
-  bse_server_require_pcm_input (bse_server_get());
-  return FALSE;
+  Bse::ServerImpl::instance().require_pcm_input();
+  return false;
 }
 
 static void
@@ -191,9 +176,9 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 
   assert_return (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
 
-  if (mdata->handle->readable)
+  if (mdata->driver->readable())
     {
-      l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
+      l = mdata->driver->pcm_read (mdata->n_values, mdata->buffer);
       assert_return (l == mdata->n_values);
     }
   else
@@ -211,8 +196,7 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 }
 
 static BseModule*
-bse_pcm_imodule_insert (BsePcmHandle *handle,
-			BseTrans     *trans)
+bse_pcm_imodule_insert (Bse::Driver *pcm_driver, BseTrans *trans)
 {
   static const BseModuleClass pcm_imodule_class = {
     0,				/* n_istreams */
@@ -227,15 +211,14 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
   BsePCMModuleData *mdata;
   BseModule *module;
 
-  assert_return (handle != NULL, NULL);
-  assert_return (handle->write != NULL, NULL);
+  assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (trans != NULL, NULL);
 
   mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
   mdata->buffer = g_new0 (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
-  mdata->handle = handle;
+  mdata->driver = pcm_driver;
   mdata->pcm_writer = NULL;
   module = bse_module_new (&pcm_imodule_class, mdata);
 

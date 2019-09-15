@@ -119,7 +119,6 @@ bse_server_init (BseServer *self)
   self->engine_source = NULL;
   self->projects = NULL;
   self->dev_use_count = 0;
-  self->pcm_device = NULL;
   self->pcm_imodule = NULL;
   self->pcm_omodule = NULL;
   self->pcm_writer = NULL;
@@ -310,81 +309,6 @@ bse_server_start_recording (BseServer      *self,
   impl->notify ("wave_file");
 }
 
-void
-bse_server_require_pcm_input (BseServer *server)
-{
-  if (server->pcm_device && !server->pcm_input_checked)
-    {
-      server->pcm_input_checked = TRUE;
-      if (!BSE_DEVICE_READABLE (server->pcm_device))
-        {
-          UserMessage umsg;
-          umsg.utype = Bse::UserMessageType::WARNING;
-          umsg.title = _("Audio Recording Failed");
-          umsg.text1 = _("Failed to start recording from audio device.");
-          umsg.text2 = _("An audio project is in use which processes an audio input signal, but the audio device "
-                         "has not been opened in recording mode. "
-                         "An audio signal of silence will be used instead of a recorded signal, "
-                         "so playback operation may produce results not actually intended "
-                         "(such as a silent output signal).");
-          umsg.text3 = string_format (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
-                                      BSE_DEVICE (server->pcm_device)->open_device_name,
-                                      BSE_DEVICE_GET_CLASS (server->pcm_device)->driver_name,
-                                      BSE_DEVICE (server->pcm_device)->open_device_args);
-          umsg.label = _("audio input problems");
-          ServerImpl::instance().send_user_message (umsg);
-        }
-    }
-}
-
-typedef struct {
-  guint      n_channels;
-  guint      mix_freq;
-  guint      latency;
-  guint      block_size;
-} PcmRequest;
-static void
-pcm_request_callback (BseDevice *device,
-                      gpointer   data)
-{
-  PcmRequest *pr = (PcmRequest*) data;
-  bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->mix_freq, pr->latency, pr->block_size);
-}
-static Bse::Error
-server_open_pcm_device (BseServer *server,
-                        guint      mix_freq,
-                        guint      latency,
-                        guint      block_size)
-{
-  assert_return (server->pcm_device == NULL, Bse::Error::INTERNAL);
-  Bse::Error error = Bse::Error::UNKNOWN;
-  PcmRequest pr;
-  pr.n_channels = 2;
-  pr.mix_freq = mix_freq;
-  pr.latency = latency;
-  pr.block_size = block_size;
-  server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, TRUE, TRUE,
-                                                             bse_main_args->pcm_drivers,
-                                                             pcm_request_callback, &pr, error != 0 ? NULL : &error);
-  if (!server->pcm_device)
-    server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, FALSE, TRUE,
-                                                               bse_main_args->pcm_drivers,
-                                                               pcm_request_callback, &pr, error != 0 ? NULL : &error);
-  if (!server->pcm_device)
-    {
-      UserMessage umsg;
-      umsg.utype = Bse::UserMessageType::ERROR;
-      umsg.title = _("Audio I/O Failed");
-      umsg.text1 = _("No available audio device was found.");
-      umsg.text2 = _("No available audio device could be found and opened successfully. "
-                     "Sorry, no fallback selection can be made for audio devices, giving up.");
-      umsg.text3 = string_format (_("Failed to open PCM devices: %s"), bse_error_blurb (error));
-      umsg.label = _("PCM device selections problems");
-      ServerImpl::instance().send_user_message (umsg);
-    }
-  server->pcm_input_checked = FALSE;
-  return server->pcm_device ? Bse::Error::NONE : error;
-}
 static Bse::Error
 server_open_midi_device (BseServer *server)
 {
@@ -415,6 +339,7 @@ server_open_midi_device (BseServer *server)
 Bse::Error
 bse_server_open_devices (BseServer *self)
 {
+  auto impl = self->as<Bse::ServerImpl*>();
   Bse::Error error = Bse::Error::NONE;
   assert_return (BSE_IS_SERVER (self), Bse::Error::INTERNAL);
   /* check whether devices are already opened */
@@ -430,13 +355,13 @@ bse_server_open_devices (BseServer *self)
   bse_engine_constrain (latency, mix_freq, Bse::global_config->synth_control_freq, &block_size, NULL);
   /* try opening devices */
   if (error == 0)
-    error = server_open_pcm_device (self, mix_freq, latency, block_size);
+    error = impl->open_pcm_driver (mix_freq, latency, block_size);
   guint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
   if (error != 0 && aligned_freq != mix_freq)
     {
       mix_freq = aligned_freq;
       bse_engine_constrain (latency, mix_freq, Bse::global_config->synth_control_freq, &block_size, NULL);
-      Bse::Error new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
+      Bse::Error new_error = impl->open_pcm_driver (mix_freq, latency, block_size);
       error = new_error != 0 ? error : Bse::Error::NONE;
     }
   if (error == 0)
@@ -444,9 +369,8 @@ bse_server_open_devices (BseServer *self)
   if (error == 0)
     {
       BseTrans *trans = bse_trans_open ();
-      engine_init (self, bse_pcm_device_get_mix_freq (self->pcm_device));
-      BsePcmHandle *pcm_handle = bse_pcm_device_get_handle (self->pcm_device, bse_engine_block_size());
-      self->pcm_imodule = bse_pcm_imodule_insert (pcm_handle, trans);
+      engine_init (self, impl->pcm_driver()->pcm_frequency());
+      self->pcm_imodule = bse_pcm_imodule_insert (impl->pcm_driver().get(), trans);
       if (self->wave_file)
 	{
 	  Bse::Error error;
@@ -470,7 +394,7 @@ bse_server_open_devices (BseServer *self)
 	      self->pcm_writer = NULL;
 	    }
 	}
-      self->pcm_omodule = bse_pcm_omodule_insert (pcm_handle, self->pcm_writer, trans);
+      self->pcm_omodule = bse_pcm_omodule_insert (impl->pcm_driver().get(), self->pcm_writer, trans);
       bse_trans_commit (trans);
       self->dev_use_count++;
       ServerImpl::instance().enginechange (true);
@@ -483,12 +407,7 @@ bse_server_open_devices (BseServer *self)
 	  g_object_unref (self->midi_device);
 	  self->midi_device = NULL;
 	}
-      if (self->pcm_device)
-	{
-	  bse_device_close (BSE_DEVICE (self->pcm_device));
-	  g_object_unref (self->pcm_device);
-	  self->pcm_device = NULL;
-	}
+      impl->close_pcm_driver();
     }
   Bse::global_config->unlock();
   return error;
@@ -515,6 +434,7 @@ bse_server_close_devices (BseServer *self)
 {
   assert_return (BSE_IS_SERVER (self));
   assert_return (self->dev_use_count > 0);
+  auto impl = self->as<Bse::ServerImpl*>();
 
   self->dev_use_count--;
   if (!self->dev_use_count)
@@ -534,11 +454,9 @@ bse_server_close_devices (BseServer *self)
 	  g_object_unref (self->pcm_writer);
 	  self->pcm_writer = NULL;
 	}
-      bse_device_close (BSE_DEVICE (self->pcm_device));
+      impl->close_pcm_driver();
       bse_device_close (BSE_DEVICE (self->midi_device));
       engine_shutdown (self);
-      g_object_unref (self->pcm_device);
-      self->pcm_device = NULL;
       g_object_unref (self->midi_device);
       self->midi_device = NULL;
       ServerImpl::instance().enginechange (false);
@@ -919,7 +837,9 @@ ServerImpl::ServerImpl (BseObject *bobj) :
 {}
 
 ServerImpl::~ServerImpl ()
-{}
+{
+  close_pcm_driver();
+}
 
 bool
 ServerImpl::log_messages() const
@@ -1540,6 +1460,76 @@ IpcHandler*
 ServerImpl::get_ipc_handler ()
 {
   return server_ipc_handler;
+}
+
+void
+ServerImpl::close_pcm_driver()
+{
+  if (pcm_driver_)
+    {
+      pcm_driver_->close();
+      pcm_driver_ = nullptr;
+    }
+}
+
+Bse::Error
+ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint block_size)
+{
+  assert_return (pcm_driver_ == nullptr, Error::INTERNAL);
+  Error error = Error::UNKNOWN;
+  DriverConfig config;
+  config.n_channels = 2;
+  config.mix_freq = mix_freq;
+  config.latency_ms = latency;
+  config.block_length = block_size;
+  auto entries = Driver::list_drivers (Driver::Type::PCM);
+  config.require_readable = true;
+  config.require_writable = true;
+  if (!entries.empty())
+    {
+      pcm_driver_ = Driver::open (entries[0], config, &error);
+      config.require_readable = false;
+      if (!pcm_driver_)
+        pcm_driver_ = Driver::open (entries[0], config, &error);
+    }
+  if (!pcm_driver_)
+    {
+      UserMessage umsg;
+      umsg.utype = Bse::UserMessageType::ERROR;
+      umsg.title = _("Audio I/O Failed");
+      umsg.text1 = _("No available audio device was found.");
+      umsg.text2 = _("No available audio device could be found and opened successfully. "
+                     "Sorry, no fallback selection can be made for audio devices, giving up.");
+      umsg.text3 = string_format (_("Failed to open PCM devices: %s"), bse_error_blurb (error));
+      umsg.label = _("PCM device selections problems");
+      send_user_message (umsg);
+    }
+  pcm_input_checked_ = false;
+  return pcm_driver_ ? Error::NONE : error;
+}
+
+void
+ServerImpl::require_pcm_input()
+{
+  if (pcm_driver_ && !pcm_input_checked_)
+    {
+      pcm_input_checked_ = true;
+      if (!pcm_driver_->readable())
+        {
+          UserMessage umsg;
+          umsg.utype = Bse::UserMessageType::WARNING;
+          umsg.title = _("Audio Recording Failed");
+          umsg.text1 = _("Failed to start recording from audio device.");
+          umsg.text2 = _("An audio project is in use which processes an audio input signal, but the audio device "
+                         "has not been opened in recording mode. "
+                         "An audio signal of silence will be used instead of a recorded signal, "
+                         "so playback operation may produce results not actually intended "
+                         "(such as a silent output signal).");
+          umsg.text3 = string_format (_("PCM audio device is not open for input: %s"), pcm_driver_->devid());
+          umsg.label = _("audio input problems");
+          send_user_message (umsg);
+        }
+    }
 }
 
 DeviceCrawlerIfaceP
