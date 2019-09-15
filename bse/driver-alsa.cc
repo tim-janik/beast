@@ -2,6 +2,7 @@
 #include "driver.hh"
 #include "bseengine.hh"
 #include "internal.hh"
+#include "gsldatautils.hh"
 
 #define PDEBUG(...)             Bse::debug ("pcm-alsa", __VA_ARGS__)
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
@@ -269,6 +270,68 @@ public:
     const int buffer_length = n_periods_ * period_size_; // buffer size chosen by ALSA based on latency request
     // return total latency in frames
     return CLAMP (rdelay, 0, buffer_length) + CLAMP (wdelay, 0, buffer_length);
+  }
+  virtual size_t
+  pcm_read (float *values) override
+  {
+    float *dest = values;
+    size_t n_left = period_size_;
+    const size_t n_values = n_left * n_channels_;
+
+    read_write_count_ += 1;
+    do
+      {
+        ssize_t n_frames = snd_pcm_readi (read_handle_, period_buffer_, n_left);
+        if (n_frames < 0) // errors during read, could be underrun (-EPIPE)
+          {
+            PDEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
+            snd_lib_error_set_handler (silent_error_handler);
+            snd_pcm_prepare (read_handle_);     // force retrigger
+            snd_lib_error_set_handler (NULL);
+            n_frames = n_left;
+            const size_t frame_size = n_channels_ * sizeof (period_buffer_[0]);
+            memset (period_buffer_, 0, n_frames * frame_size);
+          }
+        if (dest) // ignore dummy reads()
+          {
+            gsl_conv_to_float (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER, period_buffer_, dest, n_frames * n_channels_);
+            dest += n_frames * n_channels_;
+          }
+        n_left -= n_frames;
+      }
+    while (n_left);
+
+    return n_values;
+  }
+  virtual void
+  pcm_write (const float *values) override
+  {
+    if (read_handle_ && read_write_count_ < 1)
+      {
+        snd_lib_error_set_handler (silent_error_handler); // silence ALSA about -EPIPE
+        snd_pcm_forward (read_handle_, period_size_);
+        snd_lib_error_set_handler (NULL);
+        read_write_count_ += 1;
+      }
+    read_write_count_ -= 1;
+    const float *floats = values;
+    size_t n_left = period_size_;       // in frames
+    while (n_left)
+      {
+        gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER, floats, period_buffer_, n_left * n_channels_);
+        floats += n_left * n_channels_;
+        ssize_t n = 0;                  // in frames
+        n = snd_pcm_writei (write_handle_, period_buffer_, n_left);
+        if (n < 0)                      // errors during write, could be overrun (-EPIPE)
+          {
+            PDEBUG ("ALSA: write() error: %s", snd_strerror (n));
+            snd_lib_error_set_handler (silent_error_handler);
+            snd_pcm_prepare (write_handle_);    // force retrigger
+            snd_lib_error_set_handler (NULL);
+            return;
+          }
+        n_left -= n;
+      }
   }
 };
 

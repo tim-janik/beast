@@ -43,6 +43,8 @@ public:
   virtual Type   type          () const = 0;
   virtual bool   pcm_check_io  (long *timeoutp) = 0;
   virtual uint   pcm_latency   () const = 0;
+  virtual size_t pcm_read      (float *values) = 0;
+  virtual void   pcm_write     (const float *values) = 0;
   virtual void   close         () = 0;
   // registry
   struct Entry {
