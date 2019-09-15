@@ -185,6 +185,34 @@ public:
     // snd_pcm_dump (phandle, snd_output);
     return Error::NONE;
   }
+  void
+  pcm_retrigger ()
+  {
+    snd_lib_error_set_handler (silent_error_handler);
+    PDEBUG ("ALSA: retriggering device (r=%s w=%s)...",
+            !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
+            !write_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (write_handle_)));
+    snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
+    // first, clear io buffers
+    if (read_handle_)
+      snd_pcm_drop (read_handle_);
+    if (write_handle_)
+      snd_pcm_drain (write_handle_); // write_handle_ must be blocking
+    // prepare for playback/capture
+    int aerror = snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
+    if (aerror)   // this really should not fail
+      Bse::info ("ALSA: failed to prepare for io: %s\n", snd_strerror (aerror));
+    // fill playback buffer with silence
+    if (write_handle_)
+      {
+        int n, buffer_length = n_periods_ * period_size_; // buffer size chosen by ALSA based on latency request
+        const float *zeros = bse_engine_const_zeros (buffer_length / 2); // sizeof (int16) / sizeof (float)
+        do
+          n = snd_pcm_writei (write_handle_, zeros, buffer_length);
+        while (n == -EAGAIN); // retry on signals
+      }
+    snd_lib_error_set_handler (NULL);
+  }
 };
 
 static snd_output_t *snd_output = nullptr; // used for debugging
