@@ -3,6 +3,13 @@
 
 namespace Bse {
 
+Driver::Driver (const String &devid) :
+  devid_ (devid)
+{}
+
+Driver::~Driver ()
+{}
+
 typedef void (*DriverListFunc)  (Driver::EntryVec&);
 using DriverListFuncs = std::vector<DriverListFunc>;
 static DriverListFuncs *driver_list_funcs = nullptr;

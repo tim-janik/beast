@@ -6,12 +6,23 @@
 
 namespace Bse {
 
+struct DriverConfig {
+  bool require_readable = false;
+  bool require_writable = false;
+  uint n_channels = 0;
+  uint mix_freq = 0;
+  uint latency_ms = 0;
+  uint fragment_length = 0;
+};
+
 class Driver {
-  enum class Flags { OPENED = 1, READABLE = 2, WRITABLE = 4, };
-  Flags flags_ = Flags (0);
 protected:
+  struct Flags { enum { OPENED = 1, READABLE = 2, WRITABLE = 4, }; };
   const String       devid_;
+  size_t             flags_ = 0;
   explicit           Driver     (const String &devid);
+  virtual           ~Driver     ();
+  virtual Bse::Error open       (const DriverConfig &config, Bse::Error *ep) = 0;
 public:
   enum {
     JACK  = 0x01 << 24,
@@ -23,15 +34,14 @@ public:
     WDEV  = 0x01 <<  8,
     WSUB  = 0x01 <<  0,
   };
+  enum class Type { PCM = 1, MIDI = 2, };
   typedef std::shared_ptr<Driver> DriverP;
-  bool               opened     () const        { return size_t (flags_) & size_t (Flags::OPENED); }
-  bool               readable   () const        { return size_t (flags_) & size_t (Flags::READABLE); }
-  bool               writable   () const        { return size_t (flags_) & size_t (Flags::WRITABLE); }
-  virtual String     type       () const = 0;
-  virtual String     name       () const = 0;
-  virtual String     args       () const = 0;
-  virtual Bse::Error open       (const String &devid, bool require_readable, bool require_writable);
-  virtual void       close      ();
+  bool           opened        () const        { return flags_ & Flags::OPENED; }
+  bool           readable      () const        { return flags_ & Flags::READABLE; }
+  bool           writable      () const        { return flags_ & Flags::WRITABLE; }
+  virtual String devid         () const        { return devid_; }
+  virtual Type   type          () const = 0;
+  virtual void   close         () = 0;
   // registry
   struct Entry {
     String      devid, name, blurb, status;
@@ -42,9 +52,9 @@ public:
     DriverP   (*create) (const String &devid) = nullptr;
   };
   typedef std::vector<Entry> EntryVec;
-  enum class Type { PCM = 1, MIDI = 2, };
   static bool        register_driver (Type, void (*f) (EntryVec&));
   static EntryVec    list_drivers    (Type type);
+  static DriverP     open            (const Entry &entry, const DriverConfig &config, Bse::Error *ep);
 };
 using DriverP = Driver::DriverP;
 
