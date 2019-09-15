@@ -81,7 +81,7 @@ public:
       aerror = snd_pcm_open (&write_handle_, devid_.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
     snd_lib_error_set_handler (NULL);
     // try setup
-    const uint period_size = config.fragment_length;
+    const uint period_size = config.block_length;
     Error error = !aerror ? Error::NONE : bse_error_from_errno (-aerror, Error::FILE_OPEN_FAILED);
     uint rh_freq = config.mix_freq, rh_n_periods = 2, rh_period_size = period_size;
     if (!aerror && read_handle_)

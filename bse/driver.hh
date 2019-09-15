@@ -12,7 +12,7 @@ struct DriverConfig {
   uint n_channels = 0;
   uint mix_freq = 0;
   uint latency_ms = 0;
-  uint fragment_length = 0;
+  uint block_length = 0;
 };
 
 class Driver {
