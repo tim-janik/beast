@@ -12,9 +12,6 @@
 #include <time.h>
 #include <string>
 #include <vector>
-#ifdef __SSE__
-#include <xmmintrin.h>
-#endif
 
 using namespace Bse;
 
@@ -44,15 +41,6 @@ enum ResampleType
 };
 
 namespace { // Anon
-
-/* see: http://ds9a.nl/gcc-simd/ */
-union F4Vector
-{
-  float f[4];
-#ifdef __SSE__
-  __m128 v;   // vector of four single floats
-#endif
-};
 
 static ResampleType resample_type = RES_UPSAMPLE;
 static TestType test_type = TEST_NONE;
@@ -352,8 +340,8 @@ perform_test()
   TASSERT (options.use_sse == ups.sse_enabled());
   TASSERT (options.use_sse == downs.sse_enabled());
 
-  F4Vector in_v[block_size / 2 + 3], out_v[block_size / 2 + 3], out2_v[block_size / 2 + 3];
-  float *input = &in_v[0].f[0], *output = &out_v[0].f[0], *output2 = &out2_v[0].f[0]; /* ensure aligned data */
+  AlignedArray<float, 16> in_a (block_size * 2), out_a (block_size * 2), out2_a (block_size * 2);
+  float *input = &in_a[0], *output = &out_a[0], *output2 = &out2_a[0]; /* ensure aligned data */
 
   if (TEST == TEST_PERFORMANCE)
     {
