@@ -25,6 +25,11 @@ class Resampler2 {
     }
   };
   std::unique_ptr<Impl> impl;
+
+  template<uint ORDER, bool USE_SSE>
+  class Upsampler2;
+  template<uint ORDER, bool USE_SSE>
+  class Downsampler2;
 public:
   enum Mode {
     UP,
