@@ -4,7 +4,7 @@
 #include "internal.hh"
 #include "gsldatautils.hh"
 
-#define PDEBUG(...)             Bse::debug ("pcm-alsa", __VA_ARGS__)
+#define ADEBUG(...)             Bse::debug ("alsa", __VA_ARGS__)
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
 
 #if __has_include(<alsa/asoundlib.h>)
@@ -99,7 +99,7 @@ public:
         const bool linked = snd_pcm_link (read_handle_, write_handle_) == 0;
         if (rh_freq != wh_freq || rh_n_periods != wh_n_periods || rh_period_size != wh_period_size || !linked)
           error = Error::DEVICES_MISMATCH;
-        PDEBUG ("ALSA: %s: %s: %f==%f && %d==%d && %d==%d && linked==%d", devid_,
+        ADEBUG ("ALSA: %s: %s: %f==%f && %d==%d && %d==%d && linked==%d", devid_,
                 error != 0 ? "MISMATCH" : "LINKED", rh_freq, wh_freq, rh_n_periods, wh_n_periods, rh_period_size, wh_period_size, linked);
       }
     mix_freq_ = read_handle_ ? rh_freq : wh_freq;
@@ -122,7 +122,7 @@ public:
           snd_pcm_close (write_handle_);
         write_handle_ = nullptr;
       }
-    PDEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", devid_, config.require_readable, config.require_writable, bse_error_blurb (error));
+    ADEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", devid_, config.require_readable, config.require_writable, bse_error_blurb (error));
     return error;
   }
   Error
@@ -185,7 +185,7 @@ public:
     *mix_freq = rate;
     *n_periodsp = nperiods;
     *period_sizep = period_size;
-    PDEBUG ("ALSA: setup: r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+    ADEBUG ("ALSA: setup: r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
             phandle == read_handle_, phandle == write_handle_,
             n_channels_, *mix_freq, *n_periodsp, *period_sizep,
             nperiods * period_size, buffer_size);
@@ -196,7 +196,7 @@ public:
   pcm_retrigger ()
   {
     snd_lib_error_set_handler (silent_error_handler);
-    PDEBUG ("ALSA: retriggering device (r=%s w=%s)...",
+    ADEBUG ("ALSA: retriggering device (r=%s w=%s)...",
             !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
             !write_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (write_handle_)));
     snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
@@ -291,7 +291,7 @@ public:
         ssize_t n_frames = snd_pcm_readi (read_handle_, period_buffer_, n_left);
         if (n_frames < 0) // errors during read, could be underrun (-EPIPE)
           {
-            PDEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
+            ADEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (read_handle_);     // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -332,7 +332,7 @@ public:
         n = snd_pcm_writei (write_handle_, period_buffer_, n_left);
         if (n < 0)                      // errors during write, could be overrun (-EPIPE)
           {
-            PDEBUG ("ALSA: write() error: %s", snd_strerror (n));
+            ADEBUG ("ALSA: write() error: %s", snd_strerror (n));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (write_handle_);    // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -410,7 +410,7 @@ list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid)
           seen_plughw = seen_plughw || 0; // FIXME: strncmp (name.c_str(), "plughw:", 7) == 0;
           if (name == "pulse")
             {
-              PDEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
+              ADEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
               Driver::Entry entry;
               entry.devid = name;
               entry.name = desc;
@@ -445,7 +445,7 @@ list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid)
       const String card_name = chars2string (snd_ctl_card_info_get_name (cinfo));
       const String card_longname = chars2string (snd_ctl_card_info_get_longname (cinfo));
       const String card_mixername = chars2string (snd_ctl_card_info_get_mixername (cinfo));
-      PDEBUG ("CARD: %s - %s - %s [%s] - %s", card_id, card_driver, card_name, card_mixername, card_longname);
+      ADEBUG ("CARD: %s - %s - %s [%s] - %s", card_id, card_driver, card_name, card_mixername, card_longname);
       int pindex = -1;
       while (snd_ctl_pcm_next_device (chandle, &pindex) == 0 && pindex >= 0)
         {
