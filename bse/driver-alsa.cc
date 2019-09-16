@@ -3,6 +3,8 @@
 #include "bseengine.hh"
 #include "internal.hh"
 #include "gsldatautils.hh"
+#include "bsesequencer.hh"
+#include "bsemididecoder.hh"
 
 #define ADEBUG(...)             Bse::debug ("alsa", __VA_ARGS__)
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
@@ -47,6 +49,19 @@ substitute_string (const std::string &from, const std::string &to, const std::st
   return target;
 }
 
+static const char*
+pcm_class_name (snd_pcm_class_t pcmclass)
+{
+  switch (pcmclass)
+    {
+    case SND_PCM_CLASS_MULTI:     return "Multichannel";
+    case SND_PCM_CLASS_MODEM:     return "Modem";
+    case SND_PCM_CLASS_DIGITIZER: return "Digitizer";
+    default:
+    case SND_PCM_CLASS_GENERIC:   return "Standard";
+    }
+}
+
 static void
 silent_error_handler (const char *file, int line, const char *function, int err, const char *fmt, ...)
 {}
@@ -59,6 +74,158 @@ init_lib_alsa()
   static const bool BSE_USED initialized = [] {
     return snd_output_stdio_attach (&snd_output, stderr, 0);
   } ();
+}
+
+static void
+list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid, bool need_pcm, bool need_midi)
+{
+  init_lib_alsa();
+  // discover virtual (non-hw) devices
+  bool seen_plughw = false; // maybe needed to resample at device boundaries
+  void **nhints = nullptr;
+  if (need_pcm && snd_device_name_hint (-1, "pcm", &nhints) >= 0)
+    {
+      String name, desc, ioid;
+      for (void **hint = nhints; *hint; hint++)
+        {
+          name = cxfree (snd_device_name_get_hint (*hint, "NAME"));           // full ALSA device name
+          desc = cxfree (snd_device_name_get_hint (*hint, "DESC"));           // card_name + pcm_name + alsa.conf-description
+          ioid = cxfree (snd_device_name_get_hint (*hint, "IOID"), "Duplex"); // one of: "Duplex", "Input", "Output"
+          seen_plughw = seen_plughw || 0; // FIXME: strncmp (name.c_str(), "plughw:", 7) == 0;
+          if (name == "pulse")
+            {
+              ADEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
+              Driver::Entry entry;
+              entry.devid = name;
+              entry.name = desc;
+              entry.blurb = "Warning: PulseAudio routing is not realtime capable";
+              entry.readonly = "Input" == ioid;
+              entry.writeonly = "Output" == ioid;
+              entry.priority = Driver::PULSE;
+              entry.driverid = driverid;
+              entries.push_back (entry);
+            }
+        }
+      snd_device_name_free_hint (nhints);
+    }
+  // discover hardware cards
+  snd_ctl_card_info_t *cinfo = alsa_alloca0 (snd_ctl_card_info);
+  int cindex = -1;
+  while (snd_card_next (&cindex) == 0 && cindex >= 0)
+    {
+      snd_ctl_card_info_clear (cinfo);
+      snd_ctl_t *chandle = nullptr;
+      if (snd_ctl_open (&chandle, string_format ("hw:CARD=%u", cindex).c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
+        continue;
+      if (snd_ctl_card_info (chandle, cinfo) < 0)
+        {
+          snd_ctl_close (chandle);
+          continue;
+        }
+      const String card_id = chars2string (snd_ctl_card_info_get_id (cinfo));
+      const String card_driver = chars2string (snd_ctl_card_info_get_driver (cinfo));
+      const String card_name = chars2string (snd_ctl_card_info_get_name (cinfo));
+      const String card_longname = chars2string (snd_ctl_card_info_get_longname (cinfo));
+      const String card_mixername = chars2string (snd_ctl_card_info_get_mixername (cinfo));
+      ADEBUG ("CARD: %s - %s - %s [%s] - %s", card_id, card_driver, card_name, card_mixername, card_longname);
+      // discover PCM hardware
+      snd_pcm_info_t *wpi = !need_pcm ? nullptr : alsa_alloca0 (snd_pcm_info);
+      snd_pcm_info_t *rpi = !need_pcm ? nullptr : alsa_alloca0 (snd_pcm_info);
+      int dindex = -1;
+      while (need_pcm && snd_ctl_pcm_next_device (chandle, &dindex) == 0 && dindex >= 0)
+        {
+          snd_pcm_info_set_device (wpi, dindex);
+          snd_pcm_info_set_subdevice (wpi, 0);
+          snd_pcm_info_set_stream (wpi, SND_PCM_STREAM_PLAYBACK);
+          const bool writable = snd_ctl_pcm_info (chandle, wpi) == 0;
+          snd_pcm_info_set_device (rpi, dindex);
+          snd_pcm_info_set_subdevice (rpi, 0);
+          snd_pcm_info_set_stream (rpi, SND_PCM_STREAM_CAPTURE);
+          const bool readable = snd_ctl_pcm_info (chandle, rpi) == 0;
+          const auto pcmclass = snd_pcm_info_get_class (writable ? wpi : rpi);
+          if (!writable && !readable)
+            continue;
+          const int total_playback_subdevices = writable ? snd_pcm_info_get_subdevices_count (wpi) : 0;
+          const int avail_playback_subdevices = writable ? snd_pcm_info_get_subdevices_avail (wpi) : 0;
+          String wdevs, rdevs;
+          if (total_playback_subdevices && total_playback_subdevices != avail_playback_subdevices)
+            wdevs = string_format ("%u*playback (%u busy)", total_playback_subdevices, total_playback_subdevices - avail_playback_subdevices);
+          else if (total_playback_subdevices)
+            wdevs = string_format ("%u*playback", total_playback_subdevices);
+          const int total_capture_subdevices = readable ? snd_pcm_info_get_subdevices_count (rpi) : 0;
+          const int avail_capture_subdevices = readable ? snd_pcm_info_get_subdevices_avail (rpi) : 0;
+          if (total_capture_subdevices && total_capture_subdevices != avail_capture_subdevices)
+            rdevs = string_format ("%u*capture (%u busy)", total_capture_subdevices, total_capture_subdevices - avail_capture_subdevices);
+          else if (total_capture_subdevices)
+            rdevs = string_format ("%u*capture", total_capture_subdevices);
+          const String joiner = !wdevs.empty() && !rdevs.empty() ? " + " : "";
+          Driver::Entry entry;
+          entry.devid = string_format ("%s:CARD=%s,DEV=%u", seen_plughw ? "plughw" : "hw", card_id, dindex);
+          entry.name = chars2string (snd_pcm_info_get_name (writable ? wpi : rpi));
+          entry.name += " - " + card_name;
+          if (card_name != card_mixername && !card_mixername.empty())
+            entry.name += " [" + card_mixername + "]";
+          entry.status = pcm_class_name (pcmclass) + String (" ") + (readable && writable ? "Duplex" : readable ? "Input" : "Output");
+          entry.status += " " + wdevs + joiner + rdevs;
+          entry.blurb = card_longname;
+          entry.readonly = !writable;
+          entry.writeonly = !readable;
+          entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex;
+          entry.driverid = driverid;
+          entries.push_back (entry);
+        }
+      // discover MIDI hardware
+      snd_rawmidi_info_t *minfo = !need_midi ? nullptr : alsa_alloca0 (snd_rawmidi_info);
+      dindex = -1;
+      while (need_midi && snd_ctl_rawmidi_next_device (chandle, &dindex) == 0 && dindex >= 0)
+        {
+          snd_rawmidi_info_set_device (minfo, dindex);
+          uint total_subdevs = 0;
+          snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_INPUT);
+          if (snd_ctl_rawmidi_info (chandle, minfo) >= 0)
+            total_subdevs = std::max (total_subdevs, snd_rawmidi_info_get_subdevices_count (minfo));
+          snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_OUTPUT);
+          if (snd_ctl_rawmidi_info (chandle, minfo) >= 0)
+            total_subdevs = std::max (total_subdevs, snd_rawmidi_info_get_subdevices_count (minfo));
+          for (uint subdev = 0; subdev < total_subdevs; subdev += 1)
+            {
+              snd_rawmidi_info_set_subdevice (minfo, subdev);
+              snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_INPUT);
+              const bool readable = snd_ctl_rawmidi_info (chandle, minfo) == 0;
+              bool writable = false;
+              if (!readable)
+                {
+                  snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_OUTPUT);
+                  if (snd_ctl_rawmidi_info (chandle, minfo) < 0)
+                    continue;
+                  writable = true;
+                }
+              Driver::Entry entry;
+              if (total_subdevs > 1)
+                entry.devid = string_format ("hw:CARD=%s,DEV=%u,SUBDEV=%u", card_id, dindex, subdev);
+              else
+                entry.devid = string_format ("hw:CARD=%s,DEV=%u", card_id, dindex);
+              entry.name = chars2string (snd_rawmidi_info_get_subdevice_name (minfo));
+              entry.name += entry.name.empty() ? string_format ("Midi#%u - ", subdev) : " - ";
+              entry.name += chars2string (snd_rawmidi_info_get_name (minfo));
+              entry.name += " [" + chars2string (snd_rawmidi_info_get_id (minfo)) + "]";
+              entry.blurb = card_longname;
+              if (!writable)
+                {
+                  snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_OUTPUT);
+                  writable = snd_ctl_rawmidi_info (chandle, minfo) == 0;
+                }
+              const String joiner = readable && writable ? " & " : "";
+              entry.status = (readable ? "Input" : "") + joiner + (writable ? "Output" : "");
+              entry.readonly = !writable;
+              entry.writeonly = !readable;
+              entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
+              entry.driverid = driverid;
+              entries.push_back (entry);
+            }
+        }
+      snd_ctl_close (chandle);
+    }
 }
 
 // == AlsaPcmDriver ==
@@ -76,8 +243,8 @@ public:
   static PcmDriverP
   create (const String &devid)
   {
-    auto adriverp = std::make_shared<AlsaPcmDriver> (devid);
-    return adriverp;
+    auto pdriverp = std::make_shared<AlsaPcmDriver> (devid);
+    return pdriverp;
   }
   ~AlsaPcmDriver()
   {
@@ -144,7 +311,7 @@ public:
         const bool linked = snd_pcm_link (read_handle_, write_handle_) == 0;
         if (rh_freq != wh_freq || rh_n_periods != wh_n_periods || rh_period_size != wh_period_size || !linked)
           error = Error::DEVICES_MISMATCH;
-        ADEBUG ("ALSA: %s: %s: %f==%f && %d==%d && %d==%d && linked==%d", devid_,
+        ADEBUG ("PCM: %s: %s: %f==%f && %d==%d && %d==%d && linked==%d", devid_,
                 error != 0 ? "MISMATCH" : "LINKED", rh_freq, wh_freq, rh_n_periods, wh_n_periods, rh_period_size, wh_period_size, linked);
       }
     mix_freq_ = read_handle_ ? rh_freq : wh_freq;
@@ -167,7 +334,7 @@ public:
           snd_pcm_close (write_handle_);
         write_handle_ = nullptr;
       }
-    ADEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", devid_, config.require_readable, config.require_writable, bse_error_blurb (error));
+    ADEBUG ("PCM: opening \"%s\" readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
   Error
@@ -230,7 +397,7 @@ public:
     *mix_freq = rate;
     *n_periodsp = nperiods;
     *period_sizep = period_size;
-    ADEBUG ("ALSA: setup: r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+    ADEBUG ("PCM: setup r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
             phandle == read_handle_, phandle == write_handle_,
             n_channels_, *mix_freq, *n_periodsp, *period_sizep,
             nperiods * period_size, buffer_size);
@@ -241,7 +408,7 @@ public:
   pcm_retrigger ()
   {
     snd_lib_error_set_handler (silent_error_handler);
-    ADEBUG ("ALSA: retriggering device (r=%s w=%s)...",
+    ADEBUG ("PCM: retriggering device (r=%s w=%s)...",
             !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
             !write_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (write_handle_)));
     snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
@@ -253,7 +420,7 @@ public:
     // prepare for playback/capture
     int aerror = snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
     if (aerror)   // this really should not fail
-      Bse::info ("ALSA: failed to prepare for io: %s\n", snd_strerror (aerror));
+      info ("ALSA: failed to prepare for io: %s\n", snd_strerror (aerror));
     // fill playback buffer with silence
     if (write_handle_)
       {
@@ -336,7 +503,7 @@ public:
         ssize_t n_frames = snd_pcm_readi (read_handle_, period_buffer_, n_left);
         if (n_frames < 0) // errors during read, could be underrun (-EPIPE)
           {
-            ADEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
+            ADEBUG ("PCM: read() error: %s", snd_strerror (n_frames));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (read_handle_);     // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -377,7 +544,7 @@ public:
         n = snd_pcm_writei (write_handle_, period_buffer_, n_left);
         if (n < 0)                      // errors during write, could be overrun (-EPIPE)
           {
-            ADEBUG ("ALSA: write() error: %s", snd_strerror (n));
+            ADEBUG ("PCM: write() error: %s", snd_strerror (n));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (write_handle_);    // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -388,121 +555,163 @@ public:
   }
 };
 
-static const char*
-pcm_class_name (snd_pcm_class_t pcmclass)
-{
-  switch (pcmclass)
-    {
-    case SND_PCM_CLASS_MULTI:     return "Multichannel";
-    case SND_PCM_CLASS_MODEM:     return "Modem";
-    case SND_PCM_CLASS_DIGITIZER: return "Digitizer";
-    default:
-    case SND_PCM_CLASS_GENERIC:   return "Standard";
-    }
-}
+static const uint32 alsa_pcm_driverid = PcmDriver::register_driver (AlsaPcmDriver::create,
+                                                                    [] (Driver::EntryVec &entries, uint32 driverid) {
+                                                                      list_alsa_drivers (entries, driverid, true, false);
+                                                                    });
 
-static void
-list_alsa_pcm_drivers (Driver::EntryVec &entries, uint32 driverid)
-{
-  init_lib_alsa();
-  // discover virtual (non-hw) devices
-  bool seen_plughw = false; // maybe needed to resample at device boundaries
-  void **nhints = nullptr;
-  if (snd_device_name_hint (-1, "pcm", &nhints) >= 0)
-    {
-      String name, desc, ioid;
-      for (void **hint = nhints; *hint; hint++)
-        {
-          name = cxfree (snd_device_name_get_hint (*hint, "NAME"));           // full ALSA device name
-          desc = cxfree (snd_device_name_get_hint (*hint, "DESC"));           // card_name + pcm_name + alsa.conf-description
-          ioid = cxfree (snd_device_name_get_hint (*hint, "IOID"), "Duplex"); // one of: "Duplex", "Input", "Output"
-          seen_plughw = seen_plughw || 0; // FIXME: strncmp (name.c_str(), "plughw:", 7) == 0;
-          if (name == "pulse")
-            {
-              ADEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
-              Driver::Entry entry;
-              entry.devid = name;
-              entry.name = desc;
-              entry.blurb = "Warning: PulseAudio routing is not realtime capable";
-              entry.readonly = "Input" == ioid;
-              entry.writeonly = "Output" == ioid;
-              entry.priority = Driver::PULSE;
-              entry.driverid = driverid;
-              entries.push_back (entry);
-            }
-        }
-      snd_device_name_free_hint (nhints);
-    }
-  // discover PCM hardware
-  snd_ctl_card_info_t *cinfo = alsa_alloca0 (snd_ctl_card_info);
-  snd_pcm_info_t *pinfo = alsa_alloca0 (snd_pcm_info);
-  snd_pcm_info_t *rinfo = alsa_alloca0 (snd_pcm_info);
-  int cindex = -1;
-  while (snd_card_next (&cindex) == 0 && cindex >= 0)
-    {
-      snd_ctl_card_info_clear (cinfo);
-      snd_ctl_t *chandle = nullptr;
-      if (snd_ctl_open (&chandle, string_format ("hw:CARD=%u", cindex).c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
-        continue;
-      if (snd_ctl_card_info (chandle, cinfo) < 0)
-        {
-          snd_ctl_close (chandle);
-          continue;
-        }
-      const String card_id = chars2string (snd_ctl_card_info_get_id (cinfo));
-      const String card_driver = chars2string (snd_ctl_card_info_get_driver (cinfo));
-      const String card_name = chars2string (snd_ctl_card_info_get_name (cinfo));
-      const String card_longname = chars2string (snd_ctl_card_info_get_longname (cinfo));
-      const String card_mixername = chars2string (snd_ctl_card_info_get_mixername (cinfo));
-      ADEBUG ("CARD: %s - %s - %s [%s] - %s", card_id, card_driver, card_name, card_mixername, card_longname);
-      int pindex = -1;
-      while (snd_ctl_pcm_next_device (chandle, &pindex) == 0 && pindex >= 0)
-        {
-          snd_pcm_info_set_device (pinfo, pindex);
-          snd_pcm_info_set_subdevice (pinfo, 0);
-          snd_pcm_info_set_stream (pinfo, SND_PCM_STREAM_PLAYBACK);
-          const bool writable = snd_ctl_pcm_info (chandle, pinfo) == 0;
-          snd_pcm_info_set_device (rinfo, pindex);
-          snd_pcm_info_set_subdevice (rinfo, 0);
-          snd_pcm_info_set_stream (rinfo, SND_PCM_STREAM_CAPTURE);
-          const bool readable = snd_ctl_pcm_info (chandle, rinfo) == 0;
-          const auto pcmclass = snd_pcm_info_get_class (writable ? pinfo : rinfo);
-          if (!writable && !readable)
-            continue;
-          const int total_playback_subdevices = writable ? snd_pcm_info_get_subdevices_count (pinfo) : 0;
-          const int avail_playback_subdevices = writable ? snd_pcm_info_get_subdevices_avail (pinfo) : 0;
-          String pdevs, rdevs;
-          if (total_playback_subdevices && total_playback_subdevices != avail_playback_subdevices)
-            pdevs = string_format ("%u*playback (%u busy)", total_playback_subdevices, total_playback_subdevices - avail_playback_subdevices);
-          else if (total_playback_subdevices)
-            pdevs = string_format ("%u*playback", total_playback_subdevices);
-          const int total_capture_subdevices = readable ? snd_pcm_info_get_subdevices_count (rinfo) : 0;
-          const int avail_capture_subdevices = readable ? snd_pcm_info_get_subdevices_avail (rinfo) : 0;
-          if (total_capture_subdevices && total_capture_subdevices != avail_capture_subdevices)
-            rdevs = string_format ("%u*capture (%u busy)", total_capture_subdevices, total_capture_subdevices - avail_capture_subdevices);
-          else if (total_capture_subdevices)
-            rdevs = string_format ("%u*capture", total_capture_subdevices);
-          const String joiner = !pdevs.empty() && !rdevs.empty() ? " + " : "";
-          Driver::Entry entry; // alsa=hw:CARD=PCH,DEV=0
-          entry.devid = string_format ("%s:CARD=%s,DEV=%u", seen_plughw ? "plughw" : "hw", card_id, pindex);
-          entry.name = chars2string (snd_pcm_info_get_name (writable ? pinfo : rinfo));
-          entry.name += " - " + card_name;
-          if (card_name != card_mixername && !card_mixername.empty())
-            entry.name += " [" + card_mixername + "]";
-          entry.status = pcm_class_name (pcmclass) + String (" ") + (readable && writable ? "Duplex" : readable ? "Input" : "Output");
-          entry.status += " " + pdevs + joiner + rdevs;
-          entry.blurb = card_longname;
-          entry.readonly = !writable;
-          entry.writeonly = !readable;
-          entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * pindex;
-          entry.driverid = driverid;
-          entries.push_back (entry);
-        }
-      snd_ctl_close (chandle);
-    }
-}
+// == AlsaMidiDriver ==
+class AlsaMidiDriver : public MidiDriver {
+  snd_rawmidi_t  *read_handle_ = nullptr;
+  snd_rawmidi_t  *write_handle_ = nullptr;
+  BseMidiDecoder *midi_decoder_ = nullptr;
+  uint            total_pfds_ = 0;
+public:
+  static MidiDriverP
+  create (const String &devid)
+  {
+    auto mdriverp = std::make_shared<AlsaMidiDriver> (devid);
+    return mdriverp;
+  }
+  explicit
+  AlsaMidiDriver (const String &devid) :
+    MidiDriver (devid)
+  {
+    midi_decoder_ = bse_midi_decoder_new (TRUE, FALSE, MusicalTuning::OD_12_TET);
+  }
+  ~AlsaMidiDriver()
+  {
+    bse_midi_decoder_destroy (midi_decoder_);
+    if (read_handle_)
+      snd_rawmidi_close (read_handle_);
+    if (write_handle_)
+      snd_rawmidi_close (write_handle_);
+  }
+  virtual void
+  close () override
+  {
+    assert_return (opened());
+    if (total_pfds_)
+      Sequencer::instance().remove_io_watch (midi_io_handler_func, static_cast<void*> (this));
+    if (read_handle_)
+      {
+        snd_rawmidi_drop (read_handle_);
+        snd_rawmidi_close (read_handle_);
+        read_handle_ = nullptr;
+      }
+    if (write_handle_)
+      {
+        snd_rawmidi_nonblock (write_handle_, 0);
+        snd_rawmidi_drain (write_handle_);
+        snd_rawmidi_close (write_handle_);
+        write_handle_ = nullptr;
+      }
+    flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+  }
+  bool // called from Sequencer thread
+  midi_io_handler (uint n_pfds, GPollFD *pfds)
+  {
+    const size_t buf_size = 8192;
+    uint8 buffer[buf_size];
+    const uint64 systime = sfi_time_system ();
+    ssize_t l;
+    do
+      l = snd_rawmidi_read (read_handle_, buffer, buf_size);
+    while (l < 0 && errno == EINTR);    // restart on signal
+    if (l > 0)
+      bse_midi_decoder_push_data (midi_decoder_, l, buffer, systime);
+    return true;
+  }
+  static gboolean // called from Sequencer thread
+  midi_io_handler_func (void *thisdata, uint n_pfds, GPollFD *pfds)
+  {
+    AlsaMidiDriver *thisp = static_cast<AlsaMidiDriver*> (thisdata);
+    return thisp->midi_io_handler (n_pfds, pfds);
+  }
+  virtual Error
+  open (const DriverConfig &config) override
+  {
+    assert_return (!opened(), Error::INTERNAL);
+    int aerror = 0;
+    // setup request
+    flags_ |= Flags::READABLE * config.require_readable;
+    flags_ |= Flags::WRITABLE * config.require_writable;
+    // try open
+    snd_lib_error_set_handler (silent_error_handler);
+    aerror = snd_rawmidi_open (config.require_readable ? &read_handle_ : NULL,
+                               config.require_writable ? &write_handle_ : NULL,
+                               devid_.c_str(), SND_RAWMIDI_NONBLOCK);
+    snd_lib_error_set_handler (NULL);
+    // try setup
+    Error error = !aerror ? Error::NONE : bse_error_from_errno (-aerror, Error::FILE_OPEN_FAILED);
+    snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);
+    if (error == 0 && read_handle_)
+      {
+        if (snd_rawmidi_params_current (read_handle_, mparams) < 0)
+          error = Error::FILE_OPEN_FAILED;
+        else
+          ADEBUG ("MIDI: readable: buffer=%d active_sensing=%d min_avail=%d\n",
+                  snd_rawmidi_params_get_buffer_size (mparams),
+                  !snd_rawmidi_params_get_no_active_sensing (mparams),
+                  snd_rawmidi_params_get_avail_min (mparams));
+      }
+    if (error == 0 && write_handle_)
+      {
+        if (snd_rawmidi_params_current (write_handle_, mparams) < 0)
+          error = Error::FILE_OPEN_FAILED;
+        else
+          ADEBUG ("MIDI: writable: buffer=%d active_sensing=%d min_avail=%d\n",
+                  snd_rawmidi_params_get_buffer_size (mparams),
+                  !snd_rawmidi_params_get_no_active_sensing (mparams),
+                  snd_rawmidi_params_get_avail_min (mparams));
+      }
+    if (error == 0 && read_handle_ && snd_rawmidi_poll_descriptors_count (read_handle_) <= 0)
+      error = Error::FILE_OPEN_FAILED;
+    if (!read_handle_ && !write_handle_)
+      error = Error::FILE_OPEN_FAILED;
+    // finish opening or shutdown
+    if (error == 0)
+      {
+        flags_ |= Flags::OPENED;
+        if (read_handle_)
+          snd_rawmidi_nonblock (read_handle_, 1);
+        if (write_handle_)
+          snd_rawmidi_nonblock (write_handle_, 1);
+        int rn = read_handle_ ? snd_rawmidi_poll_descriptors_count (read_handle_) : 0;
+        int wn = write_handle_ ? snd_rawmidi_poll_descriptors_count (write_handle_) : 0;
+        rn = MAX (rn, 0);
+        wn = MAX (wn, 0);
+        if (rn || wn)
+          {
+            struct pollfd *pfds = g_newa (struct pollfd, rn + wn);
+            static_assert (sizeof (struct pollfd) == sizeof (GPollFD), "");
+            total_pfds_ = 0;
+            if (rn && snd_rawmidi_poll_descriptors (read_handle_, pfds, rn) >= 0)
+              total_pfds_ += rn;
+            if (wn && snd_rawmidi_poll_descriptors (write_handle_, pfds + total_pfds_, wn) >= 0)
+              total_pfds_ += wn;
+            if (total_pfds_)
+              Sequencer::instance().add_io_watch (total_pfds_, (GPollFD*) pfds, midi_io_handler_func, static_cast<void*> (this));
+          }
+      }
+    else
+      {
+        if (read_handle_)
+          snd_rawmidi_close (read_handle_);
+        read_handle_ = nullptr;
+        if (write_handle_)
+          snd_rawmidi_close (write_handle_);
+        write_handle_ = nullptr;
+      }
+    ADEBUG ("MIDI: open: opening \"%s\" readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    return error;
+  }
+};
 
-static const uint32 alsa_pcm_driverid = PcmDriver::register_driver (AlsaPcmDriver::create, list_alsa_pcm_drivers);
+static const uint32 alsa_midi_driverid = MidiDriver::register_driver (AlsaMidiDriver::create,
+                                                                      [] (Driver::EntryVec &entries, uint32 driverid) {
+                                                                        list_alsa_drivers (entries, driverid, false, true);
+                                                                      });
 
 } // Bse
 
