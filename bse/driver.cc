@@ -1,6 +1,9 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "driver.hh"
 #include "internal.hh"
+#include "bsesequencer.hh"
+
+#define DDEBUG(...)     Bse::debug ("driver", __VA_ARGS__)
 
 namespace Bse {
 
@@ -98,8 +101,9 @@ PcmDriver::open (const String &devid, IODir desired, IODir required, const PcmDr
   for (const auto &entry : entries)
     if (entry.driverid && (entry.devid == devid || devid == "auto"))
       {
-        if (devid == "auto" && (entry.priority & 0x0000ffff))
-          continue;     // ignore secondary devices during auto-selection
+        if (devid == "auto" && (entry.priority >= PSEUDO ||
+                                (entry.priority & 0x0000ffff))) // ignore secondary devices during auto-selection
+          continue;
         PcmDriverP pcm_driver = RegisteredDriver<PcmDriverP>::open (entry, desired, ep,
                                                                     [&config] (PcmDriverP d, IODir iodir) {
                                                                       return d->open (iodir, config);
@@ -149,6 +153,8 @@ MidiDriver::open (const String &devid, IODir iodir, Error *ep)
   for (const auto &entry : entries)
     if (entry.driverid && (entry.devid == devid || devid == "auto"))
       {
+        if (devid == "auto" && entry.priority >= PSEUDO)
+          continue;
         MidiDriverP midi_driver = RegisteredDriver<MidiDriverP>::open (entry, iodir, ep,
                                                                        [] (MidiDriverP d, IODir iodir) {
                                                                          return d->open (iodir);
@@ -180,5 +186,144 @@ MidiDriver::list_drivers ()
   pseudos.push_back (entry);
   return RegisteredDriver<MidiDriverP>::list_drivers (pseudos);
 }
+
+// == NullPcmDriver ==
+class NullPcmDriver : public PcmDriver {
+  uint          n_channels_ = 0;
+  uint          mix_freq_ = 0;
+  uint          busy_us_ = 0;
+  uint          sleep_us_ = 0;
+public:
+  explicit      NullPcmDriver (const String &devid) : PcmDriver (devid) {}
+  static PcmDriverP
+  create (const String &devid)
+  {
+    auto pdriverp = std::make_shared<NullPcmDriver> (devid);
+    return pdriverp;
+  }
+  virtual float
+  pcm_frequency () const override
+  {
+    return mix_freq_;
+  }
+  virtual void
+  close () override
+  {
+    assert_return (opened());
+    flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+  }
+  virtual Error
+  open (IODir iodir, const PcmDriverConfig &config) override
+  {
+    assert_return (!opened(), Error::INTERNAL);
+    // setup request
+    const bool nosleep = true;
+    const bool require_readable = iodir == READONLY || iodir == READWRITE;
+    const bool require_writable = iodir == WRITEONLY || iodir == READWRITE;
+    flags_ |= Flags::READABLE * require_readable;
+    flags_ |= Flags::WRITABLE * require_writable;
+    n_channels_ = config.n_channels;
+    mix_freq_ = config.mix_freq;
+    busy_us_ = 0;
+    sleep_us_ = nosleep ? 0 : 10 * 1000;
+    flags_ |= Flags::OPENED;
+    DDEBUG ("NULL-PCM: opening\"%s\" freq=%f channels=%d: %s", devid_, mix_freq_, n_channels_, bse_error_blurb (Error::NONE));
+    return Error::NONE;
+  }
+  virtual bool
+  pcm_check_io (long *timeoutp) override
+  {
+    // keep the sequencer busy or we will constantly timeout
+    Sequencer::instance().wakeup();
+    *timeoutp = 1;
+    // ensure sequencer fairness
+    return !Sequencer::instance().thread_lagging (2);
+  }
+  virtual uint
+  pcm_latency () const override
+  {
+    // total latency in frames
+    return mix_freq_ / 10;
+  }
+  virtual size_t
+  pcm_read (size_t n, float *values) override
+  {
+    memset (values, 0, sizeof (values[0]) * n);
+    return n;
+  }
+  virtual void
+  pcm_write (size_t n, const float *values) override
+  {
+    busy_us_ += n * 1000000 / mix_freq_;
+    if (busy_us_ >= 100 * 1000)
+      {
+        busy_us_ = 0;
+        // give cpu to other applications (we might run at nice level -20)
+        if (sleep_us_)
+          g_usleep (sleep_us_);
+      }
+  }
+  static void
+  list_drivers (Driver::EntryVec &entries, uint32 driverid)
+  {
+    Driver::Entry entry;
+    entry.devid = "null";
+    entry.name = "Null PCM Driver";
+    entry.blurb = _("Discard all PCM output and provide zeros as PCM input");
+    entry.readonly = false;
+    entry.writeonly = false;
+    entry.priority = Driver::DNULL;
+    entry.driverid = driverid;
+    entries.push_back (entry);
+  }
+};
+
+static const uint32 null_pcm_driverid = PcmDriver::register_driver (NullPcmDriver::create, NullPcmDriver::list_drivers);
+
+// == NullMidiDriver ==
+class NullMidiDriver : public MidiDriver {
+public:
+  explicit      NullMidiDriver (const String &devid) : MidiDriver (devid) {}
+  static MidiDriverP
+  create (const String &devid)
+  {
+    auto pdriverp = std::make_shared<NullMidiDriver> (devid);
+    return pdriverp;
+  }
+  virtual void
+  close () override
+  {
+    assert_return (opened());
+    flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+  }
+  virtual Error
+  open (IODir iodir) override
+  {
+    assert_return (!opened(), Error::INTERNAL);
+    // setup request
+    const bool require_readable = iodir == READONLY || iodir == READWRITE;
+    const bool require_writable = iodir == WRITEONLY || iodir == READWRITE;
+    flags_ |= Flags::READABLE * require_readable;
+    flags_ |= Flags::WRITABLE * require_writable;
+    flags_ |= Flags::OPENED;
+    DDEBUG ("NULL-MIDI: opening\"%s\": %s", devid_, bse_error_blurb (Error::NONE));
+    return Error::NONE;
+  }
+  static void
+  list_drivers (Driver::EntryVec &entries, uint32 driverid)
+  {
+    Driver::Entry entry;
+    entry.devid = "null";
+    entry.name = "Null MIDI Driver";
+    entry.blurb = _("Discard all MIDI events");
+    entry.readonly = false;
+    entry.writeonly = false;
+    entry.priority = Driver::DNULL;
+    entry.driverid = driverid;
+    entries.push_back (entry);
+  }
+};
+
+static const uint32 null_midi_driverid = MidiDriver::register_driver (NullMidiDriver::create, NullMidiDriver::list_drivers);
 
 } // Bse

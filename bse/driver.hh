@@ -21,6 +21,7 @@ public:
     OSS    = 0x03 << 24,
     PULSE  = 0x04 << 24,
     PSEUDO = 0x70 << 24,
+    DNULL  = 0x71 << 24,
     WCARD  = 0x01 << 16,
     WDEV   = 0x01 <<  8,
     WSUB   = 0x01 <<  0,
