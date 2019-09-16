@@ -2,8 +2,7 @@
 #ifndef __BSE_SERVER_H__
 #define __BSE_SERVER_H__
 #include <bse/bsesuper.hh>
-#include <bse/bsepcmdevice.hh>
-#include <bse/bsemididevice.hh>
+#include <bse/driver.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
@@ -20,61 +19,30 @@ struct BseServer : BseContainer {
   gchar		  *wave_file;
   double           wave_seconds;
   guint		   dev_use_count;
-  guint            pcm_input_checked : 1;
-  BsePcmDevice    *pcm_device;
   BseModule       *pcm_imodule;
   BseModule       *pcm_omodule;
   BsePcmWriter	  *pcm_writer;
-  BseMidiDevice	  *midi_device;
   GSList	  *watch_list;
 };
 struct BseServerClass : BseContainerClass
 {};
 
-BseServer*	bse_server_get				(void);
-BseProject*	bse_server_find_project			(BseServer	*server,
-							 const gchar	*name);
-void    	bse_server_stop_recording		(BseServer	*server);
-void            bse_server_start_recording              (BseServer      *server,
-                                                         const char     *wave_file,
-                                                         double          n_seconds);
-Bse::Error	bse_server_open_devices			(BseServer	*server);
-void		bse_server_close_devices		(BseServer	*server);
-void		bse_server_shutdown             	(BseServer	*server);
-BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
-							 BseSource	*source,
-							 const gchar	*uplink_name);
-void		bse_server_discard_pcm_output_module	(BseServer	*server,
-							 BseModule	*module);
-BseModule*	bse_server_retrieve_pcm_input_module	(BseServer	*server,
-							 BseSource	*source,
-							 const gchar	*uplink_name);
-void		bse_server_discard_pcm_input_module	(BseServer	*server,
-							 BseModule	*module);
-void		bse_server_require_pcm_input    	(BseServer	*server);
-BseModule*	bse_server_retrieve_midi_input_module	(BseServer	*server,
-							 const gchar	*downlink_name,
-							 guint		 midi_channel_id,
-							 guint		 nth_note,
-							 guint		 signals[4]);
-void		bse_server_discard_midi_input_module	(BseServer	*server,
-							 BseModule	*module);
-void		bse_server_add_io_watch			(BseServer	*server,
-							 gint		 fd,
-							 GIOCondition	 events,
-							 BseIOWatch	 watch_func,
-							 gpointer	 data);
-void		bse_server_remove_io_watch		(BseServer	*server,
-							 BseIOWatch	 watch_func,
-							 gpointer	 data);
-
-/* --- internal --- */
-void		bse_server_registration			(BseServer          *server,
-							 BseRegistrationType rtype,
-							 const gchar	    *what,
-							 const gchar	    *error);
-void		bse_server_queue_kill_wire		(BseServer	    *server,
-							 SfiComWire	    *wire);
+BseServer*  bse_server_get			  (void);
+BseProject* bse_server_find_project		  (BseServer *server, const char *name);
+void        bse_server_stop_recording             (BseServer *server);
+void        bse_server_start_recording            (BseServer *server, const char *wave_file, double n_seconds);
+Bse::Error  bse_server_open_devices		  (BseServer *server);
+void	    bse_server_close_devices              (BseServer *server);
+void	    bse_server_shutdown                   (BseServer *server);
+BseModule*  bse_server_retrieve_pcm_output_module (BseServer *server, BseSource *source, const char *uplink_name);
+void	    bse_server_discard_pcm_output_module  (BseServer *server, BseModule *module);
+BseModule*  bse_server_retrieve_pcm_input_module  (BseServer *server, BseSource *source, const char *uplink_name);
+void	    bse_server_discard_pcm_input_module   (BseServer *server, BseModule *module);
+void	    bse_server_add_io_watch		  (BseServer *server, int fd, GIOCondition events, BseIOWatch watch_func, void *data);
+void	    bse_server_remove_io_watch            (BseServer *server, BseIOWatch watch_func, void *data);
+// internal
+void	    bse_server_registration		  (BseServer *server, BseRegistrationType rtype, const char *what, const char *error);
+void	    bse_server_queue_kill_wire            (BseServer *server, SfiComWire *wire);
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
 
@@ -92,6 +60,9 @@ public:
 class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   int32              tc_ = 0;
   bool               log_messages_ = true;
+  bool               pcm_input_checked_ = false;
+  PcmDriverP         pcm_driver_;
+  MidiDriverP        midi_driver_;
 protected:
   virtual            ~ServerImpl            ();
 public:
@@ -100,6 +71,12 @@ public:
   void                release_shared_block  (const SharedBlock &block);
   void                set_ipc_handler       (IpcHandler *ipch);
   IpcHandler*         get_ipc_handler       ();
+  Error               open_midi_driver      ();
+  void                close_midi_driver     ();
+  PcmDriverP          pcm_driver            () const { return pcm_driver_; }
+  Error               open_pcm_driver       (uint mix_freq, uint latency, uint block_size);
+  void                require_pcm_input     ();
+  void                close_pcm_driver      ();
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;

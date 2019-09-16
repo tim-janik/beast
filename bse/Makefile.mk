@@ -30,7 +30,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsecxxvalue.hh		\
 	bse/bsedatahandle-flac.hh	\
 	bse/bsedefs.hh			\
-	bse/bsedevice.hh		\
 	bse/bseeditablesample.hh	\
 	bse/bseengine.hh		\
 	bse/bseenginemaster.hh		\
@@ -57,8 +56,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsemathsignal.hh		\
 	bse/bsemidicontroller.hh	\
 	bse/bsemididecoder.hh		\
-	bse/bsemididevice-null.hh	\
-	bse/bsemididevice.hh		\
 	bse/bsemidievent.hh		\
 	bse/bsemidifile.hh		\
 	bse/bsemidiinput.hh		\
@@ -70,8 +67,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseobject.hh		\
 	bse/bseparam.hh			\
 	bse/bsepart.hh			\
-	bse/bsepcmdevice-null.hh	\
-	bse/bsepcmdevice.hh		\
 	bse/bsepcminput.hh		\
 	bse/bsepcmoutput.hh		\
 	bse/bsepcmwriter.hh		\
@@ -107,6 +102,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/cxxaux.hh			\
 	bse/datalist.hh			\
 	bse/devicecrawler.hh		\
+	bse/driver.hh			\
 	bse/effectbase.hh		\
 	bse/entropy.hh			\
 	bse/formatter.hh		\
@@ -191,7 +187,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsedatahandle-fir.cc	\
 	bse/bsedatahandle-flac.cc	\
 	bse/bsedatahandle-resample.cc	\
-	bse/bsedevice.cc		\
 	bse/bseeditablesample.cc	\
 	bse/bseengine.cc		\
 	bse/bseenginemaster.cc		\
@@ -220,8 +215,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsemathsignal.cc		\
 	bse/bsemidicontroller.cc	\
 	bse/bsemididecoder.cc		\
-	bse/bsemididevice-null.cc	\
-	bse/bsemididevice.cc		\
 	bse/bsemidievent.cc		\
 	bse/bsemidifile.cc		\
 	bse/bsemidiinput.cc		\
@@ -233,8 +226,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bseobject.cc		\
 	bse/bseparam.cc			\
 	bse/bsepart.cc			\
-	bse/bsepcmdevice-null.cc	\
-	bse/bsepcmdevice.cc		\
 	bse/bsepcminput.cc		\
 	bse/bsepcmoutput.cc		\
 	bse/bsepcmwriter.cc		\
@@ -268,6 +259,8 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsewaverepo.cc		\
 	bse/datalist.cc			\
 	bse/devicecrawler.cc		\
+	bse/driver.cc			\
+	bse/driver-alsa.cc		\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\
@@ -344,7 +337,6 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/zres.cc			\
 )
 bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
-# BROKEN ::= bse/bsemididevice-oss.hh bse/bsemididevice-oss.cc  bse/bsepcmdevice-oss.hh bse/bsepcmdevice-oss.cc
 
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
@@ -386,7 +378,7 @@ $(call BUILD_SHARED_LIB_XDBG, \
 	$(lib/libbse.so), \
 	$(bse/libbse.objects), \
 	bse/ldscript.map | $>/lib/, \
-	$(BSEDEPS_LIBS) -lstdc++fs)
+	$(BSEDEPS_LIBS) $(ALSA_LIBS) -lstdc++fs)
 $(call INSTALL_DATA_RULE,			\
 	bse/headers,				\
 	$(DESTDIR)$(bse/include.headerdir),	\

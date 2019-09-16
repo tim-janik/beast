@@ -39,6 +39,10 @@ inline GlobalConfigPtr global_config;
 
 /* --- argc/argv overide settings --- */
 struct BseMainArgs {
+  const char           *pcm_driver;
+  const char           *midi_driver;
+  const char           *override_plugin_globs;
+  const char 	       *override_sample_path;
   uint   	        n_processors;
   /* # values to pad around wave chunk blocks per channel */
   uint   	        wave_chunk_padding;
@@ -50,8 +54,6 @@ struct BseMainArgs {
   uint   	        midi_kammer_note;
   /* kammer frequency, normally 440Hz, historically 435Hz */
   double 	        kammer_freq;
-  const char           *override_plugin_globs;
-  const char 	       *override_sample_path;
   bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, etc.
   bool                  allow_randomization;	///< Initialization argument "allow-randomization" - enables non-deterministic behavior
   bool                  force_fpu;		///< Initialization argument "force-fpu" - avoid vectorized optimizations
@@ -59,8 +61,6 @@ struct BseMainArgs {
   bool		        debug_extensions;	///< Initialization argument "debug-extensions" - enable debugging extensions
   bool                  load_drivers_early;
   bool                  dump_driver_list;
-  SfiRing              *pcm_drivers;
-  SfiRing              *midi_drivers;
 };
 
 /* --- internal --- */

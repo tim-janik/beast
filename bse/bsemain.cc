@@ -7,9 +7,8 @@
 #include "bsecategories.hh"
 #include "bsemidireceiver.hh"
 #include "bsemathsignal.hh"
+#include "driver.hh"
 #include "gsldatacache.hh"
-#include "bsepcmdevice.hh"
-#include "bsemididevice.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "bseglue.hh"
@@ -31,6 +30,10 @@ static void     attach_execution_context (GMainContext *gmaincontext, Aida::Exec
 /* from bse.hh */
 static volatile gboolean bse_initialization_stage = 0;
 static BseMainArgs       default_main_args = {
+  "auto",               // pcm_driver
+  "auto",               // midi_driver;
+  NULL,                 // override_plugin_globs
+  NULL,			// override_sample_path
   1,                    // n_processors
   64,                   // wave_chunk_padding
   256,                  // wave_chunk_big_pad
@@ -38,8 +41,6 @@ static BseMainArgs       default_main_args = {
   10 * 1024 * 1024,     // dcache_cache_memory
   BSE_KAMMER_NOTE,      // midi_kammer_note (69)
   BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
-  NULL,                 // override_plugin_globs
-  NULL,			// override_sample_path
   false,                // stand_alone
   true,                 // allow_randomization
   false,                // force_fpu
@@ -137,10 +138,23 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   // dump device list
   if (bse_main_args->dump_driver_list)
     {
+      Bse::Driver::EntryVec entries;
       printerr ("%s", _("\nAvailable PCM drivers:\n"));
-      bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
+      entries = Bse::PcmDriver::list_drivers();
+      for (const auto &entry : entries)
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s", entry.devid + ":",
+                  entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
+                  entry.priority, entry.name,
+                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
+                  entry.blurb.empty() ? "" : "\t" + entry.blurb + "\n");
       printerr ("%s", _("\nAvailable MIDI drivers:\n"));
-      bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
+      entries = Bse::MidiDriver::list_drivers();
+      for (const auto &entry : entries)
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s", entry.devid + ":",
+                  entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
+                  entry.priority, entry.name,
+                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
+                  entry.blurb.empty() ? "" : "\t" + entry.blurb + "\n");
     }
 
   // initialize core plugins
@@ -387,7 +401,7 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
           if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-              margs->pcm_drivers = sfi_ring_append (margs->pcm_drivers, argv[i]);
+              margs->pcm_driver = argv[i];
 	    }
 	  argv[i] = NULL;
 	}
@@ -396,7 +410,7 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
           if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-              margs->midi_drivers = sfi_ring_append (margs->midi_drivers, argv[i]);
+              margs->midi_driver = argv[i];
 	    }
 	  argv[i] = NULL;
 	}
