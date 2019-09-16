@@ -9,7 +9,6 @@
 #include "bsemathsignal.hh"
 #include "driver.hh"
 #include "gsldatacache.hh"
-#include "bsepcmdevice.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "bseglue.hh"
