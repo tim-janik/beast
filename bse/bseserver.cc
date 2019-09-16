@@ -7,7 +7,6 @@
 #include "bsemidinotifier.hh"
 #include "bsemain.hh"		/* threads enter/leave */
 #include "bsepcmwriter.hh"
-#include "bsemididevice-null.hh"
 #include "bsecxxplugin.hh"
 #include "gsldatahandle-mad.hh"
 #include "gslvorbis-enc.hh"

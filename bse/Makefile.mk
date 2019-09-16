@@ -57,8 +57,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsemathsignal.hh		\
 	bse/bsemidicontroller.hh	\
 	bse/bsemididecoder.hh		\
-	bse/bsemididevice-null.hh	\
-	bse/bsemididevice.hh		\
 	bse/bsemidievent.hh		\
 	bse/bsemidifile.hh		\
 	bse/bsemidiinput.hh		\
@@ -221,8 +219,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsemathsignal.cc		\
 	bse/bsemidicontroller.cc	\
 	bse/bsemididecoder.cc		\
-	bse/bsemididevice-null.cc	\
-	bse/bsemididevice.cc		\
 	bse/bsemidievent.cc		\
 	bse/bsemidifile.cc		\
 	bse/bsemidiinput.cc		\
