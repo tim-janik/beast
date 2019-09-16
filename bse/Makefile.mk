@@ -347,7 +347,6 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/zres.cc			\
 )
 bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
-# BROKEN ::= bse/bsemididevice-oss.hh bse/bsemididevice-oss.cc  bse/bsepcmdevice-oss.hh bse/bsepcmdevice-oss.cc
 
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
