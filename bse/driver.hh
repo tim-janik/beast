@@ -7,15 +7,6 @@
 
 namespace Bse {
 
-struct DriverConfig {
-  bool require_readable = false;
-  bool require_writable = false;
-  uint n_channels = 0;
-  uint mix_freq = 0;
-  uint latency_ms = 0;
-  uint block_length = 0;
-};
-
 class Driver {
 protected:
   struct Flags { enum { OPENED = 1, READABLE = 2, WRITABLE = 4, }; };
@@ -25,15 +16,16 @@ protected:
   virtual           ~Driver     ();
 public:
   enum {
-    JACK  = 0x01 << 24,
-    ALSA  = 0x02 << 24,
-    OSS   = 0x03 << 24,
-    PULSE = 0x04 << 24,
-    DUMMY = 0x7f << 24,
-    WCARD = 0x01 << 16,
-    WDEV  = 0x01 <<  8,
-    WSUB  = 0x01 <<  0,
+    JACK   = 0x01 << 24,
+    ALSA   = 0x02 << 24,
+    OSS    = 0x03 << 24,
+    PULSE  = 0x04 << 24,
+    PSEUDO = 0x70 << 24,
+    WCARD  = 0x01 << 16,
+    WDEV   = 0x01 <<  8,
+    WSUB   = 0x01 <<  0,
   };
+  enum IODir { READONLY = 1, WRITEONLY = 2, READWRITE = 3 };
   typedef std::shared_ptr<Driver> DriverP;
   bool           opened        () const        { return flags_ & Flags::OPENED; }
   bool           readable      () const        { return flags_ & Flags::READABLE; }
@@ -53,13 +45,33 @@ public:
 };
 using DriverP = Driver::DriverP;
 
+class MidiDriver : public Driver {
+protected:
+  explicit           MidiDriver      (const String &devid);
+  virtual Bse::Error open            (IODir iodir) = 0;
+public:
+  typedef std::shared_ptr<MidiDriver> MidiDriverP;
+  static MidiDriverP open            (const String &devid, IODir iodir, Bse::Error *ep);
+  static EntryVec    list_drivers    ();
+  static uint32      register_driver (const std::function<MidiDriverP (const String&)> &create,
+                                      const std::function<void (EntryVec&, uint32)> &list);
+};
+using MidiDriverP = MidiDriver::MidiDriverP;
+
+struct PcmDriverConfig {
+  uint n_channels = 0;
+  uint mix_freq = 0;
+  uint latency_ms = 0;
+  uint block_length = 0;
+};
+
 class PcmDriver : public Driver {
 protected:
   explicit           PcmDriver       (const String &devid);
-  virtual Bse::Error open            (const DriverConfig &config) = 0;
+  virtual Bse::Error open            (IODir iodir, const PcmDriverConfig &config) = 0;
 public:
   typedef std::shared_ptr<PcmDriver> PcmDriverP;
-  static PcmDriverP  open            (const Entry &entry, const DriverConfig &config, Bse::Error *ep);
+  static PcmDriverP  open            (const String &devid, IODir desired, IODir required, const PcmDriverConfig &config, Bse::Error *ep);
   virtual bool       pcm_check_io    (long *timeoutp) = 0;
   virtual uint       pcm_latency     () const = 0;
   virtual float      pcm_frequency   () const = 0;
@@ -70,19 +82,6 @@ public:
                                       const std::function<void (EntryVec&, uint32)> &list);
 };
 using PcmDriverP = PcmDriver::PcmDriverP;
-
-class MidiDriver : public Driver {
-protected:
-  explicit           MidiDriver      (const String &devid);
-  virtual Bse::Error open            (const DriverConfig &config) = 0;
-public:
-  typedef std::shared_ptr<MidiDriver> MidiDriverP;
-  static MidiDriverP open            (const Entry &entry, const DriverConfig &config, Bse::Error *ep);
-  static EntryVec    list_drivers    ();
-  static uint32      register_driver (const std::function<MidiDriverP (const String&)> &create,
-                                      const std::function<void (EntryVec&, uint32)> &list);
-};
-using MidiDriverP = MidiDriver::MidiDriverP;
 
 } // Bse
 

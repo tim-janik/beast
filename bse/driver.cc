@@ -27,9 +27,9 @@ struct RegisteredDriver {
     static RegisteredDriverVector registered_driver_vector_;
     return registered_driver_vector_;
   }
-  template<typename OpenerConfig> static DriverP
-  open (const Driver::Entry &entry, const OpenerConfig &config, Error *ep,
-        const std::function<Error (DriverP, const OpenerConfig&)> &opener)
+  static DriverP
+  open (const Driver::Entry &entry, Driver::IODir iodir, Error *ep,
+        const std::function<Error (DriverP, Driver::IODir)> &opener)
   {
     std::function<DriverP (const String&)> create;
     for (const auto &driver : registered_driver_vector())
@@ -42,14 +42,14 @@ struct RegisteredDriver {
     DriverP driver = create ? create (entry.devid) : NULL;
     if (driver)
       {
-        error = opener (driver, config);
+        error = opener (driver, iodir);
         if (ep)
           *ep = error;
         if (error == Error::NONE)
           {
             assert_return (driver->opened() == true, nullptr);
-            assert_return (!config.require_readable || driver->readable(), nullptr);
-            assert_return (!config.require_writable || driver->writable(), nullptr);
+            assert_return (!(iodir & Driver::READONLY) || driver->readable(), nullptr);
+            assert_return (!(iodir & Driver::WRITEONLY) || driver->writable(), nullptr);
           }
         else
           driver = nullptr;
@@ -68,10 +68,11 @@ struct RegisteredDriver {
     return rd.driver_id_;
   }
   static Driver::EntryVec
-  list_drivers ()
+  list_drivers (const Driver::EntryVec &pseudos)
   {
-    auto &vec = registered_driver_vector();
     Driver::EntryVec entries;
+    std::copy (pseudos.begin(), pseudos.end(), std::back_inserter (entries));
+    auto &vec = registered_driver_vector();
     for (const auto &rd : vec)
       {
         Driver::EntryVec dentries;
@@ -91,12 +92,27 @@ PcmDriver::PcmDriver (const String &devid) :
 {}
 
 PcmDriverP
-PcmDriver::open (const Entry &entry, const DriverConfig &config, Error *ep)
+PcmDriver::open (const String &devid, IODir desired, IODir required, const PcmDriverConfig &config, Error *ep)
 {
-  return RegisteredDriver<PcmDriverP>::open<DriverConfig> (entry, config, ep,
-                                                           [] (PcmDriverP d, const DriverConfig &c) {
-                                                             return d->open (c);
+  Driver::EntryVec entries = list_drivers();
+  for (const auto &entry : entries)
+    if (entry.driverid && (entry.devid == devid || devid == "auto"))
+      {
+        if (devid == "auto" && (entry.priority & 0x0000ffff))
+          continue;     // ignore secondary devices during auto-selection
+        PcmDriverP pcm_driver = RegisteredDriver<PcmDriverP>::open (entry, desired, ep,
+                                                                    [&config] (PcmDriverP d, IODir iodir) {
+                                                                      return d->open (iodir, config);
+                                                                    });
+        if (!pcm_driver && required && desired != required)
+          pcm_driver = RegisteredDriver<PcmDriverP>::open (entry, required, ep,
+                                                           [&config] (PcmDriverP d, IODir iodir) {
+                                                             return d->open (iodir, config);
                                                            });
+        if (pcm_driver)
+          return pcm_driver;
+      }
+  return nullptr;
 }
 
 uint32
@@ -109,7 +125,16 @@ PcmDriver::register_driver (const std::function<PcmDriverP (const String&)> &cre
 Driver::EntryVec
 PcmDriver::list_drivers ()
 {
-  return RegisteredDriver<PcmDriverP>::list_drivers();
+  Driver::Entry entry;
+  entry.devid = "auto";
+  entry.name = _("Automatic PCM card selection");
+  entry.readonly = false;
+  entry.writeonly = false;
+  entry.priority = Driver::PSEUDO + Driver::WCARD * 1 + Driver::WDEV * 1 + Driver::WSUB * 1;
+  entry.driverid = 0;
+  Driver::EntryVec pseudos;
+  pseudos.push_back (entry);
+  return RegisteredDriver<PcmDriverP>::list_drivers (pseudos);
 }
 
 // == MidiDriver ==
@@ -118,12 +143,20 @@ MidiDriver::MidiDriver (const String &devid) :
 {}
 
 MidiDriverP
-MidiDriver::open (const Entry &entry, const DriverConfig &config, Error *ep)
+MidiDriver::open (const String &devid, IODir iodir, Error *ep)
 {
-  return RegisteredDriver<MidiDriverP>::open<DriverConfig> (entry, config, ep,
-                                                            [] (MidiDriverP d, const DriverConfig &c) {
-                                                              return d->open (c);
-                                                            });
+  Driver::EntryVec entries = list_drivers();
+  for (const auto &entry : entries)
+    if (entry.driverid && (entry.devid == devid || devid == "auto"))
+      {
+        MidiDriverP midi_driver = RegisteredDriver<MidiDriverP>::open (entry, iodir, ep,
+                                                                       [] (MidiDriverP d, IODir iodir) {
+                                                                         return d->open (iodir);
+                                                                       });
+        if (midi_driver)
+          return midi_driver;
+      }
+  return nullptr;
 }
 
 uint32
@@ -136,7 +169,16 @@ MidiDriver::register_driver (const std::function<MidiDriverP (const String&)> &c
 Driver::EntryVec
 MidiDriver::list_drivers ()
 {
-  return RegisteredDriver<MidiDriverP>::list_drivers();
+  Driver::Entry entry;
+  entry.devid = "auto";
+  entry.name = _("Automatic MIDI driver selection");
+  entry.readonly = false;
+  entry.writeonly = false;
+  entry.priority = Driver::PSEUDO + Driver::WCARD * 1 + Driver::WDEV * 1 + Driver::WSUB * 1;
+  entry.driverid = 0;
+  Driver::EntryVec pseudos;
+  pseudos.push_back (entry);
+  return RegisteredDriver<MidiDriverP>::list_drivers (pseudos);
 }
 
 } // Bse

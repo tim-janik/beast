@@ -281,19 +281,21 @@ public:
     flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
   }
   virtual Error
-  open (const DriverConfig &config) override
+  open (IODir iodir, const PcmDriverConfig &config) override
   {
     assert_return (!opened(), Error::INTERNAL);
     int aerror = 0;
     // setup request
-    flags_ |= Flags::READABLE * config.require_readable;
-    flags_ |= Flags::WRITABLE * config.require_writable;
+    const bool require_readable = iodir == READONLY || iodir == READWRITE;
+    const bool require_writable = iodir == WRITEONLY || iodir == READWRITE;
+    flags_ |= Flags::READABLE * require_readable;
+    flags_ |= Flags::WRITABLE * require_writable;
     n_channels_ = config.n_channels;
     // try open
     snd_lib_error_set_handler (silent_error_handler);
-    if (!aerror && config.require_readable)
+    if (!aerror && require_readable)
       aerror = snd_pcm_open (&read_handle_, devid_.c_str(), SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
-    if (!aerror && config.require_writable)
+    if (!aerror && require_writable)
       aerror = snd_pcm_open (&write_handle_, devid_.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
     snd_lib_error_set_handler (NULL);
     // try setup
@@ -629,17 +631,19 @@ public:
     return thisp->midi_io_handler (n_pfds, pfds);
   }
   virtual Error
-  open (const DriverConfig &config) override
+  open (IODir iodir) override
   {
     assert_return (!opened(), Error::INTERNAL);
     int aerror = 0;
     // setup request
-    flags_ |= Flags::READABLE * config.require_readable;
-    flags_ |= Flags::WRITABLE * config.require_writable;
+    const bool require_readable = iodir == READONLY || iodir == READWRITE;
+    const bool require_writable = iodir == WRITEONLY || iodir == READWRITE;
+    flags_ |= Flags::READABLE * require_readable;
+    flags_ |= Flags::WRITABLE * require_writable;
     // try open
     snd_lib_error_set_handler (silent_error_handler);
-    aerror = snd_rawmidi_open (config.require_readable ? &read_handle_ : NULL,
-                               config.require_writable ? &write_handle_ : NULL,
+    aerror = snd_rawmidi_open (require_readable ? &read_handle_ : NULL,
+                               require_writable ? &write_handle_ : NULL,
                                devid_.c_str(), SND_RAWMIDI_NONBLOCK);
     snd_lib_error_set_handler (NULL);
     // try setup
