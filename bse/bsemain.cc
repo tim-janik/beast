@@ -149,6 +149,13 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
                   entry.blurb);
       bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
       printerr ("%s", _("\nAvailable MIDI drivers:\n"));
+      entries = Bse::MidiDriver::list_drivers();
+      for (const auto &entry : entries)
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s\t%s\n", entry.devid + ":",
+                  entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
+                  entry.priority, entry.name,
+                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
+                  entry.blurb);
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 
