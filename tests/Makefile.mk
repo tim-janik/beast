@@ -74,7 +74,7 @@ tests/check-load = $(strip						\
 	$(tools/bsetool)						\
 	  $(if $(findstring 1, $(V)),, --quiet)				\
 	  check-load							\
-	  --bse-pcm-driver null=nosleep					\
+	  --bse-pcm-driver null						\
 	  --bse-midi-driver null					\
 	  --bse-override-plugin-globs '$>/plugins/*.so'			\
 	  --bse-override-sample-path 'tests/audio:media/Samples'	\
