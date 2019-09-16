@@ -30,7 +30,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsecxxvalue.hh		\
 	bse/bsedatahandle-flac.hh	\
 	bse/bsedefs.hh			\
-	bse/bsedevice.hh		\
 	bse/bseeditablesample.hh	\
 	bse/bseengine.hh		\
 	bse/bseenginemaster.hh		\
@@ -68,8 +67,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseobject.hh		\
 	bse/bseparam.hh			\
 	bse/bsepart.hh			\
-	bse/bsepcmdevice-null.hh	\
-	bse/bsepcmdevice.hh		\
 	bse/bsepcminput.hh		\
 	bse/bsepcmoutput.hh		\
 	bse/bsepcmwriter.hh		\
@@ -190,7 +187,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsedatahandle-fir.cc	\
 	bse/bsedatahandle-flac.cc	\
 	bse/bsedatahandle-resample.cc	\
-	bse/bsedevice.cc		\
 	bse/bseeditablesample.cc	\
 	bse/bseengine.cc		\
 	bse/bseenginemaster.cc		\
@@ -230,8 +226,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bseobject.cc		\
 	bse/bseparam.cc			\
 	bse/bsepart.cc			\
-	bse/bsepcmdevice-null.cc	\
-	bse/bsepcmdevice.cc		\
 	bse/bsepcminput.cc		\
 	bse/bsepcmoutput.cc		\
 	bse/bsepcmwriter.cc		\

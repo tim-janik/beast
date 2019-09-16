@@ -327,14 +327,6 @@ bse_server_open_devices (BseServer *self)
   /* try opening devices */
   if (error == 0)
     error = impl->open_pcm_driver (mix_freq, latency, block_size);
-  uint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
-  if (error != 0 && aligned_freq != mix_freq)
-    {
-      mix_freq = aligned_freq;
-      bse_engine_constrain (latency, mix_freq, Bse::global_config->synth_control_freq, &block_size, NULL);
-      Bse::Error new_error = impl->open_pcm_driver (mix_freq, latency, block_size);
-      error = new_error != 0 ? error : Bse::Error::NONE;
-    }
   if (error == 0)
     error = impl->open_midi_driver();
   if (error == 0)
