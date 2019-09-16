@@ -3,7 +3,7 @@
 #include <bse/bsemain.hh>
 #include <bse/testing.hh>
 #include <bse/gsldatautils.hh>
-#include <bse/bseblockutils.hh>
+#include <bse/bseresampler.hh>
 #include "bse/internal.hh"
 #include <stdlib.h>
 #include <vector>
@@ -43,7 +43,7 @@ check (const char           *up_down,
        const vector<float>  &input,
        const vector<double> &expected,
        int                   n_channels,
-       BseResampler2Mode     resampler_mode,
+       Resampler2::Mode      resampler_mode,
        int                   precision_bits,
        double                max_db)
 {
@@ -54,7 +54,7 @@ check (const char           *up_down,
 
   GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, input.size(), &input[0], NULL);
   GslDataHandle *rhandle;
-  if (resampler_mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+  if (resampler_mode == Resampler2::UP)
     {
       TASSERT (input.size() * 2 == expected.size());
       rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
@@ -62,7 +62,7 @@ check (const char           *up_down,
   else
     {
       TASSERT (input.size() == expected.size() * 2);
-      rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits); 
+      rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits);
     }
   gsl_data_handle_unref (ihandle);
 
@@ -212,7 +212,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440);
   generate_test_signal (expected, LEN * 2, 88200, 440);
   check ("Up", "M", params[p].bits, run_type,
-         input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
+         input, expected, 1, Resampler2::UP,
          params[p].bits, params[p].mono_upsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
@@ -220,7 +220,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440, 1000);
   generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
   check ("Up", "S", params[p].bits, run_type,
-         input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
+         input, expected, 2, Resampler2::UP,
          params[p].bits, params[p].stereo_upsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
@@ -228,7 +228,7 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440);
   generate_test_signal (expected, LEN / 2, 22050, 440);
   check ("Dn", "M", params[p].bits, run_type,
-         input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+         input, expected, 1, Resampler2::DOWN,
          params[p].bits, params[p].mono_downsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
@@ -236,62 +236,34 @@ run_tests (const char *run_type, uint p)
   generate_test_signal (input, LEN, 44100, 440, 1000);
   generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
   check ("Dn", "S", params[p].bits, run_type,
-         input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+         input, expected, 2, Resampler2::DOWN,
          params[p].bits, params[p].stereo_downsample_db);
   // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 }
 
 static void
-test_c_api (const char *run_type)
-{
-  // TSTART ("Resampler C API (%s)", run_type);
-  BseResampler2 *resampler = bse_resampler2_create (BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_96DB);
-  const int INPUT_SIZE = 1024, OUTPUT_SIZE = 2048;
-  float in[INPUT_SIZE];
-  float out[OUTPUT_SIZE];
-  double error = 0;
-  int i;
-
-  for (i = 0; i < INPUT_SIZE; i++)
-    in[i] = sin (i * 440 * 2 * M_PI / 44100) * bse_window_blackman ((double) (i * 2 - INPUT_SIZE) / INPUT_SIZE);
-
-  bse_resampler2_process_block (resampler, in, INPUT_SIZE, out);
-
-  int delay = bse_resampler2_delay (resampler);
-  for (i = 0; i < 2048; i++)
-    {
-      double expected = sin ((i - delay) * 220 * 2 * M_PI / 44100)
-	              * bse_window_blackman ((double) ((i - delay) * 2 - OUTPUT_SIZE) / OUTPUT_SIZE);
-      error = MAX (error, fabs (out[i] - expected));
-    }
-  double error_db = bse_db_from_factor (error, -200);
-  bse_resampler2_destroy (resampler);
-  TCHECK (error_db < -95, "C API delta below epsilon: %f < -95\n", error_db);
-  // TDONE();
-}
-static void
-test_delay_compensation (const char *run_type)
+test_delay_compensation (bool use_sse)
 {
   struct TestParameters {
     double error_db;
-    BseResampler2Mode mode;
-    BseResampler2Precision precision;
+    Resampler2::Mode mode;
+    Resampler2::Precision precision;
   } params[] =
   {
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_48DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_72DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_96DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_120DB },
-    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_144DB },
-    { 48,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_48DB },
-    { 67,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_72DB },
-    { 96,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_96DB },
-    { 120, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_120DB },
-    { 134, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_144DB },
+    { 200, Resampler2::UP, Resampler2::PREC_48DB },
+    { 200, Resampler2::UP, Resampler2::PREC_72DB },
+    { 200, Resampler2::UP, Resampler2::PREC_96DB },
+    { 200, Resampler2::UP, Resampler2::PREC_120DB },
+    { 200, Resampler2::UP, Resampler2::PREC_144DB },
+    { 48,  Resampler2::DOWN, Resampler2::PREC_48DB },
+    { 67,  Resampler2::DOWN, Resampler2::PREC_72DB },
+    { 96,  Resampler2::DOWN, Resampler2::PREC_96DB },
+    { 120, Resampler2::DOWN, Resampler2::PREC_120DB },
+    { 134, Resampler2::DOWN, Resampler2::PREC_144DB },
     { -1, }
   };
+  const char *run_type = use_sse ? "SSE" : "FPU";
 
-  using Bse::Resampler::Resampler2;
   // TSTART ("Resampler Delay Compensation (%s)", run_type);
 
   for (guint p = 0; params[p].error_db > 0; p++)
@@ -305,24 +277,24 @@ test_delay_compensation (const char *run_type)
       generate_test_signal (in, INPUT_SIZE, 44100, 440);
 
       /* up/downsample test signal */
-      Resampler2 *resampler = Resampler2::create (params[p].mode,
-                                                  params[p].precision);
-      resampler->process_block (&in[0], INPUT_SIZE, &out[0]);
+      Resampler2 resampler (params[p].mode, params[p].precision, use_sse);
+      TASSERT (resampler.sse_enabled() == use_sse);
+      resampler.process_block (&in[0], INPUT_SIZE, &out[0]);
 
       /* setup increments for comparision loop */
       size_t iinc = 1, jinc = 1;
-      if (params[p].mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+      if (params[p].mode == Resampler2::UP)
 	jinc = 2;
       else
 	iinc = 2;
 
       /* compensate resampler delay by incrementing comparision start offset */
-      double delay = resampler->delay();
+      double delay = resampler.delay();
       size_t i = 0, j = (int) round (delay * 2);
       if (j % 2)
 	{
 	  /* implement half a output sample delay (for downsampling only) */
-	  assert_return (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
+	  assert_return (params[p].mode == Resampler2::DOWN);
 	  i++;
 	  j += 2;
 	}
@@ -336,11 +308,9 @@ test_delay_compensation (const char *run_type)
 	  i += iinc; j += jinc;
 	}
 
-      delete resampler;
-
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
-      TCHECK (error_db < -params[p].error_db, "Resampler Delay Compensation delta below epsilon: %f < %f\n", error_db, -params[p].error_db);
+      TCHECK (error_db < -params[p].error_db, "Resampler %s Delay Compensation delta below epsilon: %f < %f\n", run_type, error_db, -params[p].error_db);
     }
   // TDONE();
 }
@@ -450,19 +420,11 @@ test_state_length (const char *run_type)
 }
 
 static void
-test_resample_handle_c_api()
-{
-  Bse::StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
-  Bse::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name());
-  test_c_api ("SSE");
-}
-TEST_ADD (test_resample_handle_c_api);
-
-static void
 test_resample_delay_compensation()
 {
-  test_delay_compensation ("SSE");
+  test_delay_compensation (false);
+  if (Resampler2::sse_available())
+    test_delay_compensation (true);
 }
 TEST_ADD (test_resample_delay_compensation);
 

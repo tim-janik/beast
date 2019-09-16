@@ -5,7 +5,6 @@
 #include <bse/bseloader.hh>
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
-#include <bse/bseresamplerimpl.hh>
 #include <bse/testing.hh>
 #include "../topbuildid.hh"
 #include "bse/internal.hh"

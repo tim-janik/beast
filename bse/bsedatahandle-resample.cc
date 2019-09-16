@@ -6,7 +6,6 @@
 #include <vector>
 
 namespace Bse {
-using Resampler::Resampler2;
 using std::vector;
 
 class DataHandleResample2;
@@ -23,7 +22,7 @@ protected:
   CDataHandleResample2	m_dhandle;
   GslDataHandle	       *m_src_handle;
   int                   m_precision_bits;
-  vector<Resampler2 *>  m_resamplers;
+  vector<Resampler2>    m_resamplers;
   int64			m_pcm_frame;
   vector<float>		m_pcm_data;
   int64			m_frame_size;
@@ -120,7 +119,7 @@ protected:
   }
 
   /* implemented by upsampling and downsampling datahandle */
-  virtual BseResampler2Mode mode	() const = 0;
+  virtual Resampler2::Mode  mode	() const = 0;
   virtual int64		    read_frame  (int64 frame) = 0;
 
 public:
@@ -137,37 +136,34 @@ public:
     *setup = m_src_handle->setup; /* copies setup.xinfos by pointer */
     switch (mode())
       {
-      case BSE_RESAMPLER2_MODE_UPSAMPLE:    setup->mix_freq *= 2.0;
-					    setup->n_values *= 2;
-					    break;
-      case BSE_RESAMPLER2_MODE_DOWNSAMPLE:  setup->mix_freq /= 2.0;
-					    setup->n_values = (setup->n_values + 1) / 2;
-					    break;
-      default:				    assert_return_unreached (Bse::Error::INTERNAL);
+      case Resampler2::UP:    setup->mix_freq *= 2.0;
+			      setup->n_values *= 2;
+			      break;
+      case Resampler2::DOWN:  setup->mix_freq /= 2.0;
+			      setup->n_values = (setup->n_values + 1) / 2;
+			      break;
+      default:		      assert_return_unreached (Bse::Error::INTERNAL);
       }
 
     m_frame_size = 1024 * setup->n_channels;
     m_pcm_frame = -2;
     m_pcm_data.resize (m_frame_size);
 
-    BseResampler2Precision precision = Resampler2::find_precision_for_bits (m_precision_bits);
+    Resampler2::Precision precision = Resampler2::find_precision_for_bits (m_precision_bits);
     for (guint i = 0; i < setup->n_channels; i++)
       {
-	Resampler2 *resampler = Resampler2::create (mode(), precision);
-	assert_return (resampler, Bse::Error::INTERNAL);
-
-	m_resamplers.push_back (resampler);
+	m_resamplers.emplace_back (Resampler2 (mode(), precision));
       }
     assert_return (!m_resamplers.empty(), Bse::Error::INTERNAL); /* n_channels is always > 0 */
-    m_filter_order = m_resamplers[0]->order();
+    m_filter_order = m_resamplers[0].order();
 
     /* Resampler2::delay() is defined in output samples, but we need to
      * compensate by shifting the input samples to enable seeking, thus the
      * factor 2
      */
-    if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
+    if (mode() == Resampler2::UP)
       {
-	m_filter_delay = (int) round (m_resamplers[0]->delay());
+	m_filter_delay = (int) round (m_resamplers[0].delay());
 
 	// dividing this value may erase half a sample delay (if m_filter_delay is odd)
 	// this half sample delay is compensated on the input
@@ -176,7 +172,7 @@ public:
       }
     else
       {
-	m_filter_delay = (int) round (m_resamplers[0]->delay() * 2);
+	m_filter_delay = (int) round (m_resamplers[0].delay() * 2);
 	m_filter_delay_input = 0;
       }
     return Bse::Error::NONE;
@@ -184,9 +180,6 @@ public:
   void
   close()
   {
-    for (guint i = 0; i < m_dhandle.setup.n_channels; i++)
-      delete m_resamplers[i];
-
     m_resamplers.clear();
     m_pcm_data.clear();
 
@@ -228,7 +221,7 @@ public:
     // m_src_handle must be opened and have valid state size
     assert_return (source_state_length >= 0, 0);  
 
-    if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
+    if (mode() == Resampler2::UP)
       source_state_length *= 2;
     else
       source_state_length = (source_state_length + 1) / 2;
@@ -240,7 +233,7 @@ public:
      * affects samples 10 and 11, and thus the state length we assume for
      * that case is 11.
      */
-    int64 per_channel_state = ceil (m_resamplers[0]->delay());
+    int64 per_channel_state = ceil (m_resamplers[0].delay());
     return source_state_length + per_channel_state * m_dhandle.setup.n_channels;
   }
   static GslDataHandle*
@@ -316,10 +309,10 @@ public:
     if (m_init_ok)
       m_dhandle.name = g_strconcat (m_src_handle->name, "// #upsample2 /", NULL);
   }
-  BseResampler2Mode
+  Resampler2::Mode
   mode() const
   {
-    return BSE_RESAMPLER2_MODE_UPSAMPLE;
+    return Resampler2::UP;
   }
   int64
   prepare_filter_history (int64 frame)
@@ -342,7 +335,7 @@ public:
 	/* we don't need the output, this is just for filling the filter history */
 	float output[n_input_samples * 2];
 
-	m_resamplers[ch]->process_block (input + ch * n_input_samples, n_input_samples, output);
+	m_resamplers[ch].process_block (input + ch * n_input_samples, n_input_samples, output);
       }
     return 1;
   }
@@ -374,7 +367,7 @@ public:
 	const int64 output_per_channel = m_frame_size / m_dhandle.setup.n_channels;
 	const int64 input_per_channel = output_per_channel / 2;
 
-	m_resamplers[ch]->process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
+	m_resamplers[ch].process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
       }
     interleave (output, &m_pcm_data[0], m_frame_size);
 
@@ -391,10 +384,10 @@ public:
     DataHandleResample2 (src_handle, precision_bits)
   {
   }
-  BseResampler2Mode
+  Resampler2::Mode
   mode() const
   {
-    return BSE_RESAMPLER2_MODE_DOWNSAMPLE;
+    return Resampler2::DOWN;
   }
   int64
   prepare_filter_history (int64 frame)
@@ -417,7 +410,7 @@ public:
 	/* we don't need the output, this is just for filling the filter history */
 	float output[n_input_samples / 2];
 
-	m_resamplers[ch]->process_block (input + ch * n_input_samples, n_input_samples, output);
+	m_resamplers[ch].process_block (input + ch * n_input_samples, n_input_samples, output);
       }
     return 1;
   }
@@ -449,7 +442,7 @@ public:
 	const int64 output_per_channel = m_frame_size / m_dhandle.setup.n_channels;
 	const int64 input_per_channel = output_per_channel * 2;
 
-	m_resamplers[ch]->process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
+	m_resamplers[ch].process_block (input + ch * input_per_channel, input_per_channel, output + ch * output_per_channel);
       }
     interleave (output, &m_pcm_data[0], m_frame_size);
 

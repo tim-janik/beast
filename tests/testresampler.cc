@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseresampler.hh>
-#include <bse/bseresamplerimpl.hh>
-#include <bse/bseblockutils.hh>
 #include <bse/testing.hh>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
@@ -22,7 +20,6 @@ using std::vector;
 using std::min;
 using std::max;
 using std::copy;
-using namespace Bse::Resampler;
 
 enum TestType
 {
@@ -49,32 +46,20 @@ static ResampleType resample_type = RES_UPSAMPLE;
 static TestType test_type = TEST_NONE;
 
 struct Options {
-  guint			  block_size;
-  double		  frequency;
-  double		  freq_min;
-  double		  freq_max;
-  double		  freq_inc;
-  bool                    freq_scan_verbose;
-  double                  max_threshold_db;
-  BseResampler2Precision  precision;
-  bool                    filter_impl_verbose;
-  bool                    verbose;
-  string		  program_name;
+  uint                    block_size          = 128;
+  double                  frequency           = 440.0;
+  double                  freq_min            = -1;
+  double                  freq_max            = -1;
+  double                  freq_inc            = 0;
+  bool                    freq_scan_verbose   = false;
+  double                  max_threshold_db    = 0;
+  Resampler2::Precision   precision           = Resampler2::PREC_96DB;
+  bool                    filter_impl_verbose = false;
+  bool                    verbose             = false;
+  bool                    use_sse             = false;
+  bool                    standalone          = false;
+  string                  program_name        = "testresampler";
 
-  Options() :
-    block_size (128),
-    frequency (440.0),
-    freq_min (-1),
-    freq_max (-1),
-    freq_inc (0),
-    freq_scan_verbose (false),
-    max_threshold_db (0),
-    precision (BSE_RESAMPLER2_PREC_96DB),
-    filter_impl_verbose (false),
-    verbose (false),
-    program_name ("testresampler")
-  {
-  }
   void parse (int *argc_p, char **argv_p[]);
 } options;
 
@@ -138,7 +123,6 @@ usage ()
 
 }
 
-#ifdef STANDALONE
 static bool
 check_arg (uint         argc,
            char        *argv[],
@@ -243,7 +227,7 @@ Options::parse (int   *argc_p,
 	    case 12:
 	    case 16:
 	    case 20:
-	    case 24: precision = static_cast<BseResampler2Precision> (p);
+            case 24: precision = Resampler2::Precision (p);
 	      break;
 	    default: printerr ("testresampler: unsupported precision: %d\n", p);
 		     exit (1);
@@ -251,7 +235,11 @@ Options::parse (int   *argc_p,
 	}
       else if (check_arg (argc, argv, &i, "--precision-linear"))
 	{
-	  precision = BSE_RESAMPLER2_PREC_LINEAR;
+	  precision = Resampler2::PREC_LINEAR;
+	}
+      else if (check_arg (argc, argv, &i, "--fpu"))
+	{
+	  use_sse = false;
 	}
       else if (check_arg (argc, argv, &i, "--freq-scan", &opt_arg))
 	{
@@ -309,12 +297,11 @@ Options::parse (int   *argc_p,
       }
   *argc_p = e;
 }
-#endif // STANDALONE
 
 static int
 test_filter_impl()
 {
-  bool filter_ok = Bse::Block::test_resampler2 (options.filter_impl_verbose);
+  bool filter_ok = Resampler2::test_filter_impl (options.filter_impl_verbose);
 
   if (filter_ok)
     verbose_output += "filter implementation ok.\n";
@@ -336,7 +323,6 @@ gettime ()
 template <int TEST, int RESAMPLE> int
 perform_test()
 {
-  const int REPETITIONS = 5000; // 500000;
   const guint	block_size = (TEST == TEST_IMPULSE) ? 150 /* enough space for all possible tests */
 						    : options.block_size;
   /* Initialize up- and downsampler via bse.
@@ -350,14 +336,18 @@ perform_test()
    *  - we can not provide optimal compiler flags (-funroll-loops -O3 is good for the resampler)
    *    which makes things even more slow
    */
-  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision);
-  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision);
+  Resampler2 ups (Resampler2::UP, options.precision, options.use_sse);
+  Resampler2 downs (Resampler2::DOWN, options.precision, options.use_sse);
 
-  F4Vector in_v[block_size / 2 + 3], out_v[block_size / 2 + 3], out2_v[block_size / 2 + 3];
-  float *input = &in_v[0].f[0], *output = &out_v[0].f[0], *output2 = &out2_v[0].f[0]; /* ensure aligned data */
+  TASSERT (options.use_sse == ups.sse_enabled());
+  TASSERT (options.use_sse == downs.sse_enabled());
+
+  AlignedArray<float, 16> in_a (block_size * 2), out_a (block_size * 2), out2_a (block_size * 2);
+  float *input = &in_a[0], *output = &out_a[0], *output2 = &out2_a[0]; /* ensure aligned data */
 
   if (TEST == TEST_PERFORMANCE)
     {
+      const int REPETITIONS = (options.standalone ? 64'000'000 : 640'000) / block_size;
       const gdouble test_frequency = options.frequency;
 
       for (unsigned int i = 0; i < block_size; i++)
@@ -369,15 +359,15 @@ perform_test()
 	{
 	  if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	    {
-	      downs->process_block (input, block_size, output);
+	      downs.process_block (input, block_size, output);
 	      if (RESAMPLE == RES_SUBSAMPLE)
-		ups->process_block (output, block_size / 2, output2);
+		ups.process_block (output, block_size / 2, output2);
 	    }
 	  if (RESAMPLE == RES_UPSAMPLE || RESAMPLE == RES_OVERSAMPLE)
 	    {
-	      ups->process_block (input, block_size, output);
+	      ups.process_block (input, block_size, output);
 	      if (RESAMPLE == RES_OVERSAMPLE)
-		downs->process_block (output, block_size * 2, output2);
+		downs.process_block (output, block_size * 2, output2);
 	    }
 	  k += block_size;
 	}
@@ -449,15 +439,15 @@ perform_test()
 		}
 	      if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 		{
-		  downs->process_block (input + misalign, bs, output);
+		  downs.process_block (input + misalign, bs, output);
 		  if (RESAMPLE == RES_SUBSAMPLE)
-		    ups->process_block (output, bs / 2, output2);
+		    ups.process_block (output, bs / 2, output2);
 		}
 	      if (RESAMPLE == RES_UPSAMPLE || RESAMPLE == RES_OVERSAMPLE)
 		{
-		  ups->process_block (input + misalign, bs, output);
+		  ups.process_block (input + misalign, bs, output);
 		  if (RESAMPLE == RES_OVERSAMPLE)
-		    downs->process_block (output, bs * 2, output2);
+		    downs.process_block (output, bs * 2, output2);
 		}
 
 	      /* validate output */
@@ -469,21 +459,21 @@ perform_test()
 
 	      if (RESAMPLE == RES_UPSAMPLE)
 		{
-		  sin_shift = ups->delay();
+		  sin_shift = ups.delay();
 		  freq_factor = 0.5;
 		  out_bs = bs * 2;
 		  correct_volume = 1;
 		}
 	      else if (RESAMPLE == RES_DOWNSAMPLE)
 		{
-		  sin_shift = downs->delay();
+		  sin_shift = downs.delay();
 		  freq_factor = 2;
 		  out_bs = bs / 2;
 		  correct_volume = (test_frequency < (44100/4)) ? 1 : 0;
 		}
 	      else if (RESAMPLE == RES_OVERSAMPLE)
 		{
-		  sin_shift = ups->delay() * 0.5 + downs->delay();
+		  sin_shift = ups.delay() * 0.5 + downs.delay();
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
@@ -491,7 +481,7 @@ perform_test()
 		}
 	      else if (RESAMPLE == RES_SUBSAMPLE)
 		{
-		  sin_shift = downs->delay() * 2 + ups->delay();
+		  sin_shift = downs.delay() * 2 + ups.delay();
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
@@ -500,7 +490,7 @@ perform_test()
 
 	      for (unsigned int i = 0; i < out_bs; i++, k++)
 		{
-		  if (k > (ups->order() * 4))
+		  if (k > (ups.order() * 4))
 		    {
 		      /* The expected resampler output signal is a sine signal with
 		       * different frequency and is phase shifted a bit.
@@ -605,15 +595,15 @@ perform_test()
 
       if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	{
-	  downs->process_block (input, block_size, output);
+	  downs.process_block (input, block_size, output);
 	  if (RESAMPLE == RES_SUBSAMPLE)
-	    ups->process_block (output, block_size / 2, output2);
+	    ups.process_block (output, block_size / 2, output2);
 	}
       if (RESAMPLE == RES_UPSAMPLE || RESAMPLE == RES_OVERSAMPLE)
 	{
-	  ups->process_block (input, block_size, output);
+	  ups.process_block (input, block_size, output);
 	  if (RESAMPLE == RES_OVERSAMPLE)
-	    downs->process_block (output, block_size * 2, output2);
+	    downs.process_block (output, block_size * 2, output2);
 	}
 
       float *check = output;
@@ -623,15 +613,13 @@ perform_test()
       for (unsigned int i = 0; i < block_size; i++)
 	verbose_output += string_format ("%.17f\n", check[i]);
     }
-  delete ups;
-  delete downs;
   return 0;
 }
 
 template <int TEST> int
 perform_test()
 {
-  const char *instruction_set = Bse::Block::impl_name();
+  const char *instruction_set = options.use_sse ? "SSE" : "FPU";
 
   switch (resample_type)
     {
@@ -651,6 +639,7 @@ perform_test()
 static int
 perform_test()
 {
+  verbose_output = "";
   switch (test_type)
     {
     case TEST_PERFORMANCE:    verbose_output += "performance test "; return perform_test<TEST_PERFORMANCE> ();
@@ -663,7 +652,6 @@ perform_test()
     }
 }
 
-#ifdef STANDALONE
 static string
 test_title()
 {
@@ -675,7 +663,7 @@ test_title()
     {
       assert_return (test_type == TEST_ACCURACY, "*bad test type*");
 
-      const char *instruction_set = Bse::Block::impl_name();
+      const char *instruction_set = options.use_sse ? "SSE" : "FPU";
       const char *rname = "*bad resample name*";
       switch (resample_type)
         {
@@ -693,15 +681,7 @@ static int standalone (int argc, char **argv) __attribute__((unused));
 static int
 standalone (int argc, char **argv)
 {
-  /* preprocess args: allow using --fpu instead of --bse-force-fpu,
-   * because its a really common use case for the resampler test
-   */
-  for (int i = 0; i < argc; i++)
-    if (strcmp (argv[i], "--fpu") == 0)
-      argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
-
-  /* load plugins */
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
+  options.use_sse = Resampler2::sse_available();
   options.parse (&argc, &argv);
 
   if (argc == 2)
@@ -764,7 +744,6 @@ standalone (int argc, char **argv)
     }
   return result;
 }
-#endif // STANDALONE
 
 // == test collection ==
 static void
@@ -776,11 +755,11 @@ run_testresampler (TestType tt)
 }
 
 static void
-run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, double finc, double threshold)
+run_accuracy (ResampleType rtype, bool use_sse_if_available, int bits, double fmin, double fmax, double finc, double threshold)
 {
   test_type = TEST_ACCURACY;
   resample_type = rtype;
-  options.precision = static_cast<BseResampler2Precision> (precision);
+  options.precision = Resampler2::find_precision_for_bits (bits);
   options.freq_min = fmin;
   options.freq_max = fmax;
   options.freq_inc = finc;
@@ -789,6 +768,7 @@ run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, doubl
   if (options.max_threshold_db > 0)
     options.max_threshold_db = -options.max_threshold_db;
   //options.verbose = true;
+  options.use_sse = Resampler2::sse_available() && use_sse_if_available;
   const int result = perform_test();
   if (options.verbose)
     printf ("%s", verbose_output.c_str());
@@ -796,31 +776,81 @@ run_accuracy (ResampleType rtype, int precision, double fmin, double fmax, doubl
 }
 
 static void
-run_perf (ResampleType rtype, int precision)
+run_perf (ResampleType rtype, int bits)
 {
-  test_type = TEST_PERFORMANCE;
-  resample_type = rtype;
-  options.precision = static_cast<BseResampler2Precision> (precision);
-  options.verbose = true;
-  const int result = perform_test();
-  if (options.verbose)
-    printf ("%s", verbose_output.c_str());
-  TASSERT (result == 0);
+  const int runs = Resampler2::sse_available() ? 2 : 1; // run test twice if we have both: FPU and SSE support
+
+  for (int r = 0; r < runs; r++)
+    {
+      test_type = TEST_PERFORMANCE;
+      resample_type = rtype;
+      options.precision = Resampler2::find_precision_for_bits (bits);
+      options.verbose = true;
+      options.use_sse = r;
+
+      const int result = perform_test();
+      if (options.verbose)
+        printf ("%s", verbose_output.c_str());
+      TASSERT (result == 0);
+    }
 }
 
 static void testresampler_check_filter_impl()           { run_testresampler (TEST_FILTER_IMPL); }
 TEST_ADD (testresampler_check_filter_impl);
 
-static void testresampler_check_precision_up8()         { run_accuracy (RES_UPSAMPLE, 8, 180, 18000, 1979, 45); }
+static void testresampler_check_precision_up8()         { run_accuracy (RES_UPSAMPLE, true, 8, 180, 18000, 1979, 45); }
 TEST_ADD (testresampler_check_precision_up8);
-static void testresampler_check_precision_down12()      { run_accuracy (RES_DOWNSAMPLE, 12, 90, 9000, 997, 72); }
+static void testresampler_check_precision_down12()      { run_accuracy (RES_DOWNSAMPLE, true, 12, 90, 9000, 997, 72); }
 TEST_ADD (testresampler_check_precision_down12);
-static void testresampler_check_precision_up16()        { run_accuracy (RES_UPSAMPLE, 16, 180, 18000, 1453, 89.5); }
-TEST_ADD (testresampler_check_precision_up16); // --bse-force-fpu
-static void testresampler_check_precision_over20()      { run_accuracy (RES_OVERSAMPLE, 20, 180, 18000, 1671, 113.5); }
-TEST_ADD (testresampler_check_precision_over20); // --bse-force-fpu
-static void testresampler_check_precision_sub24()       { run_accuracy (RES_SUBSAMPLE, 24, 90, 9000, 983, 126); }
+static void testresampler_check_precision_up16()        { run_accuracy (RES_UPSAMPLE, true, 16, 180, 18000, 1453, 89.5); }
+TEST_ADD (testresampler_check_precision_up16);
+static void testresampler_check_precision_over20()      { run_accuracy (RES_OVERSAMPLE, false, 20, 180, 18000, 1671, 113.5); }
+TEST_ADD (testresampler_check_precision_over20);
+static void testresampler_check_precision_sub24()       { run_accuracy (RES_SUBSAMPLE, false, 24, 90, 9000, 983, 126); }
 TEST_ADD (testresampler_check_precision_sub24);
+
+static void
+testresampler_check_accuracy_full()
+{
+  if (Resampler2::sse_available())
+    {
+      // SSE upsampler tests
+      run_accuracy (RES_UPSAMPLE, true, 8,  50, 18000, 50, 45);     // ideally: 48dB
+      run_accuracy (RES_UPSAMPLE, true, 12, 50, 18000, 50, 66.5);   // ideally: 72dB
+      run_accuracy (RES_UPSAMPLE, true, 16, 50, 18000, 50, 89);     // ideally: 96dB
+      run_accuracy (RES_UPSAMPLE, true, 20, 50, 18000, 50, 113.5);  // ideally: 120dB
+      run_accuracy (RES_UPSAMPLE, true, 24, 50, 18000, 50, 126);    // ideally: 144dB
+      // SSE downsampler tests
+      run_accuracy (RES_DOWNSAMPLE, true, 8,  25, 9000, 25, 51);    // ideally: 48dB
+      run_accuracy (RES_DOWNSAMPLE, true, 12, 25, 9000, 25, 72);    // ideally: 72dB
+      run_accuracy (RES_DOWNSAMPLE, true, 16, 25, 9000, 25, 95);    // ideally: 96dB
+      run_accuracy (RES_DOWNSAMPLE, true, 20, 25, 9000, 25, 119.5); // ideally: 120dB
+      run_accuracy (RES_DOWNSAMPLE, true, 24, 25, 9000, 25, 131);   // ideally: 144dB
+    }
+  // FPU upsampler tests
+  run_accuracy (RES_UPSAMPLE, false, 8,  50, 18000, 50, 45);     // ideally: 48dB
+  run_accuracy (RES_UPSAMPLE, false, 12, 50, 18000, 50, 66.5);   // ideally: 72dB
+  run_accuracy (RES_UPSAMPLE, false, 16, 50, 18000, 50, 89);     // ideally: 96dB
+  run_accuracy (RES_UPSAMPLE, false, 20, 50, 18000, 50, 113.5);  // ideally: 120dB
+  run_accuracy (RES_UPSAMPLE, false, 24, 50, 18000, 50, 126);    // ideally: 144dB
+  // FPU downsampler tests
+  run_accuracy (RES_DOWNSAMPLE, false, 8,  25, 9000, 25, 51);    // ideally: 48dB
+  run_accuracy (RES_DOWNSAMPLE, false, 12, 25, 9000, 25, 72);    // ideally: 72dB
+  run_accuracy (RES_DOWNSAMPLE, false, 16, 25, 9000, 25, 95);    // ideally: 96dB
+  run_accuracy (RES_DOWNSAMPLE, false, 20, 25, 9000, 25, 119.5); // ideally: 120dB
+  run_accuracy (RES_DOWNSAMPLE, false, 24, 25, 9000, 25, 131);   // ideally: 144dB
+  // sparse testing of sub- and oversampling (we don't test every combination of
+  // flags here, but this is also an uncommon usage scenario)
+  if (Resampler2::sse_available())
+    {
+      run_accuracy (RES_OVERSAMPLE, true, 8,  50, 18000, 50, 45);   // ideally: 48dB
+      run_accuracy (RES_OVERSAMPLE, true, 16, 50, 18000, 50, 89);   // ideally: 96dB
+      run_accuracy (RES_SUBSAMPLE,  true, 16, 25,  9000, 25, 85.5); // ideally: 96dB
+    }
+  run_accuracy (RES_OVERSAMPLE, false, 16, 50, 18000, 50, 89);   // ideally: 96dB
+  run_accuracy (RES_SUBSAMPLE,  false, 16, 25,  9000, 25, 85.5); // ideally: 96dB
+}
+TEST_SLOW (testresampler_check_accuracy_full);
 
 #if 0 // lengthy and verbose performance tests
 #define TEST_PERF(fun)  TEST_BENCH (fun)
@@ -874,10 +904,17 @@ TEST_PERF (testresampler_check_performance_sub24);
 static void testresampler_check_performance_over24()    { run_perf (RES_OVERSAMPLE, 24); }
 TEST_PERF (testresampler_check_performance_over24);
 
-#ifdef STANDALONE
+int test_resampler (int argc, char **argv);
+
 int
-main (int argc, char **argv)
+test_resampler (int argc, char **argv)
 {
-  return standalone (argc, argv);
+  options.standalone = true;
+
+  char first_argv[] = "testresampler";
+  vector<char *> standalone_argv { first_argv };
+  for (int i = 2; i < argc; i++)
+    standalone_argv.push_back (argv[i]);
+
+  return standalone (standalone_argv.size(), standalone_argv.data());
 }
-#endif

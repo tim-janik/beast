@@ -12,7 +12,6 @@
 
 using namespace Bse;
 
-using Bse::Resampler::Resampler2;
 using Bse::AlignedArray;
 using std::vector;
 using std::max;
@@ -40,8 +39,8 @@ public:
   double max_error;
 
   void  check_spectrum (const vector<float>& impulse_response, int p);
-  void  check_resampler_up (BseResampler2Precision precision);
-  void  check_resampler_down (BseResampler2Precision precision);
+  void  check_resampler_up (Resampler2::Precision precision, bool use_sse);
+  void  check_resampler_down (Resampler2::Precision precision, bool use_sse);
 };
 
 void
@@ -72,17 +71,18 @@ ResamplerTest::check_spectrum (const vector<float>& impulse_response, int p)
 }
 
 void
-ResamplerTest::check_resampler_up (BseResampler2Precision precision)
+ResamplerTest::check_resampler_up (Resampler2::Precision precision, bool use_sse)
 {
-  Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, precision);
+  Resampler2 ups (Resampler2::UP, precision, use_sse);
   AlignedArray<float,16> input (options.test_size);
   AlignedArray<float,16> output (options.test_size * 2);
   vector< vector<float> > results;
 
+  TASSERT (ups.sse_enabled() == use_sse);
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
-      ups->process_block (&input[0], input.size(), &output[0]);
+      ups.process_block (&input[0], input.size(), &output[0]);
       input[i] = 0;
       results.push_back (vector<float> (&output[0], &output[output.size()]));
       for (size_t j = 0; j < output.size(); j++)
@@ -96,7 +96,7 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
     }
   for (size_t i = 0; i < options.rand_samples; i++)
     input[i] = g_random_double_range (-1, 1);
-  ups->process_block (&input[0], input.size(), &output[0]);
+  ups.process_block (&input[0], input.size(), &output[0]);
 
   max_error = 0;
   for (size_t j = 0; j < output.size(); j++)
@@ -112,17 +112,18 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
 }
 
 void
-ResamplerTest::check_resampler_down (BseResampler2Precision precision)
+ResamplerTest::check_resampler_down (Resampler2::Precision precision, bool use_sse)
 {
-  Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, precision);
+  Resampler2 downs (Resampler2::DOWN, precision, use_sse);
   AlignedArray<float,16> input (options.test_size * 2);
   AlignedArray<float,16> output (options.test_size);
   vector< vector<float> > results;
 
+  TASSERT (downs.sse_enabled() == use_sse);
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
-      downs->process_block (&input[0], input.size(), &output[0]);
+      downs.process_block (&input[0], input.size(), &output[0]);
       input[i] = 0;
       results.push_back (vector<float> (&output[0], &output[output.size()]));
       for (size_t j = 0; j < output.size(); j++)
@@ -134,7 +135,7 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision)
     }
   for (size_t i = 0; i < options.rand_samples; i++)
     input[i] = g_random_double_range (-1, 1);
-  downs->process_block (&input[0], input.size(), &output[0]);
+  downs.process_block (&input[0], input.size(), &output[0]);
   max_error = 0;
   for (size_t j = 0; j < output.size(); j++)
     {
@@ -162,7 +163,7 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision)
 }
 
 static double
-band_err (BseResampler2Precision p)
+band_err (Resampler2::Precision p)
 {
   /* the filter design is not always exactly as specified by the precision,
    * so sometimes we achieve a lower db value than requested, and sometimes
@@ -170,30 +171,30 @@ band_err (BseResampler2Precision p)
    */
   switch (p)
     {
-      case BSE_RESAMPLER2_PREC_LINEAR:  return -8.5;
-      case BSE_RESAMPLER2_PREC_48DB:    return -51;
-      case BSE_RESAMPLER2_PREC_72DB:    return -74;
-      case BSE_RESAMPLER2_PREC_96DB:    return -95;
-      case BSE_RESAMPLER2_PREC_120DB:   return -120;
-      case BSE_RESAMPLER2_PREC_144DB:   return -144;
-      default:                          assert_return_unreached (NAN);
+      case Resampler2::PREC_LINEAR:  return -8.5;
+      case Resampler2::PREC_48DB:    return -51;
+      case Resampler2::PREC_72DB:    return -74;
+      case Resampler2::PREC_96DB:    return -95;
+      case Resampler2::PREC_120DB:   return -120;
+      case Resampler2::PREC_144DB:   return -144;
+      default:           assert_return_unreached (NAN);
     }
 }
 
 static void
-run_tests (const char *label)
+run_tests (bool use_sse)
 {
-  BseResampler2Precision p = BSE_RESAMPLER2_PREC_96DB;  // should not be equal to the first resampler precision
+  Resampler2::Precision p = Resampler2::PREC_96DB;  // should not be equal to the first resampler precision
 
   for (int i = 0; i < 32; i++)
     {
-      BseResampler2Precision new_p = Resampler2::find_precision_for_bits (i);
+      Resampler2::Precision new_p = Resampler2::find_precision_for_bits (i);
       if (new_p != p)
         {
           p = new_p;
 
           ResamplerTest rt_up;
-          rt_up.check_resampler_up (p);
+          rt_up.check_resampler_up (p, use_sse);
 
           TASSERT (bse_db_from_factor (rt_up.max_error, -200) < -125);
           TASSERT (bse_db_from_factor (rt_up.passband_err, -200) < band_err (p));
@@ -203,7 +204,7 @@ run_tests (const char *label)
                                                     //bse_db_from_factor (rt_up.passband_err, -200),
                                                     //bse_db_from_factor (rt_up.stopband_err, -200));
           ResamplerTest rt_down;
-          rt_down.check_resampler_down (p);
+          rt_down.check_resampler_down (p, use_sse);
 
           TASSERT (bse_db_from_factor (rt_up.max_error, -200) < -125);
           TASSERT (bse_db_from_factor (rt_up.passband_err, -200) < band_err (p));
@@ -212,7 +213,7 @@ run_tests (const char *label)
           //printf ("## DOWN %d %.17g %.17g %.17g\n", p, bse_db_from_factor (rt_down.max_error, -200),
                                                     //bse_db_from_factor (rt_down.passband_err, -200),
                                                     //bse_db_from_factor (rt_down.stopband_err, -200));
-          printout ("  OK       Resampler %s Precision %d\n", label, p);
+          printout ("  OK       Resampler %s Precision %d\n", use_sse ? "SSE" : "FPU", p);
         }
     }
 }
@@ -240,16 +241,8 @@ test_resampler_variants()
   assert_return (options.rand_samples <= options.test_size / 2);
   assert_return (options.test_size >= 128);
   TNOTE ("Resampler test parameters: test_size=%zd rand_samples=%zd", options.test_size, options.rand_samples);
-  run_tests ("FPU");
-
-#if 0
-  /* load plugins */
-  diag_abort_hook (NULL); // hack to allow test reinitialization
-  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
-  /* check for possible specialization */
-  if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
-    return 0;   /* nothing changed */
-  run_tests ("SSE");
-#endif
+  run_tests (false);
+  if (Resampler2::sse_available())
+    run_tests (true);
 }
 TEST_ADD (test_resampler_variants);

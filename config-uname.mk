@@ -64,7 +64,7 @@ ifdef HAVE_GCC    # g++
   endif
 endif
 
-ifeq ($(uname_S),x86_64)
+ifeq ($(uname_M),x86_64)
   COMMONFLAGS	 += -mcx16			# for CMPXCHG16B, in AMD64 since 2005
   OPTIMIZE	 += -minline-all-stringops
   OPTIMIZE	 += -mmmx -msse -msse2		# Intel since 2001, AMD since 2003

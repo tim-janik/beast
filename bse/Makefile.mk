@@ -73,7 +73,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseplugin.hh		\
 	bse/bseproject.hh		\
 	bse/bseresampler.hh		\
-	bse/bseresamplerimpl.hh		\
 	bse/bsesequencer.hh		\
 	bse/bseserver.hh		\
 	bse/bsesnet.hh			\
