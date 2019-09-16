@@ -2,7 +2,6 @@
 #ifndef __BSE_SERVER_H__
 #define __BSE_SERVER_H__
 #include <bse/bsesuper.hh>
-#include <bse/bsemididevice.hh>
 #include <bse/driver.hh>
 
 /* --- BSE type macros --- */
@@ -23,7 +22,6 @@ struct BseServer : BseContainer {
   BseModule       *pcm_imodule;
   BseModule       *pcm_omodule;
   BsePcmWriter	  *pcm_writer;
-  BseMidiDevice	  *midi_device;
   GSList	  *watch_list;
 };
 struct BseServerClass : BseContainerClass
@@ -40,8 +38,6 @@ BseModule*  bse_server_retrieve_pcm_output_module (BseServer *server, BseSource 
 void	    bse_server_discard_pcm_output_module  (BseServer *server, BseModule *module);
 BseModule*  bse_server_retrieve_pcm_input_module  (BseServer *server, BseSource *source, const char *uplink_name);
 void	    bse_server_discard_pcm_input_module   (BseServer *server, BseModule *module);
-BseModule*  bse_server_retrieve_midi_input_module (BseServer *server, const char *downlink_name, uint midi_channel_id, uint nth_note, uint signals[4]);
-void	    bse_server_discard_midi_input_module  (BseServer *server, BseModule *module);
 void	    bse_server_add_io_watch		  (BseServer *server, int fd, GIOCondition events, BseIOWatch watch_func, void *data);
 void	    bse_server_remove_io_watch            (BseServer *server, BseIOWatch watch_func, void *data);
 // internal
@@ -66,6 +62,7 @@ class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   bool               log_messages_ = true;
   bool               pcm_input_checked_ = false;
   PcmDriverP         pcm_driver_;
+  MidiDriverP        midi_driver_;
 protected:
   virtual            ~ServerImpl            ();
 public:
@@ -74,9 +71,11 @@ public:
   void                release_shared_block  (const SharedBlock &block);
   void                set_ipc_handler       (IpcHandler *ipch);
   IpcHandler*         get_ipc_handler       ();
-  void                require_pcm_input     ();
-  Error               open_pcm_driver       (uint mix_freq, uint latency, uint block_size);
+  Error               open_midi_driver      ();
+  void                close_midi_driver     ();
   PcmDriverP          pcm_driver            () const { return pcm_driver_; }
+  Error               open_pcm_driver       (uint mix_freq, uint latency, uint block_size);
+  void                require_pcm_input     ();
   void                close_pcm_driver      ();
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;

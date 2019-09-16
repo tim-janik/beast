@@ -122,7 +122,6 @@ bse_server_init (BseServer *self)
   self->pcm_imodule = NULL;
   self->pcm_omodule = NULL;
   self->pcm_writer = NULL;
-  self->midi_device = NULL;
 
   /* keep the server singleton alive */
   bse_item_use (BSE_ITEM (self));
@@ -309,33 +308,6 @@ bse_server_start_recording (BseServer      *self,
   impl->notify ("wave_file");
 }
 
-static Bse::Error
-server_open_midi_device (BseServer *server)
-{
-  assert_return (server->midi_device == NULL, Bse::Error::INTERNAL);
-  Bse::Error error;
-  server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
-  if (!server->midi_device)
-    {
-      SfiRing *ring = sfi_ring_prepend (NULL, (void*) "null");
-      server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
-      sfi_ring_free (ring);
-
-      if (server->midi_device)
-        {
-          UserMessage umsg;
-          umsg.utype = Bse::UserMessageType::WARNING;
-          umsg.title = _("MIDI I/O Failed");
-          umsg.text1 = _("MIDI input or output is not available.");
-          umsg.text2 = _("No available MIDI device could be found and opened successfully. "
-                         "Reverting to null device, no MIDI events will be received or sent.");
-          umsg.text3 = string_format (_("Failed to open MIDI devices: %s"), bse_error_blurb (error));
-          umsg.label = _("MIDI device selections problems");
-          ServerImpl::instance().send_user_message (umsg);
-        }
-    }
-  return server->midi_device ? Bse::Error::NONE : error;
-}
 Bse::Error
 bse_server_open_devices (BseServer *self)
 {
@@ -356,7 +328,7 @@ bse_server_open_devices (BseServer *self)
   /* try opening devices */
   if (error == 0)
     error = impl->open_pcm_driver (mix_freq, latency, block_size);
-  guint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
+  uint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
   if (error != 0 && aligned_freq != mix_freq)
     {
       mix_freq = aligned_freq;
@@ -365,7 +337,7 @@ bse_server_open_devices (BseServer *self)
       error = new_error != 0 ? error : Bse::Error::NONE;
     }
   if (error == 0)
-    error = server_open_midi_device (self);
+    error = impl->open_midi_driver();
   if (error == 0)
     {
       BseTrans *trans = bse_trans_open ();
@@ -401,13 +373,8 @@ bse_server_open_devices (BseServer *self)
     }
   else
     {
-      if (self->midi_device)
-	{
-	  bse_device_close (BSE_DEVICE (self->midi_device));
-	  g_object_unref (self->midi_device);
-	  self->midi_device = NULL;
-	}
       impl->close_pcm_driver();
+      impl->close_midi_driver();
     }
   Bse::global_config->unlock();
   return error;
@@ -455,10 +422,8 @@ bse_server_close_devices (BseServer *self)
 	  self->pcm_writer = NULL;
 	}
       impl->close_pcm_driver();
-      bse_device_close (BSE_DEVICE (self->midi_device));
+      impl->close_midi_driver();
       engine_shutdown (self);
-      g_object_unref (self->midi_device);
-      self->midi_device = NULL;
       ServerImpl::instance().enginechange (false);
     }
 }
@@ -839,6 +804,7 @@ ServerImpl::ServerImpl (BseObject *bobj) :
 ServerImpl::~ServerImpl ()
 {
   close_pcm_driver();
+  close_midi_driver();
 }
 
 bool
@@ -1460,6 +1426,41 @@ IpcHandler*
 ServerImpl::get_ipc_handler ()
 {
   return server_ipc_handler;
+}
+
+void
+ServerImpl::close_midi_driver()
+{
+  if (midi_driver_)
+    {
+      midi_driver_->close();
+      midi_driver_ = nullptr;
+    }
+}
+
+Bse::Error
+ServerImpl::open_midi_driver()
+{
+  assert_return (midi_driver_ == nullptr, Error::INTERNAL);
+  Error error = Error::UNKNOWN;
+  DriverConfig config;
+  config.require_readable = true;
+  config.require_writable = false;
+  auto entries = MidiDriver::list_drivers();
+  if (entries.size() >= 2)
+    midi_driver_ = MidiDriver::open (entries[1], config, &error);
+  if (!midi_driver_)
+    {
+      UserMessage umsg;
+      umsg.utype = Bse::UserMessageType::WARNING;
+      umsg.title = _("MIDI I/O Failed");
+      umsg.text1 = _("No MIDI input is available.");
+      umsg.text2 = _("No available MIDI device could be found and opened successfully.");
+      umsg.text3 = string_format (_("Failed to open MIDI devices: %s"), bse_error_blurb (error));
+      umsg.label = _("MIDI device selections problems");
+      send_user_message (umsg);
+    }
+  return midi_driver_ ? Error::NONE : error;
 }
 
 void
