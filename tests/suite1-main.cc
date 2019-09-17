@@ -4,6 +4,7 @@
 #include <bse/bse.hh>
 #include <bse/bseserver.hh>
 #include "ipc.hh"
+#include "testresampler.hh"
 
 #define DEBUG(...)              do { break; Bse::printerr (__VA_ARGS__); } while (0)
 
@@ -186,14 +187,11 @@ main (int argc, char *argv[])
       bench_aida();
       return 0;
     }
-  /* NEVER inline prototypes, ALWAYS use a header file!
-   *  if (argc >= 2 && argv[1] && std::string ("--resampler") == argv[1])
-   *    {
-   *      Bse::init_async (&argc, argv, argv[0], args);
-   *      extern int test_resampler (int, char **);
-   *      return test_resampler (argc, argv);
-   *    }
-   */
+  if (argc >= 2 && argv[1] && std::string ("--resampler") == argv[1])
+    {
+      Bse::init_async (&argc, argv, argv[0], args);
+      return test_resampler (argc, argv);
+    }
   // run tests
   return bse_init_and_test (&argc, argv, [&]() { return test_main (argc, argv); }, args);
 }
