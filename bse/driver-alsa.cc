@@ -427,7 +427,8 @@ public:
     if (write_handle_)
       {
         int n, buffer_length = n_periods_ * period_size_; // buffer size chosen by ALSA based on latency request
-        const float *zeros = bse_engine_const_zeros (buffer_length / 2); // sizeof (int16) / sizeof (float)
+        const size_t frame_size = n_channels_ * sizeof (period_buffer_[0]);
+        const uint8  zeros[buffer_length * frame_size] = { 0, };
         do
           n = snd_pcm_writei (write_handle_, zeros, buffer_length);
         while (n == -EAGAIN); // retry on signals
