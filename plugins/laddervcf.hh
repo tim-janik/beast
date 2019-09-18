@@ -3,6 +3,8 @@
 #ifndef __BSE_LADDER_VCF_HH__
 #define __BSE_LADDER_VCF_HH__
 
+#include <bse/bseresampler.hh>
+
 namespace Bse {
 
 enum class LadderVCFMode { LP1, LP2, LP3, LP4 };
@@ -14,14 +16,9 @@ class LadderVCF
     double x1, x2, x3, x4;
     double y1, y2, y3, y4;
 
-    std::unique_ptr<Bse::Resampler::Resampler2> res_up;
-    std::unique_ptr<Bse::Resampler::Resampler2> res_down;
-
-    Channel() :
-      res_up (Bse::Resampler::Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_48DB)),
-      res_down (Bse::Resampler::Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_48DB))
-    {
-    }
+    // NOTE: Bse currently doesn't enforce SSE alignment so we force FPU resampling
+    Resampler2 res_up   { Resampler2::UP,   Resampler2::PREC_48DB, false };
+    Resampler2 res_down { Resampler2::DOWN, Resampler2::PREC_48DB, false };
   };
   std::array<Channel, 2> channels;
   LadderVCFMode mode;
@@ -90,8 +87,8 @@ public:
         c.x1 = c.x2 = c.x3 = c.x4 = 0;
         c.y1 = c.y2 = c.y3 = c.y4 = 0;
 
-        c.res_up->reset();
-        c.res_down->reset();
+        c.res_up.reset();
+        c.res_down.reset();
       }
     last_key_freq = -1;
     last_key_tracking_factor = 0;
@@ -198,7 +195,7 @@ private:
       {
         for (size_t i = 0; i < channels.size(); i++)
           if (need_channel<CHANNEL_MASK> (i))
-            channels[i].res_up->process_block (inputs[i], n_samples, over_samples[i]);
+            channels[i].res_up.process_block (inputs[i], n_samples, over_samples[i]);
       }
 
     fc *= freq_scale;
@@ -262,7 +259,7 @@ private:
       {
         for (size_t i = 0; i < channels.size(); i++)
           if (need_channel<CHANNEL_MASK> (i))
-            channels[i].res_down->process_block (over_samples[i], 2 * n_samples, outputs[i]);
+            channels[i].res_down.process_block (over_samples[i], 2 * n_samples, outputs[i]);
       }
   }
   template<LadderVCFMode MODE> inline void
