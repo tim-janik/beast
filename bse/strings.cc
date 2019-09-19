@@ -1043,6 +1043,21 @@ cstrings_to_vector (const char *s, ...)
   return sv;
 }
 
+// == Generic Key-Value-Pairs ==
+String
+kvpair_key (const String &key_value_pair)
+{
+  const char *const eq = strchr (key_value_pair.c_str(), '=');
+  return eq ? key_value_pair.substr (0, eq - key_value_pair.c_str()) : key_value_pair;
+}
+
+String
+kvpair_value (const String &key_value_pair)
+{
+  const char *const eq = strchr (key_value_pair.c_str(), '=');
+  return eq ? key_value_pair.substr (eq - key_value_pair.c_str() + 1) : "";
+}
+
 // === String Options ===
 #define is_sep(c)               (c == ';' || c == ':')
 #define is_spacesep(c)          (isspace (c) || is_sep (c))
