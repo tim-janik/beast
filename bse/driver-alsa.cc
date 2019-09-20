@@ -423,11 +423,12 @@ public:
     // fill playback buffer with silence
     if (write_handle_)
       {
-        int n, buffer_length = n_periods_ * period_size_; // buffer size chosen by ALSA based on latency request
-        const float *zeros = bse_engine_const_zeros (buffer_length / 2); // sizeof (int16) / sizeof (float)
-        do
-          n = snd_pcm_writei (write_handle_, zeros, buffer_length);
-        while (n == -EAGAIN); // retry on signals
+        int n;
+        const float *zeros = bse_engine_const_zeros (n_channels_ * period_size_ / 2); // sizeof (int16) / sizeof (float)
+        for (size_t i = 0; i < n_periods_; i++)
+          do
+            n = snd_pcm_writei (write_handle_, zeros, n_channels_ * period_size_);
+          while (n == -EAGAIN); // retry on signals
       }
     snd_lib_error_set_handler (NULL);
   }
