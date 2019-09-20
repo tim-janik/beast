@@ -16,6 +16,61 @@ using namespace Bse;
 
 namespace { // Anon
 
+/*------------------------------------------------------------------------
+The jack driver as provided here should be usable. However, there are a few
+things that could be improved, here is a short list.
+
+Audio Engine start/stop
+-----------------------
+Currently the JACK driver registers a new BEAST client every time the device
+is opened. This is problematic because connections between the BEAST jack
+client and other applications will be disconnected on every close. So
+redirecting output song playback through some other application would have
+to be reconnected the next time the song plays. Also connecting BEAST to
+other JACK clients while the device is closed - before actual playback -
+would be impossible.
+
+To fix this, there should be an explicit audio engine start/stop in BEAST.
+Once the audio engine is started, the JACK client should remain registered
+with JACK, even if no song is playing. This should fix the problems this
+driver has due to JACK disconnect on device close.
+
+JACK Midi
+---------
+Apart from audio, JACK can provide midi events to clients. This can be
+added later on.
+
+Less buffering, better latency
+------------------------------
+Currently, the JACK driver has a ring buffer that holds some audio data.  This
+introduces latency. This is not what JACK applications typically do.  So here
+are some thoughts of how to avoid buffering completely.
+
+To do so, we make the JACK callback block until BEAST has processed the audio
+data.
+
+(1) [JACK Thread] jack_process_callback gets called with N input samples
+(2) [JACK Thread] wake up engine thread
+(3) [JACK Thread] wait for engine thread
+(4) [ENGINE Thread] engine thread processes N samples input -> N samples output
+(5) [ENGINE Thread] engine thread wakes up jack thread
+(6) [JACK Thread] jack_process_callback returns, supplying N output samples
+
+So the idea is to receive input samples from jack (1) and then stall the jack
+thread (2). The engine processes the samples (4) and wakes up the jack thread
+(5) which then returns (6) the samples the engine created. The engine thread
+can use helper threads to complete the job.
+
+Note that this optimization works best (no buffering/latency) if the engine
+block size and the jack block size are equal. It also works well if the jack
+block size is an integer multiple fo the engine block size.
+
+This avoids latency and buffering. However this may pose stricter RT
+requirements onto BEAST. So whether it runs as dropout-free as the current
+version would remain to be seen. A not so realtime version would buffer
+M complete blocks of N samples, still avoiding partially filled buffers.
+------------------------------------------------------------------------*/
+
 /**
  * This function uses std::copy to copy the n_values of data from ivalues
  * to ovalues. If a specialized version is available in bseblockutils,
