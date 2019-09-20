@@ -77,7 +77,7 @@ init_lib_alsa()
 }
 
 static void
-list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid, bool need_pcm, bool need_midi)
+list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
 {
   init_lib_alsa();
   // discover virtual (non-hw) devices
@@ -102,7 +102,6 @@ list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid, bool need_pcm, bo
               entry.readonly = "Input" == ioid;
               entry.writeonly = "Output" == ioid;
               entry.priority = Driver::PULSE;
-              entry.driverid = driverid;
               entries.push_back (entry);
             }
         }
@@ -171,7 +170,6 @@ list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid, bool need_pcm, bo
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex;
-          entry.driverid = driverid;
           entries.push_back (entry);
         }
       // discover MIDI hardware
@@ -220,7 +218,6 @@ list_alsa_drivers (Driver::EntryVec &entries, uint32 driverid, bool need_pcm, bo
               entry.readonly = !writable;
               entry.writeonly = !readable;
               entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
-              entry.driverid = driverid;
               entries.push_back (entry);
             }
         }
@@ -336,7 +333,7 @@ public:
           snd_pcm_close (write_handle_);
         write_handle_ = nullptr;
       }
-    ADEBUG ("PCM: opening \"%s\" readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    ADEBUG ("PCM: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
   Error
@@ -399,8 +396,8 @@ public:
     *mix_freq = rate;
     *n_periodsp = nperiods;
     *period_sizep = period_size;
-    ADEBUG ("PCM: setup r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
-            phandle == read_handle_, phandle == write_handle_,
+    ADEBUG ("PCM: %s: setup r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+            devid_, phandle == read_handle_, phandle == write_handle_,
             n_channels_, *mix_freq, *n_periodsp, *period_sizep,
             nperiods * period_size, buffer_size);
     // snd_pcm_dump (phandle, snd_output);
@@ -410,8 +407,8 @@ public:
   pcm_retrigger ()
   {
     snd_lib_error_set_handler (silent_error_handler);
-    ADEBUG ("PCM: retriggering device (r=%s w=%s)...",
-            !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
+    ADEBUG ("PCM: %s: retriggering device (r=%s w=%s)...",
+            devid_, !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
             !write_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (write_handle_)));
     snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
     // first, clear io buffers
@@ -505,7 +502,7 @@ public:
         ssize_t n_frames = snd_pcm_readi (read_handle_, period_buffer_, n_left);
         if (n_frames < 0) // errors during read, could be underrun (-EPIPE)
           {
-            ADEBUG ("PCM: read() error: %s", snd_strerror (n_frames));
+            ADEBUG ("PCM: %s: read() error: %s", devid_, snd_strerror (n_frames));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (read_handle_);     // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -546,7 +543,7 @@ public:
         n = snd_pcm_writei (write_handle_, period_buffer_, n_left);
         if (n < 0)                      // errors during write, could be overrun (-EPIPE)
           {
-            ADEBUG ("PCM: write() error: %s", snd_strerror (n));
+            ADEBUG ("PCM: %s: write() error: %s", devid_, snd_strerror (n));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (write_handle_);    // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -557,9 +554,10 @@ public:
   }
 };
 
-static const uint32 alsa_pcm_driverid = PcmDriver::register_driver (AlsaPcmDriver::create,
-                                                                    [] (Driver::EntryVec &entries, uint32 driverid) {
-                                                                      list_alsa_drivers (entries, driverid, true, false);
+static const String alsa_pcm_driverid = PcmDriver::register_driver ("alsa",
+                                                                    AlsaPcmDriver::create,
+                                                                    [] (Driver::EntryVec &entries) {
+                                                                      list_alsa_drivers (entries, true, false);
                                                                     });
 
 // == AlsaMidiDriver ==
@@ -654,8 +652,8 @@ public:
         if (snd_rawmidi_params_current (read_handle_, mparams) < 0)
           error = Error::FILE_OPEN_FAILED;
         else
-          ADEBUG ("MIDI: readable: buffer=%d active_sensing=%d min_avail=%d\n",
-                  snd_rawmidi_params_get_buffer_size (mparams),
+          ADEBUG ("MIDI: %s: readable: buffer=%d active_sensing=%d min_avail=%d\n",
+                  devid_, snd_rawmidi_params_get_buffer_size (mparams),
                   !snd_rawmidi_params_get_no_active_sensing (mparams),
                   snd_rawmidi_params_get_avail_min (mparams));
       }
@@ -664,8 +662,8 @@ public:
         if (snd_rawmidi_params_current (write_handle_, mparams) < 0)
           error = Error::FILE_OPEN_FAILED;
         else
-          ADEBUG ("MIDI: writable: buffer=%d active_sensing=%d min_avail=%d\n",
-                  snd_rawmidi_params_get_buffer_size (mparams),
+          ADEBUG ("MIDI: %s: writable: buffer=%d active_sensing=%d min_avail=%d\n",
+                  devid_, snd_rawmidi_params_get_buffer_size (mparams),
                   !snd_rawmidi_params_get_no_active_sensing (mparams),
                   snd_rawmidi_params_get_avail_min (mparams));
       }
@@ -707,14 +705,15 @@ public:
           snd_rawmidi_close (write_handle_);
         write_handle_ = nullptr;
       }
-    ADEBUG ("MIDI: open: opening \"%s\" readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    ADEBUG ("MIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
 };
 
-static const uint32 alsa_midi_driverid = MidiDriver::register_driver (AlsaMidiDriver::create,
-                                                                      [] (Driver::EntryVec &entries, uint32 driverid) {
-                                                                        list_alsa_drivers (entries, driverid, false, true);
+static const String alsa_midi_driverid = MidiDriver::register_driver ("alsa",
+                                                                      AlsaMidiDriver::create,
+                                                                      [] (Driver::EntryVec &entries) {
+                                                                        list_alsa_drivers (entries, false, true);
                                                                       });
 
 } // Bse
