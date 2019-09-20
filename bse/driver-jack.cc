@@ -671,7 +671,8 @@ public:
       {
         flags_ |= Flags::OPENED;
 
-        pcm_latency();   // debugging only: print latency values
+        uint dummy;
+        pcm_latency (&dummy, &dummy);   // debugging only: print latency values
       }
     else
       {
@@ -738,10 +739,10 @@ public:
     *timeoutp = std::max<int> (*timeoutp, 1);
     return false;
   }
-  virtual uint
-  pcm_latency () const override
+  virtual void
+  pcm_latency (uint *rlatency, uint *wlatency) const override
   {
-    assert_return (jack_client_ != NULL, 0);
+    assert_return (jack_client_ != NULL);
 
     jack_nframes_t jack_rlatency = 0;
     for (auto port : input_ports_)
@@ -771,9 +772,8 @@ public:
     // ring buffer is normally completely filled
     //  -> the buffer latency counts as additional write latency
 
-    // *rlatency = jack_rlatency;
-    // *wlatency = jack_wlatency + jack->buffer_frames;
-    return total_latency;
+    *rlatency = jack_rlatency;
+    *wlatency = jack_wlatency + buffer_frames_;
   }
   virtual size_t
   pcm_read (size_t n, float *values) override

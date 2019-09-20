@@ -477,8 +477,8 @@ public:
     *timeoutp = diff_frames * 1000 / mix_freq_;
     return false;
   }
-  virtual uint
-  pcm_latency () const override
+  virtual void
+  pcm_latency (uint *rlatency, uint *wlatency) const override
   {
     snd_pcm_sframes_t rdelay, wdelay;
     if (!read_handle_ || snd_pcm_delay (read_handle_, &rdelay) < 0)
@@ -487,7 +487,8 @@ public:
       wdelay = 0;
     const int buffer_length = n_periods_ * period_size_; // buffer size chosen by ALSA based on latency request
     // return total latency in frames
-    return CLAMP (rdelay, 0, buffer_length) + CLAMP (wdelay, 0, buffer_length);
+    *rlatency = CLAMP (rdelay, 0, buffer_length);
+    *wlatency = CLAMP (wdelay, 0, buffer_length);
   }
   virtual size_t
   pcm_read (size_t n, float *values) override

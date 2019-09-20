@@ -252,11 +252,11 @@ public:
     // ensure sequencer fairness
     return !Sequencer::instance().thread_lagging (2);
   }
-  virtual uint
-  pcm_latency () const override
+  virtual void
+  pcm_latency (uint *rlatency, uint *wlatency) const override
   {
-    // total latency in frames
-    return mix_freq_ / 10;
+    *rlatency = mix_freq_ / 10;
+    *wlatency = mix_freq_ / 10;
   }
   virtual size_t
   pcm_read (size_t n, float *values) override
