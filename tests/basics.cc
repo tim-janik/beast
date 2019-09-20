@@ -4,8 +4,10 @@
 using namespace Aida;
 
 static void
-test_aida_strings()
+test_strings()
 {
+  TASSERT (Bse::kvpair_key ("foo=bar=baz") == "foo");
+  TASSERT (Bse::kvpair_value ("foo=bar=baz") == "bar=baz");
   StringVector sv;
   sv = string_split_any ("a, b, c", ", ");
   TCMP (string_join (";", sv), ==, "a;;b;;c");
@@ -94,7 +96,7 @@ test_aida_strings()
   TASSERT (string_match_identifier_tail ("x.FOO", "X-Foo") == true);
   TASSERT (string_match_identifier_tail ("xFOO", "Foo") == false);
 }
-TEST_ADD (test_aida_strings);
+TEST_ADD (test_strings);
 
 static void
 test_aida_posix_printf ()

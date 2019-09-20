@@ -37,7 +37,6 @@ public:
   struct Entry {
     String      devid, name, blurb, status;
     uint32      priority = 0xffffffff; // lower is better
-    uint32      driverid = 0;
     bool        readonly = false;
     bool        writeonly = false;
     bool        duplex = false;
@@ -54,8 +53,9 @@ public:
   typedef std::shared_ptr<MidiDriver> MidiDriverP;
   static MidiDriverP open            (const String &devid, IODir iodir, Bse::Error *ep);
   static EntryVec    list_drivers    ();
-  static uint32      register_driver (const std::function<MidiDriverP (const String&)> &create,
-                                      const std::function<void (EntryVec&, uint32)> &list);
+  static String      register_driver (const String &driverid,
+                                      const std::function<MidiDriverP (const String&)> &create,
+                                      const std::function<void (EntryVec&)> &list);
 };
 using MidiDriverP = MidiDriver::MidiDriverP;
 
@@ -79,8 +79,9 @@ public:
   virtual size_t     pcm_read        (size_t n, float *values) = 0;
   virtual void       pcm_write       (size_t n, const float *values) = 0;
   static EntryVec    list_drivers    ();
-  static uint32      register_driver (const std::function<PcmDriverP (const String&)> &create,
-                                      const std::function<void (EntryVec&, uint32)> &list);
+  static String      register_driver (const String &driverid,
+                                      const std::function<PcmDriverP (const String&)> &create,
+                                      const std::function<void (EntryVec&)> &list);
 };
 using PcmDriverP = PcmDriver::PcmDriverP;
 

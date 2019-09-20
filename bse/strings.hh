@@ -129,6 +129,10 @@ void    string_options_split    (const String   &option_string,
                                  vector<String> &option_values,
                                  const String   &empty_default = "");
 
+// == Generic Key-Value-Pairs ==
+String  kvpair_key              (const String &key_value_pair);
+String  kvpair_value            (const String &key_value_pair);
+
 // == Strings ==
 /// Convenience Constructor for StringSeq or std::vector<std::string>
 class Strings : public std::vector<std::string>

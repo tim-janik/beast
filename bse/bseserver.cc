@@ -1445,6 +1445,7 @@ ServerImpl::open_midi_driver()
       umsg.text3 = string_format (_("Failed to open MIDI devices: %s"), bse_error_blurb (error));
       umsg.label = _("MIDI device selections problems");
       send_user_message (umsg);
+      midi_driver_ = MidiDriver::open ("null", Driver::READONLY, &error);
     }
   return midi_driver_ ? Error::NONE : error;
 }
