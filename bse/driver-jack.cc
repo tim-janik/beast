@@ -94,15 +94,13 @@ fast_copy (uint         n_values,
   Block::copy (n_values, ovalues, ivalues);
 }
 
-#if 0 // <- avoid unused warning
-template<> void
+template<> BSE_UNUSED void
 fast_copy (uint	         n_values,
            uint32       *ovalues,
            const uint32 *ivalues)
 {
   Block::copy (n_values, ovalues, ivalues);
 }
-#endif
 
 /**
  * The FrameRingBuffer class implements a ringbuffer for the communication
@@ -129,11 +127,11 @@ class FrameRingBuffer {
   //BIRNET_PRIVATE_COPY (FrameRingBuffer);
 private:
   vector<vector<T> >  channel_buffer_;
-  std::atomic<int>    atomic_read_frame_pos_;
-  std::atomic<int>    atomic_write_frame_pos_;
-  uint                channel_buffer_size_;       // = n_frames + 1; the extra frame allows us to
-                                                  // see the difference between an empty/full ringbuffer
-  uint                n_channels_;
+  std::atomic<int>    atomic_read_frame_pos_ {0};
+  std::atomic<int>    atomic_write_frame_pos_ {0};
+  uint                channel_buffer_size_ = 0;       // = n_frames + 1; the extra frame allows us to
+                                                      // see the difference between an empty/full ringbuffer
+  uint                n_channels_ = 0;
 public:
   FrameRingBuffer (uint n_frames = 0,
 		   uint n_channels = 1)
@@ -317,7 +315,7 @@ connect_jack()
 
   jack_set_error_function (error_callback_show);
 
-  JDEBUG ("attaching to JACK server returned status: %d\n", status);
+  JDEBUG ("JACK: attaching to server returned status: %d\n", status);
   return jack_client;
 }
 
@@ -414,10 +412,6 @@ list_jack_drivers (Driver::EntryVec &entries)
       devices = query_jack_devices (jack_client);
       disconnect_jack (jack_client);
     }
-  else
-    {
-      // should we try to generate and show an error message if connecting jack failed?
-    }
 
   for (std::map<std::string, DeviceDetails>::iterator di = devices.begin(); di != devices.end(); di++)
     {
@@ -431,6 +425,11 @@ list_jack_drivers (Driver::EntryVec &entries)
         {
           Driver::Entry entry;
           entry.devid = device_name;
+          if (details.physical_ports == details.ports)
+            entry.name = "Hardware Device: " + device_name;
+          else
+            entry.name = device_name;
+          entry.blurb = string_format ("%d Inputs / %d Outputs", details.input_ports, details.output_ports);
           entry.priority = Driver::JACK;
           entries.push_back (entry);
         }
@@ -438,7 +437,7 @@ list_jack_drivers (Driver::EntryVec &entries)
 }
 
 /* macro for jack dropout tests - see below */
-#define TEST_DROPOUT() if (unlink ("/tmp/drop") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
+#define TEST_DROPOUT() if (unlink ("/tmp/bse-dropout") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
 
 } // Anon
 
@@ -467,12 +466,6 @@ class JackPcmDriver : public PcmDriver {
   uint64                        device_write_counter_ = 0;
   int                           device_open_counter_ = 0;
 
-  static int
-  static_process_callback (jack_nframes_t   n_frames,
-                           void            *jack_handle)
-  {
-    return static_cast <JackPcmDriver *> (jack_handle)->process_callback (n_frames);
-  }
   int
   process_callback (jack_nframes_t n_frames)
   {
@@ -537,12 +530,6 @@ class JackPcmDriver : public PcmDriver {
       }
     return range;
   }
-  static void
-  static_latency_callback (jack_latency_callback_mode_t  mode,
-                           void                         *jack_handle)
-  {
-    static_cast <JackPcmDriver *> (jack_handle)->latency_callback (mode);
-  }
   void
   latency_callback (jack_latency_callback_mode_t mode)
   {
@@ -566,11 +553,6 @@ class JackPcmDriver : public PcmDriver {
           jack_port_set_latency_range (port, mode, &range);
       }
   }
-  static void
-  static_shutdown_callback (void *jack_handle)
-  {
-    static_cast<JackPcmDriver *> (jack_handle)->shutdown_callback();
-  }
   void
   shutdown_callback()
   {
@@ -586,6 +568,8 @@ public:
   }
   ~JackPcmDriver()
   {
+    if (jack_client_)
+      close();
   }
   virtual float
   pcm_frequency () const override
@@ -671,7 +655,7 @@ public:
                           buffer_frames_, buffer_frames);
             error = Bse::Error::INTERNAL;
           }
-        JDEBUG ("ringbuffer size = %.3fms", buffer_frames_ / double (mix_freq_) * 1000);
+        JDEBUG ("JACK: %s: ringbuffer size = %.3fms", devid_, buffer_frames_ / double (mix_freq_) * 1000);
 
         /* initialize output ringbuffer with silence
          * this will prevent dropouts at initialization, when no data is there at all
@@ -690,9 +674,14 @@ public:
     /* activate */
     if (error == 0)
       {
-        jack_set_process_callback (jack_client_, static_process_callback, this);
-        jack_set_latency_callback (jack_client_, static_latency_callback, this);
-        jack_on_shutdown (jack_client_, static_shutdown_callback, this);
+        jack_set_process_callback (jack_client_,
+          [] (jack_nframes_t n_frames, void *p) { return static_cast <JackPcmDriver *> (p)->process_callback (n_frames); }, this);
+
+        jack_set_latency_callback (jack_client_,
+          [] (jack_latency_callback_mode_t mode, void *p) { static_cast <JackPcmDriver *> (p)->latency_callback (mode); }, this);
+
+        jack_on_shutdown (jack_client_,
+          [] (void *p) { static_cast<JackPcmDriver *> (p)->shutdown_callback(); }, this);
 
         if (jack_activate (jack_client_) != 0)
           error = Bse::Error::FILE_OPEN_FAILED;
@@ -734,7 +723,7 @@ public:
         disconnect_jack (jack_client_);
         jack_client_ = nullptr;
       }
-    JDEBUG ("JACK: opening PCM \"%s\" readupble=%d writable=%d: %s", devid_.c_str(), readable(), writable(), bse_error_blurb (error));
+    JDEBUG ("JACK: %s: opening PCM: readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
   virtual bool
@@ -770,14 +759,14 @@ public:
     if (atomic_xruns_ != printed_xruns_)
       {
         printed_xruns_ = atomic_xruns_;
-        Bse::printerr ("JACK: %d beast driver xruns\n", printed_xruns_);
+        Bse::printerr ("JACK: %s: %d beast driver xruns\n", devid_, printed_xruns_);
       }
     /* report jack shutdown */
     if (is_down_ && !printed_is_down_)
       {
         printed_is_down_ = true;
-        Bse::printerr ("JACK: connection to jack server lost\n");
-        Bse::printerr ("JACK:  -> to continue, manually stop playback and restart\n");
+        Bse::printerr ("JACK: %s: connection to jack server lost\n", devid_);
+        Bse::printerr ("JACK: %s:  -> to continue, manually stop playback and restart\n", devid_);
       }
 
     uint n_frames_avail = std::min (output_ringbuffer_.get_writable_frames(), input_ringbuffer_.get_readable_frames());
@@ -818,7 +807,8 @@ public:
       }
 
     uint total_latency = buffer_frames_ + jack_rlatency + jack_wlatency;
-    JDEBUG ("jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+    JDEBUG ("JACK: %s: jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+            devid_,
             jack_rlatency / double (mix_freq_) * 1000,
             jack_wlatency / double (mix_freq_) * 1000,
             buffer_frames_ / double (mix_freq_) * 1000,
