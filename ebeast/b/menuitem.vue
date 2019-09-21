@@ -67,15 +67,16 @@
 	  :disabled="isdisabled()"
 	  @mouseenter="focus"
 	  @click="clicked" >
-    <b-icon class="menuicon" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
+    <b-icon class="menuicon" :ic="ic" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
   </button>
 </template>
 
 <script>
+const STR = { type: String, default: '' }; // empty string default
 module.exports = {
   name: 'b-menuitem',
-  props: [ 'role', 'disabled', 'fa', 'mi', 'uc' ],
+  props: { 'role': {}, 'disabled': {}, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
 			default: { 'showicons': true, 'showaccels': true, checkedroles: {} }, },
   },
