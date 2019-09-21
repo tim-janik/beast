@@ -1318,6 +1318,22 @@ interface DeviceCrawler {
   DeviceEntry list_device_origin (DeviceOrigin origin);
 };
 
+/// Driver information for PCM and MIDI handling.
+record DriverEntry {
+  String devid;
+  String name;
+  String blurb;
+  String status;
+  int32  priority;
+  bool   readonly;
+  bool   writeonly;
+  bool   duplex;
+};
+
+/// DriverEntry sequence.
+sequence DriverEntrySeq {
+  DriverEntry entries;
+};
 
 /// Fragment description for interesting bits of shared memory.
 record ShmFragment {
@@ -1373,6 +1389,8 @@ interface Server : Container {
   void           set_config    (Configuration configuration);   ///< Assign updated Bse::Configuration settings.
   Configuration  get_config    ();                              ///< Retrieve Bse::Configuration settings.
   bool           locked_config ();      ///< Returns whether `Configuration` is in use and locked against modifications.
+  DriverEntrySeq list_pcm_drivers  ();  ///< List available drivers for PCM input/output handling.
+  DriverEntrySeq list_midi_drivers ();  ///< List available drivers for MIDI input/output handling.
   DeviceCrawler  get_device_crawler();
 
   // properties
