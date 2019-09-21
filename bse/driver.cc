@@ -142,7 +142,7 @@ PcmDriver::list_drivers ()
   entry.name = _("Automatic PCM card selection");
   entry.readonly = false;
   entry.writeonly = false;
-  entry.priority = Driver::PSEUDO + Driver::WCARD * 1 + Driver::WDEV * 1 + Driver::WSUB * 1;
+  entry.priority = Driver::PAUTO;
   Driver::EntryVec pseudos;
   pseudos.push_back (entry);
   return RegisteredDriver<PcmDriverP>::list_drivers (pseudos);
@@ -194,7 +194,7 @@ MidiDriver::list_drivers ()
   entry.name = _("Automatic MIDI driver selection");
   entry.readonly = false;
   entry.writeonly = false;
-  entry.priority = Driver::PSEUDO + Driver::WCARD * 1 + Driver::WDEV * 1 + Driver::WSUB * 1;
+  entry.priority = Driver::PAUTO;
   Driver::EntryVec pseudos;
   pseudos.push_back (entry);
   return RegisteredDriver<MidiDriverP>::list_drivers (pseudos);
@@ -285,7 +285,7 @@ public:
     entry.blurb = _("Discard all PCM output and provide zeros as PCM input");
     entry.readonly = false;
     entry.writeonly = false;
-    entry.priority = Driver::DNULL;
+    entry.priority = Driver::PNULL;
     entries.push_back (entry);
   }
 };
@@ -330,7 +330,7 @@ public:
     entry.blurb = _("Discard all MIDI events");
     entry.readonly = false;
     entry.writeonly = false;
-    entry.priority = Driver::DNULL;
+    entry.priority = Driver::PNULL;
     entries.push_back (entry);
   }
 };

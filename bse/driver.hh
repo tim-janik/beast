@@ -21,7 +21,8 @@ public:
     OSS    = 0x03 << 24,
     PULSE  = 0x04 << 24,
     PSEUDO = 0x70 << 24,
-    DNULL  = 0x71 << 24,
+    PAUTO  = 0x74 << 24,
+    PNULL  = 0x77 << 24,
     WCARD  = 0x01 << 16,
     WDEV   = 0x01 <<  8,
     WSUB   = 0x01 <<  0,
@@ -34,14 +35,8 @@ public:
   virtual String devid         () const        { return devid_; }
   virtual void   close         () = 0;
   // registry
-  struct Entry {
-    String      devid, name, blurb, status;
-    uint32      priority = 0xffffffff; // lower is better
-    bool        readonly = false;
-    bool        writeonly = false;
-    bool        duplex = false;
-  };
-  typedef std::vector<Entry> EntryVec;
+  using Entry = DriverEntry;
+  using EntryVec = DriverEntrySeq;
 };
 using DriverP = Driver::DriverP;
 
