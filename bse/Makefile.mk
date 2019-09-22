@@ -355,7 +355,7 @@ ifneq ('','$(BSE_JACK_LIBS)')
 endif
 
 # == BeastSoundEngine defs ==
-lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine
+lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
 bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
 bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources))
@@ -532,6 +532,7 @@ $(call BUILD_PROGRAM, \
 	$(lib/libbse.so), \
 	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
 	../lib)
+$(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
 
 # == bseprocidl rules ==
 $(bse/bseprocidl.objects):	$(bse/libbse.deps)

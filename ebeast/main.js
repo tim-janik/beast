@@ -75,7 +75,8 @@ function create_beast_sound_engine (datacb, errorcb) {
     args.push ('--verbose');
   if (verbose_binary)
     args.push ('--binary');
-  let bse_proc = spawn (__dirname + '/../lib/BeastSoundEngine', args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
+  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version_m.m.m'];
+  const bse_proc = spawn (beastsoundengine, args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
     {
