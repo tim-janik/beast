@@ -12,6 +12,8 @@
 #if __has_include(<jack/jack.h>)
 #include <jack/jack.h>
 
+#define MAX_JACK_STRING_SIZE    1024
+
 using namespace Bse;
 
 namespace { // Anon
@@ -311,7 +313,7 @@ connect_jack()
   jack_set_error_function (error_callback_silent);
 
   jack_status_t status;
-  jack_client_t *jack_client = jack_client_open ("beast", JackNoStartServer, &status);
+  jack_client_t *jack_client = jack_client_open ("Beast", JackNoStartServer, &status);
 
   jack_set_error_function (error_callback_show);
 
@@ -338,6 +340,7 @@ struct DeviceDetails {
 
   std::vector<std::string> input_port_names;
   std::vector<std::string> output_port_names;
+  std::string input_port_alias;
 };
 
 static std::map<std::string, DeviceDetails>
@@ -346,6 +349,7 @@ query_jack_devices (jack_client_t *jack_client)
   std::map<std::string, DeviceDetails> devices;
 
   assert_return (jack_client, devices);
+  assert_return (MAX_JACK_STRING_SIZE >= jack_port_name_size(), devices);
 
   const char **jack_ports = jack_get_ports (jack_client, NULL, NULL, 0);
   if (jack_ports)
@@ -354,46 +358,50 @@ query_jack_devices (jack_client_t *jack_client)
 
       for (uint i = 0; jack_ports[i]; i++)
 	{
+          jack_port_t *jack_port = jack_port_by_name (jack_client, jack_ports[i]);
 	  const char *end = strchr (jack_ports[i], ':');
-	  if (end)
-	    {
-              std::string device_name (jack_ports[i], end);
+	  if (!jack_port || !end)
+            continue;
+          std::string device_name (jack_ports[i], end);
 
-	      jack_port_t *jack_port = jack_port_by_name (jack_client, jack_ports[i]);
-	      if (jack_port)
-		{
-                  const char *port_type = jack_port_type (jack_port);
-                  if (strcmp (port_type, JACK_DEFAULT_AUDIO_TYPE) == 0)
+          const char *port_type = jack_port_type (jack_port);
+          if (strcmp (port_type, JACK_DEFAULT_AUDIO_TYPE) == 0)
+            {
+              DeviceDetails &details = devices[device_name];
+              details.ports++;
+
+              const int flags = jack_port_flags (jack_port);
+              if (flags & JackPortIsInput)
+                {
+                  details.input_ports++;
+                  details.input_port_names.push_back (jack_ports[i]);
+                }
+              if (flags & JackPortIsOutput)
+                {
+                  details.output_ports++;
+                  details.output_port_names.push_back (jack_ports[i]);
+                }
+              if (flags & JackPortIsTerminal)
+                details.terminal_ports++;
+              if (flags & JackPortIsPhysical)
+                {
+                  details.physical_ports++;
+
+                  if (!have_default_device && (flags & JackPortIsInput))
                     {
-	              DeviceDetails &details = devices[device_name];
-	              details.ports++;
-
-                      int flags = jack_port_flags (jack_port);
-                      if (flags & JackPortIsInput)
+                      /* the first device that has physical ports is the default device */
+                      details.default_device = true;
+                      have_default_device = true;
+                      char alias1[MAX_JACK_STRING_SIZE] = "", alias2[MAX_JACK_STRING_SIZE] = "";
+                      char *aliases[2] = { alias1, alias2, };
+                      const int cnt = jack_port_get_aliases (jack_port, aliases);
+                      if (cnt >= 1 && alias1[0])
                         {
-                          details.input_ports++;
-                          details.input_port_names.push_back (jack_ports[i]);
+                          const char *acolon = strrchr (alias1, ':');
+                          details.input_port_alias = acolon ? std::string (alias1, acolon - alias1) : alias1;
                         }
-                      if (flags & JackPortIsOutput)
-                        {
-                          details.output_ports++;
-                          details.output_port_names.push_back (jack_ports[i]);
-                        }
-                      if (flags & JackPortIsPhysical)
-                        {
-                          details.physical_ports++;
-
-                          if (!have_default_device)
-                            {
-                              /* the first device that has physical ports is the default device */
-                              details.default_device = true;
-                              have_default_device = true;
-                            }
-                        }
-                      if (flags & JackPortIsTerminal)
-                        details.terminal_ports++;
                     }
-		}
+                }
 	    }
 	}
       free (jack_ports);
@@ -425,11 +433,14 @@ list_jack_drivers (Driver::EntryVec &entries)
         {
           Driver::Entry entry;
           entry.devid = device_name;
+          entry.name = string_format ("JACK %s device %d*playback + %d*capture", device_name, details.input_ports / 2, details.output_ports / 2);
           if (details.physical_ports == details.ports)
-            entry.name = "Hardware Device: " + device_name;
+            entry.status = "Hardware Device";
           else
-            entry.name = device_name;
-          entry.blurb = string_format ("%d Inputs / %d Outputs", details.input_ports, details.output_ports);
+            entry.status = "Virtual Device";
+          if (!details.input_port_alias.empty())
+            entry.status += ": " + details.input_port_alias;
+          entry.blurb = "Routing via the JACK Audio Connection Kit";
           entry.priority = Driver::JACK;
           entries.push_back (entry);
         }
