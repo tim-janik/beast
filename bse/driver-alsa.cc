@@ -157,7 +157,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
             entry.capabilities = readable && writable ? "Full-Duplex Audio" : readable ? "Audio Input" : "Audio Output";
           else // pcmclass == SND_PCM_CLASS_MODEM // other SND_PCM_CLASS_ types are unused
             entry.capabilities = readable && writable ? "Full-Duplex Modem" : readable ? "Modem Input" : "Modem Output";
-          entry.capabilities += " " + wdevs + joiner + rdevs;
+          entry.capabilities += ", streams: " + wdevs + joiner + rdevs;
           entry.device_info = card_longname;
           entry.readonly = !writable;
           entry.writeonly = !readable;
@@ -206,8 +206,8 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
                   snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_OUTPUT);
                   writable = snd_ctl_rawmidi_info (chandle, minfo) == 0;
                 }
-              const String joiner = readable && writable ? " & " : "";
-              entry.capabilities = (readable ? "Input" : "") + joiner + (writable ? "Output" : "");
+              const String joiner = readable && writable ? " + " : "";
+              entry.capabilities = (readable ? "MIDI Input" : "") + joiner + (writable ? "MIDI Output" : "");
               entry.readonly = !writable;
               entry.writeonly = !readable;
               entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
