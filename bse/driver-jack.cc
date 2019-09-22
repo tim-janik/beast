@@ -295,7 +295,7 @@ public:
 static void
 error_callback_silent (const char *msg)
 {
-  JDEBUG ("JACK: %s\n", msg);
+  JDEBUG ("%s\n", msg);
 }
 
 static void
@@ -315,7 +315,7 @@ connect_jack()
 
   jack_set_error_function (error_callback_show);
 
-  JDEBUG ("JACK: attaching to server returned status: %d\n", status);
+  JDEBUG ("attaching to server returned status: %d\n", status);
   return jack_client;
 }
 
@@ -436,12 +436,12 @@ list_jack_drivers (Driver::EntryVec &entries)
     }
 }
 
-/* macro for jack dropout tests - see below */
-#define TEST_DROPOUT() if (unlink ("/tmp/bse-dropout") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
-
 } // Anon
 
 namespace Bse {
+
+/* macro for jack dropout tests - see below */
+#define TEST_DROPOUT() if (unlink ("/tmp/bse-dropout") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
 
 // == JackPcmDriver ==
 class JackPcmDriver : public PcmDriver {
@@ -655,7 +655,7 @@ public:
                           buffer_frames_, buffer_frames);
             error = Bse::Error::INTERNAL;
           }
-        JDEBUG ("JACK: %s: ringbuffer size = %.3fms", devid_, buffer_frames_ / double (mix_freq_) * 1000);
+        JDEBUG ("%s: ringbuffer size = %.3fms", devid_, buffer_frames_ / double (mix_freq_) * 1000);
 
         /* initialize output ringbuffer with silence
          * this will prevent dropouts at initialization, when no data is there at all
@@ -723,7 +723,7 @@ public:
         disconnect_jack (jack_client_);
         jack_client_ = nullptr;
       }
-    JDEBUG ("JACK: %s: opening PCM: readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    JDEBUG ("%s: opening PCM: readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
   virtual bool
@@ -807,7 +807,7 @@ public:
       }
 
     uint total_latency = buffer_frames_ + jack_rlatency + jack_wlatency;
-    JDEBUG ("JACK: %s: jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+    JDEBUG ("%s: jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
             devid_,
             jack_rlatency / double (mix_freq_) * 1000,
             jack_wlatency / double (mix_freq_) * 1000,
