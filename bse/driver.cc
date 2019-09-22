@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "driver.hh"
+#include "bsemain.hh"
 #include "internal.hh"
 #include "bsesequencer.hh"
 
@@ -340,3 +341,31 @@ public:
 static const String null_midi_driverid = MidiDriver::register_driver ("null", NullMidiDriver::create, NullMidiDriver::list_drivers);
 
 } // Bse
+
+// == libbsejack.so ==
+#include <gmodule.h>
+
+static Bse::Error
+try_load_libbsejack ()
+{
+  using namespace Bse;
+  const std::string libbsejack = string_format ("%s/lib/libbse-jack-%u.%u.%u.so", runpath (RPath::INSTALLDIR),
+                                                BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
+  Error error = Error::FILE_NOT_FOUND;
+  String errmsg;
+  if (Path::check (libbsejack, "fr"))
+    {
+      GModule *gmodule = g_module_open (libbsejack.c_str(), G_MODULE_BIND_LOCAL); // no API import
+      if (gmodule)
+        error = Error::NONE;
+      else
+        {
+          errmsg = g_module_error();
+          error = Error::FILE_OPEN_FAILED;
+        }
+    }
+  DDEBUG ("loading \"%s\": %s%s", libbsejack, bse_error_blurb (error), errmsg.empty() ? "" : ": " + errmsg);
+  return error;
+}
+
+static bool *bsejack_loaded = Bse::register_driver_loader ("bsejack", try_load_libbsejack);
