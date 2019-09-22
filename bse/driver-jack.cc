@@ -423,24 +423,25 @@ list_jack_drivers (Driver::EntryVec &entries)
 
   for (std::map<std::string, DeviceDetails>::iterator di = devices.begin(); di != devices.end(); di++)
     {
-      const std::string &device_name = di->first;
+      const std::string &devid = di->first;
       DeviceDetails &details = di->second;
 
       /* the default device is usually the hardware device, so things should work as expected
        * we could show try to show non-default devices as well, but this could be confusing
        */
-      if (details.default_device)
+      if (details.default_device && (details.input_ports || details.output_ports))
         {
           Driver::Entry entry;
-          entry.devid = device_name;
-          entry.name = string_format ("JACK %s device %d*playback + %d*capture", device_name, details.input_ports / 2, details.output_ports / 2);
-          if (details.physical_ports == details.ports)
-            entry.status = "Hardware Device";
-          else
-            entry.status = "Virtual Device";
+          entry.devid = devid;
+          entry.device_name = string_format ("JACK \"%s\" Audio Device", devid);
+          const std::string phprefix = details.physical_ports == details.ports ? "Physical: " : "";
           if (!details.input_port_alias.empty())
-            entry.status += ": " + details.input_port_alias;
-          entry.blurb = "Routing via the JACK Audio Connection Kit";
+            entry.device_name += " [" + phprefix + details.input_port_alias + "]";
+          entry.capabilities = details.output_ports && details.input_ports ? "Full-Duplex Audio" : details.output_ports ? "Audio Input" : "Audio Output";
+          entry.capabilities += string_format (", channels: %d*playback + %d*capture", details.input_ports, details.output_ports);
+          entry.device_info = "Routing via the JACK Audio Connection Kit";
+          if (details.physical_ports == details.ports)
+            entry.notice = "Note: JACK adds latency compared to direct hardware access";
           entry.priority = Driver::JACK;
           entries.push_back (entry);
         }
