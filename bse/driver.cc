@@ -351,21 +351,13 @@ try_load_libbsejack ()
   using namespace Bse;
   const std::string libbsejack = string_format ("%s/lib/libbse-jack-%u.%u.%u.so", runpath (RPath::INSTALLDIR),
                                                 BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
-  Error error = Error::FILE_NOT_FOUND;
-  String errmsg;
   if (Path::check (libbsejack, "fr"))
     {
       GModule *gmodule = g_module_open (libbsejack.c_str(), G_MODULE_BIND_LOCAL); // no API import
-      if (gmodule)
-        error = Error::NONE;
-      else
-        {
-          errmsg = g_module_error();
-          error = Error::FILE_OPEN_FAILED;
-        }
+      if (!gmodule)
+        DDEBUG ("loading \"%s\" failed: %s", libbsejack, g_module_error());
     }
-  DDEBUG ("loading \"%s\": %s%s", libbsejack, bse_error_blurb (error), errmsg.empty() ? "" : ": " + errmsg);
-  return error;
+  return Error::NONE;
 }
 
 static bool *bsejack_loaded = Bse::register_driver_loader ("bsejack", try_load_libbsejack);
