@@ -16,16 +16,17 @@ protected:
   virtual           ~Driver     ();
 public:
   enum {
-    JACK   = 0x01 << 24,
-    ALSA   = 0x02 << 24,
-    OSS    = 0x03 << 24,
-    PULSE  = 0x04 << 24,
-    PSEUDO = 0x70 << 24,
-    PAUTO  = 0x74 << 24,
-    PNULL  = 0x77 << 24,
-    WCARD  = 0x01 << 16,
-    WDEV   = 0x01 <<  8,
-    WSUB   = 0x01 <<  0,
+    JACK     = 0x01 << 24,
+    ALSA_USB = 0x03 << 24,
+    ALSA     = 0x04 << 24,
+    OSS      = 0x07 << 24,
+    PULSE    = 0x08 << 24,
+    PSEUDO   = 0x70 << 24,
+    PAUTO    = 0x74 << 24,
+    PNULL    = 0x77 << 24,
+    WCARD    = 0x01 << 16,
+    WDEV     = 0x01 <<  8,
+    WSUB     = 0x01 <<  0,
   };
   enum IODir { READONLY = 1, WRITEONLY = 2, READWRITE = 3 };
   typedef std::shared_ptr<Driver> DriverP;

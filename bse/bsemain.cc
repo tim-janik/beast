@@ -158,19 +158,21 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
       printerr ("%s", _("\nAvailable PCM drivers:\n"));
       entries = Bse::PcmDriver::list_drivers();
       for (const auto &entry : entries)
-        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s", entry.devid + ":",
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s%s", entry.devid + ":",
                   entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
-                  entry.priority, entry.name,
-                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
-                  entry.blurb.empty() ? "" : "\t" + entry.blurb + "\n");
+                  entry.priority, entry.device_name,
+                  entry.capabilities.empty() ? "" : "\t" + entry.capabilities + "\n",
+                  entry.device_info.empty() ? "" : "\t" + entry.device_info + "\n",
+                  entry.notice.empty() ? "" : "\t" + entry.notice + "\n");
       printerr ("%s", _("\nAvailable MIDI drivers:\n"));
       entries = Bse::MidiDriver::list_drivers();
       for (const auto &entry : entries)
-        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s", entry.devid + ":",
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s%s", entry.devid + ":",
                   entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
-                  entry.priority, entry.name,
-                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
-                  entry.blurb.empty() ? "" : "\t" + entry.blurb + "\n");
+                  entry.priority, entry.device_name,
+                  entry.capabilities.empty() ? "" : "\t" + entry.capabilities + "\n",
+                  entry.device_info.empty() ? "" : "\t" + entry.device_info + "\n",
+                  entry.notice.empty() ? "" : "\t" + entry.notice + "\n");
     }
 
   // initialize core plugins

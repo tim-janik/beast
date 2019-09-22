@@ -1321,13 +1321,14 @@ interface DeviceCrawler {
 /// Driver information for PCM and MIDI handling.
 record DriverEntry {
   String devid;
-  String name;
-  String blurb;
-  String status;
+  String device_name;
+  String capabilities;
+  String device_info;
+  String notice;
   int32  priority;
   bool   readonly;
   bool   writeonly;
-  bool   duplex;
+  bool   modem;
 };
 
 /// DriverEntry sequence.

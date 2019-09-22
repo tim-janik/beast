@@ -139,7 +139,8 @@ PcmDriver::list_drivers ()
 {
   Driver::Entry entry;
   entry.devid = "auto";
-  entry.name = _("Automatic PCM card selection");
+  entry.device_name = _("Automatic driver selection");
+  entry.device_info = _("Select the first available PCM card or server");
   entry.readonly = false;
   entry.writeonly = false;
   entry.priority = Driver::PAUTO;
@@ -191,7 +192,8 @@ MidiDriver::list_drivers ()
 {
   Driver::Entry entry;
   entry.devid = "auto";
-  entry.name = _("Automatic MIDI driver selection");
+  entry.device_name = _("Automatic MIDI driver selection");
+  entry.device_info = _("Select the first available MIDI device");
   entry.readonly = false;
   entry.writeonly = false;
   entry.priority = Driver::PAUTO;
@@ -281,8 +283,8 @@ public:
   {
     Driver::Entry entry;
     entry.devid = ""; // "null"
-    entry.name = "Null PCM Driver";
-    entry.blurb = _("Discard all PCM output and provide zeros as PCM input");
+    entry.device_name = "Null PCM Driver";
+    entry.device_info = _("Discard all PCM output and provide zeros as PCM input");
     entry.readonly = false;
     entry.writeonly = false;
     entry.priority = Driver::PNULL;
@@ -326,8 +328,8 @@ public:
   {
     Driver::Entry entry;
     entry.devid = ""; // "null"
-    entry.name = "Null MIDI Driver";
-    entry.blurb = _("Discard all MIDI events");
+    entry.device_name = "Null MIDI Driver";
+    entry.device_info = _("Discard all MIDI events");
     entry.readonly = false;
     entry.writeonly = false;
     entry.priority = Driver::PNULL;
