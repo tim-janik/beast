@@ -260,6 +260,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/devicecrawler.cc		\
 	bse/driver.cc			\
 	bse/driver-alsa.cc		\
+	bse/driver-jack.cc		\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\

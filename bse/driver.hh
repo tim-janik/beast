@@ -74,7 +74,7 @@ public:
   typedef std::shared_ptr<PcmDriver> PcmDriverP;
   static PcmDriverP  open            (const String &devid, IODir desired, IODir required, const PcmDriverConfig &config, Bse::Error *ep);
   virtual bool       pcm_check_io    (long *timeoutp) = 0;
-  virtual uint       pcm_latency     () const = 0;
+  virtual void       pcm_latency     (uint *rlatency, uint *wlatency) const = 0;
   virtual float      pcm_frequency   () const = 0;
   virtual size_t     pcm_read        (size_t n, float *values) = 0;
   virtual void       pcm_write       (size_t n, const float *values) = 0;

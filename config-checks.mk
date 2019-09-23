@@ -87,6 +87,7 @@ config-checks.require.pkgconfig ::= $(strip	\
         pangoft2        	>= 1.30.0	\
 	gtk+-2.0		>= 2.12.12	\
 	libgnomecanvas-2.0	>= 2.4.0	\
+	jack 			>= 0.100.0	\
 )
 # mad.pc exists in Debian only:	mad >= 0.14.2
 # boost libraries have no .pc files
@@ -96,7 +97,7 @@ config-checks.require.pkgconfig ::= $(strip	\
 GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
 GTK_PACKAGES     ::= gtk+-2.0 libgnomecanvas-2.0 zlib
 # used for GLIB_CFLAGS and GLIB_LIBS
-BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
+BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib jack $(GLIB_PACKAGES) # mad
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
 
 # == config-cache.mk ==
