@@ -416,12 +416,15 @@ public:
     // fill playback buffer with silence
     if (write_handle_)
       {
-        int n;
-        const float *zeros = bse_engine_const_zeros (n_channels_ * period_size_ / 2); // sizeof (int16) / sizeof (float)
+        const float *zeros = bse_engine_const_zeros (period_size_ / 2); // sizeof (int16) / sizeof (float)
         for (size_t i = 0; i < n_periods_; i++)
-          do
-            n = snd_pcm_writei (write_handle_, zeros, n_channels_ * period_size_);
-          while (n == -EAGAIN); // retry on signals
+          {
+            int n;
+            do
+              n = snd_pcm_writei (write_handle_, zeros, period_size_);
+            while (n == -EAGAIN); // retry on signals
+            // printerr ("%s: written=%d, left: %d / %d\n", __func__, n, snd_pcm_avail (write_handle_), n_periods_ * period_size_);
+          }
       }
     snd_lib_error_set_handler (NULL);
   }
