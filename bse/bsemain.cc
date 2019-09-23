@@ -25,6 +25,9 @@ using namespace Bse;
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
 static void     attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context);
+namespace Bse {
+static void     run_registered_driver_loaders();
+} // Bse
 
 /* --- variables --- */
 /* from bse.hh */
@@ -44,6 +47,9 @@ static BseMainArgs       default_main_args = {
   false,                // stand_alone
   true,                 // allow_randomization
   false,                // force_fpu
+  true,                 // load_drivers
+  false,                // debug_extensions
+  false,                // dump_driver_list
 };
 BseMainArgs             *bse_main_args = NULL;
 
@@ -138,18 +144,8 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   bse_server_get ();
 
   // load drivers
-  if (bse_main_args->load_drivers_early)
-    {
-      SfiRing *ring = bse_plugin_path_list_files (TRUE, FALSE);
-      while (ring)
-        {
-          gchar *name = (char*) sfi_ring_pop_head (&ring);
-          const char *error = bse_plugin_check_load (name);
-          if (error)
-            Bse::info ("while loading \"%s\": %s", name, error);
-          g_free (name);
-        }
-    }
+  if (bse_main_args->load_drivers)
+    run_registered_driver_loaders();
 
   // dump device list
   if (bse_main_args->dump_driver_list)
@@ -158,38 +154,21 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
       printerr ("%s", _("\nAvailable PCM drivers:\n"));
       entries = Bse::PcmDriver::list_drivers();
       for (const auto &entry : entries)
-        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s", entry.devid + ":",
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s%s", entry.devid + ":",
                   entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
-                  entry.priority, entry.name,
-                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
-                  entry.blurb.empty() ? "" : "\t" + entry.blurb + "\n");
+                  entry.priority, entry.device_name,
+                  entry.capabilities.empty() ? "" : "\t" + entry.capabilities + "\n",
+                  entry.device_info.empty() ? "" : "\t" + entry.device_info + "\n",
+                  entry.notice.empty() ? "" : "\t" + entry.notice + "\n");
       printerr ("%s", _("\nAvailable MIDI drivers:\n"));
       entries = Bse::MidiDriver::list_drivers();
       for (const auto &entry : entries)
-        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s", entry.devid + ":",
+        printerr ("  %-30s (%s, %08x)\n\t%s\n%s%s%s", entry.devid + ":",
                   entry.readonly ? "Input" : entry.writeonly ? "Output" : "Duplex",
-                  entry.priority, entry.name,
-                  entry.status.empty() ? "" : "\t" + entry.status + "\n",
-                  entry.blurb.empty() ? "" : "\t" + entry.blurb + "\n");
-    }
-
-  // initialize core plugins
-  if (bse_main_args->load_core_plugins)
-    {
-      auto server_registration = [] (SfiProxy server, BseRegistrationType rtype, const char *what, const char *error, void *data) {
-        if (rtype != BSE_REGISTER_DONE && error && error[0])
-          Bse::info ("failed to register \"%s\": %s", what, error);
-      };
-      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
-      SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
-      while (ring)
-        {
-          gchar *name = (char*) sfi_ring_pop_head (&ring);
-          const char *error = bse_plugin_check_load (name);
-          if (error)
-            Bse::info ("while loading \"%s\": %s", name, error);
-          g_free (name);
-        }
+                  entry.priority, entry.device_name,
+                  entry.capabilities.empty() ? "" : "\t" + entry.capabilities + "\n",
+                  entry.device_info.empty() ? "" : "\t" + entry.device_info + "\n",
+                  entry.notice.empty() ? "" : "\t" + entry.notice + "\n");
     }
 
   // start other threads
@@ -408,9 +387,9 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 	}
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
 	{
-          margs->load_drivers_early = TRUE;
-          margs->dump_driver_list = TRUE;
-	  argv[i] = NULL;
+          margs->load_drivers = true;
+          margs->dump_driver_list = true;
+	  argv[i] = nullptr;
 	}
       else if (strcmp ("--bse-pcm-driver", argv[i]) == 0)
 	{
@@ -486,8 +465,8 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
         margs->allow_randomization |= b;
       else if (parse_bool_option (arg, "force-fpu", &b))
         margs->force_fpu |= b;
-      else if (parse_bool_option (arg, "load-core-plugins", &b))
-        margs->load_core_plugins |= b;
+      else if (parse_bool_option (arg, "load-drivers", &b))
+        margs->load_drivers = b;
       else if (parse_bool_option (arg, "debug-extensions", &b))
         margs->debug_extensions |= b;
       else if (parse_int_option (arg, "wave-chunk-padding", &i))
@@ -646,6 +625,40 @@ GlobalConfigPtr::operator-> () const
         }
     }
   return static_cast<GlobalConfig*> (&static_config);
+}
+
+// == loaders ==
+using RegisteredLoaderFunc = Error (*) ();
+struct RegisteredLoader {
+  const char *const what;
+  const RegisteredLoaderFunc func;
+};
+using RegisteredLoaderVector = std::vector<RegisteredLoader>;
+static RegisteredLoaderVector& registered_loaders() { static RegisteredLoaderVector lv; return lv; }
+static bool registered_loaders_executed = false;
+
+///< Register loader callbacks at static constructor time.
+bool*
+register_driver_loader (const char *staticwhat, Error (*loader) ())
+{
+  assert_return (loader != NULL, nullptr);
+  assert_return (registered_loaders_executed == false, nullptr);
+  RegisteredLoaderVector &lv = registered_loaders();
+  lv.push_back ({ staticwhat, loader });
+  return &registered_loaders_executed;
+}
+
+static void
+run_registered_driver_loaders()
+{
+  assert_return (registered_loaders_executed == false);
+  registered_loaders_executed = true;
+  for (auto &loader : registered_loaders())
+    {
+      Error error = loader.func ();
+      if (error != Error::NONE)
+        printerr ("BSE: %s: loading failed: %s\n", loader.what, bse_error_blurb (error));
+    }
 }
 
 } // Bse

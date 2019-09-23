@@ -126,6 +126,8 @@ public:
   virtual void            test_counter_set        (int val) override;
   virtual int             test_counter_inc_fetch  () override;
   virtual int             test_counter_get        () override;
+  virtual DriverEntrySeq  list_pcm_drivers        () override;
+  virtual DriverEntrySeq  list_midi_drivers       () override;
   virtual DeviceCrawlerIfaceP get_device_crawler  () override;
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();

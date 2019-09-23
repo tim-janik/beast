@@ -125,6 +125,7 @@ $(app/js.files): $>/app/%: ebeast/% $(GITCOMMITDEPS) ebeast/Makefile.mk	| $>/app
 	$Q mv $@.tmp $@
 ebeast/config =	revision: '$(shell ./version.sh -l)', \
 		revdate: '$(shell ./version.sh -d)', \
+		'version_m.m.m': '$(VERSION_M.M.M)', \
 		debug: $(if $(findstring $(MODE), debug quick),true,false)
 
 # == $>/app/bseapi_jsonipc.js ==

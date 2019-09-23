@@ -87,18 +87,19 @@ config-checks.require.pkgconfig ::= $(strip	\
         pangoft2        	>= 1.30.0	\
 	gtk+-2.0		>= 2.12.12	\
 	libgnomecanvas-2.0	>= 2.4.0	\
-	jack 			>= 0.100.0	\
 )
 # mad.pc exists in Debian only:	mad >= 0.14.2
 # boost libraries have no .pc files
 # VORBISFILE_BAD_SEEK indicates pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
 
 # == pkg-config variables ==
+# used for GLIB_CFLAGS and GLIB_LIBS
 GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
 GTK_PACKAGES     ::= gtk+-2.0 libgnomecanvas-2.0 zlib
-# used for GLIB_CFLAGS and GLIB_LIBS
-BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib jack $(GLIB_PACKAGES) # mad
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
+BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
+# used for BSE_JACK_LIBS
+BSEDEP_JACK     ::= jack >= 0.124.0
 
 # == config-cache.mk ==
 # Note, using '-include config-cache.mk' will ignore errors during config-cache.mk creation,
@@ -145,6 +146,9 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "MAD_LIBS ::= $$MAD_LIBS"			>>$@.tmp \
 	  && echo 'BSEDEPS_LIBS += $$(MAD_LIBS)'		>>$@.tmp \
 	  && $(call conftest_require_lib, mad.h, mad_stream_errorstr, $$MAD_LIBS)
+	$Q BSE_JACK_LIBS=$$($(PKG_CONFIG) --libs '$(BSEDEP_JACK)' 2>/dev/null) \
+	  && echo "BSE_JACK_LIBS ::= $$BSE_JACK_LIBS"		>>$@.tmp \
+	  || echo "BSE_JACK_LIBS ::= # missing: $(BSEDEP_JACK)" >>$@.tmp
 	$Q BOOST_SYSTEM_LIBS='-lboost_system' \
 	  && echo "BOOST_SYSTEM_LIBS ::= $$BOOST_SYSTEM_LIBS"	>>$@.tmp \
 	  && $(call conftest_require_lib, boost/system/error_code.hpp, boost::system::system_category, $$BOOST_SYSTEM_LIBS)

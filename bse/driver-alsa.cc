@@ -49,19 +49,6 @@ substitute_string (const std::string &from, const std::string &to, const std::st
   return target;
 }
 
-static const char*
-pcm_class_name (snd_pcm_class_t pcmclass)
-{
-  switch (pcmclass)
-    {
-    case SND_PCM_CLASS_MULTI:     return "Multichannel";
-    case SND_PCM_CLASS_MODEM:     return "Modem";
-    case SND_PCM_CLASS_DIGITIZER: return "Digitizer";
-    default:
-    case SND_PCM_CLASS_GENERIC:   return "Standard";
-    }
-}
-
 static void
 silent_error_handler (const char *file, int line, const char *function, int err, const char *fmt, ...)
 {}
@@ -97,8 +84,9 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
               ADEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
               Driver::Entry entry;
               entry.devid = name;
-              entry.name = desc;
-              entry.blurb = "Warning: PulseAudio routing is not realtime capable";
+              entry.device_name = desc;
+              entry.device_info = "Routing via the PulseAudio sound system";
+              entry.notice = "Warning: PulseAudio routing is not realtime capable";
               entry.readonly = "Input" == ioid;
               entry.writeonly = "Output" == ioid;
               entry.priority = Driver::PULSE;
@@ -160,16 +148,21 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           const String joiner = !wdevs.empty() && !rdevs.empty() ? " + " : "";
           Driver::Entry entry;
           entry.devid = string_format ("%s:CARD=%s,DEV=%u", seen_plughw ? "plughw" : "hw", card_id, dindex);
-          entry.name = chars2string (snd_pcm_info_get_name (writable ? wpi : rpi));
-          entry.name += " - " + card_name;
+          const bool is_usb = string_startswith (chars2string (snd_pcm_info_get_id (writable ? wpi : rpi)), "USB Audio");
+          entry.device_name = chars2string (snd_pcm_info_get_name (writable ? wpi : rpi));
+          entry.device_name += " - " + card_name;
           if (card_name != card_mixername && !card_mixername.empty())
-            entry.name += " [" + card_mixername + "]";
-          entry.status = pcm_class_name (pcmclass) + String (" ") + (readable && writable ? "Duplex" : readable ? "Input" : "Output");
-          entry.status += " " + wdevs + joiner + rdevs;
-          entry.blurb = card_longname;
+            entry.device_name += " [" + card_mixername + "]";
+          if (pcmclass == SND_PCM_CLASS_GENERIC)
+            entry.capabilities = readable && writable ? "Full-Duplex Audio" : readable ? "Audio Input" : "Audio Output";
+          else // pcmclass == SND_PCM_CLASS_MODEM // other SND_PCM_CLASS_ types are unused
+            entry.capabilities = readable && writable ? "Full-Duplex Modem" : readable ? "Modem Input" : "Modem Output";
+          entry.capabilities += ", streams: " + wdevs + joiner + rdevs;
+          entry.device_info = card_longname;
           entry.readonly = !writable;
           entry.writeonly = !readable;
-          entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex;
+          entry.modem = pcmclass == SND_PCM_CLASS_MODEM;
+          entry.priority = (is_usb ? Driver::ALSA_USB : Driver::ALSA) + Driver::WCARD * cindex + Driver::WDEV * dindex;
           entries.push_back (entry);
         }
       // discover MIDI hardware
@@ -203,18 +196,18 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
                 entry.devid = string_format ("hw:CARD=%s,DEV=%u,SUBDEV=%u", card_id, dindex, subdev);
               else
                 entry.devid = string_format ("hw:CARD=%s,DEV=%u", card_id, dindex);
-              entry.name = chars2string (snd_rawmidi_info_get_subdevice_name (minfo));
-              entry.name += entry.name.empty() ? string_format ("Midi#%u - ", subdev) : " - ";
-              entry.name += chars2string (snd_rawmidi_info_get_name (minfo));
-              entry.name += " [" + chars2string (snd_rawmidi_info_get_id (minfo)) + "]";
-              entry.blurb = card_longname;
+              entry.device_name = chars2string (snd_rawmidi_info_get_subdevice_name (minfo));
+              entry.device_name += entry.device_name.empty() ? string_format ("Midi#%u - ", subdev) : " - ";
+              entry.device_name += chars2string (snd_rawmidi_info_get_name (minfo));
+              entry.device_name += " [" + chars2string (snd_rawmidi_info_get_id (minfo)) + "]";
+              entry.device_info = card_longname;
               if (!writable)
                 {
                   snd_rawmidi_info_set_stream (minfo, SND_RAWMIDI_STREAM_OUTPUT);
                   writable = snd_ctl_rawmidi_info (chandle, minfo) == 0;
                 }
-              const String joiner = readable && writable ? " & " : "";
-              entry.status = (readable ? "Input" : "") + joiner + (writable ? "Output" : "");
+              const String joiner = readable && writable ? " + " : "";
+              entry.capabilities = (readable ? "MIDI Input" : "") + joiner + (writable ? "MIDI Output" : "");
               entry.readonly = !writable;
               entry.writeonly = !readable;
               entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;

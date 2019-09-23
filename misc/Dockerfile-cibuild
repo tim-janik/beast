@@ -12,7 +12,7 @@ RUN : && \
   \
   echo '## Provide g++ >= 8' && \
   retry apt-get update && \
-  retry eatmydata apt-get -y install g++-8 && \
+  retry eatmydata apt-get -y install g++-8 libjack-dev && \
   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 && \
   \

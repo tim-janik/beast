@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "driver.hh"
+#include "bsemain.hh"
 #include "internal.hh"
 #include "bsesequencer.hh"
 
@@ -139,10 +140,11 @@ PcmDriver::list_drivers ()
 {
   Driver::Entry entry;
   entry.devid = "auto";
-  entry.name = _("Automatic PCM card selection");
+  entry.device_name = _("Automatic driver selection");
+  entry.device_info = _("Select the first available PCM card or server");
   entry.readonly = false;
   entry.writeonly = false;
-  entry.priority = Driver::PSEUDO + Driver::WCARD * 1 + Driver::WDEV * 1 + Driver::WSUB * 1;
+  entry.priority = Driver::PAUTO;
   Driver::EntryVec pseudos;
   pseudos.push_back (entry);
   return RegisteredDriver<PcmDriverP>::list_drivers (pseudos);
@@ -191,10 +193,11 @@ MidiDriver::list_drivers ()
 {
   Driver::Entry entry;
   entry.devid = "auto";
-  entry.name = _("Automatic MIDI driver selection");
+  entry.device_name = _("Automatic MIDI driver selection");
+  entry.device_info = _("Select the first available MIDI device");
   entry.readonly = false;
   entry.writeonly = false;
-  entry.priority = Driver::PSEUDO + Driver::WCARD * 1 + Driver::WDEV * 1 + Driver::WSUB * 1;
+  entry.priority = Driver::PAUTO;
   Driver::EntryVec pseudos;
   pseudos.push_back (entry);
   return RegisteredDriver<MidiDriverP>::list_drivers (pseudos);
@@ -281,11 +284,11 @@ public:
   {
     Driver::Entry entry;
     entry.devid = ""; // "null"
-    entry.name = "Null PCM Driver";
-    entry.blurb = _("Discard all PCM output and provide zeros as PCM input");
+    entry.device_name = "Null PCM Driver";
+    entry.device_info = _("Discard all PCM output and provide zeros as PCM input");
     entry.readonly = false;
     entry.writeonly = false;
-    entry.priority = Driver::DNULL;
+    entry.priority = Driver::PNULL;
     entries.push_back (entry);
   }
 };
@@ -326,11 +329,11 @@ public:
   {
     Driver::Entry entry;
     entry.devid = ""; // "null"
-    entry.name = "Null MIDI Driver";
-    entry.blurb = _("Discard all MIDI events");
+    entry.device_name = "Null MIDI Driver";
+    entry.device_info = _("Discard all MIDI events");
     entry.readonly = false;
     entry.writeonly = false;
-    entry.priority = Driver::DNULL;
+    entry.priority = Driver::PNULL;
     entries.push_back (entry);
   }
 };
@@ -338,3 +341,23 @@ public:
 static const String null_midi_driverid = MidiDriver::register_driver ("null", NullMidiDriver::create, NullMidiDriver::list_drivers);
 
 } // Bse
+
+// == libbsejack.so ==
+#include <gmodule.h>
+
+static Bse::Error
+try_load_libbsejack ()
+{
+  using namespace Bse;
+  const std::string libbsejack = string_format ("%s/lib/libbse-jack-%u.%u.%u.so", runpath (RPath::INSTALLDIR),
+                                                BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
+  if (Path::check (libbsejack, "fr"))
+    {
+      GModule *gmodule = g_module_open (libbsejack.c_str(), G_MODULE_BIND_LOCAL); // no API import
+      if (!gmodule)
+        DDEBUG ("loading \"%s\" failed: %s", libbsejack, g_module_error());
+    }
+  return Error::NONE;
+}
+
+static bool *bsejack_loaded = Bse::register_driver_loader ("bsejack", try_load_libbsejack);

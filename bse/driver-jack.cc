@@ -12,6 +12,8 @@
 #if __has_include(<jack/jack.h>)
 #include <jack/jack.h>
 
+#define MAX_JACK_STRING_SIZE    1024
+
 using namespace Bse;
 
 namespace { // Anon
@@ -295,7 +297,7 @@ public:
 static void
 error_callback_silent (const char *msg)
 {
-  JDEBUG ("JACK: %s\n", msg);
+  JDEBUG ("%s\n", msg);
 }
 
 static void
@@ -311,11 +313,11 @@ connect_jack()
   jack_set_error_function (error_callback_silent);
 
   jack_status_t status;
-  jack_client_t *jack_client = jack_client_open ("beast", JackNoStartServer, &status);
+  jack_client_t *jack_client = jack_client_open ("Beast", JackNoStartServer, &status);
 
   jack_set_error_function (error_callback_show);
 
-  JDEBUG ("JACK: attaching to server returned status: %d\n", status);
+  JDEBUG ("attaching to server returned status: %d\n", status);
   return jack_client;
 }
 
@@ -338,6 +340,7 @@ struct DeviceDetails {
 
   std::vector<std::string> input_port_names;
   std::vector<std::string> output_port_names;
+  std::string input_port_alias;
 };
 
 static std::map<std::string, DeviceDetails>
@@ -346,6 +349,7 @@ query_jack_devices (jack_client_t *jack_client)
   std::map<std::string, DeviceDetails> devices;
 
   assert_return (jack_client, devices);
+  assert_return (MAX_JACK_STRING_SIZE >= jack_port_name_size(), devices);
 
   const char **jack_ports = jack_get_ports (jack_client, NULL, NULL, 0);
   if (jack_ports)
@@ -354,46 +358,50 @@ query_jack_devices (jack_client_t *jack_client)
 
       for (uint i = 0; jack_ports[i]; i++)
 	{
+          jack_port_t *jack_port = jack_port_by_name (jack_client, jack_ports[i]);
 	  const char *end = strchr (jack_ports[i], ':');
-	  if (end)
-	    {
-              std::string device_name (jack_ports[i], end);
+	  if (!jack_port || !end)
+            continue;
+          std::string device_name (jack_ports[i], end);
 
-	      jack_port_t *jack_port = jack_port_by_name (jack_client, jack_ports[i]);
-	      if (jack_port)
-		{
-                  const char *port_type = jack_port_type (jack_port);
-                  if (strcmp (port_type, JACK_DEFAULT_AUDIO_TYPE) == 0)
+          const char *port_type = jack_port_type (jack_port);
+          if (strcmp (port_type, JACK_DEFAULT_AUDIO_TYPE) == 0)
+            {
+              DeviceDetails &details = devices[device_name];
+              details.ports++;
+
+              const int flags = jack_port_flags (jack_port);
+              if (flags & JackPortIsInput)
+                {
+                  details.input_ports++;
+                  details.input_port_names.push_back (jack_ports[i]);
+                }
+              if (flags & JackPortIsOutput)
+                {
+                  details.output_ports++;
+                  details.output_port_names.push_back (jack_ports[i]);
+                }
+              if (flags & JackPortIsTerminal)
+                details.terminal_ports++;
+              if (flags & JackPortIsPhysical)
+                {
+                  details.physical_ports++;
+
+                  if (!have_default_device && (flags & JackPortIsInput))
                     {
-	              DeviceDetails &details = devices[device_name];
-	              details.ports++;
-
-                      int flags = jack_port_flags (jack_port);
-                      if (flags & JackPortIsInput)
+                      /* the first device that has physical ports is the default device */
+                      details.default_device = true;
+                      have_default_device = true;
+                      char alias1[MAX_JACK_STRING_SIZE] = "", alias2[MAX_JACK_STRING_SIZE] = "";
+                      char *aliases[2] = { alias1, alias2, };
+                      const int cnt = jack_port_get_aliases (jack_port, aliases);
+                      if (cnt >= 1 && alias1[0])
                         {
-                          details.input_ports++;
-                          details.input_port_names.push_back (jack_ports[i]);
+                          const char *acolon = strrchr (alias1, ':');
+                          details.input_port_alias = acolon ? std::string (alias1, acolon - alias1) : alias1;
                         }
-                      if (flags & JackPortIsOutput)
-                        {
-                          details.output_ports++;
-                          details.output_port_names.push_back (jack_ports[i]);
-                        }
-                      if (flags & JackPortIsPhysical)
-                        {
-                          details.physical_ports++;
-
-                          if (!have_default_device)
-                            {
-                              /* the first device that has physical ports is the default device */
-                              details.default_device = true;
-                              have_default_device = true;
-                            }
-                        }
-                      if (flags & JackPortIsTerminal)
-                        details.terminal_ports++;
                     }
-		}
+                }
 	    }
 	}
       free (jack_ports);
@@ -415,33 +423,37 @@ list_jack_drivers (Driver::EntryVec &entries)
 
   for (std::map<std::string, DeviceDetails>::iterator di = devices.begin(); di != devices.end(); di++)
     {
-      const std::string &device_name = di->first;
+      const std::string &devid = di->first;
       DeviceDetails &details = di->second;
 
       /* the default device is usually the hardware device, so things should work as expected
        * we could show try to show non-default devices as well, but this could be confusing
        */
-      if (details.default_device)
+      if (details.default_device && (details.input_ports || details.output_ports))
         {
           Driver::Entry entry;
-          entry.devid = device_name;
+          entry.devid = devid;
+          entry.device_name = string_format ("JACK \"%s\" Audio Device", devid);
+          const std::string phprefix = details.physical_ports == details.ports ? "Physical: " : "";
+          if (!details.input_port_alias.empty())
+            entry.device_name += " [" + phprefix + details.input_port_alias + "]";
+          entry.capabilities = details.output_ports && details.input_ports ? "Full-Duplex Audio" : details.output_ports ? "Audio Input" : "Audio Output";
+          entry.capabilities += string_format (", channels: %d*playback + %d*capture", details.input_ports, details.output_ports);
+          entry.device_info = "Routing via the JACK Audio Connection Kit";
           if (details.physical_ports == details.ports)
-            entry.name = "Hardware Device: " + device_name;
-          else
-            entry.name = device_name;
-          entry.blurb = string_format ("%d Inputs / %d Outputs", details.input_ports, details.output_ports);
+            entry.notice = "Note: JACK adds latency compared to direct hardware access";
           entry.priority = Driver::JACK;
           entries.push_back (entry);
         }
     }
 }
 
-/* macro for jack dropout tests - see below */
-#define TEST_DROPOUT() if (unlink ("/tmp/bse-dropout") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
-
 } // Anon
 
 namespace Bse {
+
+/* macro for jack dropout tests - see below */
+#define TEST_DROPOUT() if (unlink ("/tmp/bse-dropout") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
 
 // == JackPcmDriver ==
 class JackPcmDriver : public PcmDriver {
@@ -655,7 +667,7 @@ public:
                           buffer_frames_, buffer_frames);
             error = Bse::Error::INTERNAL;
           }
-        JDEBUG ("JACK: %s: ringbuffer size = %.3fms", devid_, buffer_frames_ / double (mix_freq_) * 1000);
+        JDEBUG ("%s: ringbuffer size = %.3fms", devid_, buffer_frames_ / double (mix_freq_) * 1000);
 
         /* initialize output ringbuffer with silence
          * this will prevent dropouts at initialization, when no data is there at all
@@ -723,7 +735,7 @@ public:
         disconnect_jack (jack_client_);
         jack_client_ = nullptr;
       }
-    JDEBUG ("JACK: %s: opening PCM: readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    JDEBUG ("%s: opening PCM: readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
   virtual bool
@@ -807,7 +819,7 @@ public:
       }
 
     uint total_latency = buffer_frames_ + jack_rlatency + jack_wlatency;
-    JDEBUG ("JACK: %s: jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
+    JDEBUG ("%s: jack_rlatency=%.3f ms jack_wlatency=%.3f ms ringbuffer=%.3f ms total_latency=%.3f ms",
             devid_,
             jack_rlatency / double (mix_freq_) * 1000,
             jack_wlatency / double (mix_freq_) * 1000,

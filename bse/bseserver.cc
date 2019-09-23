@@ -1511,6 +1511,18 @@ ServerImpl::require_pcm_input()
     }
 }
 
+DriverEntrySeq
+ServerImpl::list_pcm_drivers ()
+{
+  return PcmDriver::list_drivers();
+}
+
+DriverEntrySeq
+ServerImpl::list_midi_drivers ()
+{
+  return MidiDriver::list_drivers();
+}
+
 DeviceCrawlerIfaceP
 ServerImpl::get_device_crawler ()
 {

@@ -28,6 +28,8 @@ struct GlobalConfigPtr {
 };
 inline GlobalConfigPtr global_config;
 
+bool* register_driver_loader (const char *staticwhat, Error (*loader) ());
+
 } // Bse
 
 
@@ -57,9 +59,8 @@ struct BseMainArgs {
   bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, etc.
   bool                  allow_randomization;	///< Initialization argument "allow-randomization" - enables non-deterministic behavior
   bool                  force_fpu;		///< Initialization argument "force-fpu" - avoid vectorized optimizations
-  bool		        load_core_plugins;	///< Initialization argument "load-core-plugins" - enable core plugin bootup
-  bool		        debug_extensions;	///< Initialization argument "debug-extensions" - enable debugging extensions
-  bool                  load_drivers_early;
+  bool		        load_drivers;   	///< Load Audio/MIDI drivers at bootup
+  bool                  debug_extensions;       ///< Initialization argument "debug-extensions" - enable debugging extensions
   bool                  dump_driver_list;
 };
 

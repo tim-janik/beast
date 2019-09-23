@@ -260,7 +260,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/devicecrawler.cc		\
 	bse/driver.cc			\
 	bse/driver-alsa.cc		\
-	bse/driver-jack.cc		\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\
@@ -311,6 +310,9 @@ bse/libbse.sources ::= $(strip		\
 	bse/unicode.cc			\
 	bse/weaksym.cc			\
 )
+bse/libbsejack.sources ::= $(strip	\
+	bse/driver-jack.cc		\
+)
 bse/include.idls ::= $(strip		\
 	bse/bse.idl			\
 	bse/bsebasics.idl		\
@@ -345,8 +347,15 @@ bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 bse/all: $(lib/libbse.so)
 
+# == libbsejack.so defs ==
+lib/libbsejack.so		::= $>/lib/libbse-jack-$(VERSION_M.M.M).so
+bse/libbsejack.objects		::= $(call BUILDDIR_O, $(bse/libbsejack.sources))
+ifneq ('','$(BSE_JACK_LIBS)')
+  bse/all: $(lib/libbsejack.so)
+endif
+
 # == BeastSoundEngine defs ==
-lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine
+lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
 bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
 bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources))
@@ -385,6 +394,22 @@ $(call INSTALL_DATA_RULE,			\
 	$(bse/include.headers) $(bse/libbse.deps))
 $(call $(if $(filter production, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
+
+# == libbsejack.so rules ==
+$(bse/libbsejack.objects): $(bse/libbse.deps) $(bse/libbsejack.cc.deps)
+$(bse/libbsejack.objects): EXTRA_INCLUDES ::= -I$> $(BSEDEPS_CFLAGS)
+$(bse/libbsejack.objects): EXTRA_DEFS ::= -DBSE_COMPILATION
+$(lib/libbsejack.so).LDFLAGS ::= -Wl,--version-script=bse/ldscript.map
+ifneq ('','$(BSE_JACK_LIBS)')
+$(call BUILD_SHARED_LIB_XDBG, \
+	$(lib/libbsejack.so), \
+	$(bse/libbsejack.objects), \
+	$(lib/libbse.so) bse/ldscript.map | $>/lib/, \
+	-lbse-$(VERSION_MAJOR) $(BSE_JACK_LIBS), \
+        ../lib)
+$(call $(if $(filter production, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
+	lib/libbsejack, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbsejack.so))
+endif
 
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc)	| $>/bse/
@@ -507,6 +532,7 @@ $(call BUILD_PROGRAM, \
 	$(lib/libbse.so), \
 	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
 	../lib)
+$(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
 
 # == bseprocidl rules ==
 $(bse/bseprocidl.objects):	$(bse/libbse.deps)
