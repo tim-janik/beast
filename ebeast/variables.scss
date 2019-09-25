@@ -38,3 +38,48 @@ $b-resize-handle-thickness: 5px !default;
 $b-resize-handle-bgcolor:   #555 !default;
 $b-resize-handle-hvcolor:   #bbb !default;
 $b-resize-handle-border:    1.5px solid #111 !default;
+
+// == Outset / Inset ==
+$b-style-dark-outline:        #181818 !default;
+$b-style-inset-background-1:  #1b1b1b !default;
+$b-style-inset-background-2:  #202020 !default;
+$b-style-inset-background-0:  mix($b-style-inset-background-1, $b-style-inset-background-2) !default;
+$b-style-inset-background:    linear-gradient(to bottom, $b-style-inset-background-1, $b-style-inset-background-2);
+$b-style-inset-glint-1:       $b-style-inset-background-1 !default;
+$b-style-inset-glint-2:       #383838 !default;
+@mixin b-style-inset {
+  //* Because we have box-shadows at top/bottom but not left/right, this style must not use left/right borders */
+  border-color: $b-style-inset-background-1 $b-style-inset-background-0 $b-style-inset-background-2 $b-style-inset-background-0;
+  border-left: 0px !important; border-right: 0px !important; border-radius: $b-style-border-radius;
+  outline: none; //* focus is handled via box-shadow */
+  background-color: $b-style-inset-background-0; background: $b-style-inset-background;
+  //* The inset is implemented similarly to b-style-outset */
+  box-shadow: 0px -1px 0 0px $b-style-inset-glint-1, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-inset-glint-2;
+  &:focus { box-shadow: 0px -1px 0 0px $b-style-inset-glint-1, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-inset-glint-2; }
+}
+$b-style-outset-glint-1:        #777 !default;
+$b-style-outset-glint-2:        #444 !default;
+$b-style-outset-background-1:   #606060 !default;
+$b-style-outset-background-2:   #505050 !default;
+$b-style-outset-background-0:   mix($b-style-outset-background-1, $b-style-outset-background-2) !default;
+$b-style-outset-background:     linear-gradient(to bottom, $b-style-outset-background-1, $b-style-outset-background-2);
+$b-style-outset-activebg-1:     #404040 !default;
+$b-style-outset-activebg-2:     #303030 !default;
+$b-style-outset-activebg-0:     mix($b-style-outset-activebg-1, $b-style-outset-activebg-2) !default;
+$b-style-outset-activebg:       linear-gradient(to bottom, $b-style-outset-activebg-1, $b-style-outset-activebg-2);
+$b-style-outset-activebg-glint: $b-style-outset-activebg-2 !default;
+@mixin b-style-outset {
+  //* Because we have box-shadows at top/bottom but not left/right, this style must not use left/right borders */
+  border-color: $b-style-outset-background-1 $b-style-outset-background-0 $b-style-outset-background-2 $b-style-outset-background-0;
+  border-left: 0px !important; border-right: 0px !important; border-radius: $b-style-border-radius;
+  outline: none; //* focus is handled via box-shadow */
+  background-color: $b-style-outset-background-0; background: $b-style-outset-background;
+  //* The outset is implemented by adding a dark shadow around, and light shadows above and below */
+  box-shadow: 0px -1px 0 0px $b-style-outset-glint-1, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-outset-glint-2;
+  &:focus { box-shadow: 0px -1px 0 0px $b-style-outset-glint-1, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
+  &.active, &:active {
+	background-color: $b-style-outset-activebg-0; background: $b-style-outset-activebg;
+	box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-outset-glint-2;
+	&:focus { box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
+  }
+}
