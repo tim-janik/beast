@@ -838,6 +838,11 @@ class ModalShield {
     document._b_modal_shields.unshift (this);
   }
   destroy (call_handler = false) {
+    if (!this.div)
+      return false;	// this has been detroyed already
+    if (this.div.parentNode)
+      this.div.parentNode.removeChild (this.div);
+    this.div = undefined;
     array_remove (document._b_modal_shields, this);
     if (document._b_modal_shields.length == 0)
       {
@@ -845,9 +850,6 @@ class ModalShield {
 	document.removeEventListener ('keydown', ModalShield.modal_keyboard_guard);
 	document.removeEventListener ('mousedown', ModalShield.modal_mouse_guard);
       }
-    if (this.div && this.div.parentNode)
-      this.div.parentNode.removeChild (this.div);
-    this.div = undefined;
     if (this.remove_focus_root)
       this.remove_focus_root();
     this.remove_focus_root = undefined;
@@ -858,6 +860,7 @@ class ModalShield {
 	if (call_handler)
 	  close_handler_once();
       }
+    return true;
   }
   close() {
     if (this.close_handler)
