@@ -135,23 +135,19 @@ export function equals_recursively (a, b) {
   // compare RegExp
   if (a instanceof RegExp)
     return a.source == b.source && a.flags == b.flags && a.lastIndex  == b.lastIndex;
-  // compare Object properties
+  // compare Objects by properties
+  let ak = [], i = 0;
   for (const k in a)
     {
       const av = a[k], bv = b[k];
-      if (av === bv || equals_recursively (av, bv))
-	continue;
-      return false;
+      if (!(av === bv || equals_recursively (av, bv)))
+	return false;
+      ak.push (k);
     }
   for (const k in b)
-    {
-      if (a.hasOwnProperty (k))
-	continue;	// compared above
-      const av = a[k], bv = b[k];
-      if (av === bv || equals_recursively (av, bv))
-	continue;	// compare inherited props
+    if (ak[i++] != k)
       return false;
-    }
+  ak = undefined;
   // compare non-Array iterables (e.g. Set)
   if (!Array.isArray (a) && typeof a[Symbol.iterator] == 'function')
     {
@@ -183,6 +179,8 @@ if (AUTOTEST)
     // TODO: a[999] = b; b[999] = a; console.assert (eqr (a, b));
     console.assert (eqr (/a/, /a/) && !eqr (/b/i, /b/));
     console.assert (eqr (clamp, clamp) && !eqr (clamp, eqr));
+    console.assert (eqr ({ a: 1, b: 2 }, { a: 1, b: 2 }));
+    console.assert (!eqr ({ a: 1, b: 2 }, { b: 2, a: 1 }));
   }
 
 /** Return @a x clamped into @a min and @a max. */
