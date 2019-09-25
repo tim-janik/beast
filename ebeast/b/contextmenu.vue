@@ -4,22 +4,21 @@
   # B-CONTEXTMENU
   A modal popup that displays contextmenu choices, see [B-MENUITEM](#b-menuitem),
   [B-MENUSEPARATOR](#b-menuseparator).
-  Using the `open()` method, the menu can be popped up from the parent component,
+  Using the `popup()` method, the menu can be popped up from the parent component,
   and setting up an `onclick` handler can be used to handle menuitem actions. Example:
   ```html
-  <div @contextmenu.prevent="$refs.cmenu.open">
+  <div @contextmenu.prevent="$refs.cmenu.popup">
     <b-contextmenu ref="cmenu" @click="menuactivation">...</b-contextmenu>
   </div>
   ```
   ## Props:
-  *origin*
-  : Reference DOM element to use for drop-down positioning.
   ## Events:
   *click (role)*
   : Event signaling activation of a submenu item, the `role` of the submenu is provided as argument.
   ## Methods:
-  *open (event)*
-  : Popup the contextmenu, the `event` coordinates are used for positioning.
+  *popup (event, origin)*
+  : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
+  : reference DOM element to use for drop-down positioning.
   *close()*
   : Hide the contextmenu.
 </docs>
@@ -27,13 +26,13 @@
 <style lang="scss">
   @import 'styles.scss';
   body div.b-contextmenu-area {				    //* constraint area for context menu placement */
-    position: absolute; right: 0; bottom: 0;		    //* fixed bottom right */
+    position: fixed; right: 0; bottom: 0;		    //* fixed bottom right */
     display: flex; flex-direction: column; align-items: flex-start;
+    z-index: 999;					    //* stay atop modal shield */
   }
   body .b-contextmenu-area .b-contextmenu {	//* since menus are often embedded, this needs high specificity */
     position: relative; max-width: 100%; max-height: 100%;  //* constrain to .b-contextmenu-area */
     overflow-y: auto; overflow-x: hidden;		    //* scroll if necessary */
-    z-index: 999;					    //* stay atop modal shield */
     padding: $b-menu-padding 0;
     background-color: $b-menu-background; border: 1px outset darken($b-menu-background, 20%);
     color: $b-menu-foreground;
@@ -54,7 +53,6 @@
 <script>
 module.exports = {
   name: 'b-contextmenu',
-  props: [ 'origin', ],
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
 	       resize_observer: undefined, resize_timer: 0, checkedroles: {},
 	       showicons: true, showaccels: true, checker: undefined, },
@@ -128,8 +126,6 @@ module.exports = {
 	{
 	  const menu_el = this.$refs['b-contextmenu'].$el;
 	  // unset size constraints before calculating desired size
-	  area_el.style.left = "0px";
-	  area_el.style.top = "0px";
 	  const p = Util.popup_position (menu_el, { x: this.doc_x,
 						    y: this.doc_y,
 						    origin: this.origin && this.origin.$el || this.origin });
@@ -148,7 +144,8 @@ module.exports = {
 	this.shield = Util.modal_shield (this.close, contextmenu, { focuscycle: true,
 								    background: '#00000000' });
     },
-    open (event, checker) {
+    popup (event, origin, checker) {
+      this.origin = origin;
       if (this.visible) return;
       if (event && event.pageX && event.pageY)
 	{
