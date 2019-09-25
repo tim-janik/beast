@@ -83,3 +83,37 @@ $b-style-outset-activebg-glint: $b-style-outset-activebg-2 !default;
 	&:focus { box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
   }
 }
+
+// == input[type=range] ==
+@mixin b-style-hrange-track() {
+  -webkit-appearance: none;
+  width: 100%; height: 7px; cursor: pointer;
+  border-radius: $b-style-border-radius/2;
+  box-shadow: inset 0 1px 0 0px $b-style-dark-outline, inset 0px -1px 0px 0px $b-style-inset-glint-2;
+  background-color: $b-style-inset-background-0; background: $b-style-inset-background;
+}
+@mixin b-style-hrange-thumb-bg($center: $b-style-outset-glint-1) {
+  background: radial-gradient(
+    $center 10%, $b-style-outset-glint-1 20%,
+    $b-style-inset-background-2 25%, $b-style-inset-background-2 35%,
+    mix($b-style-inset-background-2, $b-style-outset-glint-2) 40%, $b-style-outset-glint-2 50%);
+}
+@mixin b-style-hrange-thumb {
+  width: 15px; height: 15px; cursor: pointer;
+  border-radius: 50%; border: none;
+  box-shadow:
+	0px 0px 0 1px $b-style-dark-outline, inset 0 3px 2px -2px $b-style-outset-glint-1,
+	inset 0 -3px 2px -2px $b-style-inset-background-2;
+  @include b-style-hrange-thumb-bg;
+}
+@mixin b-style-hrange-input {
+  -webkit-appearance: none;
+  background-color: transparent;
+  &::-moz-range-track              { @include b-style-hrange-track(); }
+  &::-moz-range-thumb		   { @include b-style-hrange-thumb(); }
+  &:hover::-moz-range-thumb	   { @include b-style-hrange-thumb-bg(#ffc); }
+  &::-webkit-slider-runnable-track { @include b-style-hrange-track(); }
+  &::-webkit-slider-thumb          { @include b-style-hrange-thumb();
+				     margin-top: -4px; -webkit-appearance: none; }
+  &:hover::-webkit-slider-thumb    { @include b-style-hrange-thumb-bg(#ffc); }
+}
