@@ -22,6 +22,8 @@ $b-menu-padding: 		0.3em;
 $b-menu-spacing: 		0.75em;	// icon spacing
 $b-menu-tightspace: 		0.3em;	// icon spacing when packed
 $b-menu-box-shadow: 		0 0 13px 1px #0005;
+$b-style-focus-color:		#0080ff !default;
+$b-style-border-radius:         3px !default;
 
 // == BrowserWindow Defaults ==
 $b-default-background-color:	$b-main-background;	// #rrggbb needed
