@@ -1494,7 +1494,8 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	    getter_cleanups[key] = undefined;
 	    cleaner();
 	  }
-	odata[key] = result;
+	if (!equals_recursively (odata[key], result))
+	  odata[key] = result;
 	if (newcleaner)
 	  getter_cleanups[key] = newcleaner;
       };
