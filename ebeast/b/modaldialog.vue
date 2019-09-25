@@ -127,7 +127,10 @@ module.exports = {
   methods: {
     close (event) {
       if (this.shield)
-	this.shield.destroy (false);
+	{
+	  this.shield.destroy (false);
+	  this.shield = undefined;
+	}
       if (event instanceof Event)
 	event.preventDefault();
       this.$emit ('close');
