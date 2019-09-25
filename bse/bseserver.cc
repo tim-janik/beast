@@ -1434,7 +1434,7 @@ ServerImpl::open_midi_driver()
 {
   assert_return (midi_driver_ == nullptr, Error::INTERNAL);
   Error error = Error::UNKNOWN;
-  midi_driver_ = MidiDriver::open (bse_main_args->midi_driver, Driver::READONLY, &error);
+  midi_driver_ = MidiDriver::open (get_config().midi_driver, Driver::READONLY, &error);
   if (!midi_driver_)
     {
       UserMessage umsg;
@@ -1470,7 +1470,7 @@ ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint block_size)
   config.mix_freq = mix_freq;
   config.latency_ms = latency;
   config.block_length = block_size;
-  pcm_driver_ = PcmDriver::open (bse_main_args->pcm_driver, Driver::READWRITE, Driver::WRITEONLY, config, &error);
+  pcm_driver_ = PcmDriver::open (get_config().pcm_driver, Driver::READWRITE, Driver::WRITEONLY, config, &error);
   if (!pcm_driver_)
     {
       UserMessage umsg;
