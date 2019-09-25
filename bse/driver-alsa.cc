@@ -158,7 +158,8 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           else // pcmclass == SND_PCM_CLASS_MODEM // other SND_PCM_CLASS_ types are unused
             entry.capabilities = readable && writable ? "Full-Duplex Modem" : readable ? "Modem Input" : "Modem Output";
           entry.capabilities += ", streams: " + wdevs + joiner + rdevs;
-          entry.device_info = card_longname;
+          if (!string_startswith (card_longname, card_name + " at "))
+            entry.device_info = card_longname;
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.modem = pcmclass == SND_PCM_CLASS_MODEM;
