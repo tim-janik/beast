@@ -34,7 +34,7 @@
     <b-contextmenu class="b-preferencesdialog-cmenu" ref="cmenu" @click="menuactivation" >
       <b-menutitle> PCM / MIDI Device Selection </b-menutitle>
 
-      <b-menuitem v-for="e in Array.prototype.concat (pcmlist, midilist)" :key="e.devid" :role="e.devid" :ic="driver_icon (e)" >
+      <b-menuitem v-for="e in pcmlist" :key="e.devid" :role="e.devid" :ic="driver_icon (e)" >
 	{{ e.device_name }}
 	<span class="card">  </span> <br />
 	<span class="line1" v-if="e.capabilities" > {{ e.capabilities }} </span> <br v-if="e.capabilities" />
@@ -48,18 +48,46 @@
 </template>
 
 <script>
+function drivers2picklist (e) {
+  const item = {
+    role:  e.devid,
+    icon:  this.driver_icon (e),
+    label: e.device_name,
+    line1: e.capabilities,
+    line2: e.device_info,
+    line9: e.notice,
+  };
+  return item;
+}
+async function fetch_current_config (addcleanup) {
+  const d = await Bse.server.get_config();
+  if (d.__typename__)
+    {
+      d.__typedata__ = await Bse.server.find_typedata (d.__typename__);
+      d.__fieldhooks__ = {
+	'pcm_driver.picklistitems': () => {
+	  if (this.pcmrefresh)  // Bse provides no notification for list_pcm_drivers
+	    this.pcmrefresh();  // so we poll it when necessary
+	  return this.pcmlist.map (drivers2picklist.bind (this));
+	},
+	'midi_driver.picklistitems': () => {
+	  if (this.midirefresh) // Bse provides no notification for list_midi_drivers
+	    this.midirefresh(); // so we poll it when necessary
+	  return this.midilist.map (drivers2picklist.bind (this));
+	},
+      };
+    }
+  return Object.freeze (d);
+}
 function component_data () {
   const data = {
     defaults: { getter: async c => Object.freeze (await Bse.server.get_config_defaults()), },
     locked:   { getter: async c => Bse.server.locked_config(), },
-    prefdata: { getter: async c => {
-      const d = await Bse.server.get_config();
-      if (d.__typename__)
-	d.__typedata__ = await Bse.server.find_typedata (d.__typename__);
-      return Object.freeze (d);
-    }, },
-    pcmlist:  { getter: async c => Object.freeze (await Bse.server.list_pcm_drivers()), },
-    midilist: { getter: async c => Object.freeze (await Bse.server.list_midi_drivers()), },
+    prefdata: { getter: fetch_current_config.bind (this), },
+    pcmlist:  { getter: async c => Object.freeze (await Bse.server.list_pcm_drivers()),
+		notify: n => { this.pcmrefresh = n; return () => this.pcmrefresh = null; }, },
+    midilist: { getter: async c => Object.freeze (await Bse.server.list_midi_drivers()),
+		notify: n => { this.midirefresh = n; return () => this.midirefresh = null; }, },
   };
   return this.observable_from_getters (data, () => true);
 }
@@ -111,7 +139,7 @@ module.exports = {
       Bse.server.set_config (prefs);
     },
     popdown (event) {
-      this.$refs.cmenu.open (event);
+      this.$refs.cmenu.popup (event);
     },
     menuactivation (event) {
     },
