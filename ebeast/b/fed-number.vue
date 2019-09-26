@@ -25,19 +25,15 @@
 <style lang="scss">
   @import 'styles.scss';
   .b-fed-number        {
+    display: flex; justify-content: flex-end;
     input[type='number'] {
-      text-align: right; background-color: rgba(255,255,255,.3); color: #fff;
-      outline-width: 0; border: none; border-radius: $b-button-radius;
-      &:focus		{ box-shadow: $b-focus-box-shadow; }
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-	margin-left: 0.25em; margin-right: $b-button-radius; width: 0.75em; opacity: .5;
-	// -webkit-appearance: none; display: none;
-      }
+      text-align: right;
+      outline-width: 0; border: none;
+      @include b-style-number-input;
     }
-    input[type=range] {
-      &::-webkit-slider-thumb { max-height: 0.75em !important; }
-      // -webkit-slider-thumb -webkit-slider-runnable-track -webkit-appearance:none
+    input[type='range'] {
+      margin: auto 1em auto 0;
+      @include b-style-hrange-input;
     }
   }
 </style>
