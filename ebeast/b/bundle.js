@@ -23,6 +23,7 @@ const vue_components = [
   require ('./menutitle.vue'),
   require ('./fed-number.vue'),
   require ('./fed-object.vue'),
+  require ('./fed-picklist.vue'),
   require ('./fed-switch.vue'),
   require ('./fed-text.vue'),
   require ('./flex.vue'),
