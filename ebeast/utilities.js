@@ -611,7 +611,7 @@ export function compute_style_properties (el, obj) {
 export function inside_display_none (element) {
   while (element)
     {
-      if (element.style.display == "none")
+      if (getComputedStyle (element).display == "none")
 	return true;
       element = element.parentElement;
     }
@@ -704,7 +704,7 @@ class FocusGuard {
   }
   push_focus_root (element) {
     const current_focus = document.activeElement && document.activeElement != document.body ? document.activeElement : undefined;
-    this.focus_root_list.push ([ element, current_focus]);
+    this.focus_root_list.unshift ([ element, current_focus]);
     if (current_focus)
       this.focus_changed (current_focus, false);
   }
