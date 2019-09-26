@@ -140,7 +140,17 @@ module.exports = {
 	  else if (ft == "boolean")
 	    ct = 'b-fed-switch';
 	  else if (ft == "string")
-	    ct = 'b-fed-text';
+	    {
+	      const picklistitems = fieldhooks[fieldname + '.picklistitems'];
+	      if (picklistitems)
+		{
+		  attrs.picklistitems = picklistitems;
+		  attrs.title = label + " " + _("Selection");
+		  ct = 'b-fed-picklist';
+		}
+	      else
+		ct = 'b-fed-text';
+	    }
 	  if (ct)
 	    {
 	      const group = field_data.group || "Settings";
