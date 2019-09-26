@@ -53,6 +53,9 @@ app/generated 		::= $(strip	\
 	$>/app/assets/components.js	\
 	$>/app/assets/material-icons.css \
 )
+app/assets.copies	::= $(strip	\
+	$>/app/assets/spinners.svg	\
+)
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.deps ::= $>/ebeast/npm.rules
 NODE_MODULES.dir  ::= $>/ebeast/node_modules
@@ -105,7 +108,7 @@ ebeast-lint: FORCE
 	@$(MAKE) $>/ebeast/lint.rules
 
 # == app ==
-$>/ebeast/app.rules: $(app/js.files) $(app/generated) $>/ebeast/lint.rules
+$>/ebeast/app.rules: $(app/js.files) $(app/generated) $(app/assets.copies) $>/ebeast/lint.rules
 	$(QECHO) MAKE $@
 	$Q rm -f -r $>/electron/ \
 	  && $(CP) -a $>/ebeast/node_modules/electron/dist/ $>/electron/ \
@@ -113,7 +116,7 @@ $>/ebeast/app.rules: $(app/js.files) $(app/generated) $>/ebeast/lint.rules
 	  && mv $>/electron/electron $>/electron/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q echo >$@
-$(app/js.copies): $>/app/%: ebeast/%		| $>/app/
+$(app/assets.copies): $>/app/assets/%: ebeast/%		| $>/app/assets/
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
 
