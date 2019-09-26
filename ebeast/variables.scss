@@ -85,6 +85,29 @@ $b-style-outset-activebg-glint: $b-style-outset-activebg-2 !default;
   }
 }
 
+// == input[type='number'] ==
+@mixin b-style-number-input () {
+  @include b-style-inset();
+  // Assign webkit spinners that fit the theme
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none; // allow customizations
+    display: none;
+  }
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none; // allow customizations
+    width: 0.75em; margin-left: 0.25em; margin-right: $b-style-border-radius;
+    background: transparent url(assets/spinners.svg) no-repeat center center !important;
+    background-size: 100% 100% !important;
+    opacity: .5;
+    &:hover { opacity: .99; }
+  }
+  // Mozilla spin buttons are ugly in dark themes, so hide them unless hovering
+  html[gecko] & {
+    -moz-appearance: textfield; padding-right: 14px + 1px;
+    &:hover  { -moz-appearance: unset; padding-right: 1px; }
+  }
+}
+
 // == input[type=range] ==
 @mixin b-style-hrange-track() {
   -webkit-appearance: none;
