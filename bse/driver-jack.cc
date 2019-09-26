@@ -697,14 +697,14 @@ public:
         char port_name[port_name_size];
         jack_port_t *port;
 
-        snprintf (port_name, port_name_size, "in_%u", i);
+        snprintf (port_name, port_name_size, "in_%u", i + 1);
         port = jack_port_register (jack_client_, port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
         if (port)
           input_ports_.push_back (port);
         else
           error = Bse::Error::FILE_OPEN_FAILED;
 
-        snprintf (port_name, port_name_size, "out_%u", i);
+        snprintf (port_name, port_name_size, "out_%u", i + 1);
         port = jack_port_register (jack_client_, port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
         if (port)
           output_ports_.push_back (port);
@@ -984,7 +984,7 @@ public:
   {
     assert_return (midi_input_port_ == nullptr, false);
     midi_driver_callback_ = callback;
-    midi_input_port_ = jack_port_register (jack_client_, "midi-in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+    midi_input_port_ = jack_port_register (jack_client_, "midi_in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
     if (jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_input_port_)) != 0)
       {
