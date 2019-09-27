@@ -986,7 +986,8 @@ public:
     midi_driver_callback_ = callback;
     midi_input_port_ = jack_port_register (jack_client_, "midi_in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
-    if (jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_input_port_)) != 0)
+    const bool auto_connect = from_port != "no-auto-connect";
+    if (auto_connect && jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_input_port_)) != 0)
       {
         jack_port_unregister (jack_client_, midi_input_port_);
         midi_input_port_ = nullptr;
