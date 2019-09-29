@@ -813,20 +813,31 @@ class ModalShield {
   defaults() { return {
     close_handler: undefined,
     remove_focus_root: undefined,
-    div: undefined,
+    placeholder: undefined, root: undefined,
+    modal: undefined, overlay: undefined,
   }; }
-  constructor (close_handler, preserve_element, opts) {
+  constructor (modal_element, opts) {
     Object.assign (this, this.defaults());
-    this.close_handler = close_handler;
+    this.close_handler = opts.close;
+    this.modal = modal_element;
+    this.root = opts.root || this.modal;
     // prevent focus during modal shield
-    push_focus_root (preserve_element);
-    this.remove_focus_root = () => remove_focus_root (preserve_element);
-    // install shield element on <body/>
-    const div = document.createElement ("DIV");
-    div.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
-		'background:' + (opts['background'] || '#00000099');
-    document.body.appendChild (div);
-    this.div = div;
+    push_focus_root (modal_element);
+    this.remove_focus_root = () => remove_focus_root (modal_element);
+    if (this.root.parentElement)
+      this.root.parentElement.replaceChild (this.placeholder = document.createComment (''), this.root);
+    // install shield overlay on <body/>
+    this.overlay = document.createElement ("DIV");
+    this.overlay.appendChild (opts.root || this.root);
+    Object.assign (this.overlay.style, {
+      position: 'fixed', top: 0, right: 0, bottom: 0, left: 0,
+      'z-index': 9999,  // stay atop any siblings
+      display: 'flex', 'justify-content': 'center', 'align-items': 'center',
+    });
+    document.body.appendChild (this.overlay);
+    // support custom css class
+    if (opts.class)
+      this.toggle (opts.class);
     // keep a shield list and handle keyboard / mouse events on the shield
     if (!(document._b_modal_shields instanceof Array)) {
       document._b_modal_shields = [];
@@ -835,12 +846,32 @@ class ModalShield {
     }
     document._b_modal_shields.unshift (this);
   }
+  toggle (cssclass) {
+    if (this.overlay)
+      {
+	const overlay = this.overlay;
+	window.requestAnimationFrame (() => overlay.classList.toggle (cssclass));
+	// use animation-frame to allow cssclass to start transitions
+	return !overlay.classList.contains (cssclass);
+      }
+    return false;
+  }
   destroy (call_handler = false) {
-    if (!this.div)
+    if (!this.overlay)
       return false;	// this has been detroyed already
-    if (this.div.parentNode)
-      this.div.parentNode.removeChild (this.div);
-    this.div = undefined;
+    if (this.placeholder && this.placeholder.parentElement)
+      {
+	if (this.root.parentElement)
+	  this.placeholder.parentElement.replaceChild (this.root, this.placeholder);
+	else
+	  this.placeholder.parentElement.removeChild (this.placeholder);
+      }
+    this.placeholder = undefined;
+    if (this.overlay.parentNode)
+      this.overlay.parentNode.removeChild (this.overlay);
+    while (this.overlay.children.length)
+      this.overlay.removeChild (this.overlay.children[0]);
+    this.overlay = undefined;
     array_remove (document._b_modal_shields, this);
     if (document._b_modal_shields.length == 0)
       {
@@ -851,13 +882,10 @@ class ModalShield {
     if (this.remove_focus_root)
       this.remove_focus_root();
     this.remove_focus_root = undefined;
-    if (this.close_handler)
-      {
-	const close_handler_once = this.close_handler;
-	this.close_handler = undefined;		// guards against recursion
-	if (call_handler)
-	  close_handler_once();
-      }
+    const close_handler = this.close_handler;
+    this.close_handler = undefined;
+    if (call_handler && close_handler)
+      close_handler();
     return true;
   }
   close() {
@@ -881,8 +909,7 @@ class ModalShield {
     if (document._b_modal_shields.length > 0)
       {
 	const shield = document._b_modal_shields[0];
-	if (!event.cancelBubble &&
-	    event.target == shield.div)
+	if (!event.cancelBubble && !shield.modal.contains (event.target))
 	  {
 	    event.preventDefault();
 	    event.stopPropagation();
@@ -898,9 +925,12 @@ class ModalShield {
   }
 }
 
-/** Add a modal overlay to `body` to deflect DOM clicks and keyboard events */
-export function modal_shield (close_handler, preserve_element, opts = {}) {
-  return new ModalShield (close_handler, preserve_element, opts);
+/** Create a modal overlay under `body` and reparent `modal_element` to guard against outside DOM events */
+export function modal_shield (modal_element, opts = {}) {
+  console.assert (modal_element instanceof Element);
+  if (opts.root)
+    console.assert (opts.root.contains (modal_element));
+  return new ModalShield (modal_element, opts);
 }
 
 /** Use capturing to swallow any `type` events until `timeout` has passed */
@@ -1407,7 +1437,7 @@ export function match_key_event (event, keyname)
 }
 
 class UtilResizeObserver {
-  constructor (close_handler, preserve_element, opts) {
+  constructor (close_handler) {
     this.observers = new Map();	// { observer: { callback, elements:[] } }
     this.have_ResizeObserver = window.ResizeObserver != undefined;
     this.listening = false;
