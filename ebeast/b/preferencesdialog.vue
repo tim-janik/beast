@@ -11,19 +11,20 @@
 <style lang="scss">
   @import 'styles.scss';
   .b-preferencesdialog	{
-    .b-modaldialog-container	{ max-width: 90em; }
-    .b-preferencesdialog-cmenu	{
-      span.card  { color: #bbb; }
-      span.line1 { font-size: 90%; color: #bbb; }
-      span.line2 { font-size: 90%; color: #bbb; }
-      span.warning { color: #f80; }
-      span.note    { color: #fc0; }
-    }
+    /* max-width: 70em; */
+  }
+  .b-preferencesdialog-cmenu {
+    span.card  { color: #bbb; }
+    span.line1 { font-size: 90%; color: #bbb; }
+    span.line2 { font-size: 90%; color: #bbb; }
+    span.warning { color: #f80; }
+    span.note    { color: #fc0; }
   }
 </style>
 
 <template>
-  <b-modaldialog class="b-preferencesdialog" @close="$emit ('close')">
+  <b-modaldialog class="b-preferencesdialog"
+		 :value="value" @input="$emit ('input', $event)" >
     <div
 	@click="popdown"
 	slot="header">BEAST Preferences</div>
@@ -83,7 +84,8 @@ function component_data () {
   const data = {
     defaults: { getter: async c => Object.freeze (await Bse.server.get_config_defaults()), },
     locked:   { getter: async c => Bse.server.locked_config(), },
-    prefdata: { getter: fetch_current_config.bind (this), },
+    prefdata: { getter: fetch_current_config.bind (this),
+		notify: n => { this.prefrefresh = n; return () => this.prefrefresh = null; }, },
     pcmlist:  { getter: async c => Object.freeze (await Bse.server.list_pcm_drivers()),
 		notify: n => { this.pcmrefresh = n; return () => this.pcmrefresh = null; }, },
     midilist: { getter: async c => Object.freeze (await Bse.server.list_midi_drivers()),
@@ -95,7 +97,13 @@ function component_data () {
 module.exports = {
   name: 'b-preferencesdialog',
   mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  props: {
+    value: false,
+  },
   data() { return component_data.call (this); },
+  watch: {
+    value (vnew, vold) { if (vnew && this.prefrefresh) this.prefrefresh(); },
+  },
   methods: {
     notice_class (entry) {
       if (entry.notice.startsWith ("Warning:"))
@@ -137,6 +145,8 @@ module.exports = {
       const prefs = await Bse.server.get_config();
       Util.assign_forin (prefs, po);
       Bse.server.set_config (prefs);
+      if (this.prefrefresh)
+	this.prefrefresh();
     },
     popdown (event) {
       this.$refs.cmenu.popup (event);
