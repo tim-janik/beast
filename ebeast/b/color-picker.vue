@@ -15,14 +15,23 @@
   @import 'styles.scss';
 
   .b-color-picker {
-    * {
-      flex-shrink: 0;
-    }
-    button {
-      cursor: pointer;
-    }
-    .b-color-picker-dropdown {
-    }
+    * { flex-shrink: 0; }
+    button { cursor: pointer; }
+  }
+
+  .b-color-picker-dropdown {
+    display: flex; flex-direction: column; padding: 10px;
+    position: fixed; right: auto; bottom: auto;
+    z-index: 9999;
+    box-shadow: 3px 3px 16px 0px rgba(0,0,0,0.9);
+    background-color: #4e4e4e; color: #f1f1f1;
+
+    $timing: 0.2s;
+    &.v-enter-active 		{ transition: opacity $timing ease-out, transform $timing/2 linear; }
+    &.v-leave-active		{ transition: opacity $timing ease-in,  transform $timing linear; }
+    &.v-enter	 		{ opacity: 0; transform: translateX(-5vw) translateY(-10vh) scale(1); }
+    &.v-leave-to	 	{ opacity: 0.5; transform: translateX(-50%) translateY(-50%) scale(0); }
+
     .b-color-picker-entry {
       margin: 1px;
       width:  20px;
@@ -61,37 +70,35 @@
 </style>
 
 <template>
-
   <div class="b-color-picker" style="position: relative; display: flex;" >
-    <button :style="{ 'background-color': color, color: contrast }" @click="open_dropdown()" ><slot>⁜</slot></button>
-    <div v-if="visible_dropdown" ref="dropdown" class="b-color-picker-dropdown"
-	 style="display: flex; flex-direction: column; position: absolute; z-index: 91; top: 100%;
-		box-shadow: 3px 3px 16px 0px rgba(0,0,0,0.9);
-		background-color: #4e4e4e; color: #f1f1f1; font-size: 1rem; padding: 10px; " >
-      <div style="display: flex; flex-direction: row;"
-	   v-for="(row, row_index) in color_rows" :key="'row-' + row_index" >
-	<div class="b-color-picker-entry b-data-tooltip"
-	     v-for="(item, index) in row"
-	     @click="select (item[0])"
-	     :data-tooltip=" item[1] + '   ' + item[0] + '' "
-	     :key="row_index + '.' + index" :style="{ 'background-color': item[0] }" ></div>
+    <button ref="button" :style="{ 'background-color': color, color: contrast }" @click="visible_dropdown++" ><slot>⁜</slot></button>
+    <transition @before-leave="intransition++" @after-leave="end_transitions" >
+      <div v-if="visible_dropdown" ref="dropdown" class="b-color-picker-dropdown" >
+	<div style="display: flex; flex-direction: row;"
+	     v-for="(row, row_index) in color_rows" :key="'row-' + row_index" >
+	  <div class="b-color-picker-entry b-data-tooltip"
+	       v-for="(item, index) in row"
+	       @click="select (item[0])"
+	       :data-tooltip=" item[1] + '   ' + item[0] + '' "
+	       :key="row_index + '.' + index" :style="{ 'background-color': item[0] }" ></div>
+	</div>
       </div>
-    </div>
+    </transition>
   </div>
-
 </template>
 
 <script>
 module.exports = {
   name: 'b-color-picker',
-  mixins: [ Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
   props: {
     'initial-color': { type: String, default: '#808080' },
   },
   data: function() {
     return {
       value: this['initial-color'],
-      visible_dropdown: false,
+      intransition: 0,
+      visible_dropdown: 0,
   }; },
   computed: {
     contrast: function () { return Util.parse_hex_pgrey (this.value) > 0x7f ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.5)'; },
@@ -111,20 +118,43 @@ module.exports = {
     // sample usage:
     // this.$on ('input', hex => console.log (hex));
   },
+  beforeDestroy () {
+    if (this.shield)
+      this.shield.destroy (false);
+  },
   methods: {
-    hide() {
-      this.visible_dropdown = false;
-      this.shield.destroy (false); // false prevents recursion
-      this.shield = undefined;
+    update_shield() {
+      if (this.visible_dropdown && !this.shield)
+	this.shield = Util.modal_shield (this.$refs.dropdown, { close: this.hide });
+      else if (!this.visible_dropdown && this.shield && !this.intransition)
+	{
+	  this.shield.destroy();
+	  this.shield = null;
+	}
     },
-    open_dropdown() {
+    dom_update() {
+      this.update_shield();
+      if (this.$refs.dropdown)
+	{
+	  const p = Util.popup_position (this.$refs.dropdown, { origin: this.$refs.button });
+	  this.$refs.dropdown.style.left = p.x + "px";
+	  this.$refs.dropdown.style.top = p.y + "px";
+	}
+    },
+    end_transitions() {
+      this.intransition = 0;
+      this.update_shield();
+    },
+    hide() {
+      this.visible_dropdown = 0;
       if (this.shield)
-	this.shield.destroy();
-      this.shield = Util.modal_shield (this.hide);
-      this.visible_dropdown = true;
+	{
+	  this.shield.destroy (false); // false prevents recursion
+	  this.shield = undefined;
+	}
     },
     select (hex) {
-      if (hex.match(/#[a-f0-9]{6}/i))
+      if (hex.match (/#[a-f0-9]{6}/i))
 	this.color = hex;
       this.hide();
     },
