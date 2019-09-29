@@ -35,7 +35,7 @@
     </b-hflex>
 
     <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
-    <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
+    <b-preferencesdialog v-model="show_preferences_dialog" ></b-preferencesdialog>
   </b-vflex>
 </template>
 
