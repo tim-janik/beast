@@ -52,18 +52,17 @@
 	margin: 0 0 0 .5em;
       }
     }
-
-    .b-menuitem {
-      .b-fed-picklist-line1, .b-fed-picklist-line2, .b-fed-picklist-line3, .b-fed-picklist-line4,
-      .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8,
-      .b-fed-picklist-line9	{ display: block; font-size: 90%; color: #bbb; }
-      .b-fed-picklist-line0	{ display: block; }
-    }
+  }
+  .b-fed-picklist-cmenu {
+    .b-fed-picklist-line1, .b-fed-picklist-line2, .b-fed-picklist-line3, .b-fed-picklist-line4,
+    .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8,
+    .b-fed-picklist-line9	{ display: block; font-size: 90%; color: #bbb; }
+    .b-fed-picklist-line0	{ display: block; }
   }
 </style>
 
 <template>
-  <label class="b-fed-picklist" ref="label" @click.stop="opencount++, $refs.cmenu.popup ($event, $refs.label)" >
+  <label class="b-fed-picklist" ref="label" @mousedown.stop="opencount++, $refs.cmenu.popup ($event, $refs.label)" >
     <input ref="texttype" type="text" :readonly="readonly" :style="pickliststyle()" :placeholder="placeholder"
 	   :value="value" @input="emit_input_value ($event.target.value)" >
     <b-hflex class="b-fed-picklist-button" start tabindex="0" >
@@ -72,7 +71,7 @@
       <span class="b-fed-picklist-arrow"> ⬍ <!-- ▼ ▽ ▾ ▿ ⇕ ⬍ ⇳ --> </span>
     </b-hflex>
 
-    <b-contextmenu class="b-preferencesdialog-cmenu" ref="cmenu" @click="menuactivation" >
+    <b-contextmenu class="b-fed-picklist-cmenu" ref="cmenu" @click="menuactivation" notransitions >
       <b-menutitle v-if="title" > {{ title }} </b-menutitle>
 
       <b-menuitem v-for="item in picklist_" :key="item.key || item.role" :role="item.role || item.key" :ic="item.icon" >
