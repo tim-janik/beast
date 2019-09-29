@@ -28,9 +28,20 @@
   body div.b-contextmenu-area {				    //* constraint area for context menu placement */
     position: fixed; right: 0; bottom: 0;		    //* fixed bottom right */
     display: flex; flex-direction: column; align-items: flex-start;
-    z-index: 999;					    //* stay atop modal shield */
+    //* transition */
+    $timing: 0.1s;
+    &.v-enter-active	{ transition: opacity $timing ease-out, transform $timing linear; }
+    &.v-leave-active	{ transition: opacity $timing ease-in,  transform $timing linear; }
+    &.v-enter	 	{ opacity: 0.3; transform: translateX(-0.3vw) translateY(-1vh); }
+    &.v-leave-to	{ opacity: 0; transform: translateX(-0%) translateY(-0%) scale(1); }
+    &.b-contextmenu-notransitions { transition: none !important; }
+  }
+  body .b-contextmenu-shield {
+    background: #0001;
+    transition: background 0.1s;
   }
   body .b-contextmenu-area .b-contextmenu {	//* since menus are often embedded, this needs high specificity */
+    //* The template uses flex+start for layouting to scroll without vertical shrinking */
     position: relative; max-width: 100%; max-height: 100%;  //* constrain to .b-contextmenu-area */
     overflow-y: auto; overflow-x: hidden;		    //* scroll if necessary */
     padding: $b-menu-padding 0;
@@ -38,21 +49,26 @@
     color: $b-menu-foreground;
     box-shadow: $b-menu-box-shadow;
     [disabled], [disabled] * { pointer-events: none; }
-    //* The template uses flex+start for layouting to scroll without vertical shrinking */
   }
 </style>
 
 <template>
-  <div class="b-contextmenu-area" v-if="visible" ref="b-contextmenu-area" >
-    <b-vflex class="b-contextmenu" ref="b-contextmenu" start>
-      <slot />
-    </b-vflex>
-  </div>
+  <transition>
+    <div class='b-contextmenu-area' :class='cmenu_class' ref='b-contextmenu-area' v-if='visible' >
+      <b-vflex class='b-contextmenu' ref='b-contextmenu' start >
+	<slot />
+      </b-vflex>
+    </div>
+  </transition>
 </template>
 
 <script>
 module.exports = {
   name: 'b-contextmenu',
+  props: { 'notransitions': { default: false }, },
+  computed: {
+    cmenu_class() { return this.notransitions !== false ? 'b-contextmenu-notransitions' : ''; },
+  },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
 	       resize_observer: undefined, resize_timer: 0, checkedroles: {},
 	       showicons: true, showaccels: true, checker: undefined, },
@@ -141,8 +157,9 @@ module.exports = {
 	  this.shield = undefined;
 	}
       if (contextmenu && this.visible && !this.shield)
-	this.shield = Util.modal_shield (this.close, contextmenu, { focuscycle: true,
-								    background: '#00000000' });
+	this.shield = Util.modal_shield (contextmenu, { class: 'b-contextmenu-shield',
+							root: this.$refs['b-contextmenu-area'],
+							close: this.close });
     },
     popup (event, origin, checker) {
       this.origin = origin;
@@ -158,7 +175,8 @@ module.exports = {
       this.visible = true;
     },
     close () {
-      if (!this.visible) return;
+      if (!this.visible)
+	return;
       this.visible = false;
       // take down shield immediately, to remove focus guards
       if (this.shield)
