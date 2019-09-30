@@ -105,6 +105,7 @@ module.exports = {
     this.checkitems();
   },
   beforeDestroy () {
+    this.clear_dragging();
     this.resize_observer.destroy();
     this.resize_observer = undefined;
     if (this.resize_timer)
@@ -163,7 +164,8 @@ module.exports = {
     },
     popup (event, origin, checker) {
       this.origin = origin;
-      if (this.visible) return;
+      if (this.visible)
+	return;
       if (event && event.pageX && event.pageY)
 	{
 	  this.doc_x = event.pageX;
@@ -173,8 +175,52 @@ module.exports = {
 	this.doc_x = this.doc_y = undefined;
       this.checker = checker;
       this.visible = true;
+      if (event.type == "mousedown")
+	{
+	  console.assert (!this.dragging);
+	  this.dragging = {
+	    button: event.button,
+	    ignoreclick: true,
+	    timer: setTimeout (() => { if (this.dragging) this.dragging.ignoreclick = false; }, 500),
+	    handler: (e) => this.drag_event (e),
+	    evpassive: { capture: true, passive: true },
+	    evactive: { capture: false, passive: false }
+	  };
+	  window.addEventListener ('mouseup',   this.dragging.handler, this.dragging.evactive);
+	  window.addEventListener ('mousedown', this.dragging.handler, this.dragging.evpassive);
+	  window.addEventListener ('keydown',   this.dragging.handler, this.dragging.evpassive);
+	}
+    },
+    clear_dragging() {
+      if (!this.dragging)
+	return;
+      if (this.dragging.ignoreclick)
+	clearTimeout (this.dragging.timer);
+      window.removeEventListener ('mouseup',   this.dragging.handler, this.dragging.evactive);
+      window.removeEventListener ('mousedown', this.dragging.handler, this.dragging.evpassive);
+      window.removeEventListener ('keydown',   this.dragging.handler, this.dragging.evpassive);
+      this.dragging = undefined;
+    },
+    drag_event (event) {
+      console.assert (this.dragging);
+      let clickit = null;
+      if (this.visible && !this.dragging.ignoreclick &&
+	  event.type == 'mouseup' && event.button == this.dragging.button &&
+	  this.$refs['b-contextmenu'].$el.contains (document.activeElement) &&
+	  document.activeElement.contains (event.target))
+	{
+	  clickit = document.activeElement;
+	  event.stopPropagation(); // avoid other 'mouseup' handlers
+	  event.preventDefault();  // avoid generating 'click' from 'mouseup'
+	}
+      // clean up `dragging` state
+      this.clear_dragging();
+      // activate due to valid drag-selection
+      if (clickit)
+	Util.keyboard_click (clickit);
     },
     close () {
+      this.clear_dragging();
       if (!this.visible)
 	return;
       this.visible = false;
