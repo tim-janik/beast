@@ -21,7 +21,8 @@
 </style>
 
 <template>
-  <b-modaldialog class="b-aboutdialog" @close="$emit ('close')">
+  <b-modaldialog class="b-aboutdialog"
+		 :value="value" @input="$emit ('input', $event)" >
     <div slot="header">About BEAST</div>
     <slot></slot>
     <table>
@@ -68,6 +69,9 @@ async function about_pairs() {
 }
 module.exports = {
   name: 'b-aboutdialog',
+  props: {
+    value: false,
+  },
   data_tmpl: { info_pairs: [] },
   async created() {
     this.info_pairs = await about_pairs();
