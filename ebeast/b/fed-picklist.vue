@@ -55,8 +55,8 @@
 </style>
 
 <template>
-  <span class="b-fed-picklist" ref="label" @mousedown.stop="opencount++, $refs.cmenu.popup ($event, $refs.label)" >
-    <b-hflex class="b-fed-picklist-button" start tabindex="0" >
+  <div style="display: hflex" class="b-fed-picklist" ref="flexroot" @click="open_menu" @mousedown="open_menu" >
+    <b-hflex class="b-fed-picklist-button" start tabindex="0" ref="picklistbutton" >
       <b-icon class="b-fed-picklist-icon" :ic="currentitem.icon" v-if="currentitem.icon" />
       <span class="b-fed-picklist-label"> {{ currentitem.label }} </span>
       <span class="b-fed-picklist-arrow"> ⬍ <!-- ▼ ▽ ▾ ▿ ⇕ ⬍ ⇳ --> </span>
@@ -80,7 +80,7 @@
 
     </b-contextmenu>
 
-  </span>
+  </div>
 </template>
 
 <script>
@@ -128,6 +128,21 @@ module.exports = {
       // determine width for input types
       const width = 1 + 15; // padding + characters
       return `width: ${width}em;`;
+    },
+    open_menu (event) {
+      // Firefox-68 and Electron-6.0.1 generate a 'click' for mousedown+ESC+mouseup inside `picklistbutton`
+      if (event.type == 'click' && event.detail > 0)  // click events originating from the mouse have a non-0 detail
+	return;                                       // ignore, we use 'mousedown' for popups via mouse
+      // when opening through @mousedown, force focus *before* the menu's modal_shield is installed
+      if (event.type == 'mousedown')
+	this.$refs.picklistbutton.$el.focus();
+      // in any case, avoid propagation or default processing once the menu is up
+      event.stopPropagation(); // avoid other 'mouseup' handlers
+      event.preventDefault();  // avoid generating 'click' from 'mousedown'
+      // trigger getter() refresh on each menu popup
+      this.opencount++;
+      // popup, the context menu takes it from here
+      this.$refs.cmenu.popup (event, this.$refs.flexroot);
     },
   },
 };
