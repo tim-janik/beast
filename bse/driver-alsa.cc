@@ -86,7 +86,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
               entry.devid = name;
               entry.device_name = desc;
               entry.device_info = "Routing via the PulseAudio sound system";
-              entry.notice = "Warning: PulseAudio routing is not realtime capable";
+              entry.notice = "Note: PulseAudio routing is not realtime capable";
               entry.readonly = "Input" == ioid;
               entry.writeonly = "Output" == ioid;
               entry.priority = Driver::PULSE;
