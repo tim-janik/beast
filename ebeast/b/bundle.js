@@ -27,8 +27,6 @@ const vue_components = [
   require ('./fed-switch.vue'),
   require ('./fed-text.vue'),
   require ('./flex.vue'),
-  require ('./hflex.vue'),
-  require ('./vflex.vue'),
   require ('./hscrollbar.vue'),
   require ('./modaldialog.vue'),
   require ('./part-list.vue'),
@@ -46,5 +44,6 @@ const vue_components = [
 
 // register components
 vue_components.forEach (c => {
-  Vue.component (c.name, c);
+  if (c.name)
+    Vue.component (c.name, c);
 });
