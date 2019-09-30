@@ -14,8 +14,9 @@
     /* max-width: 70em; */
   }
   body .b-fed-picklist-contextmenu { //* popup menus are reparented into a body shield  */
-    span.b-preferencesdialog-warning { color: #f80; }
-    span.b-preferencesdialog-note    { color: #fc0; }
+    span.b-preferencesdialog-warning { color: $b-style-fg-warning; }
+    span.b-preferencesdialog-notice  { color: $b-style-fg-notice; }
+    //* for focus/active: b-fed-picklist-lines already applies $b-style-fg-filter */
   }
 </style>
 
@@ -51,7 +52,7 @@ function drivers2picklist (e) {
   if (e.notice.startsWith ("Warning:"))
     noticeclass = "b-preferencesdialog-warning";
   if (e.notice.startsWith ("Note:") || e.notice.startsWith ("Notice:"))
-    noticeclass = "b-preferencesdialog-note";
+    noticeclass = "b-preferencesdialog-notice";
   const item = {
     role:  e.devid,
     icon:  this.driver_icon (e),

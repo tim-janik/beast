@@ -26,7 +26,6 @@
 
       padding: .1em .3em .1em .3em;
       @include b-style-outset();
-      // @include b-style-inset();
 
       .b-fed-picklist-icon {
 	flex: 0 0 auto; width: 1em;
@@ -47,10 +46,13 @@
     }
   }
   .b-fed-picklist-contextmenu {
-    .b-fed-picklist-line1, .b-fed-picklist-line2, .b-fed-picklist-line3, .b-fed-picklist-line4,
-    .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8,
-    .b-fed-picklist-line9	{ display: block; font-size: 90%; color: #bbb; }
-    .b-fed-picklist-line0	{ display: block; }
+    $b-fed-picklist-lines: ".b-fed-picklist-line1, .b-fed-picklist-line2, .b-fed-picklist-line3, .b-fed-picklist-line4,
+      .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8, .b-fed-picklist-line9";
+    .b-fed-picklist-label    { display: block; }
+    #{$b-fed-picklist-lines} { display: block; font-size: 90%; color: $b-style-fg-secondary; }
+    & :focus, & .active, & :active {
+      #{$b-fed-picklist-lines} { filter: $b-style-fg-filter; } //* adjust to inverted menuitem */
+    }
   }
 </style>
 
@@ -68,7 +70,7 @@
 
       <b-menuitem v-for="item in picklist_" :key="item.key || item.role" :role="item.role || item.key"
 		  :ic="item.icon"      :iconclass='item.iconclass' >
-	<span class="b-fed-picklist-line0" :class='item.labelclass' v-if="item.label" > {{ item.label }} </span>
+	<span class="b-fed-picklist-label" :class='item.labelclass' v-if="item.label" > {{ item.label }} </span>
 	<span class="b-fed-picklist-line1" :class='item.line1class' v-if="item.line1" > {{ item.line1 }} </span>
 	<span class="b-fed-picklist-line2" :class='item.line2class' v-if="item.line2" > {{ item.line2 }} </span>
 	<span class="b-fed-picklist-line3" :class='item.line3class' v-if="item.line3" > {{ item.line3 }} </span>

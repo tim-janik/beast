@@ -31,6 +31,11 @@ $b-style-light-foreground:	$b-main-foreground !default;
 $b-style-dark-outline:		#181818 !default;
 $b-style-modal-overlay:		#222b !default;
 
+$b-style-fg-secondary: #ccc !default;			// secondary foreground, for details / fineprint
+$b-style-fg-warning:   #f80 !default;
+$b-style-fg-notice:    #fc0 !default;
+$b-style-fg-filter:    brightness(66%) !default;	// adjust style-fg in inverted focus/active contexts
+
 // == BrowserWindow Defaults ==
 $b-default-background-color:	$b-main-background;	// #rrggbb needed
 $b-default-font-size:		14px;          		// int px needed
