@@ -1,8 +1,5 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-// == User Settings & Overrides ==
-@import '../variables.scss';
-
 // HSV (HSB) to RGBA
 @function hsv($hue, $satb, $value, $a: 1) {
   @if $satb == 0 {
