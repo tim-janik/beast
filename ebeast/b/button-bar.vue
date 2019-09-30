@@ -9,7 +9,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-button-bar {
       display: inline-flex; background-color: $b-button-border;
       border: 1px solid $b-button-border;

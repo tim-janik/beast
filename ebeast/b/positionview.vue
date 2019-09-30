@@ -7,7 +7,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   $b-positionview-fg: #71cff2; $b-positionview-b0: #011214; $b-positionview-b1: #00171a;
   $b-positionview-bg: mix($b-positionview-b0, $b-positionview-b1);
 

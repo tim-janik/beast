@@ -20,7 +20,7 @@
 </template>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-part-list {
     display: inline-block;
     position: relative;

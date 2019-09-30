@@ -14,7 +14,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-fed-text		{
     input		{
       outline-width: 0; border: none; border-radius: $b-button-radius;

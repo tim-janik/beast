@@ -26,7 +26,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   @mixin b-flex-vbox() {
     display: flex; flex-basis: auto; align-items: center; justify-content: center;
     flex-shrink: 0; flex-flow: column; height: auto;

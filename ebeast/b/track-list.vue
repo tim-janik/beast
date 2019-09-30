@@ -28,7 +28,7 @@
 </template>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   $b-track-list-arranger-lpad: 3px;
   .b-track-list {
     background-color: $b-button-border;

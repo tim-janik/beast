@@ -40,7 +40,7 @@
 </template>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-projectshell {
     border: 5px solid #322;
     --b-resize-handle-thickness: #{$b-resize-handle-thickness};

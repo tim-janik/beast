@@ -6,7 +6,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-treeselector-item {
     user-select: none;
     & > span div:focus { outline: $b-focus-outline; }

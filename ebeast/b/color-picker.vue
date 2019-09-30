@@ -12,7 +12,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
 
   .b-color-picker {
     * { flex-shrink: 0; }

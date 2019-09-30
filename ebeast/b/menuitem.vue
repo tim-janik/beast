@@ -24,7 +24,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   body button.b-menuitem { //* since menus are often embedded, this needs high specificity */
     display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap;
     margin: 0; padding: 5px 1em; text-align: left;

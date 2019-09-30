@@ -23,7 +23,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-icon {
     margin: 0; padding: 0; text-align: center;
     &.b-icon-dfl { height: 1em; width: 1em; }

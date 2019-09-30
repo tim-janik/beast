@@ -19,7 +19,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-example		{ /* component specific CSS */ }
   .b-example-slot	{ /* all classes must use component prefixes */ }
 </style>

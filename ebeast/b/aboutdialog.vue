@@ -9,7 +9,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-aboutdialog .b-modaldialog-container	{ max-width: 70em; }
   .b-aboutdialog table	{ table-layout: fixed; max-width: 100%; }
   .b-aboutdialog th	{

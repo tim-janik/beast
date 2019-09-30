@@ -36,7 +36,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-hflex, .b-vflex {
     display: flex; flex-basis: auto;
     flex-wrap: nowrap;

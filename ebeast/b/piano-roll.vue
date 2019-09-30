@@ -14,7 +14,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-piano-roll {
     border: 1px solid #111;
   }

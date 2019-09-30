@@ -9,7 +9,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   body div.b-menutitle { //* since menus are often embedded, this needs high specificity */
     display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap; flex-direction: row;
     align-items: baseline;      //* distribute extra cross-axis space */

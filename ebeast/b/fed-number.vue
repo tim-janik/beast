@@ -23,7 +23,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-fed-number        {
     display: flex; justify-content: flex-end;
     input[type='number'] {

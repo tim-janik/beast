@@ -14,7 +14,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-fed-switch        { position: relative; display: inline-block; width: 2.6em; height: 1.4em;
     input               { opacity: 0; width: 0; height: 0;
       &:focus   + .b-fed-switch-trough		{ box-shadow: $b-focus-box-shadow; }

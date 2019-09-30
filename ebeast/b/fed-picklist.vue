@@ -14,7 +14,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-fed-picklist		{
     $b-fed-picklist-width: 23em;
     .b-fed-picklist-button {

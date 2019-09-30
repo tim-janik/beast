@@ -9,7 +9,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-treeselector {
     .b-modaldialog-container	{ max-width: 70em; height: 90vh; align-items: stretch; }
     .b-modaldialog-body	{ flex-grow: 1; }

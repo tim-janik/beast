@@ -20,7 +20,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-fed-object		{
     .b-fed-object-clear	{
       font-size: 1.1em; font-weight: bolder;

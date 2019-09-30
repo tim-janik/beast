@@ -11,7 +11,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   $b-track-view-level-height: 3px;
   $b-track-view-level-space: 1px;
   .b-track-view-lbg {

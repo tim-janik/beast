@@ -24,7 +24,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   body div.b-contextmenu-area {				    //* constraint area for context menu placement */
     position: fixed; right: 0; bottom: 0;		    //* fixed bottom right */
     display: flex; flex-direction: column; align-items: flex-start;
