@@ -286,6 +286,7 @@ public:
     entry.devid = ""; // "null"
     entry.device_name = "Null PCM Driver";
     entry.device_info = _("Discard all PCM output and provide zeros as PCM input");
+    entry.notice = "Warning: The Null driver has no playback timing support";
     entry.readonly = false;
     entry.writeonly = false;
     entry.priority = Driver::PNULL;
