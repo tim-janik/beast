@@ -8,17 +8,14 @@
   : A *close* event is emitted once the "Close" button activated.
 </docs>
 
-<style lang="scss">
+<style lang="scss" >
   @import 'mixins.scss';
   .b-preferencesdialog	{
     /* max-width: 70em; */
   }
-  .b-preferencesdialog-cmenu {
-    span.card  { color: #bbb; }
-    span.line1 { font-size: 90%; color: #bbb; }
-    span.line2 { font-size: 90%; color: #bbb; }
-    span.warning { color: #f80; }
-    span.note    { color: #fc0; }
+  body .b-fed-picklist-contextmenu { //* popup menus are reparented into a body shield  */
+    span.b-preferencesdialog-warning { color: #f80; }
+    span.b-preferencesdialog-note    { color: #fc0; }
   }
 </style>
 
@@ -29,7 +26,7 @@
 	@click="popdown"
 	slot="header">BEAST Preferences</div>
     <slot></slot>
-    <b-fed-object :ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=500>
+    <b-fed-object class="b-preferencesdialog-fed" :ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=500>
     </b-fed-object>
 
     <b-contextmenu class="b-preferencesdialog-cmenu" ref="cmenu" @click="menuactivation" >
@@ -40,7 +37,7 @@
 	<span class="card">  </span> <br />
 	<span class="line1" v-if="e.capabilities" > {{ e.capabilities }} </span> <br v-if="e.capabilities" />
 	<span class="line2" v-if="e.device_info" > {{ e.device_info }} </span> <br v-if="e.device_info" />
-	<span class="line2" :class="notice_class (e)" v-if="e.notice" > {{ e.notice }} </span>
+	<span class="line2" v-if="e.notice" > {{ e.notice }} </span>
       </b-menuitem>
 
     </b-contextmenu>
@@ -50,13 +47,18 @@
 
 <script>
 function drivers2picklist (e) {
+  let noticeclass = '';
+  if (e.notice.startsWith ("Warning:"))
+    noticeclass = "b-preferencesdialog-warning";
+  if (e.notice.startsWith ("Note:") || e.notice.startsWith ("Notice:"))
+    noticeclass = "b-preferencesdialog-note";
   const item = {
     role:  e.devid,
     icon:  this.driver_icon (e),
     label: e.device_name,
     line1: e.capabilities,
     line2: e.device_info,
-    line9: e.notice,
+    line9: e.notice, line9class: noticeclass,
   };
   return item;
 }
@@ -105,13 +107,6 @@ module.exports = {
     value (vnew, vold) { if (vnew && this.prefrefresh) this.prefrefresh(); },
   },
   methods: {
-    notice_class (entry) {
-      if (entry.notice.startsWith ("Warning:"))
-	return "warning";
-      if (entry.notice.startsWith ("Note:") || entry.notice.startsWith ("Notice:"))
-	return "note";
-      return "";
-    },
     driver_icon (entry, is_midi = false) {
       if (entry.devid.startsWith ("jack="))
 	return "mi-graphic_eq";
