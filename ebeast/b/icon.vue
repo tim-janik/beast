@@ -6,6 +6,8 @@
   Note, to style the color of icon font symbols, simply apply the `color` CSS property to this element
   (styling `fill` as for SVG elements is not needed).
   ## Props:
+  *iconclass*
+  : A CSS class to apply to this icon.
   *fa*
   : The name of a "Fork Awesome" icon (compatible with "Font Awesome 4"), see the [Fork Awesome Icons](https://forkaweso.me/Fork-Awesome/cheatsheet/).
   *mi*
@@ -34,9 +36,9 @@
 </style>
 
 <template>
-  <span     v-if="uc_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true">{{ uc_ }}</span>
-  <i   v-else-if="fa_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true"></i>
-  <i   v-else-if="mi_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true">{{ mi_ }}</i>
+  <span    v-if="uc_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true">{{ uc_ }}</span>
+  <i  v-else-if="fa_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true"></i>
+  <i  v-else-if="mi_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true">{{ mi_ }}</i>
   <span v-else-if="1" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true"><slot /></span>
 </template>
 <!-- SVG-1.1 notation: <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="...svg"></use> -->
@@ -45,14 +47,14 @@
 const STR = { type: String, default: '' }; // empty string default
 module.exports = {
   name: 'b-icon',
-  props: { ic: STR, fa: STR, mi: STR, uc: STR,
+  props: { iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR,
 	   'nosize': undefined, 'fw': undefined, 'lg': undefined },
   computed: {
     mi_() { return this.ic.startsWith ('mi-') ? this.ic.substr (3) : this.mi; },
     uc_() { return this.ic.startsWith ('uc-') ? this.ic.substr (3) : this.uc; },
     fa_() { return this.ic.startsWith ('fa-') ? this.ic.substr (3) : this.fa; },
     iconclasses() {
-      let classes = [];
+      let classes = (this.iconclass || '').split (/ +/);
       if (this.fw || this.fw === '')
 	classes.push ('b-icon-fw');
       else if (!(this.nosize || this.nosize == ''))
