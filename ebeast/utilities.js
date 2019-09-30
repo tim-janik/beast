@@ -938,9 +938,11 @@ export function swallow_event (type, timeout = 0) {
   const preventandstop = function (event) {
     event.preventDefault();
     event.stopPropagation();
+    event.stopImmediatePropagation();
+    return true;
   };
-  document.addEventListener ('contextmenu', preventandstop, true);
-  setTimeout (() => document.removeEventListener ('contextmenu', preventandstop, true), timeout);
+  document.addEventListener (type, preventandstop, true);
+  setTimeout (() => document.removeEventListener (type, preventandstop, true), timeout);
 }
 
 /** Determine position for a popup */
@@ -1348,7 +1350,7 @@ export function in_keyboard_click()
 /// Trigger element click via keyboard.
 export function keyboard_click (element)
 {
-  if (element)
+  if (element instanceof Element)
     {
       keyboard_click_state.inclick += 1;
       if (!element.classList.contains ('active'))
