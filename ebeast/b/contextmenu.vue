@@ -142,7 +142,10 @@ module.exports = {
       if (area_el && area_el.getBoundingClientRect) // ignore comments
 	{
 	  const menu_el = this.$refs.cmenu;
-	  // unset size constraints before calculating desired size
+	  // unset size constraints before calculating desired size, otherwise resizing
+	  // can take dozens of resize_observer/popup_position frame iterations
+	  area_el.style.left = '0px';
+	  area_el.style.top = '0px';
 	  const p = Util.popup_position (menu_el, { x: this.doc_x,
 						    y: this.doc_y,
 						    origin: this.origin && this.origin.$el || this.origin });
