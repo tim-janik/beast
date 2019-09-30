@@ -99,7 +99,6 @@ function component_data () {
 
 module.exports = {
   name: 'b-preferencesdialog',
-  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     value: false,
   },
