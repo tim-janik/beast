@@ -100,7 +100,7 @@ function observable_part_data () {
 
 module.exports = {
   name: 'b-piano-roll',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     part: [Bse.Part],
   },

@@ -90,7 +90,7 @@
 <script>
 module.exports = {
   name: 'b-color-picker',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     'initial-color': { type: String, default: '#808080' },
   },

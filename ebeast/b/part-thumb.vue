@@ -45,7 +45,7 @@ function observable_part_data () {
 
 module.exports = {
   name: 'b-part-thumb',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     part: { type: Bse.Part, },
     tick: { type: Number, },

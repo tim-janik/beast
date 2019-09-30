@@ -33,7 +33,6 @@
 <script>
 module.exports = {
   name: 'b-example',
-  mixins: [ Util.vue_mixins.dom_updates, ],	// Always call the dom_update(), etc methods
   props: { valuefromparent: String, },
   computed: {
     sample:	{ set (v) { this.sample_ = v; },

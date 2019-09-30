@@ -6,7 +6,6 @@ console.assert (Vue !== undefined);
 
 // load utilities
 require ('./hotkeys.js'); // adds $.click_hotkey()
-Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (cloning) from `data_tmpl`
 
 // load Vue components
 const vue_components = [

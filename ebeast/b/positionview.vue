@@ -68,7 +68,6 @@ function observable_song_data () {
 
 module.exports = {
   name: 'b-positionview',
-  mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song, },
   },

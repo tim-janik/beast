@@ -96,7 +96,6 @@ function song_data () {
 
 module.exports = {
   name: 'b-track-list',
-  mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song }
   },

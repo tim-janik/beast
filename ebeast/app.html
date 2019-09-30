@@ -104,6 +104,8 @@
   Vue.prototype.observable_from_getters = Util.vue_observable_from_getters;
   for (let directivename in Util.vue_directives) // register all utility directives
     Vue.directive (directivename, Util.vue_directives[directivename]);
+  Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
+  Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
   loadstatus.innerText += "Loaded Util...\n";
 
   // Start at onload and fetch remaining resources

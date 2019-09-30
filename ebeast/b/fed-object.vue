@@ -100,7 +100,7 @@ function component_data () {
 
 module.exports = {
   name: 'b-fed-object',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   data() { return component_data.call (this); },
   props: {
     readonly:	{ default: false, },

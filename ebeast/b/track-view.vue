@@ -179,7 +179,7 @@ function track_data () {
 
 module.exports = {
   name: 'b-track-view',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
