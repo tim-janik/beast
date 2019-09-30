@@ -46,7 +46,7 @@
       }
     }
   }
-  .b-fed-picklist-cmenu {
+  .b-fed-picklist-contextmenu {
     .b-fed-picklist-line1, .b-fed-picklist-line2, .b-fed-picklist-line3, .b-fed-picklist-line4,
     .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8,
     .b-fed-picklist-line9	{ display: block; font-size: 90%; color: #bbb; }
@@ -57,25 +57,27 @@
 <template>
   <b-hflex class="b-fed-picklist" ref="flexroot" @click="open_menu" @mousedown="open_menu" >
     <b-hflex class="b-fed-picklist-button" start tabindex="0" ref="picklistbutton" >
-      <b-icon class="b-fed-picklist-icon" :ic="currentitem.icon" v-if="currentitem.icon" />
-      <span class="b-fed-picklist-label"> {{ currentitem.label }} </span>
-      <span class="b-fed-picklist-arrow"> ⬍ <!-- ▼ ▽ ▾ ▿ ⇕ ⬍ ⇳ --> </span>
+      <b-icon class="b-fed-picklist-icon" v-if="currentitem.icon"
+	      :ic="currentitem.icon" :iconclass='currentitem.iconclass' />
+      <span class="b-fed-picklist-label" :class='currentitem.labelclass' > {{ currentitem.label }} </span>
+      <span class="b-fed-picklist-arrow" :class='currentitem.arrowclass' > ⬍ <!-- ▼ ▽ ▾ ▿ ⇕ ⬍ ⇳ --> </span>
     </b-hflex>
 
-    <b-contextmenu class="b-fed-picklist-cmenu" ref="cmenu" @click="menuactivation" notransitions >
+    <b-contextmenu class="b-fed-picklist-contextmenu" ref="cmenu" @click="menuactivation" notransitions >
       <b-menutitle v-if="title" > {{ title }} </b-menutitle>
 
-      <b-menuitem v-for="item in picklist_" :key="item.key || item.role" :role="item.role || item.key" :ic="item.icon" >
-	<span class="b-fed-picklist-line0" v-if="item.label" > {{ item.label }} </span>
-	<span class="b-fed-picklist-line1" v-if="item.line1" > {{ item.line1 }} </span>
-	<span class="b-fed-picklist-line2" v-if="item.line2" > {{ item.line2 }} </span>
-	<span class="b-fed-picklist-line3" v-if="item.line3" > {{ item.line3 }} </span>
-	<span class="b-fed-picklist-line4" v-if="item.line4" > {{ item.line4 }} </span>
-	<span class="b-fed-picklist-line5" v-if="item.line5" > {{ item.line5 }} </span>
-	<span class="b-fed-picklist-line6" v-if="item.line6" > {{ item.line6 }} </span>
-	<span class="b-fed-picklist-line7" v-if="item.line7" > {{ item.line7 }} </span>
-	<span class="b-fed-picklist-line8" v-if="item.line8" > {{ item.line8 }} </span>
-	<span class="b-fed-picklist-line9" v-if="item.line9" > {{ item.line9 }} </span>
+      <b-menuitem v-for="item in picklist_" :key="item.key || item.role" :role="item.role || item.key"
+		  :ic="item.icon"      :iconclass='item.iconclass' >
+	<span class="b-fed-picklist-line0" :class='item.labelclass' v-if="item.label" > {{ item.label }} </span>
+	<span class="b-fed-picklist-line1" :class='item.line1class' v-if="item.line1" > {{ item.line1 }} </span>
+	<span class="b-fed-picklist-line2" :class='item.line2class' v-if="item.line2" > {{ item.line2 }} </span>
+	<span class="b-fed-picklist-line3" :class='item.line3class' v-if="item.line3" > {{ item.line3 }} </span>
+	<span class="b-fed-picklist-line4" :class='item.line4class' v-if="item.line4" > {{ item.line4 }} </span>
+	<span class="b-fed-picklist-line5" :class='item.line5class' v-if="item.line5" > {{ item.line5 }} </span>
+	<span class="b-fed-picklist-line6" :class='item.line6class' v-if="item.line6" > {{ item.line6 }} </span>
+	<span class="b-fed-picklist-line7" :class='item.line7class' v-if="item.line7" > {{ item.line7 }} </span>
+	<span class="b-fed-picklist-line8" :class='item.line8class' v-if="item.line8" > {{ item.line8 }} </span>
+	<span class="b-fed-picklist-line9" :class='item.line9class' v-if="item.line9" > {{ item.line9 }} </span>
       </b-menuitem>
 
     </b-contextmenu>
