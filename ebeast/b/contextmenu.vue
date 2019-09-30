@@ -74,48 +74,48 @@ module.exports = {
 	       showicons: true, showaccels: true, checker: undefined, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
 			    [ 'checkedroles', 'showicons', 'showaccels', 'clicked', 'close' ]),
-  mounted () {
-    this.update_shield();
-    this.position_popup();
-    this.resize_observer = Util.resize_observer (this, ev => {
-      if (!this.resize_timer)
-	this.resize_timer = setTimeout (() => {
-	  this.resize_timer = 0;
-	  this.position_popup();
-	}, 1);
-    });
-    this.checkitems();
-  },
-  beforeUpdate () {
-    this.update_shield();
-    this.position_popup();
-  },
-  updated () {
-    this.resize_observer.disconnect();
-    this.update_shield();
-    this.position_popup();
-    if (this.$refs.cmenu)
-      {
-	this.resize_observer.observe (this.$refs.cmenu);
-	this.resize_observer.observe (document.body);
-	/* adding `origin` to the observer is of little use, for live repositioning,
-	 * we would need to observe the origin's size *and* viewport position.
-	 */
-      }
-    this.checkitems();
-  },
-  beforeDestroy () {
-    this.clear_dragging();
-    this.resize_observer.destroy();
-    this.resize_observer = undefined;
-    if (this.resize_timer)
-      clearTimeout (this.resize_timer);
-    this.resize_timer = 0;
-    if (this.shield)
-      this.shield.destroy (false);
-    this.shield = undefined;
-  },
   methods: {
+    dom_update () {
+      if (!this.resize_observer)
+	{
+	  this.resize_observer = Util.resize_observer (this, ev => {
+	    if (!this.resize_timer)
+	      this.resize_timer = setTimeout (() => {
+		this.resize_timer = 0;
+		this.position_popup();
+	      }, 1);
+	  });
+	}
+      else
+	this.resize_observer.disconnect();
+      if (this.$refs.cmenu)
+	{
+	  this.resize_observer.observe (this.$refs.cmenu);
+	  this.resize_observer.observe (document.body);
+	  /* adding `origin` to the observer is of little use, for live repositioning,
+	   * we would need to observe the origin's size *and* viewport position.
+	   */
+	}
+      this.update_shield();
+      this.checkitems();
+      if (this.resize_timer)
+	{
+	  clearTimeout (this.resize_timer);
+	  this.resize_timer = 0;
+	}
+      this.position_popup();
+    },
+    dom_destroy () {
+      this.clear_dragging();
+      this.resize_observer.destroy();
+      this.resize_observer = undefined;
+      if (this.resize_timer)
+	clearTimeout (this.resize_timer);
+      this.resize_timer = 0;
+      if (this.shield)
+	this.shield.destroy (false);
+      this.shield = undefined;
+    },
     checkitems() {
       if (!this.checker)
 	return;
