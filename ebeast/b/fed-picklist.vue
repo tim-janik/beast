@@ -16,13 +16,6 @@
 <style lang="scss">
   @import 'styles.scss';
   .b-fed-picklist		{
-    input		{
-      outline-width: 0; border: none; border-radius: $b-button-radius;
-      text-align: left; background-color: rgba(255,255,255,.3); color: #fff;
-      padding-left: $b-button-radius; padding-right: $b-button-radius;
-      &:focus		{ box-shadow: $b-focus-box-shadow; }
-      display: none;
-    }
     $b-fed-picklist-width: 23em;
     .b-fed-picklist-button {
       width: 1.5 + $b-fed-picklist-width + 1.5;
@@ -62,9 +55,7 @@
 </style>
 
 <template>
-  <label class="b-fed-picklist" ref="label" @mousedown.stop="opencount++, $refs.cmenu.popup ($event, $refs.label)" >
-    <input ref="texttype" type="text" :readonly="readonly" :style="pickliststyle()" :placeholder="placeholder"
-	   :value="value" @input="emit_input_value ($event.target.value)" >
+  <span class="b-fed-picklist" ref="label" @mousedown.stop="opencount++, $refs.cmenu.popup ($event, $refs.label)" >
     <b-hflex class="b-fed-picklist-button" start tabindex="0" >
       <b-icon class="b-fed-picklist-icon" :ic="currentitem.icon" v-if="currentitem.icon" />
       <span class="b-fed-picklist-label"> {{ currentitem.label }} </span>
@@ -89,7 +80,7 @@
 
     </b-contextmenu>
 
-  </label>
+  </span>
 </template>
 
 <script>
