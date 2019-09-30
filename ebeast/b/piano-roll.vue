@@ -131,10 +131,10 @@ module.exports = {
       if (!this.$refs.scrollarea)
 	return;
       this.$refs.hscrollbar.value = 0;
-      const vbr = this.$refs.scrollarea.$el.parentElement.getBoundingClientRect();
+      const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
       const sbr = this.$refs['notes-canvas'].getBoundingClientRect();
       if (oldpart && sbr.height > vbr.height)
-	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.$el.parentElement.scrollTop / (sbr.height - vbr.height);
+	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
       if (newpart)
 	{
 	  const auto_scrollto = this.auto_scrolls[newpart.$id];
@@ -147,11 +147,11 @@ module.exports = {
       if (!this.$el) // we need a second Vue.render() call for canvas drawing
 	return this.$forceUpdate();
       // DOM, $el and $refs are in place now
-      if (this.scrollarea_element != this.$refs.scrollarea.$el)
+      if (this.scrollarea_element != this.$refs.scrollarea)
 	{
 	  if (this.scrollarea_element)
 	    this.resize_observer.unobserve (this.scrollarea_element);
-	  this.scrollarea_element = this.$refs.scrollarea.$el;
+	  this.scrollarea_element = this.$refs.scrollarea;
 	  this.resize_observer.observe (this.scrollarea_element);
 	}
       // make sure scroll events in the canvas are forwarded to the scrollbar

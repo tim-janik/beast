@@ -55,7 +55,7 @@
 <template>
   <transition>
     <div class='b-contextmenu-area' :class='cmenu_class' ref='b-contextmenu-area' v-if='visible' >
-      <b-vflex class='b-contextmenu' ref='b-contextmenu' start >
+      <b-vflex class='b-contextmenu' ref='cmenu' start >
 	<slot />
       </b-vflex>
     </div>
@@ -94,9 +94,9 @@ module.exports = {
     this.resize_observer.disconnect();
     this.update_shield();
     this.position_popup();
-    if (this.$refs['b-contextmenu'] && this.$refs['b-contextmenu'].$el)
+    if (this.$refs.cmenu)
       {
-	this.resize_observer.observe (this.$refs['b-contextmenu'].$el);
+	this.resize_observer.observe (this.$refs.cmenu);
 	this.resize_observer.observe (document.body);
 	/* adding `origin` to the observer is of little use, for live repositioning,
 	 * we would need to observe the origin's size *and* viewport position.
@@ -134,14 +134,14 @@ module.exports = {
 	for (let child of component.$children)
 	  checkrecursive (child);
       };
-      if (this.$refs['b-contextmenu'])
-	checkrecursive (this.$refs['b-contextmenu']);
+      if (this.$refs.cmenu)
+	checkrecursive (this.$refs.cmenu);
     },
     position_popup() {
       let area_el = this.$refs['b-contextmenu-area'];
       if (area_el && area_el.getBoundingClientRect) // ignore comments
 	{
-	  const menu_el = this.$refs['b-contextmenu'].$el;
+	  const menu_el = this.$refs.cmenu;
 	  // unset size constraints before calculating desired size
 	  const p = Util.popup_position (menu_el, { x: this.doc_x,
 						    y: this.doc_y,
@@ -151,7 +151,7 @@ module.exports = {
 	}
     },
     update_shield() {
-      const contextmenu = this.$refs['b-contextmenu'] && this.$refs['b-contextmenu'].$el;
+      const contextmenu = this.$refs.cmenu;
       if (!contextmenu && this.shield)
 	{
 	  this.shield.destroy (false);
@@ -206,7 +206,7 @@ module.exports = {
       let clickit = null;
       if (this.visible && !this.dragging.ignoreclick &&
 	  event.type == 'mouseup' && event.button == this.dragging.button &&
-	  this.$refs['b-contextmenu'].$el.contains (document.activeElement) &&
+	  this.$refs.cmenu.contains (document.activeElement) &&
 	  document.activeElement.contains (event.target))
 	{
 	  clickit = document.activeElement;

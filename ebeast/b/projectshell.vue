@@ -102,7 +102,7 @@ module.exports = {
   provide () { return { 'b-projectshell': this }; },
   methods: {
     sidebar_mouse (e) {
-      const sidebar = this.$refs.sidebarcontainer.$el;
+      const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);
       const html_classes = document.documentElement.classList;
       if (e.type == 'mousedown' && !this.listening)

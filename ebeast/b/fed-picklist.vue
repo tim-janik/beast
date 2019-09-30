@@ -55,7 +55,7 @@
 </style>
 
 <template>
-  <div style="display: hflex" class="b-fed-picklist" ref="flexroot" @click="open_menu" @mousedown="open_menu" >
+  <b-hflex class="b-fed-picklist" ref="flexroot" @click="open_menu" @mousedown="open_menu" >
     <b-hflex class="b-fed-picklist-button" start tabindex="0" ref="picklistbutton" >
       <b-icon class="b-fed-picklist-icon" :ic="currentitem.icon" v-if="currentitem.icon" />
       <span class="b-fed-picklist-label"> {{ currentitem.label }} </span>
@@ -80,7 +80,7 @@
 
     </b-contextmenu>
 
-  </div>
+  </b-hflex>
 </template>
 
 <script>
@@ -135,7 +135,7 @@ module.exports = {
 	return;                                       // ignore, we use 'mousedown' for popups via mouse
       // when opening through @mousedown, force focus *before* the menu's modal_shield is installed
       if (event.type == 'mousedown')
-	this.$refs.picklistbutton.$el.focus();
+	this.$refs.picklistbutton.focus();
       // in any case, avoid propagation or default processing once the menu is up
       event.stopPropagation(); // avoid other 'mouseup' handlers
       event.preventDefault();  // avoid generating 'click' from 'mousedown'
