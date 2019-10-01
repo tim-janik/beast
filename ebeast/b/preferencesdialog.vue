@@ -23,26 +23,10 @@
 <template>
   <b-modaldialog class="b-preferencesdialog"
 		 :value="value" @input="$emit ('input', $event)" >
-    <div
-	@click="popdown"
-	slot="header">BEAST Preferences</div>
+    <div slot="header">BEAST Preferences</div>
     <slot></slot>
     <b-fed-object class="b-preferencesdialog-fed" :ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=500>
     </b-fed-object>
-
-    <b-contextmenu class="b-preferencesdialog-cmenu" ref="cmenu" @click="menuactivation" >
-      <b-menutitle> PCM / MIDI Device Selection </b-menutitle>
-
-      <b-menuitem v-for="e in pcmlist" :key="e.devid" :role="e.devid" :ic="driver_icon (e)" >
-	{{ e.device_name }}
-	<span class="card">  </span> <br />
-	<span class="line1" v-if="e.capabilities" > {{ e.capabilities }} </span> <br v-if="e.capabilities" />
-	<span class="line2" v-if="e.device_info" > {{ e.device_info }} </span> <br v-if="e.device_info" />
-	<span class="line2" v-if="e.notice" > {{ e.notice }} </span>
-      </b-menuitem>
-
-    </b-contextmenu>
-
   </b-modaldialog>
 </template>
 
@@ -142,11 +126,6 @@ module.exports = {
       Bse.server.set_config (prefs);
       if (this.prefrefresh)
 	this.prefrefresh();
-    },
-    popdown (event) {
-      this.$refs.cmenu.popup (event);
-    },
-    menuactivation (event) {
     },
   },
 };
