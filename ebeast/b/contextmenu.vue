@@ -54,7 +54,7 @@
 
 <template>
   <transition>
-    <div class='b-contextmenu-area' :class='cmenu_class' ref='b-contextmenu-area' v-if='visible' >
+    <div class='b-contextmenu-area' :class='cmenu_class' ref='contextmenuarea' v-if='visible' >
       <b-vflex class='b-contextmenu' ref='cmenu' start >
 	<slot />
       </b-vflex>
@@ -70,7 +70,7 @@ module.exports = {
     cmenu_class() { return this.notransitions !== false ? 'b-contextmenu-notransitions' : ''; },
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
-	       resize_observer: undefined, resize_timer: 0, checkedroles: {},
+	       resize_observer: undefined, checkedroles: {},
 	       showicons: true, showaccels: true, checker: undefined, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
 			    [ 'checkedroles', 'showicons', 'showaccels', 'clicked', 'close' ]),
@@ -78,36 +78,34 @@ module.exports = {
     dom_update () {
       if (!this.resize_observer)
 	{
-	  this.resize_observer = Util.resize_observer (this, ev => {
-	    if (!this.resize_timer)
-	      this.resize_timer = setTimeout (() => {
-		this.resize_timer = 0;
-		this.position_popup();
-	      }, 1);
+	  this.resize_observer = new ResizeObserver ((e, ro) => {
+	    if (this.resize_timer)
+	      return;
+	    this.resize_timer = setTimeout (() => {
+	      this.resize_timer = 0;
+	      this.position_popup();
+	    }, 1);
 	  });
 	}
-      else
-	this.resize_observer.disconnect();
-      if (this.$refs.cmenu)
-	{
-	  this.resize_observer.observe (this.$refs.cmenu);
-	  this.resize_observer.observe (document.body);
-	  /* adding `origin` to the observer is of little use, for live repositioning,
-	   * we would need to observe the origin's size *and* viewport position.
-	   */
-	}
-      this.update_shield();
-      this.checkitems();
-      if (this.resize_timer)
+      else if (this.resize_timer)
 	{
 	  clearTimeout (this.resize_timer);
 	  this.resize_timer = 0;
 	}
-      this.position_popup();
+      this.resize_observer.disconnect();
+      this.update_shield();
+      if (this.$refs.cmenu)
+	{
+	  this.checkitems();
+	  this.position_popup();
+	  this.resize_observer.observe (document.body);
+	  if (this.origin)
+	    this.resize_observer.observe (this.origin.$el || this.origin);
+	}
     },
     dom_destroy () {
       this.clear_dragging();
-      this.resize_observer.destroy();
+      this.resize_observer.disconnect();
       this.resize_observer = undefined;
       if (this.resize_timer)
 	clearTimeout (this.resize_timer);
@@ -115,6 +113,22 @@ module.exports = {
       if (this.shield)
 	this.shield.destroy (false);
       this.shield = undefined;
+    },
+    position_popup() {
+      const area_el = this.$refs.contextmenuarea;
+      if (area_el && area_el.getBoundingClientRect) // ignore Vue placeholder (html comment)
+	{
+	  const menu_el = this.$refs.cmenu;
+	  // unset size constraints before calculating desired size, otherwise resizing
+	  // can take dozens of resize_observer/popup_position frame iterations
+	  area_el.style.left = '0px';
+	  area_el.style.top = '0px';
+	  const p = Util.popup_position (menu_el, { x: this.doc_x,
+						    y: this.doc_y,
+						    origin: this.origin && this.origin.$el || this.origin });
+	  area_el.style.left = p.x + "px";
+	  area_el.style.top = p.y + "px";
+	}
     },
     checkitems() {
       if (!this.checker)
@@ -137,22 +151,6 @@ module.exports = {
       if (this.$refs.cmenu)
 	checkrecursive (this.$refs.cmenu);
     },
-    position_popup() {
-      let area_el = this.$refs['b-contextmenu-area'];
-      if (area_el && area_el.getBoundingClientRect) // ignore comments
-	{
-	  const menu_el = this.$refs.cmenu;
-	  // unset size constraints before calculating desired size, otherwise resizing
-	  // can take dozens of resize_observer/popup_position frame iterations
-	  area_el.style.left = '0px';
-	  area_el.style.top = '0px';
-	  const p = Util.popup_position (menu_el, { x: this.doc_x,
-						    y: this.doc_y,
-						    origin: this.origin && this.origin.$el || this.origin });
-	  area_el.style.left = p.x + "px";
-	  area_el.style.top = p.y + "px";
-	}
-    },
     update_shield() {
       const contextmenu = this.$refs.cmenu;
       if (!contextmenu && this.shield)
@@ -162,10 +160,11 @@ module.exports = {
 	}
       if (contextmenu && this.visible && !this.shield)
 	this.shield = Util.modal_shield (contextmenu, { class: 'b-contextmenu-shield',
-							root: this.$refs['b-contextmenu-area'],
+							root: this.$refs.contextmenuarea,
 							close: this.close });
     },
-    popup (event, origin, checker) {
+    popup (event, options) {
+      const { origin, check } = options || {};
       this.origin = origin;
       if (this.visible)
 	return;
@@ -176,7 +175,7 @@ module.exports = {
 	}
       else
 	this.doc_x = this.doc_y = undefined;
-      this.checker = checker;
+      // FIXME: this.checker = check;
       this.visible = true;
       if (event.type == "mousedown")
 	{

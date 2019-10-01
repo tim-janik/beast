@@ -231,7 +231,7 @@ module.exports = {
       console.log ("menuedit", role, "(preventDefault)");
     },
     menuopen (event) {
-      this.$refs.cmenu.popup (event, this.menucheck.bind (this));
+      this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this) });
     },
     menucheck (role, component) {
       switch (role)

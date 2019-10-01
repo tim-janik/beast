@@ -146,7 +146,7 @@ module.exports = {
       // trigger getter() refresh on each menu popup
       this.opencount++;
       // popup, the context menu takes it from here
-      this.$refs.cmenu.popup (event, this.$refs.flexroot);
+      this.$refs.cmenu.popup (event, { origin: this.$refs.flexroot });
     },
   },
 };
