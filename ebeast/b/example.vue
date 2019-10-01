@@ -19,7 +19,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-example		{ /* component specific CSS */ }
   .b-example-slot	{ /* all classes must use component prefixes */ }
 </style>
@@ -33,7 +33,6 @@
 <script>
 module.exports = {
   name: 'b-example',
-  mixins: [ Util.vue_mixins.dom_updates, ],	// Always call the dom_update(), etc methods
   props: { valuefromparent: String, },
   computed: {
     sample:	{ set (v) { this.sample_ = v; },

@@ -10,7 +10,7 @@ d) Assorted JS logic.
 The Vue component object is defined as part of (d).
 We often use `<canvas>` elements for EBEAST specific displays, and Vue canvas handling comes with certain caveats:
 
-1) Using `mixins: [ Util.vue_mixins.dom_updates ]` is recommended, to trigger the `dom_update()`
+1) Use of the `Util.vue_mixins.dom_updates` mixin (now default) allows to trigger the `dom_update()`
    component method for `$forceUpdate()` invocations and related events.
 
 2) A `methods: { dom_update() {}, }` component entry should be provided that triggers the

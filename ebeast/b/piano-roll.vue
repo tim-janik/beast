@@ -14,7 +14,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-piano-roll {
     border: 1px solid #111;
   }
@@ -100,7 +100,7 @@ function observable_part_data () {
 
 module.exports = {
   name: 'b-piano-roll',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     part: [Bse.Part],
   },
@@ -121,20 +121,20 @@ module.exports = {
     // keep vertical scroll position for each part, non-reactive
     this.auto_scrolls = {};
     // observer to watch for canvas size changes
-    this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
+    this.resize_observer = new Util.ResizeObserver (() => this.$forceUpdate());
   },
   destroyed() {
-    this.resize_observer.destroy();
+    this.resize_observer.disconnect();
   },
   methods: {
     sync_scrollpos (newpart, oldpart) {
       if (!this.$refs.scrollarea)
 	return;
       this.$refs.hscrollbar.value = 0;
-      const vbr = this.$refs.scrollarea.$el.parentElement.getBoundingClientRect();
+      const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
       const sbr = this.$refs['notes-canvas'].getBoundingClientRect();
       if (oldpart && sbr.height > vbr.height)
-	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.$el.parentElement.scrollTop / (sbr.height - vbr.height);
+	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
       if (newpart)
 	{
 	  const auto_scrollto = this.auto_scrolls[newpart.$id];
@@ -147,11 +147,11 @@ module.exports = {
       if (!this.$el) // we need a second Vue.render() call for canvas drawing
 	return this.$forceUpdate();
       // DOM, $el and $refs are in place now
-      if (this.scrollarea_element != this.$refs.scrollarea.$el)
+      if (this.scrollarea_element != this.$refs.scrollarea)
 	{
 	  if (this.scrollarea_element)
 	    this.resize_observer.unobserve (this.scrollarea_element);
-	  this.scrollarea_element = this.$refs.scrollarea.$el;
+	  this.scrollarea_element = this.$refs.scrollarea;
 	  this.resize_observer.observe (this.scrollarea_element);
 	}
       // make sure scroll events in the canvas are forwarded to the scrollbar

@@ -18,7 +18,7 @@
 </template>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
     height: $b-track-list-row-height;
@@ -45,7 +45,7 @@ function observable_part_data () {
 
 module.exports = {
   name: 'b-part-thumb',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     part: { type: Bse.Part, },
     tick: { type: Number, },

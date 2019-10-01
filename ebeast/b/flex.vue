@@ -1,8 +1,9 @@
 <!-- This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0 -->
 
 <docs>
-  # B-FLEX
-  A [flex](https://www.w3.org/TR/css-flexbox-1/#flex-containers) container for horizontal or vertical layouting.
+  # B-HFLEX
+  A [flex](https://www.w3.org/TR/css-flexbox-1/#flex-containers) container for horizontal layouting
+  (or vertical in the case of `B-VFLEX`).
   ## Props:
   *inline*
   : Use 'display: inline-flex' as layout mode, e.g. to integrate this container into text flow.
@@ -30,22 +31,26 @@
   : Layout of the flexbox children may wrap if the elements use more than 100%, in reverse order.
   ## Slots:
   : The *default* slot holds the contextmenu content.
+  # B-VFLEX
+  A vertical variant of the [B-HFLEX](#b-hflex) container for vertical layouting.
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
-  .b-flex {
+  @import 'mixins.scss';
+  .b-hflex, .b-vflex {
     display: flex; flex-basis: auto;
     flex-wrap: nowrap;
     justify-content: space-evenly;	//* distribute extra main-axis space */
     align-items: stretch;		//* distribute extra cross-axis space */
     align-content: stretch;		//* distribute extra cross-axis space for multi-line layouts */
-    &.flex-row {
-      flex-direction: row;
-      .b-flex-reverse	{ flex-direction: row-reverse; } }
-    &.flex-column {
-      flex-direction: column;
-      .b-flex-reverse	{ flex-direction: column-reverse; } }
+  }
+  .b-hflex {
+    flex-direction: row;
+    .b-flex-reverse	{ flex-direction: row-reverse; }
+  }
+  .b-vflex {
+    flex-direction: column;
+    .b-flex-reverse	{ flex-direction: column-reverse; }
   }
   .b-flex-inline	{ display: inline-flex; }
   .b-flex-start		{ justify-content: flex-start; }
@@ -66,41 +71,52 @@
   .b-flex-shrink0 { flex-shrink: 0; }
 </style>
 
-<template>
-  <div class="b-flex" :class="classlist()"
-  ><slot></slot></div>
-</template>
-
 <script>
-module.exports = {
-  name: 'b-flex',
-  inheritAttrs: true,	// v-bind="$attrs"
-  methods: {
-    classlist() {
-      let cl = [];
-      if (this.derivedclass)
-	cl.push (this.derivedclass);
-      const classnames = [
-	'flex-column', 'flex-row',
-	'start',
-	'end',
-	'center',
-	'inline',
-	'space-between',
-	'space-around',
-	'space-evenly',
-	'grow0', 'grow1', 'grow2', 'grow3', 'grow4',
-	'grow5', 'grow6', 'grow7', 'grow8', 'grow9',
-	'reverse',
-	'shrink0', 'shrink1', 'shrink2', 'shrink3', 'shrink4',
-	'shrink5', 'shrink6', 'shrink7', 'shrink8', 'shrink9',
-	'wrap', 'wrap-reverse',
-      ];
-      for (let cssclass of classnames)
-	if (this.$attrs[cssclass] == "" || this.$attrs[cssclass])
-	  cl.push ('b-flex-' + cssclass);
-      return cl;
-    },
-  },
+function classlist (classlist, attrs) {
+  const classnames = [
+    'flex-column', 'flex-row',
+    'start',
+    'end',
+    'center',
+    'inline',
+    'space-between',
+    'space-around',
+    'space-evenly',
+    'grow0', 'grow1', 'grow2', 'grow3', 'grow4',
+    'grow5', 'grow6', 'grow7', 'grow8', 'grow9',
+    'reverse',
+    'shrink0', 'shrink1', 'shrink2', 'shrink3', 'shrink4',
+    'shrink5', 'shrink6', 'shrink7', 'shrink8', 'shrink9',
+    'wrap', 'wrap-reverse',
+  ];
+  const classes = (classlist || '').split (/ +/);
+  for (let cssclass of classnames)
+    if (attrs[cssclass] === "" || attrs[cssclass])
+      classes.push ('b-flex-' + cssclass);
+  return classes;
+}
+
+const hflex = {
+  name: 'b-hflex',
+  functional: true,
+  render: function (h, context) {
+    const classes = classlist ('b-hflex ' + (context.data.class || ''), context.data.attrs || {});
+    const data = Object.assign ({}, context.data, { class: classes.join (' ') });
+    return h ('div', data, context.children);
+  }
 };
+Vue.component (hflex.name, hflex);
+
+const vflex = {
+  name: 'b-vflex',
+  functional: true,
+  render: function (h, context) {
+    const classes = classlist ('b-vflex ' + (context.data.class || ''), context.data.attrs || {});
+    const data = Object.assign ({}, context.data, { class: classes.join (' ') });
+    return h ('div', data, context.children);
+  }
+};
+Vue.component (vflex.name, vflex);
+
+module.exports = {};
 </script>

@@ -135,23 +135,19 @@ export function equals_recursively (a, b) {
   // compare RegExp
   if (a instanceof RegExp)
     return a.source == b.source && a.flags == b.flags && a.lastIndex  == b.lastIndex;
-  // compare Object properties
+  // compare Objects by properties
+  let ak = [], i = 0;
   for (const k in a)
     {
       const av = a[k], bv = b[k];
-      if (av === bv || equals_recursively (av, bv))
-	continue;
-      return false;
+      if (!(av === bv || equals_recursively (av, bv)))
+	return false;
+      ak.push (k);
     }
   for (const k in b)
-    {
-      if (a.hasOwnProperty (k))
-	continue;	// compared above
-      const av = a[k], bv = b[k];
-      if (av === bv || equals_recursively (av, bv))
-	continue;	// compare inherited props
+    if (ak[i++] != k)
       return false;
-    }
+  ak = undefined;
   // compare non-Array iterables (e.g. Set)
   if (!Array.isArray (a) && typeof a[Symbol.iterator] == 'function')
     {
@@ -183,6 +179,8 @@ if (AUTOTEST)
     // TODO: a[999] = b; b[999] = a; console.assert (eqr (a, b));
     console.assert (eqr (/a/, /a/) && !eqr (/b/i, /b/));
     console.assert (eqr (clamp, clamp) && !eqr (clamp, eqr));
+    console.assert (eqr ({ a: 1, b: 2 }, { a: 1, b: 2 }));
+    console.assert (!eqr ({ a: 1, b: 2 }, { b: 2, a: 1 }));
   }
 
 /** Return @a x clamped into @a min and @a max. */
@@ -613,7 +611,7 @@ export function compute_style_properties (el, obj) {
 export function inside_display_none (element) {
   while (element)
     {
-      if (element.style.display == "none")
+      if (getComputedStyle (element).display == "none")
 	return true;
       element = element.parentElement;
     }
@@ -706,7 +704,7 @@ class FocusGuard {
   }
   push_focus_root (element) {
     const current_focus = document.activeElement && document.activeElement != document.body ? document.activeElement : undefined;
-    this.focus_root_list.push ([ element, current_focus]);
+    this.focus_root_list.unshift ([ element, current_focus]);
     if (current_focus)
       this.focus_changed (current_focus, false);
   }
@@ -771,6 +769,7 @@ class FocusGuard {
 	if (idx >= 0)
 	  {
 	    focuslist[idx].focus();
+	    event.preventDefault();
 	    return true;
 	  }
       }
@@ -793,6 +792,7 @@ class FocusGuard {
     if (next >= 0 && next < focuslist.length)
       {
 	focuslist[next].focus();
+	event.preventDefault();
 	return true;
       }
     return false;
@@ -815,20 +815,31 @@ class ModalShield {
   defaults() { return {
     close_handler: undefined,
     remove_focus_root: undefined,
-    div: undefined,
+    placeholder: undefined, root: undefined,
+    modal: undefined, overlay: undefined,
   }; }
-  constructor (close_handler, preserve_element, opts) {
+  constructor (modal_element, opts) {
     Object.assign (this, this.defaults());
-    this.close_handler = close_handler;
+    this.close_handler = opts.close;
+    this.modal = modal_element;
+    this.root = opts.root || this.modal;
     // prevent focus during modal shield
-    push_focus_root (preserve_element);
-    this.remove_focus_root = () => remove_focus_root (preserve_element);
-    // install shield element on <body/>
-    const div = document.createElement ("DIV");
-    div.style = 'display: flex; position: fixed; z-index: 90; left: 0; top: 0; width: 100%; height: 100%;' +
-		'background:' + (opts['background'] || '#00000099');
-    document.body.appendChild (div);
-    this.div = div;
+    push_focus_root (modal_element);
+    this.remove_focus_root = () => remove_focus_root (modal_element);
+    if (this.root.parentElement)
+      this.root.parentElement.replaceChild (this.placeholder = document.createComment (''), this.root);
+    // install shield overlay on <body/>
+    this.overlay = document.createElement ("DIV");
+    this.overlay.appendChild (opts.root || this.root);
+    Object.assign (this.overlay.style, {
+      position: 'fixed', top: 0, right: 0, bottom: 0, left: 0,
+      'z-index': 9999,  // stay atop any siblings
+      display: 'flex', 'justify-content': 'center', 'align-items': 'center',
+    });
+    document.body.appendChild (this.overlay);
+    // support custom css class
+    if (opts.class)
+      this.toggle (opts.class);
     // keep a shield list and handle keyboard / mouse events on the shield
     if (!(document._b_modal_shields instanceof Array)) {
       document._b_modal_shields = [];
@@ -837,7 +848,32 @@ class ModalShield {
     }
     document._b_modal_shields.unshift (this);
   }
+  toggle (cssclass) {
+    if (this.overlay)
+      {
+	const overlay = this.overlay;
+	window.requestAnimationFrame (() => overlay.classList.toggle (cssclass));
+	// use animation-frame to allow cssclass to start transitions
+	return !overlay.classList.contains (cssclass);
+      }
+    return false;
+  }
   destroy (call_handler = false) {
+    if (!this.overlay)
+      return false;	// this has been detroyed already
+    if (this.placeholder && this.placeholder.parentElement)
+      {
+	if (this.root.parentElement)
+	  this.placeholder.parentElement.replaceChild (this.root, this.placeholder);
+	else
+	  this.placeholder.parentElement.removeChild (this.placeholder);
+      }
+    this.placeholder = undefined;
+    if (this.overlay.parentNode)
+      this.overlay.parentNode.removeChild (this.overlay);
+    while (this.overlay.children.length)
+      this.overlay.removeChild (this.overlay.children[0]);
+    this.overlay = undefined;
     array_remove (document._b_modal_shields, this);
     if (document._b_modal_shields.length == 0)
       {
@@ -845,19 +881,14 @@ class ModalShield {
 	document.removeEventListener ('keydown', ModalShield.modal_keyboard_guard);
 	document.removeEventListener ('mousedown', ModalShield.modal_mouse_guard);
       }
-    if (this.div && this.div.parentNode)
-      this.div.parentNode.removeChild (this.div);
-    this.div = undefined;
     if (this.remove_focus_root)
       this.remove_focus_root();
     this.remove_focus_root = undefined;
-    if (this.close_handler)
-      {
-	const close_handler_once = this.close_handler;
-	this.close_handler = undefined;		// guards against recursion
-	if (call_handler)
-	  close_handler_once();
-      }
+    const close_handler = this.close_handler;
+    this.close_handler = undefined;
+    if (call_handler && close_handler)
+      close_handler();
+    return true;
   }
   close() {
     if (this.close_handler)
@@ -880,8 +911,7 @@ class ModalShield {
     if (document._b_modal_shields.length > 0)
       {
 	const shield = document._b_modal_shields[0];
-	if (!event.cancelBubble &&
-	    event.target == shield.div)
+	if (!event.cancelBubble && !shield.modal.contains (event.target))
 	  {
 	    event.preventDefault();
 	    event.stopPropagation();
@@ -897,9 +927,12 @@ class ModalShield {
   }
 }
 
-/** Add a modal overlay to `body` to deflect DOM clicks and keyboard events */
-export function modal_shield (close_handler, preserve_element, opts = {}) {
-  return new ModalShield (close_handler, preserve_element, opts);
+/** Create a modal overlay under `body` and reparent `modal_element` to guard against outside DOM events */
+export function modal_shield (modal_element, opts = {}) {
+  console.assert (modal_element instanceof Element);
+  if (opts.root)
+    console.assert (opts.root.contains (modal_element));
+  return new ModalShield (modal_element, opts);
 }
 
 /** Use capturing to swallow any `type` events until `timeout` has passed */
@@ -907,9 +940,11 @@ export function swallow_event (type, timeout = 0) {
   const preventandstop = function (event) {
     event.preventDefault();
     event.stopPropagation();
+    event.stopImmediatePropagation();
+    return true;
   };
-  document.addEventListener ('contextmenu', preventandstop, true);
-  setTimeout (() => document.removeEventListener ('contextmenu', preventandstop, true), timeout);
+  document.addEventListener (type, preventandstop, true);
+  setTimeout (() => document.removeEventListener (type, preventandstop, true), timeout);
 }
 
 /** Determine position for a popup */
@@ -1317,7 +1352,7 @@ export function in_keyboard_click()
 /// Trigger element click via keyboard.
 export function keyboard_click (element)
 {
-  if (element)
+  if (element instanceof Element)
     {
       keyboard_click_state.inclick += 1;
       if (!element.classList.contains ('active'))
@@ -1405,68 +1440,29 @@ export function match_key_event (event, keyname)
   return true;
 }
 
-class UtilResizeObserver {
-  constructor (close_handler, preserve_element, opts) {
-    this.observers = new Map();	// { observer: { callback, elements:[] } }
-    this.have_ResizeObserver = window.ResizeObserver != undefined;
-    this.listening = false;
+class FallbackResizeObserver {
+  constructor (resize_handler) {
+    this.observables = new Set();
+    this.resizer = () => resize_handler.call (null, [], this);
   }
-  add_owner (owner, callback) {
-    const utilresizeobserver = this;
-    if (!this.have_ResizeObserver && !this.listening)
-      {
-	window.addEventListener ('resize', () => this.resized());
-	this.listening = true;
-      }
-    let rso = undefined;
-    if (this.have_ResizeObserver)
-      rso = new window.ResizeObserver (() => callback());
-    const new_observer = {
-      callback: callback.bind (owner),
-      elements: [],
-      rso: rso,
-      observe (ele) {
-	if (this.rso)
-	  this.rso.observe (ele);
-	else
-	  this.elements.push (ele);
-      },
-      unobserve (ele) {
-	if (this.rso)
-	  this.rso.unobserve (ele);
-	else
-	  {
-	    const i = this.elements.indexOf (ele);
-	    if (i >= 0)
-	      this.elements.splice (i, 1);
-	  }
-      },
-      disconnect() {
-	if (this.rso)
-	  this.rso.disconnect();
-	else
-	  this.elements = [];
-      },
-      destroy() {
-	this.disconnect();
-	utilresizeobserver.observers.delete (owner);
-      }
-    };
-    this.observers.set (owner, new_observer);
-    return new_observer;
+  disconnect() {
+    this.observables.clear();
+    window.removeEventListener ('resize', this.resizer);
   }
-  resized() {
-    for (let o of this.observers)
-      if (o[1].elements.length)
-	o[1].callback (o);
+  observe (ele) {
+    if (!this.observables.size)
+      window.addEventListener ('resize', this.resizer);
+    this.observables.add (ele);
+  }
+  unobserve (ele) {
+    this.observables.delete (ele);
+    if (!this.observables.size())
+      this.disconnect();
   }
 }
-const utilresizeobserver = new UtilResizeObserver();
 
-/// Create a ResizeObserver object
-export function resize_observer (owner, callback) {
-  return utilresizeobserver.add_owner (owner, callback);
-}
+/// Work around FireFox 68 having ResizeObserver disabled
+export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
 /** Create an observable binding for the fields in `tmpl`.
  * Once the expression `predicate` changes and becomes true-ish, the `getter` of each field in `tmpl` is
@@ -1493,7 +1489,8 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	    getter_cleanups[key] = undefined;
 	    cleaner();
 	  }
-	odata[key] = result;
+	if (!equals_recursively (odata[key], result))
+	  odata[key] = result;
 	if (newcleaner)
 	  getter_cleanups[key] = newcleaner;
       };

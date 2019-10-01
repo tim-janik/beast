@@ -7,7 +7,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   $b-positionview-fg: #71cff2; $b-positionview-b0: #011214; $b-positionview-b1: #00171a;
   $b-positionview-bg: mix($b-positionview-b0, $b-positionview-b1);
 
@@ -68,7 +68,6 @@ function observable_song_data () {
 
 module.exports = {
   name: 'b-positionview',
-  mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song, },
   },

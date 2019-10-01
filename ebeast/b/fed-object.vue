@@ -20,7 +20,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-fed-object		{
     .b-fed-object-clear	{
       font-size: 1.1em; font-weight: bolder;
@@ -64,11 +64,11 @@
 
 async function editable_object () {
   // provide an editable and reactive clone of this.value
-  let o = {}, td;
+  let o = { __typedata__: undefined, __fieldhooks__: undefined, }, td;
   for (const p in this.value)
     if (p[0] != '_' && typeof (this.value[p]) != "function")
       o[p] = this.value[p];
-  // determine typedata
+  // determine __typedata__
   if (Array.isArray (this.value.__typedata__))
     td = Util.map_from_kvpairs (this.value.__typedata__);
   else if (typeof (this.value.__typedata__) == "function")
@@ -86,6 +86,8 @@ async function editable_object () {
       td = { fields: fields.join (';'), };
     }
   o.__typedata__ = td;
+  // transport __fieldhooks__
+  o.__fieldhooks__ = Object.freeze (Object.assign ({}, this.value.__fieldhooks__ || {}));
   return o;
 }
 
@@ -98,7 +100,7 @@ function component_data () {
 
 module.exports = {
   name: 'b-fed-object',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   data() { return component_data.call (this); },
   props: {
     readonly:	{ default: false, },
@@ -110,35 +112,45 @@ module.exports = {
     list_fields() {
       if (!this.object)
 	return [];
-      const o = this.object, td = o.__typedata__;
+      const o = this.object, td = o.__typedata__, fieldhooks = o.__fieldhooks__ || {};
       const field_typedata = unfold_properties (td); // { foo: { label: 'Foo' }, bar: { step: '5' }, etc }
       const fields = td.fields ? td.fields.split (';') : [];
       const groupmap = {};
       const grouplist = [];
-      for (let f of fields)
+      for (let fieldname of fields)
 	{
-	  const field_data = field_typedata[f];
+	  const field_data = field_typedata[fieldname];
 	  const attrs = {};
 	  for (let p of ['min', 'max', 'step'])
 	    if (field_data[p] != undefined)
 	      attrs[p] = field_data[p];
 	  if (this.readonly || (':' + field_data.hints + ':').indexOf ('ro') >= 0)
 	    attrs.readonly = true;
-	  const handler = (v) => this.apply_field (f, v);
+	  const handler = (v) => this.apply_field (fieldname, v);
+	  let label = td[fieldname + '.label'] || fieldname;
 	  let ct = '';			// component type
-	  const ft = typeof (o[f]); // FIXME: use td
+	  const ft = typeof (o[fieldname]); // FIXME: use td
 	  if (ft == "number")
 	    {
 	      ct = 'b-fed-number';
-	      if (o[f] != 0|o[f]) // not int // FIXME: use td
+	      if (o[fieldname] != 0 | o[fieldname]) // not int // FIXME: use td
 		attrs.allowfloat = true;
 	      // min max
 	    }
 	  else if (ft == "boolean")
 	    ct = 'b-fed-switch';
 	  else if (ft == "string")
-	    ct = 'b-fed-text';
-	  let label = td[f + '.label'] || f;
+	    {
+	      const picklistitems = fieldhooks[fieldname + '.picklistitems'];
+	      if (picklistitems)
+		{
+		  attrs.picklistitems = picklistitems;
+		  attrs.title = label + " " + _("Selection");
+		  ct = 'b-fed-picklist';
+		}
+	      else
+		ct = 'b-fed-text';
+	    }
 	  if (ct)
 	    {
 	      const group = field_data.group || "Settings";
@@ -152,7 +164,7 @@ module.exports = {
 		}
 	      else
 		groupfields = groupmap[group][1];
-	      groupfields.push ([ f, ct, label, attrs, o, handler ]);
+	      groupfields.push ([ fieldname, ct, label, attrs, o, handler ]);
 	    }
 	}
       return grouplist; // [ [ 'Group', [ field1, field2 ], [ 'Other', [ field3, field4 ] ] ]

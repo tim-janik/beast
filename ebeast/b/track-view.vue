@@ -11,7 +11,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   $b-track-view-level-height: 3px;
   $b-track-view-level-space: 1px;
   .b-track-view-lbg {
@@ -179,7 +179,7 @@ function track_data () {
 
 module.exports = {
   name: 'b-track-view',
-  mixins: [ Util.vue_mixins.dom_updates, Util.vue_mixins.hyphen_props ],
+  mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
     'track': { type: Bse.Track, },
     'trackindex': { type: Number, },
@@ -231,7 +231,7 @@ module.exports = {
       console.log ("menuedit", role, "(preventDefault)");
     },
     menuopen (event) {
-      this.$refs.cmenu.open (event, this.menucheck.bind (this));
+      this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this) });
     },
     menucheck (role, component) {
       switch (role)

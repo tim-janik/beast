@@ -6,7 +6,6 @@ console.assert (Vue !== undefined);
 
 // load utilities
 require ('./hotkeys.js'); // adds $.click_hotkey()
-Vue.mixin (Util.vue_mixins.data_tmpl); // Allow automatic `data` construction (cloning) from `data_tmpl`
 
 // load Vue components
 const vue_components = [
@@ -23,11 +22,10 @@ const vue_components = [
   require ('./menutitle.vue'),
   require ('./fed-number.vue'),
   require ('./fed-object.vue'),
+  require ('./fed-picklist.vue'),
   require ('./fed-switch.vue'),
   require ('./fed-text.vue'),
   require ('./flex.vue'),
-  require ('./hflex.vue'),
-  require ('./vflex.vue'),
   require ('./hscrollbar.vue'),
   require ('./modaldialog.vue'),
   require ('./part-list.vue'),
@@ -45,5 +43,6 @@ const vue_components = [
 
 // register components
 vue_components.forEach (c => {
-  Vue.component (c.name, c);
+  if (c.name)
+    Vue.component (c.name, c);
 });

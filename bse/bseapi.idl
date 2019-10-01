@@ -1235,6 +1235,7 @@ interface PcmWriter : Item {
 // == Bse Configuration ==
 record Configuration {
   group _("Synthesis Settings") {
+    String pcm_driver        = String (_("PCM Driver"), _("Driver and device to be used for PCM input and output"), STANDARD);
     int32 synth_latency      = Range (_("Latency [ms]"),
                                       _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
                                       STANDARD, 1, 2000, 5);
@@ -1247,7 +1248,8 @@ record Configuration {
                                       STANDARD, 1, 192000, 0);
   };
   group _("MIDI") {
-    bool invert_sustain = Bool (_("Invert Sustain Pedal"), _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"), STANDARD);
+    String midi_driver     = String (_("MIDI Driver"), _("Driver and device to be used for MIDI input and output"), STANDARD);
+    bool   invert_sustain  = Bool (_("Invert Sustain Pedal"), _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"), STANDARD);
   };
   group _("Default Values") {
     String author_default  = String (_("Default Author"), _("Default value for 'Author' fields"), STANDARD);

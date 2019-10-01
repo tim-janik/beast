@@ -34,13 +34,13 @@
       </b-hflex>
     </b-hflex>
 
-    <b-aboutdialog v-if="show_about_dialog" @close="show_about_dialog = false"></b-aboutdialog>
-    <b-preferencesdialog v-if="show_preferences_dialog" @close="show_preferences_dialog = false"></b-preferencesdialog>
+    <b-aboutdialog v-model="show_about_dialog" />
+    <b-preferencesdialog v-model="show_preferences_dialog" />
   </b-vflex>
 </template>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-projectshell {
     border: 5px solid #322;
     --b-resize-handle-thickness: #{$b-resize-handle-thickness};
@@ -102,7 +102,7 @@ module.exports = {
   provide () { return { 'b-projectshell': this }; },
   methods: {
     sidebar_mouse (e) {
-      const sidebar = this.$refs.sidebarcontainer.$el;
+      const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);
       const html_classes = document.documentElement.classList;
       if (e.type == 'mousedown' && !this.listening)

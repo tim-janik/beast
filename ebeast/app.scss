@@ -1,5 +1,10 @@
-// app.scss -> b/styles.scss -> b/cssaux.scss -> variables.scss ; app.scss -> scrollbar.scss
-@import 'b/styles.scss';
+// This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+/* Imports:
+ * - app.scss -> b/mixins.scss -> variables.scss -> cssaux.scss
+ * - app.scss -> scrollbar.scss
+ */
+@import 'b/mixins.scss';
 
 // == Settings ==
 $b-main-background-lg0:		lighten($b-main-background, 1%);

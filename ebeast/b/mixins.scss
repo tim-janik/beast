@@ -1,7 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-// == Scss Helper Functions ==
-@import 'cssaux.scss';
+// == Scss Theme Basics ==
+@import '../variables.scss';
 
 // == Variables ==
 // Only put *!default* definitions here, so `variables.scss` takes precedence.
@@ -10,7 +10,7 @@
 $b-theme-font-family:		$b-main-font-family;
 $b-theme-foreground: 		$b-main-foreground;
 $b-theme-background: 		$b-main-background;
-$b-theme-border-radius:		3px !default;
+$b-theme-border-radius:		$b-style-border-radius !default;
 $b-main-border-light:		lighten($b-base-background, 9%) !default;	// used for modal border
 $b-main-border-dark:		darken($b-base-background, 9%) !default;
 $b-toolbar-background:		#606060 !default;
@@ -26,7 +26,7 @@ $b-button-active:		fade(#000000, 20%) !default;
 $b-button-active-fg:		#bbbbbb !default;
 $b-button-active-lg:     	linear-gradient(to bottom, #606060 0%, #707070 50%, #606060 100%) !default;
 $b-button-active-border:	#555555 !default;
-$b-glow-control:		#0080ff !default;
+$b-glow-control:		$b-style-focus-color;
 $b-switch-inactive:		#999999 !default;
 $b-switch-active:		#2080f0 !default;
 $b-switch-knob:		$b-button-foreground !default;

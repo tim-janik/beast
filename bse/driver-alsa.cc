@@ -86,7 +86,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
               entry.devid = name;
               entry.device_name = desc;
               entry.device_info = "Routing via the PulseAudio sound system";
-              entry.notice = "Warning: PulseAudio routing is not realtime capable";
+              entry.notice = "Note: PulseAudio routing is not realtime capable";
               entry.readonly = "Input" == ioid;
               entry.writeonly = "Output" == ioid;
               entry.priority = Driver::PULSE;
@@ -158,7 +158,8 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           else // pcmclass == SND_PCM_CLASS_MODEM // other SND_PCM_CLASS_ types are unused
             entry.capabilities = readable && writable ? "Full-Duplex Modem" : readable ? "Modem Input" : "Modem Output";
           entry.capabilities += ", streams: " + wdevs + joiner + rdevs;
-          entry.device_info = card_longname;
+          if (!string_startswith (card_longname, card_name + " at "))
+            entry.device_info = card_longname;
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.modem = pcmclass == SND_PCM_CLASS_MODEM;
@@ -416,12 +417,15 @@ public:
     // fill playback buffer with silence
     if (write_handle_)
       {
-        int n;
-        const float *zeros = bse_engine_const_zeros (n_channels_ * period_size_ / 2); // sizeof (int16) / sizeof (float)
+        const float *zeros = bse_engine_const_zeros (period_size_ / 2); // sizeof (int16) / sizeof (float)
         for (size_t i = 0; i < n_periods_; i++)
-          do
-            n = snd_pcm_writei (write_handle_, zeros, n_channels_ * period_size_);
-          while (n == -EAGAIN); // retry on signals
+          {
+            int n;
+            do
+              n = snd_pcm_writei (write_handle_, zeros, period_size_);
+            while (n == -EAGAIN); // retry on signals
+            // printerr ("%s: written=%d, left: %d / %d\n", __func__, n, snd_pcm_avail (write_handle_), n_periods_ * period_size_);
+          }
       }
     snd_lib_error_set_handler (NULL);
   }

@@ -6,7 +6,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   body hr.b-menuseparator {	//* since menus are often embedded, this needs high specificity */
     border-color: $b-menu-separator;
   }

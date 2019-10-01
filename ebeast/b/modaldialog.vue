@@ -7,9 +7,12 @@
   elements while it is visible and constrains the focus chain. A *close* event is
   emitted on clicks outside of the dialog area, if *Escape* is pressed or the default
   *Close* button is actiavted.
+  ## Props:
+  *value*
+  : A boolean value to control the visibility of the dialog, suitable for `v-model` bindings.
   ## Events:
-  *close*
-  : A *close* event is emitted once the "Close" button activated.
+  *input*
+  : An *input* event with value `false` is emitted when the "Close" button activated.
   ## Slots:
   *header*
   : The *header* slot can be used to hold the modal dialog title.
@@ -18,14 +21,12 @@
   *footer*
   : By default, the *footer* slot holds a *Close* button which emits the *close* event.
   ## CSS Classes:
-  *b-modaldialog-mask*
-  : The *b-modaldialog-mask* CSS class is used as backdrop beneath the dialog contents to mask non-modal contents.
   *b-modaldialog*
   : The *b-modaldialog* CSS class contains styling for the actual dialog contents.
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   @mixin b-flex-vbox() {
     display: flex; flex-basis: auto; align-items: center; justify-content: center;
     flex-shrink: 0; flex-flow: column; height: auto;
@@ -34,15 +35,8 @@
     display: flex; flex-basis: auto; align-items: center; justify-content: center;
     flex-shrink: 0; flex-flow: row; width: auto;
   }
-  .b-modaldialog-mask {
-    @include b-flex-vbox;
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 99998;
-    background-color: fadeout(darken($b-theme-background, 15%), 15%); /* backdrop */
-  }
   .b-modaldialog {
-    $dist: 1em; z-index: 99999;
-    position: fixed; top: $dist; left: $dist; right: $dist; bottom: $dist;
+    position: fixed; top: auto; left: auto; right: auto; bottom: auto;
     max-height: 100%; max-width: 100%;
     * { flex-shrink: 0; }
     @include b-flex-vbox; flex-shrink: 1;
@@ -56,8 +50,12 @@
     justify-content: space-between;
     margin: auto;
     overflow: auto;
-    transition: all .4s ease-out;
+    &.v-enter-active 		{ transition: opacity 0.15s ease-out, transform 0.15s linear; }
+    &.v-leave-active		{ transition: opacity 0.15s ease-in,  transform 0.15s linear; }
+    &.v-enter, &.v-leave-to 	{ opacity: 0.5; transform: translateY(-100%) scale(1); }
   }
+  .b-modaldialog-shield		{ transition: background 0.15s ease-in; background: $b-style-modal-overlay; }
+  .b-modaldialog-shield-leave	{ background: #0000; }
   .b-modaldialog-header {
     font-size: 1.5em; font-weight: bold;
     padding: 1rem 0 1.1rem;
@@ -72,9 +70,6 @@
   .b-modaldialog-body {
     padding: 1.5em 2em;
   }
-  .b-modaldialog-mask {
-    transition: all .4s ease;
-  }
   .b-modaldialog-transition-enter {
     opacity: 0;
   }
@@ -88,8 +83,9 @@
 </style>
 
 <template>
-  <transition name="b-modaldialog-transition">
-    <div class="b-modaldialog" @click.stop ref="container">
+  <transition @after-leave="end_transitions"
+	      @before-leave="intransition = shield && shield.toggle ('b-modaldialog-shield-leave')" >
+    <div class="b-modaldialog" @click.stop ref='b-modaldialog' v-if='value' >
 
       <div class="b-modaldialog-header">
 	<slot name="header">
@@ -114,23 +110,48 @@
 <script>
 module.exports = {
   name: 'b-modaldialog',
+  props:     { value: false, },
+  data_tmpl: { focus_close: true, intransition: 0, },
   mounted () {
-    this.shield = Util.modal_shield (this.close, this.$refs['container'], { focuscycle: true });
-    const focus_close = true;
-    if (focus_close)
-      this.$refs.bclose.$el.focus();
+    this.update_shield();
+    if (this.focus_close && this.$refs.bclose)
+      {
+	this.$refs.bclose.$el.focus();
+	this.focus_close = false;
+      }
+  },
+  updated () {
+    this.update_shield();
+    if (this.focus_close && this.$refs.bclose)
+      {
+	this.$refs.bclose.$el.focus();
+	this.focus_close = false;
+      }
+    if (!this.value)
+      this.focus_close = true; // re-focus next time
   },
   beforeDestroy () {
     if (this.shield)
       this.shield.destroy (false);
   },
   methods: {
+    update_shield() {
+      const modaldialog = this.$refs['b-modaldialog'];
+      if (!modaldialog && this.shield && !this.intransition)
+	{
+	  this.shield.destroy (false);
+	  this.shield = undefined;
+	}
+      if (modaldialog && !this.shield)
+	this.shield = Util.modal_shield (this.$refs['b-modaldialog'], { class: 'b-modaldialog-shield',
+									close: this.close });
+    },
+    end_transitions() {
+      this.intransition = 0;
+      this.update_shield();
+    },
     close (event) {
-      if (this.shield)
-	this.shield.destroy (false);
-      if (event instanceof Event)
-	event.preventDefault();
-      this.$emit ('close');
+      this.$emit ('input', false); // value = false
     },
   },
 };

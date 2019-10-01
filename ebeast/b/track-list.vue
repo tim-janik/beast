@@ -28,7 +28,7 @@
 </template>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   $b-track-list-arranger-lpad: 3px;
   .b-track-list {
     background-color: $b-button-border;
@@ -96,7 +96,6 @@ function song_data () {
 
 module.exports = {
   name: 'b-track-list',
-  mixins: [ Util.vue_mixins.dom_updates ],
   props: {
     song: { type: Bse.Song }
   },

@@ -24,7 +24,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   body button.b-menuitem { //* since menus are often embedded, this needs high specificity */
     display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap;
     margin: 0; padding: 5px 1em; text-align: left;
@@ -67,15 +67,16 @@
 	  :disabled="isdisabled()"
 	  @mouseenter="focus"
 	  @click="clicked" >
-    <b-icon class="menuicon" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
+    <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
   </button>
 </template>
 
 <script>
+const STR = { type: String, default: '' }; // empty string default
 module.exports = {
   name: 'b-menuitem',
-  props: [ 'role', 'disabled', 'fa', 'mi', 'uc' ],
+  props: { 'role': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
 			default: { 'showicons': true, 'showaccels': true, checkedroles: {} }, },
   },
@@ -93,7 +94,7 @@ module.exports = {
       event.preventDefault(); // avoid submit, etc
     },
     isdisabled() {
-      if (this.role && 'boolean' == typeof this.menudata.checkedroles[this.role])
+      if (this.role && undefined !== this.menudata.checkedroles[this.role])
 	return !this.menudata.checkedroles[this.role];
       if (this.disabled == "" || !!this.disabled ||
 	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])

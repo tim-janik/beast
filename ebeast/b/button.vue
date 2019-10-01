@@ -15,7 +15,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'styles.scss';
+  @import 'mixins.scss';
   .b-button                  	{ @include b-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
   .b-button:focus            	{ outline: $b-focus-outline; }
   .b-button:hover            	{ @include b-buttonhover; }
