@@ -78,7 +78,7 @@ module.exports = {
     dom_update () {
       if (!this.resize_observer)
 	{
-	  this.resize_observer = new ResizeObserver ((e, ro) => {
+	  this.resize_observer = new Util.ResizeObserver ((e, ro) => {
 	    if (this.resize_timer)
 	      return;
 	    this.resize_timer = setTimeout (() => {

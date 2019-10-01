@@ -121,10 +121,10 @@ module.exports = {
     // keep vertical scroll position for each part, non-reactive
     this.auto_scrolls = {};
     // observer to watch for canvas size changes
-    this.resize_observer = Util.resize_observer (this, () => this.$forceUpdate());
+    this.resize_observer = new Util.ResizeObserver (() => this.$forceUpdate());
   },
   destroyed() {
-    this.resize_observer.destroy();
+    this.resize_observer.disconnect();
   },
   methods: {
     sync_scrollpos (newpart, oldpart) {
