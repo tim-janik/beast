@@ -94,7 +94,7 @@ module.exports = {
       event.preventDefault(); // avoid submit, etc
     },
     isdisabled() {
-      if (this.role && 'boolean' == typeof this.menudata.checkedroles[this.role])
+      if (this.role && undefined !== this.menudata.checkedroles[this.role])
 	return !this.menudata.checkedroles[this.role];
       if (this.disabled == "" || !!this.disabled ||
 	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])

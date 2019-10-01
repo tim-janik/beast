@@ -134,19 +134,26 @@ module.exports = {
       if (!this.checker)
 	return;
       const checkrecursive = component => {
-	if (component.$options.propsData && component.$options.propsData.role)
+	if (component instanceof Element &&
+	    component.__vue__)
+	  component = component.__vue__;
+	if (component.$options && component.$options.propsData && component.$options.propsData.role)
 	  {
-	    let result = this.checker (component.$options.propsData.role, component);
+	    let result = this.checker.call (null, component.$options.propsData.role, component);
 	    if ('boolean' !== typeof result)
 	      result = undefined;
 	    if (result != this.checkedroles[component.$options.propsData.role])
 	      {
-		this.checkedroles[component.$options.propsData.role] = result;
+		this.$set (this.checkedroles, component.$options.propsData.role, result); // Vue reactivity
 		component.$forceUpdate();
 	      }
 	  }
-	for (let child of component.$children)
-	  checkrecursive (child);
+	if (component.$children)
+	  for (let child of component.$children)
+	    checkrecursive (child);
+	else if (component.children) // DOM element, possibly a function component
+	  for (let child of component.children)
+	    checkrecursive (child);
       };
       if (this.$refs.cmenu)
 	checkrecursive (this.$refs.cmenu);
@@ -165,9 +172,10 @@ module.exports = {
     },
     popup (event, options) {
       const { origin, check } = options || {};
+      this.visible = false;
       this.origin = origin;
-      if (this.visible)
-	return;
+      this.checker = check;
+      this.clear_dragging();
       if (event && event.pageX && event.pageY)
 	{
 	  this.doc_x = event.pageX;
@@ -175,8 +183,6 @@ module.exports = {
 	}
       else
 	this.doc_x = this.doc_y = undefined;
-      // FIXME: this.checker = check;
-      this.visible = true;
       if (event.type == "mousedown")
 	{
 	  console.assert (!this.dragging);
@@ -192,6 +198,7 @@ module.exports = {
 	  window.addEventListener ('mousedown', this.dragging.handler, this.dragging.evpassive);
 	  window.addEventListener ('keydown',   this.dragging.handler, this.dragging.evpassive);
 	}
+      this.visible = true;
     },
     clear_dragging() {
       if (!this.dragging)
