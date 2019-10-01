@@ -769,6 +769,7 @@ class FocusGuard {
 	if (idx >= 0)
 	  {
 	    focuslist[idx].focus();
+	    event.preventDefault();
 	    return true;
 	  }
       }
@@ -791,6 +792,7 @@ class FocusGuard {
     if (next >= 0 && next < focuslist.length)
       {
 	focuslist[next].focus();
+	event.preventDefault();
 	return true;
       }
     return false;
