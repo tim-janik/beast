@@ -10,14 +10,20 @@
 
 <style lang="scss">
   @import 'mixins.scss';
-  .b-aboutdialog .b-modaldialog-container	{ max-width: 70em; }
-  .b-aboutdialog table	{ table-layout: fixed; max-width: 100%; }
-  .b-aboutdialog th	{
-    text-align: right; vertical-align: top;
+  .b-aboutdialog .b-grid {
+    max-width: 100%;
+    & > * { //* avoid visible overflow for worst-case resizing */
+      overflow-wrap: break-word;
+      min-width: 0; }
+  }
+  .b-aboutdialog .b-aboutdialog-header {
+    grid-column: 1;
+    text-align: right; vertical-align: top; font-weight: bold;
     padding-right: .5em; min-width: 15em; }
-  .b-aboutdialog td	{
-    max-width: 50%; overflow-wrap: break-word;
-    display: inline-block; white-space: pre; }
+  .b-aboutdialog .b-aboutdialog-field {
+    grid-column: 2;
+    overflow-wrap: break-word;
+    display: inline-block; white-space: pre-wrap; }
 </style>
 
 <template>
@@ -25,12 +31,12 @@
 		 :value="value" @input="$emit ('input', $event)" >
     <div slot="header">About BEAST</div>
     <slot></slot>
-    <table>
-      <tr v-for="p in info_pairs" :key="p[0]" >
-	<th>{{ p[0] }}</th>
-	<td>{{ p[1] }}</td>
-      </tr>
-    </table>
+    <b-grid>
+      <template v-for="p in info_pairs">
+	<span class="b-aboutdialog-header" :key="'h' + p[0]" >{{ p[0] }}</span>
+	<span class="b-aboutdialog-field"  :key="'f' + p[0]" >{{ p[1] }}</span>
+      </template>
+    </b-grid>
   </b-modaldialog>
 </template>
 

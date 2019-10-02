@@ -30,34 +30,34 @@
       &:active			{ color: #3bf; }
 
     } }
-  table.b-fed-object		{ table-layout: fixed; max-width: 100%;
-    & > tr			{
-      & > td			{ overflow-wrap: break-word; }
-      & > td:first-child	{ max-width: 40%; }
-    }
+  .b-fed-object > * { //* avoid visible overflow for worst-case resizing */
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 </style>
 
 <!-- field = [ ident, iscomponent, label, attrs, o, handler ] -->
 <template>
-  <table class="b-fed-object">
+  <b-grid class="b-fed-object" style="grid-gap: 0.6em 0.5em;">
     <template v-for="group in list_fields()">
-      <tr :key="'group:' + group[0]">
-	<td colspan="3">
-	  <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1em">
-	    <span style="flex-grow: 0; font-weight: bold">{{ group[0] }}</span>
-	    <hr style="flex-grow: 1; margin-left: 0.5em; min-width: 5em" />
-	  </div> </td> </tr>
-      <tr v-for="field in group[1]" :key="'field:' + field[0]">
-	<td style="padding: 0 1em 0; text-align: left" :title="field[3].blurb"
-	>{{ field[2] }}</td>
-	<td style="text-align: right" :title="field[3].blurb">
+
+      <b-hflex style="grid-column: 1 / span 3; align-items: center; margin-top: 1em" :key="'group:' + group[0]">
+	<span style="flex-grow: 0; font-weight: bold">{{ group[0] }}</span>
+	<hr style="flex-grow: 1; margin-left: 0.5em; min-width: 5em" />
+      </b-hflex>
+
+      <template v-for="field in group[1]" >
+	<span style="grid-column: 1; padding: 0 1em 0; text-align: left" :title="field[3].blurb" :key="'f1:' + field[0]"
+	>{{ field[2] }}</span>
+	<span style="text-align: right" :title="field[3].blurb" :key="'f2:' + field[0]">
 	  <component :is="field[1]" v-bind="field[3]"
-		     :value="field[4][field[0]]" @input="field[5]"></component></td>
-	<td><button class="b-fed-object-clear" tabindex="-1" @click="clear_field (field[0])"> ⊗  </button></td>
-      </tr>
+		     :value="field[4][field[0]]" @input="field[5]"></component></span>
+	<span :key="'f3:' + field[0]">
+	  <button class="b-fed-object-clear" tabindex="-1" @click="clear_field (field[0])" > ⊗  </button></span>
+      </template>
+
     </template>
-  </table>
+  </b-grid>
 </template>
 
 <script>

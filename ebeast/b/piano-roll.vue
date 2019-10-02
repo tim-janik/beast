@@ -53,7 +53,7 @@
 <template>
 
   <b-vflex class="b-piano-roll" style="width: 100%; border-top: 3px solid blue"
-	   tabindex="0" @keydown.native="keydown">
+	   tabindex="0" @keydown="keydown">
     <b-hflex class="shrink0" style="width: 100%">
       <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
 	<button >I</button>
