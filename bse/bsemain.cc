@@ -514,11 +514,11 @@ GlobalConfig::defaults ()
 {
   Configuration config;
   // static defaults
-  config.pcm_driver = "auto";
+  config.pcm_driver = bse_main_args->pcm_driver;
   config.synth_latency = 50;
   config.synth_mixing_freq = 48000;
   config.synth_control_freq = 1000;
-  config.midi_driver = "auto";
+  config.midi_driver = bse_main_args->midi_driver;
   config.invert_sustain = false;
   config.license_default = "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
   // dynamic defaults
