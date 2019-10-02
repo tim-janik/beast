@@ -14,9 +14,6 @@
     .b-modaldialog-container	{ max-width: 70em; height: 90vh; align-items: stretch; }
     .b-modaldialog-body	{ flex-grow: 1; }
   }
-  .b-treeselector table	{ table-layout: fixed; max-width: 100%; }
-  .b-treeselector th	{ text-align: right; padding-right: .5em; min-width: 15em; }
-  .b-treeselector td	{ max-width: 50%; overflow-wrap: break-word; }
 </style>
 
 <template>
