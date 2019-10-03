@@ -116,7 +116,7 @@ module.exports = {
     this.update_shield();
     if (this.focus_close && this.$refs.bclose)
       {
-	this.$refs.bclose.$el.focus();
+	this.$refs.bclose.focus();
 	this.focus_close = false;
       }
   },
@@ -124,7 +124,7 @@ module.exports = {
     this.update_shield();
     if (this.focus_close && this.$refs.bclose)
       {
-	this.$refs.bclose.$el.focus();
+	this.$refs.bclose.focus();
 	this.focus_close = false;
       }
     if (!this.value)

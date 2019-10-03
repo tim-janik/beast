@@ -16,7 +16,12 @@
 
 <style lang="scss">
   @import 'mixins.scss';
-  .b-button                  	{ @include b-buttonshade; display: inline-flex; text-align: center; margin: 0; padding: 3px 1em; }
+  .b-button {
+    @include b-buttonshade;
+    text-align: center; margin: 0; padding: 3px 1em;
+    display: flex;
+    align-items: center;
+  }
   .b-button:focus            	{ outline: $b-focus-outline; }
   .b-button:hover            	{ @include b-buttonhover; }
   .b-button.active,
@@ -26,25 +31,24 @@
   .b-button:active *         	{ color: $b-button-active-fg;  fill: $b-button-active-fg !important; }
 </style>
 
-<template>
-  <button ref="btn"
-	  class="b-button"
-	  @click="emit ('click', $event)"
-  ><slot class="b-slot"></slot></button>
-</template>
-
 <script>
-module.exports = {
+module.exports = {};
+
+const b_button = {
   name: 'b-button',
   props: [ 'hotkey' ],
-  methods: {
-    emit (what, ev) {
-      this.$emit (what, ev);
-    },
-  },
-  mounted: function () { // `this` points to the Vue instance
-    if (this.hotkey)
-      $(this.$refs.btn).click_hotkey (this.hotkey);
-  },
+  functional: true,
+  render: function (h, context) {
+    const attrs = {
+    };
+    const localdata = {
+      staticClass: Util.join_classes ('b-button', context.data.staticClass),
+      attrs: Object.assign ({}, context.data.attrs, attrs),
+    };
+    const data = Object.assign ({}, context.data, localdata);
+    return h ('span', data, context.children);
+  }
 };
+Vue.component (b_button.name, b_button);
+
 </script>
