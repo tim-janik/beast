@@ -39,12 +39,6 @@ Once the audio engine is started, the JACK client should remain registered
 with JACK, even if no song is playing. This should fix the problems this
 driver has due to JACK disconnect on device close.
 
-Option to disable auto connect
-------------------------------
-Currently we auto connect to hardware devices in audio/midi driver init. While
-this is the common case, we should (as an option) starting unconnected, so that
-users can connect our ports manually using patchbays/qjackctl/... .
-
 Less buffering, better latency
 ------------------------------
 Currently, the JACK driver has a ring buffer that holds some audio data.  This
@@ -459,6 +453,9 @@ query_jack_devices (jack_client_t *jack_client)
   return devices;
 }
 
+// special audio / midi driver devid which doesn't auto connect to a physical device
+static const String no_auto_connect_devid = "no-auto-connect";
+
 static void
 list_jack_drivers (Driver::EntryVec &entries)
 {
@@ -490,8 +487,15 @@ list_jack_drivers (Driver::EntryVec &entries)
           entry.capabilities += string_format (", channels: %d*playback + %d*capture", details.input_ports, details.output_ports);
           entry.device_info = "Routing via the JACK Audio Connection Kit";
           if (details.physical_ports == details.ports)
-            entry.notice = "Note: JACK adds latency compared to direct hardware access";
+            entry.notice = "Note: JACK driver adds latency compared to direct hardware access";
           entry.priority = Driver::JACK;
+          entries.push_back (entry);
+
+          // add device entry which doesn't auto connect to hardware device
+          entry.devid = no_auto_connect_devid;
+          entry.device_name = string_format ("JACK \"%s\" Audio Device", entry.devid);
+          entry.capabilities = "Full-Duplex Audio";
+          entry.priority = Driver::JACK + 1;
           entries.push_back (entry);
         }
     }
@@ -775,7 +779,8 @@ public:
       }
 
     /* connect ports */
-    if (error == 0) // we may want to make auto connect configurable (so it can be turned off)
+    const bool auto_connect = devid_ != no_auto_connect_devid;
+    if (error == 0 && auto_connect)
       {
         std::map<std::string, DeviceDetails> devices = query_jack_devices (jack_client_);
         std::map<std::string, DeviceDetails>::const_iterator di;
@@ -986,7 +991,7 @@ public:
     midi_driver_callback_ = callback;
     midi_input_port_ = jack_port_register (jack_client_, "midi_in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
-    const bool auto_connect = from_port != "no-auto-connect";
+    const bool auto_connect = from_port != no_auto_connect_devid;
     if (auto_connect && jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_input_port_)) != 0)
       {
         jack_port_unregister (jack_client_, midi_input_port_);
@@ -1089,6 +1094,8 @@ public:
     if (!jack_client)
       return;
 
+    // ports which are automatically connected to hardware device
+    uint priority = Driver::JACK;
     const char **ports = jack_get_ports (jack_client, NULL, JACK_DEFAULT_MIDI_TYPE, JackPortIsPhysical | JackPortIsOutput);
     if (ports)
       {
@@ -1111,14 +1118,23 @@ public:
 
             entry.capabilities = "Hardware Midi Input";
             entry.device_info = "Routing via the JACK Audio Connection Kit";
-            entry.notice = "Note: JACK adds latency compared to direct hardware access";
-            entry.priority = Driver::JACK + i;
+            entry.priority = priority++;
             entry.readonly = true;
             entries.push_back (entry);
           }
 
         free (ports);
       }
+
+    // port which isn't connected (let the user connect it to other apps)
+    Driver::Entry entry;
+    entry.devid = no_auto_connect_devid;
+    entry.device_name = string_format ("JACK Midi \"%s\"", entry.devid);
+    entry.capabilities = "Virtual Midi Input";
+    entry.device_info = "Routing via the JACK Audio Connection Kit";
+    entry.priority = priority++;
+    entry.readonly = true;
+    entries.push_back (entry);
 
     disconnect_jack (jack_client);
   }
