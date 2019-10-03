@@ -50,9 +50,10 @@
       .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8, .b-fed-picklist-line9";
     .b-fed-picklist-label    { display: block; }
     #{$b-fed-picklist-lines} { display: block; font-size: 90%; color: $b-style-fg-secondary; }
-    & :focus, & .active, & :active {
-      #{$b-fed-picklist-lines} { filter: $b-style-fg-filter; } //* adjust to inverted menuitem */
-    }
+    .b-menuitem {
+      &:focus, &.active, &:active {
+	#{$b-fed-picklist-lines} { filter: $b-style-fg-filter; } //* adjust to inverted menuitem */
+      } }
   }
 </style>
 
