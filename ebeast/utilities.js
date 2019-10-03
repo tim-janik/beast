@@ -435,6 +435,26 @@ vue_mixins.dom_updates = {
   },
 };
 
+/// Join strings and arrays of class lists from `args`.
+export function join_classes (...args) {
+  const cs = new Set();
+  for (const arg of args)
+    {
+      if (Array.isArray (arg))
+	{
+	  for (const a of arg)
+	    if (a !== undefined)
+	      cs.add ('' + a);
+	}
+      else if (arg !== undefined)
+	{
+	  for (const a of arg.split (/ +/))
+	    cs.add (a);
+	}
+    }
+  return cs.size ? Array.from (cs).join (' ') : undefined;
+}
+
 /// Extract the promise `p` state as one of: 'pending', 'fulfilled', 'rejected'
 export function promise_state (p) {
   const t = {}; // dummy, acting as fulfilled
