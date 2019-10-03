@@ -61,7 +61,7 @@
     padding: 1rem 0 1.1rem;
   }
   .b-modaldialog-header, .b-modaldialog-footer {
-    display: block; width: 100%; align-items: center; text-align: center;
+    width: 100%; align-items: center; text-align: center;
     background-color: darken($b-theme-background, 8%);
   }
   .b-modaldialog-footer {
@@ -87,21 +87,21 @@
 	      @before-leave="intransition = shield && shield.toggle ('b-modaldialog-shield-leave')" >
     <div class="b-modaldialog" @click.stop ref='b-modaldialog' v-if='value' >
 
-      <div class="b-modaldialog-header">
+      <b-hflex class="b-modaldialog-header">
 	<slot name="header">
 	  Modal Dialog
 	</slot>
-      </div>
+      </b-hflex>
       <div class="b-modaldialog-body">
 	<slot name="default"></slot>
       </div>
-      <div class="b-modaldialog-footer">
+      <b-hflex class="b-modaldialog-footer">
 	<slot name="footer">
 	  <b-button class="b-modaldialog-button" ref="bclose" @click="close">
 	    Close
 	  </b-button>
 	</slot>
-      </div>
+      </b-hflex>
 
     </div>
   </transition>
