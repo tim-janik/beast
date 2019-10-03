@@ -72,7 +72,7 @@
 </style>
 
 <script>
-function classlist (classlist, attrs) {
+function classlist (attrs) {
   const classnames = [
     'flex-column', 'flex-row',
     'start',
@@ -89,7 +89,7 @@ function classlist (classlist, attrs) {
     'shrink5', 'shrink6', 'shrink7', 'shrink8', 'shrink9',
     'wrap', 'wrap-reverse',
   ];
-  const classes = (classlist || '').split (/ +/);
+  const classes = [];
   for (let cssclass of classnames)
     if (attrs[cssclass] === "" || attrs[cssclass])
       classes.push ('b-flex-' + cssclass);
@@ -100,8 +100,8 @@ const hflex = {
   name: 'b-hflex',
   functional: true,
   render: function (h, context) {
-    const classes = classlist ('b-hflex ' + (context.data.class || ''), context.data.attrs || {});
-    const data = Object.assign ({}, context.data, { class: classes.join (' ') });
+    const classes = Util.join_classes ('b-hflex', context.data.class, classlist (context.data.attrs || {}));
+    const data = Object.assign ({}, context.data, { class: classes });
     return h ('div', data, context.children);
   }
 };
@@ -111,8 +111,8 @@ const vflex = {
   name: 'b-vflex',
   functional: true,
   render: function (h, context) {
-    const classes = classlist ('b-vflex ' + (context.data.class || ''), context.data.attrs || {});
-    const data = Object.assign ({}, context.data, { class: classes.join (' ') });
+    const classes = Util.join_classes ('b-vflex', context.data.class, classlist (context.data.attrs || {}));
+    const data = Object.assign ({}, context.data, { class: classes });
     return h ('div', data, context.children);
   }
 };
