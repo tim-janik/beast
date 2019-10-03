@@ -1403,13 +1403,27 @@ export function keyboard_click (element)
 	{
 	  const e = element;
 	  e.classList.toggle ('active', true);
-	  setTimeout (() => e.classList.toggle ('active', false), 170); // match focus-activation delay
+	  if (!e.keyboard_click_reset_id)
+	    e.keyboard_click_reset_id = setTimeout (() => {
+	      e.keyboard_click_reset_id = undefined;
+	      e.classList.toggle ('active', false);
+	    }, 170); // match focus-activation delay
 	}
       element.click();
       keyboard_click_state.inclick -= 1;
       return true;
     }
   return false;
+}
+
+/// Trigger element click via keyboard.
+export function clear_keyboard_click (element)
+{
+  if (element.keyboard_click_reset_id)
+    {
+      clearTimeout (element.keyboard_click_reset_id);
+      element.keyboard_click_reset_id = undefined;
+    }
 }
 
 /** Check whether `element` is contained in `array` */
