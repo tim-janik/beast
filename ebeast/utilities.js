@@ -671,37 +671,60 @@ export function list_focusables (element)
   return array;
 }
 
-/** Check if `element` supports step up/down operations */
-export function is_updown_input (element) {
-  const steppable_elements = [
+/** Check if `element` has inner input navigation */
+export function is_nav_input (element) {
+  const nav_elements = [
+    "AUDIO",
+    "SELECT",
+    "TEXTAREA",
+    "VIDEO",
+    "EMBED",
+    "IFRAME",
+    "OBJECT",
+    "applet",
+  ];
+  if (in_array (element.tagName, nav_elements))
+    return true;
+  const nav_input_types = [
     'date',
     'datetime-local',
+    'email',
     'month',
     'number',
+    'password',
     'range',
+    'search',
+    'tel',
+    'text',
     'time',
+    'url',
     'week',
   ];
-  if (element.stepUp && element.stepDown && element.tagName == "INPUT" &&
-      in_array (element.type, steppable_elements))
+  if (element.tagName == "INPUT" && in_array (element.type, nav_input_types))
     return true;
   return false;
 }
 
-/** Check if `element` behaves like a button */
+/** Check if `element` is button-like input */
 export function is_button_input (element) {
-  const button_like_elements = [
+  const click_elements = [
+    "BUTTON",
+    "SUMMARY",
+  ];
+  if (in_array (element.tagName, click_elements))
+    return true;
+  const button_input_types = [
     'button',
     'checkbox',
     'color',
+    'file',
+    // 'hidden',
     'image',
     'radio',
-    'range',
     'reset',
     'submit',
   ];
-  if (element.tagName == 'BUTTON' || (element.tagName == "INPUT" &&
-				      in_array (element.type, button_like_elements)))
+  if (element.tagName == "INPUT" && in_array (element.type, button_input_types))
     return true;
   return false;
 }
@@ -775,6 +798,7 @@ class FocusGuard {
     const end = event.keyCode == KeyCode.END;
     if (this.focus_root_list.length == 0 || !this.updown_focus ||
 	!(up || down || home || end) ||
+	is_nav_input (document.activeElement) ||
 	(document.activeElement.tagName == "INPUT" &&
 	 !is_button_input (document.activeElement)))
       return false; // not interfering
