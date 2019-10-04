@@ -545,7 +545,7 @@ global_config_beastrc()
   return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "bserc.xml") : argv_bse_rcfile;
 }
 
-static Configuration
+static const Configuration&
 global_config_load ()
 {
   static bool loaded_once = false;
@@ -556,7 +556,7 @@ global_config_load ()
       String fileconfig = Path::stringread (global_config_beastrc());
       if (!fileconfig.empty())
         {
-          Configuration tmp;
+          Configuration tmp = config;
           SerializeFromXML si (fileconfig);
           if (si.load (tmp))
             config = tmp;
@@ -571,7 +571,8 @@ global_config_load ()
 void
 GlobalConfig::assign (const Configuration &configuration)
 {
-  if (global_config_rcsettings == configuration)
+  if (global_config_rcsettings == configuration ||
+      GlobalConfig::locked ())
     return;
   global_config_rcsettings = configuration;
   global_config_stamp++;
@@ -616,17 +617,8 @@ GlobalConfig::locked ()
 const GlobalConfig*
 GlobalConfigPtr::operator-> () const
 {
-  static Configuration static_config = GlobalConfig::defaults();
-  if (!GlobalConfig::locked())
-    {
-      static size_t last_stamp = 0;
-      if (last_stamp != global_config_stamp)
-        {
-          static_config = global_config_load();
-          last_stamp = global_config_stamp;
-        }
-    }
-  return static_cast<GlobalConfig*> (&static_config);
+  const Configuration &config = global_config_load();
+  return static_cast<const GlobalConfig*> (&config);
 }
 
 // == loaders ==
