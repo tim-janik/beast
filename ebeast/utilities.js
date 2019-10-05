@@ -754,7 +754,7 @@ class FocusGuard {
     if (idx < 0) // invalid element gaining focus
       {
 	document.activeElement.blur();
-	if (refocus && this.last_focus && focuslist.length)
+	if (refocus && focuslist.length)
 	  {
 	    const lastidx = focuslist.indexOf (this.last_focus);
 	    let newidx = 0;
