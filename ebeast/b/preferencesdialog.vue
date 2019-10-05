@@ -25,7 +25,7 @@
 		 :value="value" @input="$emit ('input', $event)" >
     <div slot="header">BEAST Preferences</div>
     <slot></slot>
-    <b-fed-object class="b-preferencesdialog-fed" :ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=500>
+    <b-fed-object class="b-preferencesdialog-fed" :ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=75>
     </b-fed-object>
   </b-modaldialog>
 </template>
@@ -123,7 +123,7 @@ module.exports = {
     async value_changed (po) {
       const prefs = await Bse.server.get_config();
       Util.assign_forin (prefs, po);
-      Bse.server.set_config (prefs);
+      await Bse.server.set_config (prefs);
       if (this.prefrefresh)
 	this.prefrefresh();
     },
