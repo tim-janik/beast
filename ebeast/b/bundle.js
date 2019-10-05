@@ -4,9 +4,6 @@
 // assert Vue is present
 console.assert (Vue !== undefined);
 
-// load utilities
-require ('./hotkeys.js'); // adds $.click_hotkey()
-
 // load Vue components
 const vue_components = [
   require ('./aboutdialog.vue'),
