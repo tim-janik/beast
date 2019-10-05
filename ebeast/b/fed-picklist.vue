@@ -50,9 +50,10 @@
       .b-fed-picklist-line5, .b-fed-picklist-line6, .b-fed-picklist-line7, .b-fed-picklist-line8, .b-fed-picklist-line9";
     .b-fed-picklist-label    { display: block; }
     #{$b-fed-picklist-lines} { display: block; font-size: 90%; color: $b-style-fg-secondary; }
-    & :focus, & .active, & :active {
-      #{$b-fed-picklist-lines} { filter: $b-style-fg-filter; } //* adjust to inverted menuitem */
-    }
+    .b-menuitem {
+      &:focus, &.active, &:active {
+	#{$b-fed-picklist-lines} { filter: $b-style-fg-filter; } //* adjust to inverted menuitem */
+      } }
   }
 </style>
 
@@ -145,8 +146,11 @@ module.exports = {
       event.preventDefault();  // avoid generating 'click' from 'mousedown'
       // trigger getter() refresh on each menu popup
       this.opencount++;
+      // keep an 'active' indicator for picklistbutton during menu popup
+      Util.clear_keyboard_click (this.$refs.picklistbutton); // reset cleanup handler from potential keyboard_click
+      const tieclass = { element: this.$refs.picklistbutton, class: 'active' };
       // popup, the context menu takes it from here
-      this.$refs.cmenu.popup (event, { origin: this.$refs.flexroot });
+      this.$refs.cmenu.popup (event, { origin: this.$refs.flexroot, tieclass: tieclass });
     },
   },
 };

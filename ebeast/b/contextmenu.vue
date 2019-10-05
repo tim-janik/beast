@@ -102,9 +102,19 @@ module.exports = {
 	  if (this.origin)
 	    this.resize_observer.observe (this.origin.$el || this.origin);
 	}
+      else if (this.tieclass)
+	{
+	  this.tieclass.element.classList.remove (this.tieclass.class);
+	  this.tieclass = undefined;
+	}
     },
     dom_destroy () {
       this.clear_dragging();
+      if (this.tieclass)
+	{
+	  this.tieclass.element.classList.remove (this.tieclass.class);
+	  this.tieclass = undefined;
+	}
       this.resize_observer.disconnect();
       this.resize_observer = undefined;
       if (this.resize_timer)
@@ -171,10 +181,11 @@ module.exports = {
 							close: this.close });
     },
     popup (event, options) {
-      const { origin, check } = options || {};
+      const { origin, check, tieclass } = options || {};
       this.visible = false;
       this.origin = origin;
       this.checker = check;
+      this.tieclass = tieclass;
       this.clear_dragging();
       if (event && event.pageX && event.pageY)
 	{
@@ -198,6 +209,8 @@ module.exports = {
 	  window.addEventListener ('mousedown', this.dragging.handler, this.dragging.evpassive);
 	  window.addEventListener ('keydown',   this.dragging.handler, this.dragging.evpassive);
 	}
+      if (this.tieclass)
+	this.tieclass.element.classList.add (this.tieclass.class);
       this.visible = true;
     },
     clear_dragging() {

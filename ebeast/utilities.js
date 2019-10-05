@@ -435,6 +435,26 @@ vue_mixins.dom_updates = {
   },
 };
 
+/// Join strings and arrays of class lists from `args`.
+export function join_classes (...args) {
+  const cs = new Set();
+  for (const arg of args)
+    {
+      if (Array.isArray (arg))
+	{
+	  for (const a of arg)
+	    if (a !== undefined)
+	      cs.add ('' + a);
+	}
+      else if (arg !== undefined)
+	{
+	  for (const a of arg.split (/ +/))
+	    cs.add (a);
+	}
+    }
+  return cs.size ? Array.from (cs).join (' ') : undefined;
+}
+
 /// Extract the promise `p` state as one of: 'pending', 'fulfilled', 'rejected'
 export function promise_state (p) {
   const t = {}; // dummy, acting as fulfilled
@@ -651,37 +671,60 @@ export function list_focusables (element)
   return array;
 }
 
-/** Check if `element` supports step up/down operations */
-export function is_updown_input (element) {
-  const steppable_elements = [
+/** Check if `element` has inner input navigation */
+export function is_nav_input (element) {
+  const nav_elements = [
+    "AUDIO",
+    "SELECT",
+    "TEXTAREA",
+    "VIDEO",
+    "EMBED",
+    "IFRAME",
+    "OBJECT",
+    "applet",
+  ];
+  if (in_array (element.tagName, nav_elements))
+    return true;
+  const nav_input_types = [
     'date',
     'datetime-local',
+    'email',
     'month',
     'number',
+    'password',
     'range',
+    'search',
+    'tel',
+    'text',
     'time',
+    'url',
     'week',
   ];
-  if (element.stepUp && element.stepDown && element.tagName == "INPUT" &&
-      in_array (element.type, steppable_elements))
+  if (element.tagName == "INPUT" && in_array (element.type, nav_input_types))
     return true;
   return false;
 }
 
-/** Check if `element` behaves like a button */
+/** Check if `element` is button-like input */
 export function is_button_input (element) {
-  const button_like_elements = [
+  const click_elements = [
+    "BUTTON",
+    "SUMMARY",
+  ];
+  if (in_array (element.tagName, click_elements))
+    return true;
+  const button_input_types = [
     'button',
     'checkbox',
     'color',
+    'file',
+    // 'hidden',
     'image',
     'radio',
-    'range',
     'reset',
     'submit',
   ];
-  if (element.tagName == 'BUTTON' || (element.tagName == "INPUT" &&
-				      in_array (element.type, button_like_elements)))
+  if (element.tagName == "INPUT" && in_array (element.type, button_input_types))
     return true;
   return false;
 }
@@ -734,7 +777,7 @@ class FocusGuard {
     if (idx < 0) // invalid element gaining focus
       {
 	document.activeElement.blur();
-	if (refocus && this.last_focus && focuslist.length)
+	if (refocus && focuslist.length)
 	  {
 	    const lastidx = focuslist.indexOf (this.last_focus);
 	    let newidx = 0;
@@ -755,6 +798,7 @@ class FocusGuard {
     const end = event.keyCode == KeyCode.END;
     if (this.focus_root_list.length == 0 || !this.updown_focus ||
 	!(up || down || home || end) ||
+	is_nav_input (document.activeElement) ||
 	(document.activeElement.tagName == "INPUT" &&
 	 !is_button_input (document.activeElement)))
       return false; // not interfering
@@ -1359,7 +1403,11 @@ export function keyboard_click (element)
 	{
 	  const e = element;
 	  e.classList.toggle ('active', true);
-	  setTimeout (() => e.classList.toggle ('active', false), 170); // match focus-activation delay
+	  if (!e.keyboard_click_reset_id)
+	    e.keyboard_click_reset_id = setTimeout (() => {
+	      e.keyboard_click_reset_id = undefined;
+	      e.classList.toggle ('active', false);
+	    }, 170); // match focus-activation delay
 	}
       element.click();
       keyboard_click_state.inclick -= 1;
@@ -1368,32 +1416,44 @@ export function keyboard_click (element)
   return false;
 }
 
+/// Trigger element click via keyboard.
+export function clear_keyboard_click (element)
+{
+  if (element.keyboard_click_reset_id)
+    {
+      clearTimeout (element.keyboard_click_reset_id);
+      element.keyboard_click_reset_id = undefined;
+    }
+}
+
 /** Check whether `element` is contained in `array` */
 export function in_array (element, array)
 {
   return array.indexOf (element) >= 0;
 }
 
-/// Export key codes
+/// Symbolic names for key codes
 export const KeyCode = {
-  BACKSPACE: 8, TAB: 9, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32, PAGEUP: 33, PAGEDOWN: 34,
-  END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44, INSERT: 45, DELETE: 46, SELECT: 93,
+  BACKSPACE: 8, TAB: 9, LINEFEED: 10, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32,
+  PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, PRINTSCREEN: 44,
+  INSERT: 45, DELETE: 46, SELECT: 93,
   F1: 112, F2: 113, F3: 114, F4: 115, F5: 116, F6: 117, F7: 118, F8: 119, F9: 120, F10: 121, F11: 122, F12: 123,
   F13: 124, F14: 125, F15: 126, F16: 127, F17: 128, F18: 129, F19: 130, F20: 131, F21: 132, F22: 133, F23: 134, F24: 135,
   BROWSERBACK: 166, BROWSERFORWARD: 167, PLUS: 187/*FIXME*/, MINUS: 189/*FIXME*/, PAUSE: 230, ALTGR: 255,
   VOLUMEMUTE: 173, VOLUMEDOWN: 174, VOLUMEUP: 175, MEDIANEXTTRACK: 176, MEDIAPREVIOUSTRACK: 177, MEDIASTOP: 178, MEDIAPLAYPAUSE: 179,
 };
 
-const navigation_keys = [
-  KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
-  KeyCode.TAB, KeyCode.SPACE, KeyCode.ENTER /*13*/, 10 /*LINEFEED*/,
-  KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
-  KeyCode.SELECT /*contextmenu*/, KeyCode.ESCAPE,
-];
-
 /// Check if a key code is used of rnavigaiton (and non alphanumeric).
 export function is_navigation_key_code (keycode)
 {
+  const navigation_keys = [
+    KeyCode.UP, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.LEFT,
+    KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
+    KeyCode.ESCAPE, KeyCode.TAB, KeyCode.SELECT /*contextmenu*/,
+    KeyCode.BROWSERBACK, KeyCode.BROWSERFORWARD,
+    KeyCode.BACKSPACE, KeyCode.DELETE,
+    KeyCode.SPACE, KeyCode.ENTER /*13*/,
+  ];
   return in_array (keycode, navigation_keys);
 }
 
@@ -1439,6 +1499,39 @@ export function match_key_event (event, keyname)
     return false;
   return true;
 }
+
+function hotkey_handler (event) {
+  const log = console.log ? console.log : () => 0;
+  // give precedence to navigatable element with focus
+  if (Util.is_navigation_key_code (event.keyCode) &&
+      (is_nav_input (document.activeElement) ||
+       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement))))
+    {
+      log ("IGNORE-NAV: " + event.keyCode + ' (' + document.activeElement.tagName + ')');
+      return false;
+    }
+  // activate focus via Enter
+  if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
+    {
+      event.preventDefault();
+      Util.keyboard_click (document.activeElement);
+      log ("KEYBOARD_CLICK: " + ' (' + document.activeElement.tagName + ')');
+      return true;
+    }
+  const hotkey_elements = document.querySelectorAll ('[data-hotkey]');
+  for (const el of hotkey_elements)
+    if (match_key_event (event, el.getAttribute ('data-hotkey')))
+      {
+	event.preventDefault();
+	Util.keyboard_click (el);
+	log ("HOTKEY: '" + el.getAttribute ('data-hotkey') + "'", el);
+	return true;
+      }
+  Shell.status ('KEYDOWN: ' + event.keyCode + ' ' + event.which + ' ' + event.charCode +
+		' (' + document.activeElement.tagName + ')', document.querySelectorAll ('[data-hotkey]'));
+  return false;
+}
+window.addEventListener ('keydown', hotkey_handler, { capture: true });
 
 class FallbackResizeObserver {
   constructor (resize_handler) {

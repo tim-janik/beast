@@ -21,8 +21,8 @@
       class="b-playcontrols" >
     <b-button hotkey="L"     @click="pcall ('...Last')"      ><b-icon fw lg fa="fast-backward" /></b-button>
     <b-button hotkey="B"     @click="pcall ('...Backwards')" ><b-icon fw lg fa="backward"      /></b-button>
-    <b-button hotkey="Space" @click="pcall ('stop')"         ><b-icon fw lg fa="stop"          /></b-button>
-    <b-button hotkey="P"     @click="pcall ('play')"         ><b-icon fw lg fa="play"          /></b-button>
+    <b-button hotkey="S"     @click="pcall ('stop')"         ><b-icon fw lg fa="stop"          /></b-button>
+    <b-button hotkey="Space" @click="toggle_play()"          ><b-icon fw lg fa="play"          /></b-button>
     <b-button hotkey="R"     @click="pcall ('...Record')"    ><b-icon fw lg fa="circle"        /></b-button>
     <b-button hotkey="F"     @click="pcall ('...Forwards')"  ><b-icon fw lg fa="forward"       /></b-button>
     <b-button hotkey="N"     @click="pcall ('...Next')"      ><b-icon fw lg fa="fast-forward"  /></b-button>
@@ -49,6 +49,13 @@ module.exports = {
       else
 	message = method + ': unimplemented';
       Shell.status (message);
+    },
+    async toggle_play() {
+      const project = this.project;
+      if (!await this.project.is_playing())
+	project.play();
+      else
+	project.stop();
     },
   },
 };
