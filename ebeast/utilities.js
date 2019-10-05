@@ -1405,16 +1405,17 @@ export const KeyCode = {
   VOLUMEMUTE: 173, VOLUMEDOWN: 174, VOLUMEUP: 175, MEDIANEXTTRACK: 176, MEDIAPREVIOUSTRACK: 177, MEDIASTOP: 178, MEDIAPLAYPAUSE: 179,
 };
 
-const navigation_keys = [
-  KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
-  KeyCode.TAB, KeyCode.SPACE, KeyCode.ENTER /*13*/, 10 /*LINEFEED*/,
-  KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
-  KeyCode.SELECT /*contextmenu*/, KeyCode.ESCAPE,
-];
-
 /// Check if a key code is used of rnavigaiton (and non alphanumeric).
 export function is_navigation_key_code (keycode)
 {
+  const navigation_keys = [
+    KeyCode.UP, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.LEFT,
+    KeyCode.PAGE_UP, KeyCode.PAGE_DOWN, KeyCode.HOME, KeyCode.END,
+    KeyCode.ESCAPE, KeyCode.TAB, KeyCode.SELECT /*contextmenu*/,
+    KeyCode.BROWSERBACK, KeyCode.BROWSERFORWARD,
+    KeyCode.BACKSPACE, KeyCode.DELETE,
+    KeyCode.SPACE, KeyCode.ENTER /*13*/,
+  ];
   return in_array (keycode, navigation_keys);
 }
 
