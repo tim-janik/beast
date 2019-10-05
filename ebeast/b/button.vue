@@ -40,6 +40,7 @@ const b_button = {
   functional: true,
   render: function (h, context) {
     const attrs = {
+      'data-hotkey': context.props.hotkey,
     };
     const localdata = {
       staticClass: Util.join_classes ('b-button', context.data.staticClass),

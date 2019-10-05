@@ -1462,6 +1462,39 @@ export function match_key_event (event, keyname)
   return true;
 }
 
+function hotkey_handler (event) {
+  const log = console.log ? console.log : () => 0;
+  // give precedence to navigatable element with focus
+  if (Util.is_navigation_key_code (event.keyCode) &&
+      (is_nav_input (document.activeElement) ||
+       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement))))
+    {
+      log ("IGNORE-NAV: " + event.keyCode + ' (' + document.activeElement.tagName + ')');
+      return false;
+    }
+  // activate focus via Enter
+  if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
+    {
+      event.preventDefault();
+      Util.keyboard_click (document.activeElement);
+      log ("KEYBOARD_CLICK: " + ' (' + document.activeElement.tagName + ')');
+      return true;
+    }
+  const hotkey_elements = document.querySelectorAll ('[data-hotkey]');
+  for (const el of hotkey_elements)
+    if (match_key_event (event, el.getAttribute ('data-hotkey')))
+      {
+	event.preventDefault();
+	Util.keyboard_click (el);
+	log ("HOTKEY: '" + el.getAttribute ('data-hotkey') + "'", el);
+	return true;
+      }
+  Shell.status ('KEYDOWN: ' + event.keyCode + ' ' + event.which + ' ' + event.charCode +
+		' (' + document.activeElement.tagName + ')', document.querySelectorAll ('[data-hotkey]'));
+  return false;
+}
+window.addEventListener ('keydown', hotkey_handler, { capture: true });
+
 class FallbackResizeObserver {
   constructor (resize_handler) {
     this.observables = new Set();
