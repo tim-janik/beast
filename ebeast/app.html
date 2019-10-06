@@ -29,7 +29,6 @@
       window.MAINCONFIG = Electron.getCurrentWindow().MAINCONFIG;
     }
   </script>
-  <script src="node_modules/jquery/dist/jquery.js"></script>
   <script>
   // Restore the global 'module', now that scripts are laoded.
   if (window.__module)
@@ -112,9 +111,6 @@
   async function onload_start_app() {
     // onload
     loadstatus.innerText += "Loaded Window...\n";
-    // jQuery
-    console.assert (window.$ !== undefined);
-    loadstatus.innerText += "Loaded jQuery...\n";
     // Bse.server
     loadstatus.innerText += "Connecting to Bse.server...\n";
     await Bse.server['$promise'];

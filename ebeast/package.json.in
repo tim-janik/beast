@@ -4,7 +4,6 @@
   "description": "Beast - Music Synthesizer and Composer",
   "main": "main.js",
   "dependencies": {
-    "jquery": "^3.4.1",
     "vue": "^2.6.10"
   },
   "babel": {

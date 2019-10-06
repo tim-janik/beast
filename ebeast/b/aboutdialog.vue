@@ -48,7 +48,6 @@ async function about_pairs() {
     [ 'BSE:',			await Bse.server.get_version() ],
     [ 'Vorbis:',		await Bse.server.get_vorbis_version() ],
     [ 'Vuejs:',			Vue.version ],
-    [ 'jQuery:',		jQuery.fn.jquery ],
     [ 'User Agent:',		user_agent ],
   ];
   if (window.Electron)
