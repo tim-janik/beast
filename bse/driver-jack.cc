@@ -536,11 +536,13 @@ class JackPcmDriver : public PcmDriver {
 
   /* midi stuff */
   using MidiDriverCallback = std::function<void(uint, uint8*)>;
-
-  std::atomic<int>              atomic_midi_active_ {0};
-  jack_port_t                  *midi_input_port_ = nullptr;
-  RingBuffer<uint8>             midi_ring_buffer_ { 8000 };
-  MidiDriverCallback            midi_driver_callback_;
+  struct MidiLink {
+    uint                        id = 0;
+    jack_port_t                *jack_port = nullptr;
+    RingBuffer<uint8>           ring_buffer { 8000 };
+    MidiDriverCallback          callback;
+  };
+  vector<std::unique_ptr<MidiLink>> midi_links;
 
   int
   process_callback (jack_nframes_t n_frames)
@@ -581,17 +583,20 @@ class JackPcmDriver : public PcmDriver {
           Block::fill (n_frames, values, 0.0);
       }
 
-    if (atomic_midi_active_)
+    if (atomic_active_)
       {
-        /* handle midi input */
-        void *port_buf = jack_port_get_buffer (midi_input_port_, n_frames);
-        jack_nframes_t event_count = jack_midi_get_event_count (port_buf);
-        for (jack_nframes_t event_index = 0; event_index < event_count; event_index++)
+        for (auto& midi_link_ptr : midi_links)
           {
-            jack_midi_event_t    in_event;
-            jack_midi_event_get (&in_event, port_buf, event_index);
-            if (midi_ring_buffer_.get_writable_items() >= in_event.size)  // write whole event or nothing
-              midi_ring_buffer_.write (in_event.size, in_event.buffer);
+            /* handle midi input */
+            void *port_buf = jack_port_get_buffer (midi_link_ptr->jack_port, n_frames);
+            jack_nframes_t event_count = jack_midi_get_event_count (port_buf);
+            for (jack_nframes_t event_index = 0; event_index < event_count; event_index++)
+              {
+                jack_midi_event_t    in_event;
+                jack_midi_event_get (&in_event, port_buf, event_index);
+                if (midi_link_ptr->ring_buffer.get_writable_items() >= in_event.size)  // write whole event or nothing
+                  midi_link_ptr->ring_buffer.write (in_event.size, in_event.buffer);
+              }
           }
       }
     return 0;
@@ -848,8 +853,8 @@ public:
     /* enable processing in callback (if not already active) */
     atomic_active_ = 1;
 
-    /* notify midi driver if new events have arrived */
-    notify_midi_driver();
+    /* notify midi drivers if new events have arrived */
+    notify_midi_drivers();
 
     /* report jack driver xruns */
     if (atomic_xruns_ != printed_xruns_)
@@ -984,43 +989,46 @@ public:
     assert_return (frames_written == block_length_);
   }
   /*---- midi driver related ----*/
-  bool
+  uint
   attach_midi_driver (const std::string& from_port, MidiDriverCallback callback)
   {
-    assert_return (midi_input_port_ == nullptr, false);
-    midi_driver_callback_ = callback;
-    midi_input_port_ = jack_port_register (jack_client_, "midi_in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+    const uint id = midi_links.size() + 1;
+    String port_name = string_format ("midi_in_%d", id);
+    jack_port_t *midi_port = jack_port_register (jack_client_, port_name.c_str(), JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
     const bool auto_connect = from_port != no_auto_connect_devid;
-    if (auto_connect && jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_input_port_)) != 0)
+    if (auto_connect && jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_port)) != 0)
       {
-        jack_port_unregister (jack_client_, midi_input_port_);
-        midi_input_port_ = nullptr;
-        return false;
+        jack_port_unregister (jack_client_, midi_port);
+        return 0;
       }
 
-    atomic_midi_active_ = 1;
-    return true;
+    auto& midi_link_ptr = midi_links.emplace_back (std::make_unique<MidiLink>());
+    midi_link_ptr->callback = callback;
+    midi_link_ptr->jack_port = midi_port;
+    midi_link_ptr->id = id;
+    return id;
   }
   void
-  notify_midi_driver()
+  notify_midi_drivers()
   {
-    if (atomic_midi_active_)
+    for (auto& midi_link_ptr : midi_links)
       {
-        uint n = midi_ring_buffer_.get_readable_items();
-        if (n > 0)
+        uint n = midi_link_ptr->ring_buffer.get_readable_items();
+        if (n > 0 && midi_link_ptr->callback)
           {
             uint8 midi_data[n];
-            midi_ring_buffer_.read (n, midi_data);
-
-            midi_driver_callback_ (n, midi_data); // process event data in JackMidiDriver
+            midi_link_ptr->ring_buffer.read (n, midi_data);
+            midi_link_ptr->callback (n, midi_data); // process event data in JackMidiDriver
           }
       }
   }
   void
-  detach_midi_driver()
+  detach_midi_driver (uint id)
   {
-    atomic_midi_active_ = 0;
+    for (auto& midi_link_ptr : midi_links)
+      if (midi_link_ptr->id == id)
+        midi_link_ptr->callback = nullptr;
   }
 };
 
@@ -1031,16 +1039,25 @@ static const String jack_pcm_driverid = PcmDriver::register_driver ("jack", Jack
  * driver in the JACK process_callback(), and the midi driver is notified by
  * the audio driver if new midi input is available.
  *
- * The audio driver has to be opened before the midi driver.
+ * We assume that the API is used only by one thread at a time, and in the
+ * following order:
  *
- * We also assume that the following functions never run at the same time (in
- * different threads). Only one of these should run at any point in time.
+ * 1. open audio driver:
+ *   - JackPcmDriver::open()
+ * 2. open midi drivers:
+ *   - JackMidiDriver::open() [can be called never, once or more than once]
+ * 3. use audio/midi drivers:
+ *   - JackPcmDriver::pcm_check_io(), ::pcm_write(), ... and related
+ * 4. close drivers (in any order):
+ *   - JackMidiDriver::close()
+ *   - JackPcmDriver::close()
  *
- * JackPcmDriver::open(), JackPcmDriver::pcm_check_io(), JackPcmDriver::close(),
- * JackMidiDriver::open(), JackMidiDriver::close()
+ * After you have started using the audio/midi drivers, open() is no longer
+ * permitted.
  */
 class JackMidiDriver : public MidiDriver {
   BseMidiDecoder *midi_decoder_ = nullptr;
+  uint            midi_driver_id_ = 0;
 public:
   static MidiDriverP
   create (const String &devid)
@@ -1063,7 +1080,7 @@ public:
   {
     assert_return (opened());
     if (jack_pcm_driver)
-      jack_pcm_driver->detach_midi_driver();
+      jack_pcm_driver->detach_midi_driver (midi_driver_id_);
 
     flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
   }
@@ -1081,7 +1098,8 @@ public:
     if (!jack_pcm_driver)
       return Error::FILE_OPEN_FAILED;
 
-    if (!jack_pcm_driver->attach_midi_driver (devid_, [this] (uint n, uint8 *midi_data) { process_midi (n, midi_data); }))
+    midi_driver_id_ = jack_pcm_driver->attach_midi_driver (devid_, [this] (uint n, uint8 *midi_data) { process_midi (n, midi_data); });
+    if (!midi_driver_id_)
       return Error::FILE_OPEN_FAILED;
 
     flags_ |= Flags::READABLE | Flags::OPENED;
