@@ -83,23 +83,28 @@ used to start JACK with midi support.
         Routing via the JACK Audio Connection Kit
         Note: JACK adds latency compared to direct hardware access
 
+In ebeast, the available jack midi inputs are listed in the preferences dialog.
+
 ### External midi input in BEAST
 
-Normally, the jack midi driver will automatically connect to the first hardware
-device, so starting BEAST and loading "MIDI Test" from the "Demo" menu should
-just work. You should be able to use an external midi keyboard and the events
-should be delivered via jack midi to BEAST.
+If you have external midi devices, the jack midi driver (as auto-detected) will
+automatically connect to the first hardware device (if any), so starting BEAST
+and loading "MIDI Test" from the "Demo" menu should just work. You should be
+able to use an external midi keyboard and the events should be delivered via
+jack midi to BEAST.
 
 In case you have more than one jack midi input, you may need to select the
 correct one using something like
 
     $ beast -m jack=system:midi_capture_1
 
+In ebeast, you can select the jack midi device using the preferences dialog.
+
 ### Manually connecting the midi input
 
-There are cases where the default midi driver strategy "connect to physical device"
-is not sufficient. One case is if you wish to use jack-keyboard. You start it
-using
+There are cases where the default midi driver strategy "connect to physical
+device" is not sufficient. One case is if you wish to use jack-keyboard. You
+start it using
 
     $ jack-keyboard
 
@@ -107,11 +112,13 @@ and then run BEAST as (which will not connect to physical device)
 
     $ beast -m jack=no-auto-connect
 
-and start "MIDI Test" from "Demo" menu. BEAST will not try to connect any midi
-input, and certainly we have no physical input here. But once BEAST is running,
-you can click on the "Connected to:" combobox in the jack-keyboard window. It
-will allow you selecting "Beast:midi_in" and like this you can use the virtual
-keyboard for BEAST.
+and start "MIDI Test" from "Demo" menu. Once BEAST is running, you can click on
+the "Connected to:" combobox in the jack-keyboard window. It will allow you to
+select "Beast:midi_in_1" and like this you can use the virtual keyboard for
+BEAST.
+
+In ebeast, the "no-auto-connect" jack midi device can be selected from the
+preferences dialog.
 
 ### Useful graphical applications
 
