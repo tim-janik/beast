@@ -3,6 +3,10 @@
 // Build time configuration, substituted in Javascript file headers by Makefile.mk
 const CONFIG = {
   /*@EBEAST_CONFIG@*/
+  files: [],
+  p: '',
+  m: '',
+  norc: false,
 };
 let win;
 let bse_proc; // assigned spawn.child
@@ -58,7 +62,7 @@ function create_window ()
     darkTheme: true,
   };
   let win = new Electron.BrowserWindow (options);
-  win.MAINCONFIG = { args: project_files };
+  win.MAINCONFIG = CONFIG;
   win.webContents.once ('crashed', e => {
     seen_crashed = true;
     if (seen_will_quit && seen_crashed)
@@ -75,6 +79,21 @@ function create_beast_sound_engine (datacb, errorcb) {
     args.push ('--verbose');
   if (verbose_binary)
     args.push ('--binary');
+  if (CONFIG.norc)
+    {
+      args.push ('--bse-rcfile');
+      args.push ('/dev/null');
+    }
+  if (CONFIG.p)
+    {
+      args.push ('--bse-pcm-driver');
+      args.push (CONFIG.p);
+    }
+  if (CONFIG.m)
+    {
+      args.push ('--bse-midi-driver');
+      args.push (CONFIG.m);
+    }
   const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version_m.m.m'];
   const bse_proc = spawn (beastsoundengine, args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
@@ -133,19 +152,21 @@ function print_help () {
     `Options:`,
     `--help        Print command line option help`,
     `--version     Print version information`,
+    `--norc        Skip reading of ~/.config/beast/bserc.xml`,
+    `-p DRIVER     Set the default PCM driver (for --norc)`,
+    `-m DRIVER     Set the default MIDI driver (for --norc)`,
   ];
   console.log (lines.join ('\n'));
 }
 
 // parse command line arguments
-const project_files = [];
 {
   let args = process.argv.slice (1);
   args.skip_defaultapp = ElectronDefaultApp;
   while (args.length) {
     const arg = pop_arg (args);
     if (args.seen_separator) {
-      project_files.push (arg);
+      CONFIG.files.push (arg);
       continue;
     }
     switch (arg) {
@@ -163,13 +184,22 @@ const project_files = [];
       case '--binary':
 	verbose_binary = true;
 	break;
+      case '-p':
+	CONFIG.p = args.length ? pop_arg (args) : '';
+	break;
+      case '-m':
+	CONFIG.m = args.length ? pop_arg (args) : '';
+	break;
+      case '--norc':
+	CONFIG.norc = true;
+	break;
       default:
 	if (/^-/.test (arg)) {
 	  console.err ('Unknown option: ' + arg);
 	  print_help();
 	  main_exit (5);
 	}
-	project_files.push (arg);
+	CONFIG.files.push (arg);
 	break;
     }
   }
