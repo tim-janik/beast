@@ -158,7 +158,8 @@ help: FORCE
 	@echo '  check-suite     - Run the unit test suite'
 	@echo 'Invocation:'
 	@echo '  make V=1        - Enable verbose output from MAKE and subcommands'
-	@echo '  make O=DIR      - Create all output files in DIR'
+	@echo '  make O=DIR      - Create all output files in DIR, see also config-defaults.mk'
+	@echo '                    for related variables like CXXFLAGS'
 	@echo '  make DESTDIR=/  - Absolute path prepended to all install/uninstall locations'
 	@echo "  make MODE=...   - Optimize build to be 'quick' or for 'production' mode binaries."
 	@echo '                    Posible modes for debugging: debug, asan, lsan, tsan, ubsan'
