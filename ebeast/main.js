@@ -7,6 +7,7 @@ const CONFIG = {
   p: '',
   m: '',
   norc: false,
+  uiscript: '',
 };
 let win;
 let bse_proc; // assigned spawn.child
@@ -192,6 +193,9 @@ function print_help () {
 	break;
       case '--norc':
 	CONFIG.norc = true;
+	break;
+      case '--uiscript':
+	CONFIG.uiscript = args.length ? pop_arg (args) : '';
 	break;
       default:
 	if (/^-/.test (arg)) {

@@ -6,7 +6,7 @@
   'use strict';
   const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, /*@EBEAST_CONFIG@*/ };
   window.CONFIG = CONFIG; // Makefile.mk substitutes /*@EBEAST_CONFIG@*/ in file headings
-  window.MAINCONFIG = { files: [], p: '', m: '', norc: false, }; // default for non-Electron connections
+  window.MAINCONFIG = { files: [], p: '', m: '', norc: false, uiscript: '' }; // default for non-Electron connections
   </script>
 
   <link rel="modulepreload" href="./utilities.js">
@@ -143,16 +143,44 @@
       }
     else
       loadstatus.innerText += "Skipped Menus...\n";
-    // Load command line files
-    for (let arg of window.MAINCONFIG.files)
-      {
-	const error = await Shell.load_project (arg);
-	if (error != Bse.Error.NONE)
-	  console.error ('Failed to load:', arg + ":", error);
+    // UI-Script
+    const run_uiscript = async function () {
+      if (!window.MAINCONFIG.uiscript)
+	return;
+      window.uiscript = await import (window.MAINCONFIG.uiscript);
+      try {
+	await window.uiscript.run();
+      } catch (e) {
+	console.error (e.stack ? e.stack : e.message ? e.message : e, '\n',
+		       'UIScript failed, aborting...');
+	Electron.app.exit (123);
       }
-    loadstatus.innerText += "(!) Skipped command line files...\n";
+    };
+    // Load command line files
+    const load_files = async () => {
+      for (let arg of window.MAINCONFIG.files)
+	{
+	  const error = await Shell.load_project (arg);
+	  if (error != Bse.Error.NONE)
+	    console.error ('Failed to load:', arg + ":", error);
+	}
+    };
+    // Dismiss startup messages
     const bodyloadstatus = document.querySelector ("#body-load-status");
-    setTimeout (() => bodyloadstatus.parentElement.removeChild (bodyloadstatus), 900);
+    if (window.MAINCONFIG.uiscript)
+      {
+	loadstatus.innerText += "Loading '" + window.MAINCONFIG.uiscript + "'...";
+	await new Promise (r => setTimeout (() => r(), 450));
+	bodyloadstatus.parentElement.removeChild (bodyloadstatus);
+	await run_uiscript();
+	await load_files();
+      }
+    else
+      {
+	await new Promise (r => setTimeout (() => r(), 450));
+	bodyloadstatus.parentElement.removeChild (bodyloadstatus);
+	await load_files();
+      }
   }
   window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
   </script>
