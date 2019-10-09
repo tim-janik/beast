@@ -69,6 +69,8 @@ function create_window ()
     if (seen_will_quit && seen_crashed)
       Eapp.exit (143); // will-quit + crashed is caused by SIGHUP or SIGTERM
   });
+  win.webContents.printout = function (...args) { console.log (...args); };
+  win.webContents.printerr = function (...args) { console.error (...args); };
   return win;
 }
 
