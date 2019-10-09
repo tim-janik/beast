@@ -91,7 +91,7 @@ module.exports = {
       delete p.Shell;
     // inject Shell into all Vue components
     Vue.prototype.Shell = this;
-    assert (this === p.Shell);
+    console.assert (this === p.Shell);
     // provide default project
     this.load_project (Bse.server.last_project());
     // load_project() also forces an update with new Shell properties in place
@@ -138,7 +138,7 @@ module.exports = {
       e.preventDefault();
     },
     open_part_edit (part) {
-      assert (part == undefined || part instanceof Bse.Part);
+      console.assert (part == undefined || part instanceof Bse.Part);
       this.piano_roll_part = part;
     },
     status (...args) {

@@ -90,11 +90,10 @@
   Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
   Vue.config.silent = !CONFIG.debug;
   Vue.config.performance = true;
-  // $log() and assert() shortcuts, inside and outside components
+  // allow $log() and console shortcuts, inside Vue component handlers
   window.$log = console.log.bind (console);
-  window.assert = console.assert.bind (console);
   Vue.prototype.$log = window.$log;
-  Vue.prototype.assert = window.assert;
+  Vue.prototype.console = console;
   Vue.prototype.CONFIG = CONFIG;
   Vue.options.inheritAttrs = false; // Add non-props attributes to $attrs (default in Vue-3)
   // utilities.js
@@ -132,7 +131,7 @@
       el:   '#vue-mountpoint',
       data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
     });
-    assert (vue_root); // Vue.$root
+    console.assert (vue_root); // Vue.$root
     loadstatus.innerText += "Mounted Vue...\n";
     // Menu bar for Electron
     if (window.Electron)
