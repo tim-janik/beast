@@ -129,7 +129,7 @@ $(app/js.files): $>/app/%: ebeast/% $(GITCOMMITDEPS) ebeast/Makefile.mk	| $>/app
 ebeast/config =	revision: '$(shell ./version.sh -l)', \
 		revdate: '$(shell ./version.sh -d)', \
 		'version_m.m.m': '$(VERSION_M.M.M)', \
-		debug: $(if $(findstring $(MODE), debug quick),true,false)
+		debug: $(if $(findstring $(MODE), debug quick),true,false),
 
 # == $>/app/bseapi_jsonipc.js ==
 $>/app/bseapi_jsonipc.js: jsonipc/head.js $(lib/BeastSoundEngine) bse/bseapi.idl	| $>/app/

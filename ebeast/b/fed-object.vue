@@ -50,8 +50,8 @@
 	<span style="grid-column: 1; padding: 0 1em 0; text-align: left" :title="field[3].blurb" :key="'f1:' + field[0]"
 	>{{ field[2] }}</span>
 	<span style="text-align: right" :title="field[3].blurb" :key="'f2:' + field[0]">
-	  <component :is="field[1]" v-bind="field[3]"
-		     :value="field[4][field[0]]" @input="field[5]"></component></span>
+	  <component :is="field[1]" v-bind="field[3]" :class="'b-fed-object--' + field[0]"
+		     :value="field[4][field[0]]" @input="field[5]" ></component></span>
 	<span :key="'f3:' + field[0]">
 	  <button class="b-fed-object-clear" tabindex="-1" @click="clear_field (field[0])" > ⊗  </button></span>
       </template>
