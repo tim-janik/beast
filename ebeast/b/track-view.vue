@@ -219,6 +219,8 @@ module.exports = {
       console.log ("menuactivation:", role);
       // close popup to remove focus guards
       this.$refs.cmenu.close();
+      if (role == 'add-track')
+	Shell.song.create_track ('Track');
       if (role == 'rename-track')
 	this.nameedit_ = 1;
       if (role.startsWith ('mc-'))
@@ -236,6 +238,7 @@ module.exports = {
     menucheck (role, component) {
       switch (role)
       {
+	case 'add-track':    return true;
 	case 'rename-track': return true;
       }
       if (role.startsWith ('mc-'))
