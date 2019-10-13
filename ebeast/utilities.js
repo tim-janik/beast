@@ -1457,6 +1457,28 @@ export function is_navigation_key_code (keycode)
   return in_array (keycode, navigation_keys);
 }
 
+// https://github.com/WICG/keyboard-map/blob/master/explainer.md
+let keyboard_map = {
+  get (key) {
+    return key.startsWith ('Key') ? key.substr (3).toLowerCase() : key;
+  },
+};
+async function refresh_keyboard_map () {
+  if (navigator && navigator.keyboard && navigator.keyboard.getLayoutMap)
+    keyboard_map = await navigator.keyboard.getLayoutMap();
+}
+(() => {
+  refresh_keyboard_map();
+  if (navigator && navigator.keyboard && navigator.keyboard.addEventListener)
+    navigator.keyboard.addEventListener ("layoutchange", () => refresh_keyboard_map());
+}) ();
+
+/// Retrieve user-printable name for a keyboard button, useful to describe KeyboardEvent.code.
+export function keyboard_map_name (keyname) {
+  const name = keyboard_map.get (keyname);
+  return name || keyname;
+}
+
 /// Match an event's key code, considering modifiers.
 export function match_key_event (event, keyname)
 {
