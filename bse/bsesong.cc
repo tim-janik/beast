@@ -753,6 +753,20 @@ SongImpl::remove_part (PartIface &part_iface)
   bse_item_undo_close (ustack);
 }
 
+TrackSeq
+SongImpl::list_tracks ()
+{
+  TrackSeq tracks;
+  for (auto &hnd : list_children())
+    {
+      ItemIface *item = hnd.__iface__();
+      TrackIfaceP track = item->as<TrackIfaceP>();
+      if (track)
+        tracks.push_back (track->__handle__());
+    }
+  return tracks;
+}
+
 TrackIfaceP
 SongImpl::create_track ()
 {

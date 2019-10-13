@@ -97,6 +97,7 @@ public:
   virtual void              remove_bus              (BusIface &bus) override;
   virtual PartIfaceP        create_part             () override;
   virtual void              remove_part             (PartIface &part) override;
+  virtual TrackSeq          list_tracks             () override;
   virtual TrackIfaceP       create_track            () override;
   virtual void              remove_track            (TrackIface &track) override;
   virtual BusIfaceP         ensure_master_bus       () override;

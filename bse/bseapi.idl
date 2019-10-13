@@ -972,6 +972,11 @@ interface Track : ContextMerger {
   ItemSeq outputs;      ///< _("Mixer busses used as output for this track.")
 };
 
+/// Sequence of Track objects.
+sequence TrackSeq {
+  Track tracks;
+};
+
 /// Record representing the use of a Part within a Track at a specific position.
 record PartLink {
   Track track;
@@ -1036,6 +1041,7 @@ interface Song : SNet {
   void       remove_bus              (Bus bus);     ///< Delete a mixer bus from a Song.
   Part       create_part             ();            ///< Create a new Part in a Song.
   void       remove_part             (Part part);   ///< Delete a Part from a Song.
+  TrackSeq   list_tracks             ();            ///< List all tracks of this song.
   Track      create_track            ();            ///< Create a new Track for a Song.
   void       remove_track            (Track track); ///< Delete a Track from a Song.
   Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.

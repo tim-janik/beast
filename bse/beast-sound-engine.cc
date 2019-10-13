@@ -164,6 +164,8 @@ namespace Jsonipc {
 template<>      struct Convert<Bse::ItemSeq>    : ConvertSeq<Bse::ItemSeq, Bse::ItemIfaceP> {};
 // Bse::PartSeq as std::vector
 template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::PartIfaceP> {};
+// Bse::TrackSeq as std::vector
+template<>      struct Convert<Bse::TrackSeq>   : ConvertSeq<Bse::TrackSeq, Bse::TrackIfaceP> {};
 // Bse::SuperSeq as std::vector
 template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
 // Bse::WaveOscSeq as std::vector
