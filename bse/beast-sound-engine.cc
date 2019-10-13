@@ -61,10 +61,12 @@ struct ConvertAny {
         any.set<std::string> (Jsonipc::from_json<std::string> (v));
         break;
       case rapidjson::kNumberType:
-        if      (v.IsInt())     any.set<int32_t> (v.GetInt());
-        else if (v.IsUint())    any.set<int64_t> (v.GetUint());
-        else if (v.IsInt64())   any.set<int64_t> (v.GetInt64());
-        else                    any.set<double>  (v.GetDouble());
+        if      (v.IsInt())     any.set<int32_t>  (v.GetInt());
+        else if (v.IsUint())    any.set<int64_t>  (v.GetUint());
+        else if (v.IsInt64())   any.set<int64_t>  (v.GetInt64());
+        else if (v.IsUint64())  any.set<uint64_t> (v.GetUint64());
+        else                    any.set<double>   (v.GetDouble());
+        break;
       case rapidjson::kArrayType:
         sequence_from_json_array (any, v);
         break;
