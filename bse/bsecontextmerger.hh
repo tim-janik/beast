@@ -2,7 +2,7 @@
 #ifndef __BSE_CONTEXT_MERGER_H__
 #define __BSE_CONTEXT_MERGER_H__
 
-#include <bse/bsesource.hh>
+#include <bse/bsecontainer.hh>
 
 /* --- object type macros --- */
 #define BSE_TYPE_CONTEXT_MERGER              (BSE_TYPE_ID (BseContextMerger))
@@ -13,17 +13,17 @@
 #define BSE_CONTEXT_MERGER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CONTEXT_MERGER, BseContextMergerClass))
 #define BSE_CONTEXT_MERGER_N_IOPORTS (8)
 /* --- object structures --- */
-struct BseContextMerger : BseSource {
+struct BseContextMerger : BseContainer {
   guint merge_context;
 };
-struct BseContextMergerClass : BseSourceClass
+struct BseContextMergerClass : BseContainerClass
 {};
 
 void	bse_context_merger_set_merge_context	(BseContextMerger	*self,
 						 guint			 merge_context);
 namespace Bse {
 
-class ContextMergerImpl : public SourceImpl, public virtual ContextMergerIface {
+class ContextMergerImpl : public ContainerImpl, public virtual ContextMergerIface {
 protected:
   virtual             ~ContextMergerImpl           ();
 public:

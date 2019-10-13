@@ -874,10 +874,6 @@ interface Source : Item {
   SignalMonitor create_signal_monitor (int32 ochannel);
 };
 
-/// Source module for merging multiple synthesis contexts, used to implement polyphony.
-interface ContextMerger : Source {
-};
-
 /** Base interface type for containers of Item derived types.
  * ### Events:
  * - **treechange** - Detail: 'additem' or 'removeitem' - a notification event is sent when an item is added to or removed from the container.
@@ -886,6 +882,10 @@ interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
   Item get_item    (String item_type, int32 seq_id); ///< Retrieve the immediate child of type @a item_type by its sequential id (the 'nth' child).
   ItemSeq list_children (); ///< List all immediate children of a container.
+};
+
+/// Source module for merging multiple synthesis contexts, used to implement polyphony.
+interface ContextMerger : Container {
 };
 
 /// Base interface type for Item managers.

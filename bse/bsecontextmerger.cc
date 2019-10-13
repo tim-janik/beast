@@ -38,7 +38,7 @@ BSE_BUILTIN_TYPE (BseContextMerger)
     (GInstanceInitFunc) bse_context_merger_init,
   };
 
-  return bse_type_register_static (BSE_TYPE_SOURCE,
+  return bse_type_register_static (BSE_TYPE_CONTAINER,
 				   "BseContextMerger",
 				   "Internal CONTEXT Voice glue object (merger)",
                                    __FILE__, __LINE__,
@@ -213,7 +213,7 @@ bse_context_merger_context_dismiss (BseSource     *source,
 namespace Bse {
 
 ContextMergerImpl::ContextMergerImpl (BseObject *bobj) :
-  SourceImpl (bobj)
+  ContainerImpl (bobj)
 {}
 
 ContextMergerImpl::~ContextMergerImpl ()
