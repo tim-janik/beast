@@ -22,7 +22,8 @@
 	  <b-track-list class="grow1" :song="song"></b-track-list>
 	</b-hflex>
 	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
-	  <b-piano-roll class="grow1" :part="piano_roll_part" ></b-piano-roll>
+	  <b-piano-roll class="grow1" :part="piano_roll_part" v-if="panel2 == 0" ></b-piano-roll>
+	  <b-hflex v-if="panel2 == 1"> Alt Panel </b-hflex>
 	</b-hflex>
       </b-vflex>
 
@@ -77,6 +78,7 @@ module.exports = {
     project: undefined,
     song: undefined,
     notifynameclear: () => 0,
+    panel2: 0,
   },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
@@ -96,11 +98,18 @@ module.exports = {
     this.load_project (Bse.server.last_project());
     // load_project() also forces an update with new Shell properties in place
   },
+  mounted() {
+    Util.add_hotkey ('Backquote', this.switch_panel2);
+  },
   destroyed() {
+    Util.remove_hotkey ('Backquote', this.switch_panel2);
     this.notifynameclear();
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
+    switch_panel2() {
+      this.panel2 = (this.panel2 + 1) % 2;
+    },
     sidebar_mouse (e) {
       const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);
