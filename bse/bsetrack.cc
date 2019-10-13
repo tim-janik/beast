@@ -108,7 +108,7 @@ bse_track_init (BseTrack *self)
   self->sound_font_preset = NULL;
   self->wave = NULL;
   self->wnet = NULL;
-  self->max_voices = 16;
+  self->max_voices = 1;
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));

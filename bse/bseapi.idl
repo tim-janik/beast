@@ -964,7 +964,7 @@ interface Track : ContextMerger {
   };
   group _("Synth Input") {
     int32 n_voices = Range (_("Max Voices"), _("Maximum number of voices for simultaneous playback"),
-			    GUI STORAGE ":scale:unprepared", 1, 256, 16, 1);
+			    GUI STORAGE ":scale:unprepared", 1, 64, 1, 1);
   };
   // property CSynth snet;         ///< _("Synthesis network to be used as instrument.")
   // property Wave wave;           ///< _("Wave to be used as instrument.")
