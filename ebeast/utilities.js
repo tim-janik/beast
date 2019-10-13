@@ -1522,6 +1522,8 @@ export function match_key_event (event, keyname)
   return true;
 }
 
+const hotkey_list = [];
+
 function hotkey_handler (event) {
   const log = console.log ? console.log : () => 0;
   // give precedence to navigatable element with focus
@@ -1539,6 +1541,17 @@ function hotkey_handler (event) {
       Util.keyboard_click (document.activeElement);
       return true;
     }
+  // activate global hotkeys
+  const array = hotkey_list;
+  for (let i = 0; i < array.length; i++)
+    if (match_key_event (event, array[i][0]))
+      {
+	const callback = array[i][1];
+	event.preventDefault();
+	log ("HOTKEY-HANDLER: '" + array[i][0] + "'", callback.name);
+	callback.call (null, event);
+	return true;
+      }
   // activate elements with data-hotkey=""
   const hotkey_elements = document.querySelectorAll ('[data-hotkey]');
   for (const el of hotkey_elements)
@@ -1554,6 +1567,23 @@ function hotkey_handler (event) {
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
+
+/// Add a global hotkey handler.
+export function add_hotkey (hotkey, callback) {
+  hotkey_list.push ([ hotkey, callback ]);
+}
+
+/// Remove a global hotkey handler.
+export function remove_hotkey (hotkey, callback) {
+  const array = hotkey_list;
+  for (let i = 0; i < array.length; i++)
+    if (hotkey === array[i][0] && callback === array[i][1])
+      {
+	array.splice (i, 1);
+	return true;
+      }
+  return false;
+}
 
 class FallbackResizeObserver {
   constructor (resize_handler) {
