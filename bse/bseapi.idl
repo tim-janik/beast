@@ -1195,7 +1195,7 @@ interface Project : Container {
   bool         is_dirty            (); ///< Check whether a project needs saving.
   SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
   Error        store               (String file_name, bool self_contained);     ///< Save project to file.
-  Error        store_bse           (Super super, String file_name,
+  Error        store_bse           (Container super, String file_name,
                                     bool self_contained);                       ///< Save effect or intrument.
   Song         create_song         (String name); ///< Create a song for this project.
   WaveRepo     get_wave_repo       ();            ///< Retrieve the project's unique wave repository.

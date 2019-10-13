@@ -496,9 +496,9 @@ static bool
 store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_name, const String &saving_message_format,
                 bool self_contained, bool want_overwrite)
 {
-  Bse::SuperH super = Bse::SuperH::__cast__ (bse_server.from_proxy (super_proxy));
-  Bse::Error error = super ? project.store_bse (super, file_name, self_contained) : project.store (file_name, self_contained);
-  const String title = Bse::string_format (saving_message_format.c_str(), super ? super.get_name() : project.get_name());
+  Bse::ContainerH container = Bse::ContainerH::__cast__ (bse_server.from_proxy (super_proxy));
+  Bse::Error error = project.store_bse (container, file_name, self_contained);
+  const String title = Bse::string_format (saving_message_format.c_str(), container ? container.get_name() : project.get_name());
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
@@ -524,7 +524,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
             {
               g_free (temp_file);
               temp_file = g_strdup_format ("%s.tmp%06x", file_name, rand() & 0xfffffd);
-              error = project.store_bse (super, temp_file, self_contained);
+              error = project.store_bse (container, temp_file, self_contained);
             }
           /* replace file by temporary file */
           if (error != Bse::Error::NONE)
@@ -567,7 +567,7 @@ bst_file_dialog_save_project (Bse::ProjectH project, gboolean self_contained,
 			      const gchar *file_name, gboolean apply_project_name, gboolean want_overwrite)
 {
   SfiProxy projectid = project.proxy_id();
-  gboolean handled = store_bse_file (project, 0, file_name, _("Saving project `%s'"), self_contained, want_overwrite);
+  gboolean handled = store_bse_file (project, projectid, file_name, _("Saving project `%s'"), self_contained, want_overwrite);
   if (apply_project_name)
     {
       bse_proxy_set_data_full (projectid, "beast-project-file-name", g_strdup (file_name), g_free);
