@@ -77,6 +77,7 @@ module.exports = {
     show_preferences_dialog: false,
     project: undefined,
     song: undefined,
+    current_track: undefined,
     notifynameclear: () => 0,
     panel2: 0,
   },
@@ -206,7 +207,7 @@ module.exports = {
 	  }
       if (!track)
 	{
-	  const track = await song.create_track ('Master');
+	  track = await song.create_track ('Master');
 	  track.ensure_output();
 	}
       // shut down old project
@@ -220,6 +221,7 @@ module.exports = {
       // reaplce project & song without await, to synchronously trigger Vue updates for both
       this.project = newproject;
       this.song = song;
+      this.current_track = track;
       const update_title = async () => {
 	const name = this.project ? await this.project.get_name_or_type() : undefined;
 	document.title = Util.format_title ('Beast', name);
