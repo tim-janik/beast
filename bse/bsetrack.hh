@@ -5,6 +5,7 @@
 #include <bse/bseitem.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsecontextmerger.hh>
+#include <bse/device.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
@@ -106,6 +107,9 @@ public:
   virtual void         midi_channel      (int val) override;
   virtual int          n_voices          () const override;
   virtual void         n_voices          (int val) override;
+  virtual StringSeq      list_device_types () override;
+  virtual DeviceTypeInfo device_type_info  (const String &device_type) override;
+  virtual DeviceIfaceP   create_device     (const String &device_type) override;
 };
 
 } // Bse

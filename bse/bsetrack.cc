@@ -1321,4 +1321,22 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
   bse_bus_or_track_set_outputs (self, newoutputs);
 }
 
+StringSeq
+TrackImpl::list_device_types ()
+{
+  return StringSeq();
+}
+
+DeviceTypeInfo
+TrackImpl::device_type_info (const String &device_type)
+{
+  return DeviceTypeInfo();
+}
+
+DeviceIfaceP
+TrackImpl::create_device (const String &device_type)
+{
+  return nullptr;
+}
+
 } // Bse
