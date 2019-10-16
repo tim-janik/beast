@@ -959,6 +959,20 @@ interface Module : Object {
   ModuleTypeInfo module_type_info ();                           ///< Describe this module type.
 };
 
+/// Info for device types.
+record DeviceTypeInfo {
+  String id;
+  String label;
+  String category;
+};
+
+/// Interface for the encapsulation of audio processors.
+interface Device : Object {
+  // device type determination
+  String         get_device_type  ();                           ///< Retrieve type of device to be created.
+  DeviceTypeInfo device_type_info ();                           ///< Describe this device type.
+};
+
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
