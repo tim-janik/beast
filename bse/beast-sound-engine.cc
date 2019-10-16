@@ -212,6 +212,7 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 #include "bsemidinotifier.hh"
 #include "bsemidisynth.hh"
 #include "bsepart.hh"
+#include "module.hh"
 #include "bsepcmwriter.hh"
 #include "bseproject.hh"
 #include "bseserver.hh"

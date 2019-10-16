@@ -944,6 +944,21 @@ interface SubSynth : Source {
   // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  STANDARD ":skip-default");
 };
 
+/// Info for module types.
+record ModuleTypeInfo {
+  String id;
+  String label;
+  String blurb;
+  String category;
+};
+
+/// Interface for the encapsulation of audio processors.
+interface Module : Object {
+  // module type determination
+  String         get_module_type  ();                           ///< Retrieve type of module to be created.
+  ModuleTypeInfo module_type_info ();                           ///< Describe this module type.
+};
+
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
