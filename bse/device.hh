@@ -16,8 +16,10 @@ public:
   virtual StringSeq      list_module_types () override;
   virtual ModuleTypeInfo module_type_info  (const String &module_type) override;
   virtual ModuleIfaceP   create_module     (const String &module_type) override;
-  virtual String         get_device_type   () override;
-  virtual DeviceTypeInfo device_type_info  () override;
+  virtual String         get_device_type   () override  { return device_type_; }
+  virtual DeviceTypeInfo device_type_info  () override  { return device_type_info (get_device_type()); }
+  static DeviceTypeInfo  device_type_info  (const String &device_id);
+  static StringSeq       list_device_types ();
 };
 using DeviceImplP = std::shared_ptr<DeviceImpl>;
 

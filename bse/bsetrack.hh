@@ -85,6 +85,7 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 namespace Bse {
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
+  std::vector<DeviceImplP> devices_;
 protected:
   virtual             ~TrackImpl         ();
 public:
@@ -107,9 +108,10 @@ public:
   virtual void         midi_channel      (int val) override;
   virtual int          n_voices          () const override;
   virtual void         n_voices          (int val) override;
-  virtual StringSeq      list_device_types () override;
-  virtual DeviceTypeInfo device_type_info  (const String &device_type) override;
-  virtual DeviceIfaceP   create_device     (const String &device_type) override;
+  virtual DeviceSeq      list_devices      () override;
+  virtual DeviceIfaceP   create_device     (const String &device_id) override;
+  virtual DeviceTypeInfo device_type_info  (const String &device_id) override { return DeviceImpl::device_type_info (device_id); }
+  virtual StringSeq      list_device_types () override                        { return DeviceImpl::list_device_types (); }
 };
 
 } // Bse

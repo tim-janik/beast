@@ -976,6 +976,7 @@ interface Device : Object {
   String         get_device_type  ();                           ///< Retrieve type of device to be created.
   DeviceTypeInfo device_type_info ();                           ///< Describe this device type.
 };
+sequence DeviceSeq { Device devices; };
 
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
@@ -985,9 +986,10 @@ interface Track : ContextMerger {
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
 
   // create devices
-  StringSeq      list_device_types ();                   ///< List known device types.
-  DeviceTypeInfo device_type_info  (String device_type); ///< Describe `device_type`.
-  Device         create_device     (String device_type); ///< Create a new device with `device_type`.
+  DeviceSeq      list_devices      ();                 ///< List devices in order of processing.
+  Device         create_device     (String device_id); ///< Create a new device with `device_type`.
+  DeviceTypeInfo device_type_info  (String device_id); ///< Describe `device_type`.
+  StringSeq      list_device_types ();                 ///< List known device types.
 
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.

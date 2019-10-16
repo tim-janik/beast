@@ -28,16 +28,20 @@ DeviceImpl::create_module (const String &module_type)
   return nullptr;
 }
 
-String
-DeviceImpl::get_device_type ()
+DeviceTypeInfo
+DeviceImpl::device_type_info (const String &device_id)
 {
-  return String();
+  DeviceTypeInfo info;
+  info.id = device_id;
+  return info;
 }
 
-DeviceTypeInfo
-DeviceImpl::device_type_info ()
+StringSeq
+DeviceImpl::list_device_types ()
 {
-  return DeviceTypeInfo();
+  StringSeq seq;
+  seq.push_back ("Dummy");
+  return seq;
 }
 
 } // Bse

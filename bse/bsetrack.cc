@@ -1321,22 +1321,23 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
   bse_bus_or_track_set_outputs (self, newoutputs);
 }
 
-StringSeq
-TrackImpl::list_device_types ()
-{
-  return StringSeq();
-}
-
-DeviceTypeInfo
-TrackImpl::device_type_info (const String &device_type)
-{
-  return DeviceTypeInfo();
-}
-
 DeviceIfaceP
-TrackImpl::create_device (const String &device_type)
+TrackImpl::create_device (const String &device_id)
 {
+  DeviceImplP devicep = FriendAllocator<DeviceImpl>::make_shared (device_id);
+  assert_return (devicep, nullptr);
+  devices_.push_back (devicep);
+  notify ("devices");
   return nullptr;
+}
+
+DeviceSeq
+TrackImpl::list_devices ()
+{
+  DeviceSeq devices;
+  for (auto &d : devices_)
+    devices.push_back (d->__handle__());
+  return devices;
 }
 
 } // Bse
