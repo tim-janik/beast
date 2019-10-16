@@ -649,6 +649,12 @@ interface Project;
 
 /// Base type for all new style C++ objects.
 interface Object {
+  // dynamic properties
+  bool      set_prop   (String name, Any value); ///< Set dynamic property `name` to `value`.
+  Any       get_prop   (String name);            ///< Get value of dynamic property `name`.
+  StringSeq find_prop  (String name);            ///< Query `key=value` meta info for dynamic property `name`.
+  StringSeq list_props ();                       ///< List names of all dynamic properties.
+  void      notify     (String detail);          ///< Emit notification event for object state or property changes.
 };
 
 /** Base type for all legacy objects, derived from `struct BseObject`.
@@ -660,13 +666,7 @@ interface LegacyObject : Object {
   String        uname           = String ("UName", "Unique object name", GUI);
   String        debug_name      ();                     ///< Object name useful for debugging output.
   int32         unique_id       ();                     ///< Generate a unique stable ID for this object, similar to a hash of its address.
-  void          notify          (String detail);        ///< Emit notification event for object state or property changes.
   int64         proxy_id        ();                     ///< Helper ID for the old SfiGlue interface.
-  // dynamic properties
-  bool          set_prop        (String name, Any value);       ///< Set dynamic property `name` to `value`.
-  Any           get_prop        (String name);                  ///< Get value of dynamic property `name`.
-  StringSeq     find_prop       (String name);                  ///< Query `key=value` meta info for dynamic property `name`.
-  StringSeq     list_props      ();                             ///< List names of all dynamic properties.
   StringSeq     find_typedata   (String type_name);             ///< Query `key=value` meta info for type `type_name`.
 };
 

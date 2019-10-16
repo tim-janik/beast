@@ -69,18 +69,6 @@ LegacyObjectImpl::~LegacyObjectImpl ()
   // BseObject keeps LegacyObjectImpl alive until finalize()
 }
 
-Aida::ExecutionContext&
-LegacyObjectImpl::__execution_context_mt__ () const
-{
-  return execution_context();
-}
-
-Aida::IfaceEventConnection
-LegacyObjectImpl::__attach__ (const String &eventselector, EventHandlerF handler)
-{
-  return event_dispatcher_.attach (eventselector, handler);
-}
-
 std::string
 LegacyObjectImpl::debug_name ()
 {
@@ -101,47 +89,6 @@ LegacyObjectImpl::proxy_id ()
   return bo->unique_id;
 }
 
-void
-LegacyObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, const KV &a3,
-                        const KV &a4, const KV &a5, const KV &a6, const KV &a7)
-{
-  const char ident_chars[] =
-    "0123456789"
-    "abcdefghijklmnopqrstuvwxyz"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const char *const ctype = type.c_str(), *const colon = strchr (ctype, ':');
-  const String name = colon ? type.substr (0, colon - ctype) : type;
-  const String detail = colon ? type.substr (colon - ctype + 1) : "";
-  for (size_t i = 0; name[i]; i++)
-    if (!strchr (ident_chars, name[i]))
-      {
-        Bse::warning ("invalid characters in Event type: %s", type);
-        break;
-      }
-  for (size_t i = 0; detail[i]; i++)
-    if (!strchr (ident_chars, detail[i]) and detail[i] != '_')
-      {
-        Bse::warning ("invalid characters in Event type: %s", type);
-        break;
-      }
-  Aida::Event ev (type);
-  const KV *args[] = { &a1, &a2, &a3, &a4, &a5, &a6, &a7 };
-  for (size_t i = 0; i < sizeof (args) / sizeof (args[0]); i++)
-    if (!args[i]->key.empty())
-      ev[args[i]->key] = args[i]->value;
-  ev["name"] = name;
-  ev["detail"] = detail;
-  event_dispatcher_.emit (ev);  // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
-  // using namespace Aida::KeyValueArgs; emit_event ("notification", "value"_v = 5);
-}
-
-void
-LegacyObjectImpl::notify (const String &detail)
-{
-  assert_return (detail.empty() == false);
-  emit_event ("notify:" + detail);
-}
-
 std::string
 LegacyObjectImpl::uname () const
 {
@@ -158,62 +105,6 @@ LegacyObjectImpl::uname (const std::string &newname)
 {
   BseObject *object = *this;
   g_object_set (object, "uname", newname.c_str(), NULL);
-}
-
-bool
-LegacyObjectImpl::set_prop (const std::string &name, const Any &value)
-{
-  if (!name.empty())
-    {
-      auto collector = [&value] (const Aida::PropertyAccessor &ps) {
-        ps.set (value);
-        return true;
-      };
-      return __access__ (name, collector);
-    }
-  return false;
-}
-
-Any
-LegacyObjectImpl::get_prop (const std::string &name)
-{
-  Any any;
-  if (!name.empty())
-    {
-      auto collector = [&any] (const Aida::PropertyAccessor &ps) {
-        ps.get().swap (any);
-        return true;
-      };
-      __access__ (name, collector);
-    }
-  return any;
-}
-
-StringSeq
-LegacyObjectImpl::find_prop (const std::string &name)
-{
-  StringSeq kvinfo;
-  if (!name.empty())
-    {
-      auto collector = [&kvinfo] (const Aida::PropertyAccessor &ps) {
-        ps.typedata().swap (kvinfo);
-        return false;
-      };
-      __access__ (name, collector);
-    }
-  return kvinfo;
-}
-
-StringSeq
-LegacyObjectImpl::list_props ()
-{
-  StringSeq props;
-  auto collector = [&props] (const Aida::PropertyAccessor &ps) {
-    props.push_back (ps.name());
-    return false;
-  };
-  __access__ ("", collector);
-  return props;
 }
 
 StringSeq

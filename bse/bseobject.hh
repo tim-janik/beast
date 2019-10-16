@@ -10,7 +10,6 @@ namespace Bse {
 
 class LegacyObjectImpl : public ObjectImpl, public DataListContainer, public virtual LegacyObjectIface {
   BseObject             *gobject_ = NULL;
-  Aida::EventDispatcher  event_dispatcher_;
   virtual Aida::SharedFromThisP __shared_from_this__ () override;
 protected:
   virtual void          post_init   ();
@@ -23,19 +22,9 @@ public:
   virtual int32_t       unique_id   () override;
   virtual std::string   uname       () const override;
   virtual void          uname       (const std::string &newname) override;
-  virtual void          notify      (const String &detail) override;
   virtual int64_t       proxy_id    () override;
-  virtual bool          set_prop    (const std::string &name, const Any &value) override;
-  virtual Any           get_prop    (const std::string &name) override;
-  virtual StringSeq     find_prop   (const std::string &name) override;
-  virtual StringSeq     list_props  () override;
   virtual StringSeq     find_typedata (const std::string &type_name) override;
-  virtual BseObject*                    as_bse_object            () override { return gobject_; }
-  virtual Aida::ExecutionContext&       __execution_context_mt__ () const override;
-  virtual Aida::IfaceEventConnection    __attach__               (const String &eventselector, EventHandlerF handler) override;
-  typedef Aida::KeyValue KV;
-  void  emit_event (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
-                    const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
+  virtual BseObject*    as_bse_object () override { return gobject_; }
 };
 typedef std::shared_ptr<LegacyObjectImpl> LegacyObjectImplP;
 
