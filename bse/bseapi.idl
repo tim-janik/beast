@@ -656,7 +656,7 @@ interface Object {
  * ### Events:
  * - **notify** - A notification event for property changes, the event field *detail* contains the property name.
  */
-interface LegacyObject {
+interface LegacyObject : Object {
   String        uname           = String ("UName", "Unique object name", GUI);
   String        debug_name      ();                     ///< Object name useful for debugging output.
   int32         unique_id       ();                     ///< Generate a unique stable ID for this object, similar to a hash of its address.

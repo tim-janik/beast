@@ -16,7 +16,9 @@ public:
   virtual Aida::ExecutionContext& __execution_context_mt__ () const override    { return execution_context(); }
   virtual Aida::IfaceEventConnection __attach__            (const String &eventselector, EventHandlerF handler) override
   { return event_dispatcher_.attach (eventselector, handler); }
+  using EnableSharedFromThis<ObjectImpl>::shared_from_this;
 };
+typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 
 } // Bse
 

@@ -4,10 +4,11 @@
 
 #include <bse/bseparam.hh>
 #include <bse/datalist.hh>
+#include <bse/object.hh>
 
 namespace Bse {
 
-class LegacyObjectImpl : public virtual LegacyObjectIface, public virtual DataListContainer {
+class LegacyObjectImpl : public ObjectImpl, public DataListContainer, public virtual LegacyObjectIface {
   BseObject             *gobject_ = NULL;
   Aida::EventDispatcher  event_dispatcher_;
   virtual Aida::SharedFromThisP __shared_from_this__ () override;
