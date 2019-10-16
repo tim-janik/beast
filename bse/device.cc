@@ -10,6 +10,24 @@ DeviceImpl::DeviceImpl (const String &device_type) :
 DeviceImpl::~DeviceImpl ()
 {}
 
+StringSeq
+DeviceImpl::list_module_types ()
+{
+  return StringSeq();
+}
+
+ModuleTypeInfo
+DeviceImpl::module_type_info (const String &module_type)
+{
+  return ModuleTypeInfo();
+}
+
+ModuleIfaceP
+DeviceImpl::create_module (const String &module_type)
+{
+  return nullptr;
+}
+
 String
 DeviceImpl::get_device_type ()
 {

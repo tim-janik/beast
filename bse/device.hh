@@ -6,15 +6,20 @@
 
 namespace Bse {
 
-class DeviceImpl : public virtual DeviceIface {
+class DeviceImpl : public ObjectImpl, public virtual DeviceIface {
   const String device_type_;
 protected:
-  virtual               ~DeviceImpl       ();
+  friend class           FriendAllocator<DeviceImpl>;
+  virtual               ~DeviceImpl        ();
 public:
-  explicit               DeviceImpl       (const String &device_type);
-  virtual String         get_device_type  () override;
-  virtual DeviceTypeInfo device_type_info () override;
+  explicit               DeviceImpl        (const String &device_type);
+  virtual StringSeq      list_module_types () override;
+  virtual ModuleTypeInfo module_type_info  (const String &module_type) override;
+  virtual ModuleIfaceP   create_module     (const String &module_type) override;
+  virtual String         get_device_type   () override;
+  virtual DeviceTypeInfo device_type_info  () override;
 };
+using DeviceImplP = std::shared_ptr<DeviceImpl>;
 
 } // Bse
 

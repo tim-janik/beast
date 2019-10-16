@@ -968,6 +968,10 @@ record DeviceTypeInfo {
 
 /// Interface for the encapsulation of audio processors.
 interface Device : Object {
+  // create modules
+  StringSeq      list_module_types ();                          ///< List known module types.
+  ModuleTypeInfo module_type_info  (String module_type);        ///< Describe `module_type`.
+  Module         create_module     (String module_type);        ///< Create a new module with `module_type`.
   // device type determination
   String         get_device_type  ();                           ///< Retrieve type of device to be created.
   DeviceTypeInfo device_type_info ();                           ///< Describe this device type.
