@@ -83,7 +83,7 @@ public:
   virtual String           wave_file        () const override;
   virtual void             wave_file        (const String& val) override;
   virtual bool             engine_active    () override;
-  virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
+  virtual LegacyObjectIfaceP    from_proxy       (int64_t proxyid) override;
   virtual SharedMemory  get_shared_memory   () override;
   virtual void    broadcast_shm_fragments   (const ShmFragmentSeq &plan, int interval_ms) override;
   virtual String        get_mp3_version     () override;

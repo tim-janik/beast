@@ -647,12 +647,12 @@ interface Item;
 interface Source;
 interface Project;
 
-/** Base type for all BSE objects.
+/** Base type for all legacy objects, derived from `struct BseObject`.
  *
  * ### Events:
  * - **notify** - A notification event for property changes, the event field *detail* contains the property name.
  */
-interface Object {
+interface LegacyObject {
   String        uname           = String ("UName", "Unique object name", GUI);
   String        debug_name      ();                     ///< Object name useful for debugging output.
   int32         unique_id       ();                     ///< Generate a unique stable ID for this object, similar to a hash of its address.
@@ -682,7 +682,7 @@ record PropertyCandidates {
 };
 
 /// Base interface type for objects that can be added to a container.
-interface Item : Object {
+interface Item : LegacyObject {
   Icon    icon = Record ("Icon", "State dependent icon representation of this item", "rw:G");
   Item    use               (); ///< Increment use count to keep an item alive.
   void    unuse             (); ///< Decrement use count for when an item is not needed anymore.
@@ -1362,7 +1362,7 @@ sequence ShmFragmentSeq {
 interface Server : Container {
   // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
-  Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
+  LegacyObject       from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   bool          engine_active   ();                     ///< Retrieve DSP engine activateion state, see also: "enginechange" Event.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.

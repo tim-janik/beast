@@ -904,7 +904,7 @@ bse_item_backup_to_undo (BseItem      *self,
 namespace Bse {
 
 ItemImpl::ItemImpl (BseObject *bobj) :
-  ObjectImpl (bobj)
+  LegacyObjectImpl (bobj)
 {}
 
 ItemImpl::~ItemImpl ()

@@ -7,7 +7,7 @@ export * from './bseapi_jsonipc.js';
 // -------- Javascript BSE API (auto-generated) --------
 
 // == Object.on ==
-Bse.ObjectIface.prototype.on = function (eventselector, callback) {
+Bse.LegacyObjectIface.prototype.on = function (eventselector, callback) {
   const connection = {
     active: true,
     promise: null,

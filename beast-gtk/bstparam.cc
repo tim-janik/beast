@@ -421,7 +421,7 @@ bst_param_new_rec (GParamSpec *pspec,
 
 
 // == Aida::Parameter binding ==
-static Bse::ObjectS* aida_property_binding_object (GxkParam *param);
+static Bse::LegacyObjectS* aida_property_binding_object (GxkParam *param);
 
 static std::string
 name_to_identifier (const std::string &name)
@@ -440,7 +440,7 @@ name_to_identifier (const std::string &name)
 static void
 aida_property_binding_set_value (GxkParam *param, const GValue *value)
 {
-  Bse::ObjectS *objectp = aida_property_binding_object (param);
+  Bse::LegacyObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
   Any any;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
@@ -476,7 +476,7 @@ aida_property_binding_set_value (GxkParam *param, const GValue *value)
 static void
 aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 {
-  Bse::ObjectS *objectp = aida_property_binding_object (param);
+  Bse::LegacyObjectS *objectp = aida_property_binding_object (param);
   GParamSpec *pspec = param->pspec;
   Any any = objectp->get_prop (name_to_identifier (pspec->name));
   if (any.empty())
@@ -525,7 +525,7 @@ aida_property_binding_get_value (GxkParam *param, GValue *param_value)
 static void
 aida_property_binding_destroy (GxkParam *param)
 {
-  Bse::ObjectS *objectp = aida_property_binding_object (param);
+  Bse::LegacyObjectS *objectp = aida_property_binding_object (param);
   assert_return (objectp);
   param->bdata[0].v_pointer = NULL;
   delete objectp;
@@ -534,7 +534,7 @@ aida_property_binding_destroy (GxkParam *param)
 static gboolean
 aida_property_binding_check_writable (GxkParam *param)
 {
-  Bse::ObjectS *objectp = aida_property_binding_object (param);
+  Bse::LegacyObjectS *objectp = aida_property_binding_object (param);
   assert_return (objectp, false);
   return true;
 }
@@ -548,19 +548,19 @@ static GxkParamBinding aida_property_binding = {
   aida_property_binding_check_writable,
 };
 
-static Bse::ObjectS*
+static Bse::LegacyObjectS*
 aida_property_binding_object (GxkParam *param)
 {
   assert_return (param && param->binding == &aida_property_binding, NULL);
-  return (Bse::ObjectS*) param->bdata[0].v_pointer;
+  return (Bse::LegacyObjectS*) param->bdata[0].v_pointer;
 }
 
 GxkParam*
-bst_param_new_property (GParamSpec *pspec, const Bse::ObjectH handle)
+bst_param_new_property (GParamSpec *pspec, const Bse::LegacyObjectH handle)
 {
   assert_return (handle != NULL, NULL);
   GxkParam *param = gxk_param_new (pspec, &aida_property_binding, NULL);
-  Bse::ObjectS *objectp = new Bse::ObjectS (handle);
+  Bse::LegacyObjectS *objectp = new Bse::LegacyObjectS (handle);
   param->bdata[0].v_pointer = objectp;
   auto notify = [param] (const Aida::Event &event) {
     gxk_param_update (param);

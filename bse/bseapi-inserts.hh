@@ -4,7 +4,7 @@ IGNORE:
 struct DUMMY { // dummy class for auto indentation
 
 
-interface_scope:Object:
+interface_scope:LegacyObject:
   BSE_USE_RESULT
   ::Aida::IfaceEventConnection on  (const ::std::string &type, ::Aida::EventHandlerF handler)   { return this->__attach__ (type, handler); }
   BSE_USE_RESULT
@@ -25,13 +25,13 @@ interface_scope:Object:
   template<class T> struct DERIVES_shared_ptr<T, Bse::void_t< typename T::element_type > > :
   std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
   // as<shared_ptr<T>>()
-  template<class ObjectImplP, typename ::std::enable_if<DERIVES_shared_ptr<ObjectImplP>::value, bool>::type = true>
-  ObjectImplP            as ()
+  template<class LegacyObjectImplP, typename ::std::enable_if<DERIVES_shared_ptr<LegacyObjectImplP>::value, bool>::type = true>
+  LegacyObjectImplP            as ()
   {
-    typedef typename ObjectImplP::element_type ObjectImplT;
-    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
-    ObjectImplT *impl = dynamic_cast<ObjectImplT*> (this);
-    return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
+    typedef typename LegacyObjectImplP::element_type LegacyObjectImplT;
+    static_assert (std::is_base_of<Aida::ImplicitBase, LegacyObjectImplT>::value, "");
+    LegacyObjectImplT *impl = dynamic_cast<LegacyObjectImplT*> (this);
+    return impl ? Bse::shared_ptr_cast<LegacyObjectImplT> (impl) : NULL;
   }
 protected:
   virtual BseObject* as_bse_object() = 0;

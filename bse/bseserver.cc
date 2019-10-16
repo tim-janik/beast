@@ -249,7 +249,7 @@ bse_server_get (void)
       g_object_ref (server);
       assert_return (server, NULL);
       assert_return (server->cxxobject_, NULL);
-      assert_return (dynamic_cast<Bse::ObjectImpl*> (server->cxxobject_), NULL);
+      assert_return (dynamic_cast<Bse::LegacyObjectImpl*> (server->cxxobject_), NULL);
       assert_return (dynamic_cast<Bse::ServerImpl*> (server->cxxobject_), NULL);
     }
 
@@ -841,13 +841,13 @@ ServerImpl::engine_active ()
   return self->dev_use_count;
 }
 
-ObjectIfaceP
+LegacyObjectIfaceP
 ServerImpl::from_proxy (int64_t proxyid)
 {
   BseObject *bo = bse_object_from_id (proxyid);
   if (!bo)
-    return ObjectIfaceP();
-  return bo->as<ObjectIfaceP>();
+    return LegacyObjectIfaceP();
+  return bo->as<LegacyObjectIfaceP>();
 }
 
 ServerImpl&
