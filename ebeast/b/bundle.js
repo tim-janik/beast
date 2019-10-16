@@ -11,6 +11,7 @@ const vue_components = [
   require ('./button.vue'),
   require ('./color-picker.vue'),
   require ('./contextmenu.vue'),
+  require ('./devicepanel.vue'),
   require ('./example.vue'),
   require ('./icon.vue'),
   require ('./menuitem.vue'),

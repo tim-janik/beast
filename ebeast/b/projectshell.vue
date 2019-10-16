@@ -23,7 +23,10 @@
 	</b-hflex>
 	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
 	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="panel2 == 0" ></b-piano-roll>
-	  <b-hflex v-show="panel2 == 1"> Alt Panel </b-hflex>
+	  <b-vflex v-show="panel2 == 1">
+	    Device Panel
+	    <b-devicepanel :track="current_track" />
+	  </b-vflex>
 	</b-hflex>
       </b-vflex>
 
