@@ -12,6 +12,7 @@ const vue_components = [
   require ('./color-picker.vue'),
   require ('./contextmenu.vue'),
   require ('./devicepanel.vue'),
+  require ('./deviceeditor.vue'),
   require ('./example.vue'),
   require ('./icon.vue'),
   require ('./menuitem.vue'),

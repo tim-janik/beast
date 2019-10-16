@@ -11,16 +11,14 @@
 <style lang="scss">
   @import 'mixins.scss';
   .b-devicepanel {
-    border: 5px solid #322;
+    border: 5px solid #755;
   }
 </style>
 
 <template>
-  <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" @contextmenu.prevent="menuopen" >
-    <b-vflex class="b-devicepanel-entry" center style="margin: 5px"
-	     v-for="device in devices" :key="device.$id" >
-      <span > DevicePlaceholder </span>
-    </b-vflex>
+  <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" @contextmenu.stop="menuopen" >
+    <b-deviceeditor v-for="device in devices" :key="device.$id"
+		    :device="device" center style="margin: 5px" />
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Device </b-menutitle>
       <b-menuitem fa="plus-circle"      role="add-device" >      Add Device		</b-menuitem>
