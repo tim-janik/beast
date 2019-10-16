@@ -647,6 +647,10 @@ interface Item;
 interface Source;
 interface Project;
 
+/// Base type for all new style C++ objects.
+interface Object {
+};
+
 /** Base type for all legacy objects, derived from `struct BseObject`.
  *
  * ### Events:
@@ -810,7 +814,7 @@ record ProbeFeatures {
 };
 
 /// Interface for monitoring output signals.
-interface SignalMonitor {
+interface SignalMonitor : Object {
   Source        get_osource        ();                  ///< Retrieve output module the SignalMonitor is connected to.
   int32         get_ochannel       ();                  ///< Retrieve output channel the SignalMonitor is connected to.
   int64         get_mix_freq       ();                  ///< Mix frequency at which monitor values are calculated.

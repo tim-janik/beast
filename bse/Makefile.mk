@@ -128,6 +128,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/magic.hh			\
 	bse/memory.hh			\
 	bse/monitor.hh			\
+	bse/object.hh			\
 	bse/path.hh			\
 	bse/platform.hh			\
 	bse/pugixml.hh			\
@@ -281,6 +282,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/memory.cc			\
 	bse/minizip.c			\
 	bse/monitor.cc			\
+	bse/object.cc			\
 	bse/path.cc			\
 	bse/platform.cc			\
 	bse/pugixml.cc			\

@@ -22,18 +22,6 @@ SignalMonitorImpl::~SignalMonitorImpl ()
   probe_features_ = ProbeFeatures();
 }
 
-Aida::ExecutionContext&
-SignalMonitorImpl::__execution_context_mt__ () const
-{
-  return execution_context();
-}
-
-Aida::IfaceEventConnection
-SignalMonitorImpl::__attach__ (const String &eventselector, EventHandlerF handler)
-{
-  return event_dispatcher_.attach (eventselector, handler);
-}
-
 SourceIfaceP
 SignalMonitorImpl::get_osource ()
 {
