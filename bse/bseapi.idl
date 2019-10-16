@@ -645,6 +645,7 @@ record TrackPart;
 sequence TrackPartSeq;
 interface Item;
 interface Source;
+interface WaveOsc;
 interface Project;
 
 /// Base type for all new style C++ objects.
@@ -1125,7 +1126,6 @@ interface WaveRepo : Super {
 };
 
 /// A list of part note events.
-interface WaveOsc;
 sequence WaveOscSeq {
   WaveOsc wave_oscs;
 };
@@ -1322,7 +1322,7 @@ record DeviceEntry {
   DeviceEntrySeq  entries;
 };
 
-interface DeviceCrawler {
+interface DeviceCrawler : Object {
   DeviceEntry list_device_origin (DeviceOrigin origin);
 };
 
