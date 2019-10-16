@@ -958,6 +958,7 @@ interface Module : Object {
   String         get_module_type  ();                           ///< Retrieve type of module to be created.
   ModuleTypeInfo module_type_info ();                           ///< Describe this module type.
 };
+sequence ModuleSeq { Module modules; };
 
 /// Info for device types.
 record DeviceTypeInfo {
@@ -969,9 +970,11 @@ record DeviceTypeInfo {
 /// Interface for the encapsulation of audio processors.
 interface Device : Object {
   // create modules
-  StringSeq      list_module_types ();                          ///< List known module types.
-  ModuleTypeInfo module_type_info  (String module_type);        ///< Describe `module_type`.
-  Module         create_module     (String module_type);        ///< Create a new module with `module_type`.
+  ModuleSeq      list_modules      ();                 ///< List modules in order of processing.
+  Module         create_module     (String module_id); ///< Create a new module with `module_type`.
+  ModuleTypeInfo module_type_info  (String module_id); ///< Describe `module_type`.
+  StringSeq      list_module_types ();                 ///< List known module types.
+
   // device type determination
   String         get_device_type  ();                           ///< Retrieve type of device to be created.
   DeviceTypeInfo device_type_info ();                           ///< Describe this device type.
