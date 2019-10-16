@@ -81,6 +81,7 @@ class Generator:
     self.gen_inclusions = []
     self.iface_base = 'Aida::ImplicitBase'
     self.property_list = 'Aida::PropertyList'
+    self.foreach_seq = []
     self.gen_mode = None
     self.strip_path = ''
     self.declared_pointerdefs = set() # types for which pointerdefs have been generated
@@ -288,6 +289,7 @@ class Generator:
     type_identifier = self.type_identifier (type_info)
     # s += self.generate_shortdoc (type_info)   # doxygen IDL snippet
     if type_info.storage == Decls.SEQUENCE:
+      self.foreach_seq.append (type_info)
       fl = type_info.elements
       #s += '/// @cond GeneratedRecords\n'
       s += 'class ' + classC + ' : public std::vector<' + self.M (fl[1]) + '>\n'
@@ -955,6 +957,15 @@ class Generator:
         for tp in spc_enums:
           s += self.generate_enum_info_impl (tp)
     s += self.open_namespace (None) # close all namespaces
+    # foreach sequence macro
+    if self.gen_clienthh:
+      s += '#define %s_FOREACH_IFACE_SEQ() \\\n' % self.cppmacro
+      for tp in self.foreach_seq:
+        if tp.elements[1].storage != Decls.INTERFACE:
+          continue
+        classC = self.C (tp)
+        s += '  %s_FOREACH_STEP (%s) \\\n' % (self.cppmacro, classC)
+      s += '\n'
     # DOXYGEN
     if self.gen_serverhh:
       s += '\n#else // DOXYGEN\n'
