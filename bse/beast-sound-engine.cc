@@ -17,26 +17,33 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 // == Aida Workarounds ==
 // Manually convert between Aida Handle types (that Jsonipc cannot know about)
 // and shared_ptr to Iface types.
+// TODO: remove this, once Handle types are removed
 // Bse::*Seq as std::vector
-template<typename Bse_Seq, typename Bse_IfaceP>
+template<typename HandleSeq, typename IfaceP>
 struct ConvertSeq {
-  static Bse_Seq
+  static HandleSeq
   from_json (const Jsonipc::JsonValue &jarray)
   {
-    std::vector<Bse_IfaceP> pointers = Jsonipc::from_json<std::vector<Bse_IfaceP>> (jarray);
-    Bse_Seq seq;
+    std::vector<IfaceP> pointers = Jsonipc::from_json<std::vector<IfaceP>> (jarray);
+    HandleSeq seq;
     seq.reserve (pointers.size());
     for (auto &ptr : pointers)
       seq.emplace_back (ptr->__handle__());
     return seq;
   }
   static Jsonipc::JsonValue
-  to_json (const Bse_Seq &vec, Jsonipc::JsonAllocator &allocator)
+  to_json (const HandleSeq &vec, Jsonipc::JsonAllocator &allocator)
   {
-    std::vector<Bse_IfaceP> pointers;
+    std::vector<IfaceP> pointers;
     pointers.reserve (vec.size());
-    for (auto &itemhandle : vec)
-      pointers.emplace_back (itemhandle.__iface__()->template as<Bse_IfaceP>());
+    for (auto &handle : vec)
+      {
+        typedef typename IfaceP::element_type IfaceT;
+        static_assert (std::is_base_of<Aida::ImplicitBase, IfaceT>::value, "");
+        auto *iface = handle.__iface__();
+        IfaceP ptr = iface ? Bse::shared_ptr_cast<IfaceT> (iface) : nullptr;
+        pointers.emplace_back (ptr); // preserve element count, possibly adding NULL
+      }
     return Jsonipc::to_json (pointers, allocator);
   }
 };
@@ -160,16 +167,20 @@ struct ConvertAny {
 
 
 namespace Jsonipc {
-// Bse::ItemSeq as std::vector
-template<>      struct Convert<Bse::ItemSeq>    : ConvertSeq<Bse::ItemSeq, Bse::ItemIfaceP> {};
-// Bse::PartSeq as std::vector
-template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::PartIfaceP> {};
-// Bse::TrackSeq as std::vector
-template<>      struct Convert<Bse::TrackSeq>   : ConvertSeq<Bse::TrackSeq, Bse::TrackIfaceP> {};
-// Bse::SuperSeq as std::vector
-template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
-// Bse::WaveOscSeq as std::vector
-template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bse::WaveOscIfaceP> {};
+
+/* TODO: remove this, once Handle types are removed
+ * Given `ItemSeq` is a type derived from `std::vector<Aida::RemoteHandle derived>` and
+ * assuming its remote handle has a `ItemIface* __iface__()` member function, create
+ * a partial specialisation for sequence conversion of this form:
+ * template<> struct Convert<ItemSeq> : ConvertSeq<ItemSeq, std::shared_ptr<ItemIface> > {};
+ */
+#define bse_bseapi_idl_FOREACH_STEP(ItemSeq)    \
+  template<> struct Convert<ItemSeq> :          \
+    ConvertSeq<ItemSeq,                         \
+               std::shared_ptr< std::remove_reference< decltype (*std::declval<ItemSeq::value_type>().__iface__()) >::type > \
+               > {};
+bse_bseapi_idl_FOREACH_IFACE_SEQ(); // uses bse_bseapi_idl_FOREACH_STEP
+#undef bse_bseapi_idl_FOREACH_STEP
 
 // Aida::Any
 template<>      struct Convert<Aida::Any> : ConvertAny {};
@@ -206,7 +217,6 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 #include "bseserver.hh"
 #include "devicecrawler.hh"
 #include "bsesnet.hh"
-#include "bsesong.hh"
 #include "bsesong.hh"
 #include "bsesoundfont.hh"
 #include "bsesoundfontrepo.hh"
