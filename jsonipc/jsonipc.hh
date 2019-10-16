@@ -434,6 +434,7 @@ struct InstanceMap {
   static Wrapper*
   lookup (size_t thisid)
   {
+    auto &wmap_ = wmap();
     auto it = wmap_.find (thisid);
     if (it != wmap_.end())
       return it->second;
@@ -442,13 +443,15 @@ struct InstanceMap {
   static size_t
   add (Wrapper *wrapper)
   {
-    const size_t id = ++counter_;
+    auto &wmap_ = wmap();
+    const size_t id = next_counter();
     wmap_[id] = wrapper;
     return id;
   }
   static bool
   remove (size_t thisid)
   {
+    auto &wmap_ = wmap();
     auto it = wmap_.find (thisid);
     if (it != wmap_.end())
       {
@@ -460,11 +463,10 @@ struct InstanceMap {
     return false;
   }
 private:
-  static std::map<size_t, Wrapper*> wmap_;
-  static size_t counter_;
+  using WrapperMap = std::map<size_t, Wrapper*>;
+  static WrapperMap& wmap        () { static WrapperMap wmap_; return wmap_; }
+  static size_t      next_counter() { static size_t counter_ = 0; return ++counter_; }
 };
-std::map<size_t, InstanceMap::Wrapper*> InstanceMap::wmap_;
-size_t InstanceMap::counter_ = 0;
 
 Closure*
 CallbackInfo::find_closure (const char *methodname)
