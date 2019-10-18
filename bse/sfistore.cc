@@ -142,21 +142,6 @@ sfi_wstore_putd (SfiWStore      *wstore,
 }
 
 void
-sfi_wstore_put_value (SfiWStore	   *wstore,
-		      const GValue *value)
-{
-  GString *gstring;
-
-  assert_return (wstore != NULL);
-  assert_return (G_IS_VALUE (value));
-
-  gstring = g_string_new (NULL);
-  sfi_value_store_typed (value, gstring);
-  sfi_wstore_puts (wstore, gstring->str);
-  g_string_free (gstring, TRUE);
-}
-
-void
 sfi_wstore_put_param (SfiWStore	   *wstore,
 		      const GValue *value,
 		      GParamSpec   *pspec)
@@ -498,30 +483,6 @@ sfi_rstore_warn_skip (SfiRStore *rstore, const std::string &msg)
     g_scanner_warn (rstore->scanner, "%s - skipping...", msg.c_str());
 
   return scanner_skip_statement (rstore->scanner, 1);
-}
-
-void
-sfi_rstore_quick_scan (SfiRStore         *rstore,
-                       const gchar       *identifier,
-                       SfiRStoreQuickScan qcheck,
-                       gpointer           data)
-{
-  assert_return (rstore);
-
-  while (g_scanner_peek_next_token (rstore->scanner) == '(')
-    {
-      g_scanner_get_next_token (rstore->scanner);
-      if (g_scanner_peek_next_token (rstore->scanner) == G_TOKEN_IDENTIFIER)
-        {
-          g_scanner_get_next_token (rstore->scanner);
-          if (strcmp (identifier, rstore->scanner->value.v_identifier) == 0)
-            {
-              if (!qcheck (rstore, data))
-                return;
-            }
-        }
-      scanner_skip_statement (rstore->scanner, 1);
-    }
 }
 
 GTokenType

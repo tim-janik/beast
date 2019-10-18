@@ -51,8 +51,6 @@ void            sfi_wstore_putf               (SfiWStore      *wstore,
                                                gfloat          vfloat);
 void            sfi_wstore_putd               (SfiWStore      *wstore,
                                                gdouble         vdouble);
-void            sfi_wstore_put_value          (SfiWStore      *wstore,
-                                               const GValue   *value);
 void            sfi_wstore_put_param          (SfiWStore      *wstore,
                                                const GValue   *value,
                                                GParamSpec     *pspec);
@@ -100,10 +98,6 @@ void            sfi_rstore_unexp_token        (SfiRStore      *rstore,
 void            sfi_rstore_warn               (SfiRStore *rstore, const std::string &msg);
 GTokenType      sfi_rstore_warn_skip          (SfiRStore *rstore, const std::string &msg);
 typedef gboolean (SfiRStoreQuickScan)         (SfiRStore      *rstore,
-                                               gpointer        data);
-void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
-                                               const gchar    *identifier,
-                                               SfiRStoreQuickScan qcheck,
                                                gpointer        data);
 
 
