@@ -6,6 +6,20 @@
 
 namespace Bse {
 
+class Storage {
+  class Impl;
+  std::shared_ptr<Storage::Impl> impl_;
+public:
+  explicit Storage           ();
+  virtual ~Storage           ();
+  // Writer API
+  int      store_file_fd     (const String &filename);
+  bool     store_file_buffer (const String &filename, const String &buffer, int64_t epoch_seconds = 0);
+  bool     rm_file           (const String &filename);
+  bool     set_mimetype_bse  ();
+  bool     export_as         (const String &filename);
+};
+
 std::string beastbse_cachedir_create  ();
 void        beastbse_cachedir_cleanup ();
 std::string beastbse_cachedir_current ();

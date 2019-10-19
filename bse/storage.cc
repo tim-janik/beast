@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "storage.hh"
 #include "internal.hh"
+#include "minizip.h"
 #include <stdlib.h>     // mkdtemp
 #include <sys/stat.h>   // mkdir
 #include <unistd.h>     // rmdir
@@ -174,4 +175,121 @@ beastbse_cachedir_cleanup()
             }
         }
 }
+
+Storage::Storage () :
+  impl_ (std::make_shared<Storage::Impl>())
+{}
+
+Storage::~Storage ()
+{}
+
+class Storage::Impl {
+  String tmpdir_;
+  std::vector<String> members_;
+  String
+  tmpdir ()
+  {
+    if (tmpdir_.empty())
+      tmpdir_ = beastbse_cachedir_create();
+    return tmpdir_;
+  }
+public:
+  ~Impl()
+  {
+    if (!tmpdir_.empty())
+      {
+        rmrf_dir (tmpdir_);
+        std::lock_guard<std::mutex> locker (cachedirs_mutex);
+        auto it = std::find (cachedirs_list.begin(), cachedirs_list.end(), tmpdir_);
+        if (it != cachedirs_list.end())
+          cachedirs_list.erase (it);
+      }
+  }
+  bool
+  rm_file (const String &filename)
+  {
+    errno = ENOENT;
+    assert_return (!Path::isabs (filename), -1);
+    printerr ("%s: rm=%s first=%s\n", __func__, filename,
+              members_.size() ? members_[0] : "");
+    if (!tmpdir_.empty())
+      {
+        std::error_code ec;
+        std::filesystem::remove (tmpdir_ + "/" + filename, ec);
+        auto it = std::find (members_.begin(), members_.end(), filename);
+        if (it != members_.end())
+          members_.erase (it);
+        return !ec;
+      }
+    return false;
+  }
+  int
+  store_file_fd (const String &filename)
+  {
+    errno = EINVAL;
+    assert_return (!Path::isabs (filename), -1);
+    rm_file (filename);
+    const int fd = open ((tmpdir() + "/" + filename).c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    if (fd >= 0)
+      {
+        // keep mimetype as first member for 'file(1)'
+        if ("mimetype" == filename)
+          members_.insert (members_.begin(), filename);
+        else
+          members_.push_back (filename);
+      }
+    return fd;
+  }
+  bool
+  store_file_buffer (const String &filename, const String &data, int64_t epoch_seconds)
+  {
+    const int fd = store_file_fd (filename);
+    if (fd >= 0)
+      {
+        long l;
+        do
+          l = write (fd, data.data(), data.size());
+        while (l < 0 && errno == EINTR);
+        if (l >= 0)
+          {
+            struct timespec times[2] = { { 0, 0, }, { 0, 0, }, };
+            times[0].tv_sec = epoch_seconds ? epoch_seconds : time (NULL);
+            times[1].tv_sec = times[0].tv_sec;
+            if (futimens (fd, times) < 0)
+              SDEBUG ("Bse::Storage::%s: %s: futimens: %s\n", __func__, filename, strerror (errno));
+            if (close (fd) >= 0)
+              return true;
+          }
+      }
+    const int saved = errno;
+    close (fd);
+    rm_file (filename);
+    errno = saved;
+    return false;
+  }
+  bool
+  set_mimetype_bse ()
+  {
+    const int64_t bse_project_start = 844503964;
+    return store_file_buffer ("mimetype", "application/x-bse", bse_project_start);
+  }
+  int
+  open_r (const String &filename)
+  {
+    errno = EINVAL;
+    assert_return (!Path::isabs (filename), -1);
+    const int fd = open ((tmpdir() + "/" + filename).c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    return fd;
+  }
+  bool     import_from (const String &filename) { return false; }
+  bool     export_as   (const String &filename) { return false; }
+};
+
+int      Storage::store_file_fd     (const String &filename)    { return impl_->store_file_fd (filename); }
+bool     Storage::store_file_buffer (const String &filename, const String &buffer, int64_t epoch_seconds)
+{ return impl_->store_file_buffer (filename, buffer, epoch_seconds); }
+bool     Storage::rm_file           (const String &filename)    { return impl_->rm_file (filename); }
+bool     Storage::set_mimetype_bse  ()                          { return impl_->set_mimetype_bse(); }
+bool     Storage::export_as         (const String &filename)    { return impl_->export_as (filename); }
+
 } // Bse
