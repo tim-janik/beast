@@ -641,6 +641,23 @@ randomize_subprotocol()
     authenticated_subprotocol += c64[csprng.random() % 64];     // each step adds 6 bits
 }
 
+static int
+nonblock_fd (int fd)
+{
+  if (fd >= 0)
+    {
+      long r, d_long;
+      do
+        d_long = fcntl (fd, F_GETFL);
+      while (d_long < 0 && errno == EINTR);
+      d_long |= O_NONBLOCK;
+      do
+        r = fcntl (fd, F_SETFL, d_long);
+      while (r < 0 && errno == EINTR);
+    }
+  return fd;
+}
+
 static void
 print_usage (bool help)
 {
@@ -752,11 +769,12 @@ main (int argc, char *argv[])
   if (embedding_pollfd.fd >= 0)
     {
       Aida::ScopedSemaphore sem;
+      nonblock_fd (embedding_pollfd.fd);
       auto handle_wsmsg = [&sem] () {
         embedding_pollfd.events = G_IO_IN | G_IO_HUP; // G_IO_PRI | (G_IO_IN | G_IO_HUP) | (G_IO_OUT | G_IO_ERR);
         GSource *source = g_source_simple (BSE_PRIORITY_NORMAL,
                                            [] (void*, int *timeoutp) -> int { // pending
-                                             return embedding_pollfd.revents != 0;
+                                             return embedding_pollfd.events && embedding_pollfd.revents;
                                            },
                                            [] (void*) { // dispatch,
                                              if (embedding_pollfd.revents & G_IO_IN)
@@ -766,7 +784,22 @@ main (int argc, char *argv[])
                                                  (void) n;
                                                }
                                              if (embedding_pollfd.revents & G_IO_HUP)
-                                               _exit (0);
+                                               {
+                                                 // stop polling, fd possibly closed
+                                                 embedding_pollfd.events = 0;
+                                                 // stop open asio connections
+                                                 for (auto ri = ws_opened_connections.rbegin(); ri != ws_opened_connections.rend(); ri++)
+                                                   {
+                                                     const ptrdiff_t conid = ptrdiff_t (ri->get());
+                                                     websocketpp::lib::error_code ec;
+                                                     (*ri)->close (websocketpp::close::status::going_away, "", ec); // omit_handshake
+                                                     if (ec)
+                                                       Bse::printerr ("%p: CLOSE:   %s\n", conid, ec.message());
+                                                   }
+                                                 // stop listening, so asio::run() can stop
+                                                 if (websocket_server.is_listening())
+                                                   websocket_server.stop_listening();
+                                               }
                                            },
                                            nullptr, // data,
                                            nullptr, // destroy,
