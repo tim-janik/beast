@@ -49,15 +49,12 @@ String       join                (const String &frag0, const String &frag1, cons
                                   const String &frag4 = "", const String &frag5 = "", const String &frag6 = "", const String &frag7 = "",
                                   const String &frag8 = "", const String &frag9 = "", const String &frag10 = "", const String &frag11 = "",
                                   const String &frag12 = "", const String &frag13 = "", const String &frag14 = "", const String &frag15 = "");
-bool         check               (const String &file,
-                                  const String &mode);
-bool         equals              (const String &file1,
-                                  const String &file2);
-char*        memread             (const String &filename,
-                                  size_t       *lengthp);
+bool         check               (const String &file, const String &mode);
+bool         equals              (const String &file1, const String &file2);
+char*        memread             (const String &filename, size_t *lengthp, ssize_t maxlength = -1);
 void         memfree             (char         *memread_mem);
 bool         memwrite            (const String &filename, size_t len, const uint8 *bytes);
-String       stringread          (const String &filename);
+String       stringread          (const String &filename, ssize_t maxlength = -1);
 bool         stringwrite         (const String &filename, const String &data, bool mkdirs = false);
 String       cwd                 ();
 String       vpath_find          (const String &file, const String &mode = "e");

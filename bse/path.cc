@@ -566,53 +566,56 @@ vpath_find (const String &file, const String &mode)
   return file;
 }
 
-static char* // return malloc()-ed buffer containing a full read of FILE 
-file_memread (FILE   *stream,
-              size_t *lengthp)
+static char* // return malloc()-ed buffer containing a full read of FILE
+file_memread (FILE *stream, size_t *lengthp, ssize_t maxlength)
 {
-  size_t sz = 256;
-  char *malloc_string = (char*) malloc (sz);
-  if (!malloc_string)
+  size_t sz = 4096;
+  char *buffer = (char*) malloc (sz);
+  if (!buffer)
     return NULL;
-  char *start = malloc_string;
+  char *current = buffer;
   errno = 0;
   while (!feof (stream))
     {
-      size_t bytes = fread (start, 1, sz - (start - malloc_string), stream);
+      size_t bytes = fread (current, 1, sz - (current - buffer), stream);
       if (bytes <= 0 && ferror (stream) && errno != EAGAIN)
         {
-          start = malloc_string; // error/0-data
+          current = buffer; // error/0-data
           break;
         }
-      start += bytes;
-      if (start == malloc_string + sz)
+      current += bytes;
+      if (maxlength >= 0 && current - buffer >= size_t (maxlength))
         {
-          bytes = start - malloc_string;
+          current = buffer + maxlength; // shorten if needed
+          break;
+        }
+      if (current == buffer + sz)
+        {
+          bytes = current - buffer;
           sz *= 2;
-          char *newstring = (char*) realloc (malloc_string, sz);
+          char *newstring = (char*) realloc (buffer, sz);
           if (!newstring)
             {
-              start = malloc_string; // error/0-data
+              current = buffer; // error/0-data
               break;
             }
-          malloc_string = newstring;
-          start = malloc_string + bytes;
+          buffer = newstring;
+          current = buffer + bytes;
         }
     }
   int savederr = errno;
-  *lengthp = start - malloc_string;
+  *lengthp = current - buffer;
   if (!*lengthp)
     {
-      free (malloc_string);
-      malloc_string = NULL;
+      free (buffer);
+      buffer = NULL;
     }
   errno = savederr;
-  return malloc_string;
+  return buffer;
 }
 
 char*
-memread (const String &filename,
-         size_t       *lengthp)
+memread (const String &filename, size_t *lengthp, ssize_t maxlength)
 {
   FILE *file = fopen (filename.c_str(), "r");
   if (!file)
@@ -620,7 +623,7 @@ memread (const String &filename,
       *lengthp = 0;
       return strdup ("");
     }
-  char *contents = file_memread (file, lengthp);
+  char *contents = file_memread (file, lengthp, maxlength);
   int savederr = errno;
   fclose (file);
   errno = savederr;
@@ -650,7 +653,7 @@ memwrite (const String &filename, size_t len, const uint8 *bytes)
 
 // Read `filename` into a std::string, check `errno` for empty returns.
 String
-stringread (const String &filename)
+stringread (const String &filename, ssize_t maxlength)
 {
   String s;
   size_t length = 0;
