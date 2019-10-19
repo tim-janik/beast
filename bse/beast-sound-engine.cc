@@ -290,10 +290,13 @@ ws_validate_connection (websocketpp::connection_hdl hdl)
   return false;
 }
 
+static std::vector<ServerEndpoint::connection_ptr> ws_opened_connections;
+
 static void
-ws_open_connection (websocketpp::connection_hdl hdl)
+ws_open (websocketpp::connection_hdl hdl)
 {
   ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl);
+  ws_opened_connections.push_back (con);
   // https://github.com/zaphoyd/websocketpp/issues/694#issuecomment-454623641
   const auto &socket = con->get_raw_socket();
   const auto &address = socket.remote_endpoint().address();
@@ -312,6 +315,27 @@ ws_open_connection (websocketpp::connection_hdl hdl)
   auto B0 = color (BOLD_OFF);
   Bse::printout ("%p: %sACCEPT:%s %s:%d/ %s\n", ptrdiff_t (con.get()), B1, B0, address.to_string().c_str(), rport, nick);
   // Bse::printout ("User-Agent: %s\n", useragent);
+}
+
+static void
+ws_close (websocketpp::connection_hdl hdl)
+{
+  websocketpp::lib::error_code ec;
+  ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (hdl, ec);
+  if (ec)
+    {
+      Bse::printerr ("%s: failed to access connection: %s", __func__, ec.message());
+      return;
+    }
+  using namespace Bse::AnsiColors;
+  const auto B1 = color (BOLD);
+  const auto B0 = color (BOLD_OFF);
+  const ptrdiff_t conid = ptrdiff_t (con.get());
+  auto it = std::find (ws_opened_connections.begin(), ws_opened_connections.end(), con);
+  Bse::printout ("%p: %sCLOSED%s%s\n", ptrdiff_t (con.get()), B1, B0,
+                 it != ws_opened_connections.end() ? "" : " (unknown)");
+  if (it != ws_opened_connections.end())
+    ws_opened_connections.erase (it);
 }
 
 static websocketpp::connection_hdl *bse_current_websocket_hdl = NULL;
@@ -760,7 +784,8 @@ main (int argc, char *argv[])
   websocket_server.set_user_agent ("beast-sound-engine/" + Bse::version());
   websocket_server.set_http_handler (&http_request);
   websocket_server.set_validate_handler (&ws_validate_connection);
-  websocket_server.set_open_handler (&ws_open_connection);
+  websocket_server.set_open_handler (&ws_open);
+  websocket_server.set_close_handler (&ws_close);
   websocket_server.set_message_handler (&ws_message);
   websocket_server.init_asio();
   websocket_server.clear_access_channels (websocketpp::log::alevel::all);
