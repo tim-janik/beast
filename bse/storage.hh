@@ -8,6 +8,7 @@ namespace Bse {
 
 std::string beastbse_cachedir_create  ();
 void        beastbse_cachedir_cleanup ();
+std::string beastbse_cachedir_current ();
 
 } // Bse
 

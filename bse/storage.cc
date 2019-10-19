@@ -136,6 +136,16 @@ beastbse_cachedir_create()
   return ""; // errno is set
 }
 
+/// Retrieve (or create) the temporary cache directory for this runtime.
+std::string
+beastbse_cachedir_current ()
+{
+  static std::string current_cachedir = beastbse_cachedir_create();
+  if (current_cachedir.empty())
+    fatal_error ("failed to create temporary cache directory: %s", strerror (errno));
+  return current_cachedir;
+}
+
 /// Clean stale cache directories from past runtimes, may be called from any thread.
 void
 beastbse_cachedir_cleanup()
