@@ -97,6 +97,7 @@ public:
   virtual String        get_version         () override;
   virtual String        get_custom_effect_dir () override;
   virtual String        get_custom_instrument_dir () override;
+  virtual void   purge_stale_cachedirs   () override;
   virtual void   register_ladspa_plugins () override;
   virtual void   register_core_plugins   () override;
   virtual void   start_recording         (const String &wave_file, double n_seconds) override;
