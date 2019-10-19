@@ -8,6 +8,7 @@
 #include "gslcommon.hh"
 #include "bseproject.hh"
 #include "bsecxxplugin.hh"
+#include "storage.hh"
 #include "bse/internal.hh"
 #include <unistd.h>
 #include <fcntl.h>
@@ -115,8 +116,6 @@ bse_storage_class_init (BseStorageClass *klass)
   quark_bse_storage_binary_v0 = g_quark_from_static_string ("BseStorageBinaryV0");
   quark_blob = g_quark_from_string ("blob");
   quark_blob_id = g_quark_from_string ("blob-id");
-
-  bse_storage_blob_clean_files(); /* FIXME: maybe better placed in bsemain.c */
 
   gobject_class->finalize = bse_storage_finalize;
 }
@@ -1804,53 +1803,8 @@ BseStorage::Blob::Blob (const std::string& file_name, bool is_temp_file) :
 BseStorage::Blob::~Blob()
 {
   if (is_temp_file_)
-    {
-      unlink (file_name_.c_str());
-      /* FIXME: check error code and do what? */
-    }
+    unlink (file_name_.c_str());
   bse_id_free (id_);
-}
-
-static std::string
-bse_storage_blob_tmp_dir()
-{
-  std::string dirname = Bse::Path::join (Bse::Path::cache_home(), "libbse");
-  if (!Bse::Path::check (dirname, "d"))
-    g_mkdir_with_parents (dirname.c_str(), 0755);
-  return dirname;
-}
-
-/* search in temp dir for files called "bse-<user>-<pid>*"
- * delete files if the pid does not exist any longer
- */
-void
-bse_storage_blob_clean_files()
-{
-  std::string tmp_dir = bse_storage_blob_tmp_dir();
-
-  GError *error;
-  GDir *dir = g_dir_open (tmp_dir.c_str(), 0, &error);
-  if (dir)
-    {
-      char *pattern = g_strdup_format ("bse-storage-blob-%zu-", size_t (getuid()));
-      const char *file_name;
-      while ((file_name = g_dir_read_name (dir)))
-	{
-	  if (strncmp (pattern, file_name, strlen (pattern)) == 0)
-	    {
-	      int pid = atoi (file_name + strlen (pattern));
-
-              if (kill (pid, 0) == -1 && errno == ESRCH)
-		{
-		  char *path = g_strdup_format ("%s/%s", tmp_dir.c_str(), file_name);
-		  unlink (path);
-		  g_free (path);
-		}
-	    }
-	}
-      g_free (pattern);
-      g_dir_close (dir);
-    }
 }
 
 struct WStoreBlob
@@ -1936,7 +1890,9 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  std::string file_name = Bse::string_format ("%s/bse-storage-blob-%zu-%u", bse_storage_blob_tmp_dir(), size_t (getuid()), getpid());
+  std::string file_name = Bse::string_format ("%s/bse-storage-blob-%zu-%u",
+                                              Bse::beastbse_cachedir_current(),
+                                              size_t (getuid()), getpid());
 
   // add enough randomness to ensure that collisions will not happen
   for (int i = 0; i < 5; i++)

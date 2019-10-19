@@ -190,10 +190,6 @@ GTokenType   bse_storage_parse_blob             (BseStorage             *self,
                                                  BseStorage::BlobP      &blob);
 gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 
-/* --- bse storage blob --- */
-
-void              bse_storage_blob_clean_files       (void);
-
 /* --- short-hands --- */
 #define bse_storage_get_scanner(s)      ((s)->rstore->scanner)
 #define bse_storage_unexp_token(s,et)   sfi_rstore_unexp_token ((s)->rstore, et)
