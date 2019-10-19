@@ -180,6 +180,8 @@
 	bodyloadstatus.parentElement.removeChild (bodyloadstatus);
 	await load_files();
       }
+    // Cleanup stale dirs
+    setTimeout (() => Bse.server.purge_stale_cachedirs(), 1000);
   }
   window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
   </script>
