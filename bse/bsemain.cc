@@ -204,9 +204,12 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 
   // close devices and shutdown engine threads
   bse_server_shutdown (bse_server_get());
-  // process pending cleanups if needed
-  while (g_main_context_pending (bse_main_context))
-    g_main_context_iteration (bse_main_context, false);
+  // process pending cleanups if needed, but avoid endless loops
+  for (size_t i = 0; i < 1000; i++)
+    if (g_main_context_pending (bse_main_context))
+      g_main_context_iteration (bse_main_context, false);
+    else
+      break;
 
   // unregister new thread
   Bse::TaskRegistry::remove (Bse::this_thread_gettid());
