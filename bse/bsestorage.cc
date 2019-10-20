@@ -1890,13 +1890,10 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  std::string file_name = Bse::string_format ("%s/bse-storage-blob-%zu-%u",
-                                              Bse::beastbse_cachedir_current(),
-                                              size_t (getuid()), getpid());
+  std::string file_name = Bse::beastbse_cachedir_current() + "/bse-storage-blob";
 
   // add enough randomness to ensure that collisions will not happen
-  for (int i = 0; i < 5; i++)
-    file_name += Bse::string_format ("-%08x", g_random_int());
+  file_name += Bse::string_format ("-%08x%08x%08x%08x", g_random_int(), g_random_int(), g_random_int(), g_random_int());
 
   blob_out = nullptr; /* on error, the resulting blob should be NULL */
 
