@@ -278,6 +278,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/gslwaveosc.cc		\
 	bse/magic.cc			\
 	bse/memory.cc			\
+	bse/minizip.c			\
 	bse/monitor.cc			\
 	bse/path.cc			\
 	bse/platform.cc			\
