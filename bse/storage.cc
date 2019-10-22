@@ -273,15 +273,6 @@ public:
     const int64_t bse_project_start = 844503964;
     return store_file_buffer ("mimetype", "application/x-bse", bse_project_start);
   }
-  int
-  open_r (const String &filename)
-  {
-    errno = EINVAL;
-    assert_return (!Path::isabs (filename), -1);
-    const int fd = open ((tmpdir() + "/" + filename).c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
-    return fd;
-  }
-  bool     import_from (const String &filename) { return false; }
   bool
   export_as (const String &filename)
   {
@@ -316,6 +307,33 @@ public:
     mz_zip_writer_delete (&writer);
     return err == MZ_OK;
   }
+  int
+  open_r (const String &filename)
+  {
+    errno = EINVAL;
+    assert_return (!Path::isabs (filename), -1);
+    const int fd = open ((tmpdir() + "/" + filename).c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    return fd;
+  }
+  String
+  fetch_file (const String &filename)
+  {
+    if (tmpdir_.empty())
+      return "";
+    // FIXME: extract
+    return tmpdir_ + "/" + filename;
+  }
+  String
+  fetch_file_buffer (const String &filename, ssize_t maxlength)
+  {
+    errno = ENOENT;
+    assert_return (!Path::isabs (filename), "");
+    if (tmpdir_.empty())
+      return "";
+    // FIXME: extract
+    return Path::stringread (tmpdir_ + "/" + filename, maxlength);
+  }
+  bool     import_from (const String &filename) { return false; }
 };
 
 int      Storage::store_file_fd     (const String &filename)    { return impl_->store_file_fd (filename); }
@@ -324,5 +342,9 @@ bool     Storage::store_file_buffer (const String &filename, const String &buffe
 bool     Storage::rm_file           (const String &filename)    { return impl_->rm_file (filename); }
 bool     Storage::set_mimetype_bse  ()                          { return impl_->set_mimetype_bse(); }
 bool     Storage::export_as         (const String &filename)    { return impl_->export_as (filename); }
+bool     Storage::import_from       (const String &filename)    { return impl_->import_from (filename); }
+String   Storage::fetch_file_buffer (const String &filename, ssize_t maxlength)
+{ return impl_->fetch_file_buffer (filename, maxlength); }
+String   Storage::fetch_file        (const String &filename)    { return impl_->fetch_file (filename); }
 
 } // Bse

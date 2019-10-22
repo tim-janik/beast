@@ -18,6 +18,10 @@ public:
   bool     rm_file           (const String &filename);
   bool     set_mimetype_bse  ();
   bool     export_as         (const String &filename);
+  // Reader API
+  bool     import_from       (const String &filename);
+  String   fetch_file_buffer (const String &filename, ssize_t maxlength = -1);
+  String   fetch_file        (const String &filename); // yields abspath
 };
 
 std::string beastbse_cachedir_create  ();
