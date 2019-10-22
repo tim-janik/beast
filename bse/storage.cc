@@ -307,20 +307,12 @@ public:
     mz_zip_writer_delete (&writer);
     return err == MZ_OK;
   }
-  int
-  open_r (const String &filename)
-  {
-    errno = EINVAL;
-    assert_return (!Path::isabs (filename), -1);
-    const int fd = open ((tmpdir() + "/" + filename).c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
-    return fd;
-  }
   String
   fetch_file (const String &filename)
   {
+    errno = ENOENT;
     if (tmpdir_.empty())
       return "";
-    // FIXME: extract
     return tmpdir_ + "/" + filename;
   }
   String
@@ -330,10 +322,47 @@ public:
     assert_return (!Path::isabs (filename), "");
     if (tmpdir_.empty())
       return "";
-    // FIXME: extract
-    return Path::stringread (tmpdir_ + "/" + filename, maxlength);
+    return Path::stringread (fetch_file (filename), maxlength);
   }
-  bool     import_from (const String &filename) { return false; }
+  bool
+  import_from (const String &filename)
+  {
+    // setup reader and open file
+    void *reader = NULL;
+    mz_zip_reader_create (&reader);
+    // mz_zip_reader_set_pattern (reader, pattern, 1);
+    mz_zip_reader_set_password (reader, NULL);
+    mz_zip_reader_set_encoding (reader, MZ_ENCODING_UTF8);
+    int err = mz_zip_reader_open_file (reader, filename.c_str());
+    errno = ELIBBAD;
+    if (err != MZ_OK)
+      return false;
+    // check and extract file entries
+    err = mz_zip_reader_goto_first_entry (reader);
+    while (err == MZ_OK)
+      {
+        mz_zip_file *file_info = NULL;
+        if (MZ_OK == mz_zip_reader_entry_get_info (reader, &file_info) && file_info->filename && file_info->filename[0])
+          {
+            if (!strchr (file_info->filename, '/') && // see: https://github.com/nmoinvaz/minizip/issues/433
+                !strchr (file_info->filename, '\\'))
+              {
+                std::string dest = tmpdir() + "/" + file_info->filename;
+                err = mz_zip_reader_entry_save_file (reader, dest.c_str());
+                SDEBUG ("%s: extract '%s': %s", filename, dest, MZ_OK == err ? "ok" : "I/O Error");
+              }
+            else
+              SDEBUG ("%s: ignore: %s", filename, file_info->filename);
+          }
+        err = mz_zip_reader_goto_next_entry (reader); // yields MZ_END_OF_LIST
+      }
+    errno = EIO;
+    err = mz_zip_reader_close (reader);
+    if (err != MZ_OK)
+      return false;
+    mz_zip_reader_delete(&reader);
+    return true;
+  }
 };
 
 int      Storage::store_file_fd     (const String &filename)    { return impl_->store_file_fd (filename); }
