@@ -282,7 +282,40 @@ public:
     return fd;
   }
   bool     import_from (const String &filename) { return false; }
-  bool     export_as   (const String &filename) { return false; }
+  bool
+  export_as (const String &filename)
+  {
+    void *writer = NULL;
+    mz_zip_writer_create (&writer);
+    mz_zip_writer_set_zip_cd (writer, false);
+    mz_zip_writer_set_password (writer, NULL);
+    mz_zip_writer_set_store_links (writer, false);
+    mz_zip_writer_set_follow_links (writer, true);
+    mz_zip_writer_set_compress_level (writer, MZ_COMPRESS_LEVEL_BEST);
+    mz_zip_writer_set_compress_method (writer, MZ_COMPRESS_METHOD_DEFLATE);
+    mz_zip_file file_info = { 0, };
+    file_info.version_madeby = BSE_MZ_VERSION_MADEBY; // MZ_VERSION_MADEBY_ZIP_VERSION;
+    file_info.zip64 = MZ_ZIP64_DISABLE;  // match limagic's ZIP-with-mimetype
+    file_info.flag = 0; // MZ_ZIP_FLAG_UTF8;
+    file_info.compression_method = MZ_COMPRESS_METHOD_DEFLATE;
+    int err = mz_zip_writer_open_file (writer, filename.c_str(), 0, false);
+    for (auto it = members_.begin(); err == MZ_OK && it != members_.end(); ++it)
+      {
+        const std::string fname = *it;
+        const bool plain = it == members_.begin() && fname == "mimetype";
+        if (plain)
+          mz_zip_writer_set_compress_method (writer, MZ_COMPRESS_METHOD_STORE);
+        err = mz_zip_writer_add_file (writer, (tmpdir() + "/" + fname).c_str(), fname.c_str());
+        if (plain)
+          mz_zip_writer_set_compress_method (writer, MZ_COMPRESS_METHOD_DEFLATE);
+      }
+    if (err == MZ_OK)
+      err = mz_zip_writer_close (writer);
+    if (err != MZ_OK)
+      unlink (filename.c_str());
+    mz_zip_writer_delete (&writer);
+    return err == MZ_OK;
+  }
 };
 
 int      Storage::store_file_fd     (const String &filename)    { return impl_->store_file_fd (filename); }
