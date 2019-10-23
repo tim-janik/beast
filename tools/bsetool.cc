@@ -493,7 +493,14 @@ bsetool_main (int argc_int, char *argv[])
   // pre-command option argument parsing
   size_t option_argc = 1; // skip argv[0]
   while (option_argc < argc && argv[option_argc][0] == '-')
-    option_argc++;
+    {
+      if (argv[option_argc] == String ("-h") || argv[option_argc] == String ("--help"))
+        {
+          help_cmd.run();
+          return 0;
+        }
+      option_argc++;
+    }
   ArgParser toolap (bsetool_options);
   String error = toolap.parse_args (option_argc - 1, argv + 1); // skip argv[0]
   if (!error.empty())
