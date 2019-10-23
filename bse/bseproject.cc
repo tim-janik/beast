@@ -19,6 +19,7 @@
 #include "bsepcmwriter.hh"
 #include "bsemidifile.hh"
 #include "bsesoundfontrepo.hh"
+#include "storage.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
@@ -394,59 +395,57 @@ compute_missing_supers (BseProject *self,
 }
 
 Bse::Error
-bse_project_store_bse (BseProject  *self,
-                       BseSuper    *super,
-		       const gchar *bse_file,
-		       gboolean     self_contained)
+bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilename, gboolean self_contained)
 {
-  BseStorage *storage;
-  GSList *slist = NULL;
-  gchar *string;
-  guint l, flags;
-  gint fd;
-
   assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
   if (super)
     {
       assert_return (BSE_IS_SUPER (super), Bse::Error::INTERNAL);
       assert_return (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::Error::INTERNAL);
     }
-  assert_return (bse_file != NULL, Bse::Error::INTERNAL);
+  assert_return (bsefilename != NULL, Bse::Error::INTERNAL);
 
-  fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
+  // create container
+  Bse::Storage zip_storage;
+  if (!zip_storage.set_mimetype_bse())
+    return Bse::Error::FILE_WRITE_FAILED;
+  int fd = zip_storage.store_file_fd ("bse_storage.scm");
   if (fd < 0)
     return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 
-  storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-  flags = 0;
+  // s-expr serialization
+  BseStorage *bse_storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
+  long l, flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
-  bse_storage_prepare_write (storage, BseStorageMode (flags));
-
-  slist = g_slist_prepend (slist, super ? (void*) super : (void*) self);
+  bse_storage_prepare_write (bse_storage, BseStorageMode (flags));
+  GSList *slist = g_slist_prepend (NULL, super ? (void*) super : (void*) self);
   while (slist)
     {
       BseItem *item = (BseItem*) g_slist_pop_head (&slist);
       if (item == (BseItem*) self)
-        bse_storage_store_item (storage, item);
+        bse_storage_store_item (bse_storage, item);
       else
-        bse_storage_store_child (storage, item);
-      slist = g_slist_concat (compute_missing_supers (self, storage), slist);
+        bse_storage_store_child (bse_storage, item);
+      slist = g_slist_concat (compute_missing_supers (self, bse_storage), slist);
     }
-
-  string = g_strdup_format ("; BseProject\n\n"); /* %010o mflags */
+  gchar *string = g_strdup_format ("; BseProject\n\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
   g_free (string);
-
-  Bse::Error error = bse_storage_flush_fd (storage, fd);
+  Bse::Error error = bse_storage_flush_fd (bse_storage, fd);
   if (close (fd) < 0 && error == Bse::Error::NONE)
     error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
-  bse_storage_reset (storage);
-  g_object_unref (storage);
+  bse_storage_reset (bse_storage);
+  g_object_unref (bse_storage);
+  if (error != Bse::Error::NONE)
+    return error;
 
-  return error;
+  // create .bse file from container
+  if (!zip_storage.export_as (bsefilename))
+    return Bse::Error::FILE_WRITE_FAILED;
+  return Bse::Error::NONE;
 }
 
 Bse::Error
