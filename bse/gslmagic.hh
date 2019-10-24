@@ -52,4 +52,27 @@ void		gsl_magic_list_brute_match	(SfiRing	*magic_list,
 						 SfiRing       **ext_matches,
 						 SfiRing       **other_matches);
 
+namespace Bse {
+class FileMagic {
+  const String  extension_;
+  const String  description_;
+  const int     priority_ = 0;
+  struct Matcher;
+  std::vector<Matcher> matchers_;
+  bool              parse_spec     (const String &magic_spec);
+  explicit          FileMagic      (const String &fileextension, const String &magic_spec, const String &description, int priority);
+  /*dtor*/         ~FileMagic      ();
+  bool              match_header   (const String &header);
+public:
+  int               priority       () const { return priority_; }
+  String            extension      () const { return extension_; }
+  String            description    () const { return description_; }
+  static FileMagic* register_magic (const String &fileextension, const String &magic_spec,
+                                    const String &description, int priority = 0);
+  static FileMagic* match_list     (const std::vector<FileMagic*> &magics, const String &filename, size_t skip_bytes = 0);
+  static String     match_magic    (const String &filename, size_t skip_bytes = 0);
+  static const int  MAGIC_HEADER_SIZE = 1024;
+};
+} // Bse
+
 #endif /* __GSL_MAGIC_H__ */
