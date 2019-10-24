@@ -54,6 +54,8 @@ bse_loader_register (BseLoader *loader)
 	  if (loader->extensions)
 	    for (j = 0; loader->extensions[j]; j++)
 	      {
+                Bse::FileMagic::register_magic (loader->extensions[j], loader->magic_specs[i],
+                                                loader->name + String (" (") + loader->extensions[j] + ")", loader->priority);
 		magic = gsl_magic_create (loader, loader->priority,
 					  loader->extensions[j], loader->magic_specs[i]);
 		gsl_magic_list1 = sfi_ring_append (gsl_magic_list1, magic);
@@ -62,6 +64,7 @@ bse_loader_register (BseLoader *loader)
 	      }
 	  else
 	    {
+              Bse::FileMagic::register_magic ("", loader->magic_specs[i], loader->name, loader->priority);
 	      magic = gsl_magic_create (loader, loader->priority,
 					NULL, loader->magic_specs[i]);
 	      gsl_magic_list1 = sfi_ring_append (gsl_magic_list1, magic);
