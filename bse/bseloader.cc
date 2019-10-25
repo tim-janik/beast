@@ -10,9 +10,9 @@
 
 
 /* --- variables --- */
-static BseLoader *bse_loader_list = NULL;
-static SfiRing   *gsl_magic_list1 = NULL;
-static SfiRing   *gsl_magic_list2 = NULL;
+static BseLoader                   *bse_loader_list = NULL;
+static std::vector<Bse::FileMagic*> magic_list1;
+static std::vector<Bse::FileMagic*> magic_list2;
 
 
 /* --- functions --- */
@@ -46,30 +46,25 @@ bse_loader_register (BseLoader *loader)
 
   if (loader->magic_specs)
     {
-      GslMagic *magic;
-      uint i, j;
-
-      for (i = 0; loader->magic_specs[i]; i++)
+      for (uint i = 0; loader->magic_specs[i]; i++)
 	{
 	  if (loader->extensions)
-	    for (j = 0; loader->extensions[j]; j++)
+	    for (uint j = 0; loader->extensions[j]; j++)
 	      {
-                Bse::FileMagic::register_magic (loader->extensions[j], loader->magic_specs[i],
-                                                loader->name + String (" (") + loader->extensions[j] + ")", loader->priority);
-		magic = gsl_magic_create (loader, loader->priority,
-					  loader->extensions[j], loader->magic_specs[i]);
-		gsl_magic_list1 = sfi_ring_append (gsl_magic_list1, magic);
+                Bse::FileMagic *magic = Bse::FileMagic::register_magic (loader->extensions[j], loader->magic_specs[i],
+                                                                        loader->name + String (" (") + loader->extensions[j] + ")", loader->priority);
+                magic->sdata (std::shared_ptr<void> (loader, [] (BseLoader*) {}));
+                magic_list1.push_back (magic);
 		if (loader->flags & BSE_LOADER_SKIP_PRECEEDING_NULLS)
-		  gsl_magic_list2 = sfi_ring_append (gsl_magic_list2, magic);
+                  magic_list2.push_back (magic);
 	      }
 	  else
 	    {
-              Bse::FileMagic::register_magic ("", loader->magic_specs[i], loader->name, loader->priority);
-	      magic = gsl_magic_create (loader, loader->priority,
-					NULL, loader->magic_specs[i]);
-	      gsl_magic_list1 = sfi_ring_append (gsl_magic_list1, magic);
-	      if (loader->flags & BSE_LOADER_SKIP_PRECEEDING_NULLS)
-		gsl_magic_list2 = sfi_ring_append (gsl_magic_list2, magic);
+              Bse::FileMagic *magic = Bse::FileMagic::register_magic ("", loader->magic_specs[i], loader->name, loader->priority); // loader
+              magic->sdata (std::shared_ptr<void> (loader, [] (BseLoader*) {}));
+              magic_list1.push_back (magic);
+              if (loader->flags & BSE_LOADER_SKIP_PRECEEDING_NULLS)
+                magic_list2.push_back (magic);
 	    }
 	}
     }
@@ -91,17 +86,15 @@ skipchr (const uint8 *mem,
 BseLoader*
 bse_loader_match (const char *file_name)
 {
-  GslMagic *magic = NULL;
-
   assert_return (file_name != NULL, NULL);
 
   /* normal magic check */
-  magic = gsl_magic_list_match_file (gsl_magic_list1, file_name);
+  Bse::FileMagic *magic = Bse::FileMagic::match_list (magic_list1, file_name);
 
   /* in a sort-of fallback attempt,
    * work around files that have preceeding nulls
    */
-  if (!magic && gsl_magic_list2)
+  if (!magic && magic_list2.size())
     {
       uint8 buffer[1024], *p = NULL;
       GslLong n, pos = 0;
@@ -127,10 +120,10 @@ bse_loader_match (const char *file_name)
 	}
       gsl_hfile_close (hfile);
       if (pos > 0)
-	magic = gsl_magic_list_match_file_skip (gsl_magic_list2, file_name, pos);
+        magic = Bse::FileMagic::match_list (magic_list2, file_name, pos);
     }
 
-  return magic ? (BseLoader*) magic->data : NULL;
+  return magic ? (BseLoader*) magic->sdata().get() : nullptr;
 }
 
 BseWaveFileInfo*
