@@ -157,7 +157,22 @@ module.exports = {
 	    {
 	      const ret = await newproject.restore_from_file (project_or_path);
 	      if (ret != Bse.Error.NONE)
-		return ret;
+		{
+		  const Path = require ('path');
+		  Electron.dialog.showMessageBox (Electron.getCurrentWindow(),
+						  {
+						    type: 'error',
+						    title: Util.format_title ('Beast', 'Failed to Load Project'),
+						    message: 'Failed to load project from "' + Path.basename (project_or_path) + '"',
+						    detail:  'Error during loading: ' + ret,
+						    buttons: [ '&Dismiss', ],
+						    cancelId: 1, defaultId: 1, normalizeAccessKeys: true,
+						  },
+						  (response, checked) => {
+						    // nothing
+						  });
+		  return ret;
+		}
 	      const basename = project_or_path.replace (/.*\//, '');
 	      await newproject.set_name (basename);
 	    }
