@@ -1153,8 +1153,22 @@ ProjectImpl::restore_from_file (const String &file_name)
   Bse::Error error;
   if (!self->in_undo && !self->in_redo)
     {
+      Bse::Storage zip_storage;
+      String scm_filename;
+      if (zip_storage.import_as_scm (file_name))
+        scm_filename = file_name;
+      else
+        {
+          if (!zip_storage.import_from (file_name))
+            {
+              if (!Path::check (file_name, "r"))
+                return bse_error_from_errno (errno, Bse::Error::IO);
+              return Bse::Error::FORMAT_INVALID; // import failed
+            }
+          scm_filename = zip_storage.fetch_file ("bse_storage.scm");
+        }
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-      error = bse_storage_input_file (storage, file_name.c_str());
+      error = bse_storage_input_file (storage, scm_filename.c_str());
       if (error == 0)
         error = bse_project_restore (self, storage);
       bse_storage_reset (storage);
