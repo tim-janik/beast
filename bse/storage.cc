@@ -217,8 +217,7 @@ public:
   {
     errno = ENOENT;
     assert_return (!Path::isabs (filename), -1);
-    printerr ("%s: rm=%s first=%s\n", __func__, filename,
-              members_.size() ? members_[0] : "");
+    SDEBUG ("%s: rm=%s first=%s\n", __func__, filename, members_.size() ? members_[0] : "");
     if (!tmpdir_.empty())
       {
         std::error_code ec;
@@ -331,6 +330,32 @@ public:
       return "";
     return Path::stringread (fetch_file (filename), maxlength);
   }
+  String
+  move_to_temporary (const String &filename)
+  {
+    const String fullname = fetch_file (filename);
+    if (Path::check (fullname, "e"))
+      {
+        auto [ base, ext ] = Path::split_extension (fullname);
+        String next;
+        for (size_t i = 1; i < size_t (-1); i++)
+          {
+            next = string_format ("%s-%u%s", base, i, ext);
+            if (!Path::check (next, "e"))
+              break;
+          }
+        assert_return (next.empty() == false, "");
+        if (rename (fullname.c_str(), next.c_str()) == 0)
+          return next.substr (fullname.size() - filename.size());
+      }
+    return ""; // error or missing file
+  }
+  bool
+  has_file (const String &filename)
+  {
+    const String fullname = fetch_file (filename);
+    return Path::check (fullname, "e");
+  }
   bool
   import_as_scm (const String &filename)
   {
@@ -424,6 +449,8 @@ bool     Storage::set_mimetype_bse  ()                          { return impl_->
 bool     Storage::export_as         (const String &filename)    { return impl_->export_as (filename); }
 bool     Storage::import_from       (const String &filename)    { return impl_->import_from (filename); }
 bool     Storage::import_as_scm     (const String &filename)    { return impl_->import_as_scm (filename); }
+bool     Storage::has_file          (const String &filename)    { return impl_->has_file (filename); }
+String   Storage::move_to_temporary (const String &filename)    { return impl_->move_to_temporary (filename); }
 String   Storage::fetch_file_buffer (const String &filename, ssize_t maxlength)
 { return impl_->fetch_file_buffer (filename, maxlength); }
 String   Storage::fetch_file        (const String &filename)    { return impl_->fetch_file (filename); }

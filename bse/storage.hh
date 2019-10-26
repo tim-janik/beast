@@ -22,6 +22,8 @@ public:
   // Reader API
   bool     import_as_scm     (const String &filename);
   bool     import_from       (const String &filename);
+  bool     has_file          (const String &filename);
+  String   move_to_temporary (const String &filename);
   String   fetch_file_buffer (const String &filename, ssize_t maxlength = -1);
   String   fetch_file        (const String &filename); // yields abspath
 };
