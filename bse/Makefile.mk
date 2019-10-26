@@ -117,7 +117,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/gslfft.hh			\
 	bse/gslfilehash.hh		\
 	bse/gslfilter.hh		\
-	bse/gslmagic.hh			\
 	bse/gsloscillator.hh		\
 	bse/gslosctable.hh		\
 	bse/gslvorbis-cutter.hh		\
@@ -126,6 +125,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/gslwaveosc.hh		\
 	bse/internal.hh			\
 	bse/ladspa.hh			\
+	bse/magic.hh			\
 	bse/memory.hh			\
 	bse/monitor.hh			\
 	bse/path.hh			\
@@ -258,8 +258,8 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsewaverepo.cc		\
 	bse/datalist.cc			\
 	bse/devicecrawler.cc		\
-	bse/driver.cc			\
 	bse/driver-alsa.cc		\
+	bse/driver.cc			\
 	bse/entropy.cc			\
 	bse/formatter.cc		\
 	bse/gslcommon.cc		\
@@ -270,13 +270,13 @@ bse/libbse.sources ::= $(strip		\
 	bse/gsldatautils.cc		\
 	bse/gslfilehash.cc		\
 	bse/gslfilter.cc		\
-	bse/gslmagic.cc			\
 	bse/gsloscillator.cc		\
 	bse/gslosctable.cc		\
 	bse/gslvorbis-cutter.cc		\
 	bse/gslvorbis-enc.cc		\
 	bse/gslwavechunk.cc		\
 	bse/gslwaveosc.cc		\
+	bse/magic.cc			\
 	bse/memory.cc			\
 	bse/monitor.cc			\
 	bse/path.cc			\

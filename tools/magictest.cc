@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsetool.hh"
 #include <bse/bsemain.hh>
-#include <bse/gslmagic.hh>
+#include <bse/magic.hh>
 #include <bse/gslcommon.hh>
 #include <bse/bseloader.hh>
 #include <bse/gsldatahandle.hh>
@@ -22,6 +22,8 @@ magic_test (const ArgParser &ap)
     { "Bourne shell script text",		"0,string,#!/bin/sh", },
     { "Bourne shell script text",		"0,string,#!\\ /bin/sh", },
     { "Bourne shell script text",		"0,string,#!\\t/bin/sh", },
+    { "Bourne shell script text",		"0,string,#!/usr/bin/env bash", },
+    { "Bourne shell script text",		"0,string,#!/usr/bin/env\tbash", },
     { "GIF image data",				"0,string,GIF8", },
     { "X window image dump (v7)",		("# .xwd files\n"
 						 "0x04,ubelong,0x0000007"), },
@@ -32,22 +34,25 @@ magic_test (const ArgParser &ap)
   };
   static const guint n_magic_presets = sizeof (magic_presets) / sizeof (magic_presets[0]);
   guint i;
-  SfiRing *magic_list = NULL;
   gboolean test_open = FALSE;
   /* initialization */
+  FileMagic::register_magic (".bse", "0 string ; Bse", "BseProject file");
+  FileMagic::register_magic (".bse",
+                             "0  string  PK\003\004\n"
+                             "8  short   0x0000\n" // uncompressed first entry
+                             "26 leshort =8\n"     // file name length
+                             "28 leshort 0x0000\n" // no extra field
+                             "30 string mimetypeapplication/x-bsePK",
+                             "Bse::Project file (application/x-bse; zipped)");
   for (i = 0; i < n_magic_presets; i++)
-    magic_list = sfi_ring_append (magic_list,
-				  gsl_magic_create ((void*) magic_presets[i][0],
-						    0,
-						    0,
-						    magic_presets[i][1]));
+    FileMagic::register_magic ("", magic_presets[i][1], magic_presets[i][0]);
   if (ap["t"] == "1")
     test_open = TRUE;
 
   for (const auto &file_name : ap.dynamics())
     {
       BseLoader *loader = bse_loader_match (file_name.c_str());
-      GslMagic *magic = gsl_magic_list_match_file (magic_list, file_name.c_str());
+      String magic_desc = Bse::FileMagic::match_magic (file_name);
       const uint l = file_name.size();
       char *pad;
 
@@ -55,13 +60,13 @@ magic_test (const ArgParser &ap)
       pad = g_strnfill (MAX (40, l) - l, ' ');
       printout ("%s", pad);
       g_free (pad);
-      if (!magic && !loader)
+      if (!loader && magic_desc.empty())
         printout (" no magic/loader found");
       else
         {
-          if (magic)
-            printout (" MAGIC: %s", (char*) magic->data);
-          if (loader)
+          if (!magic_desc.empty())
+            printout (" %s", magic_desc);
+          if (loader && test_open)
             {
               if (test_open)
                 {
