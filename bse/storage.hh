@@ -9,6 +9,7 @@ namespace Bse {
 class Storage {
   class Impl;
   std::shared_ptr<Storage::Impl> impl_;
+  bool     import_from_scm   (const String &filename);
 public:
   explicit Storage           ();
   virtual ~Storage           ();
@@ -19,6 +20,7 @@ public:
   bool     set_mimetype_bse  ();
   bool     export_as         (const String &filename);
   // Reader API
+  bool     import_as_scm     (const String &filename);
   bool     import_from       (const String &filename);
   String   fetch_file_buffer (const String &filename, ssize_t maxlength = -1);
   String   fetch_file        (const String &filename); // yields abspath

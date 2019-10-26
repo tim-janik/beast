@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "storage.hh"
 #include "internal.hh"
+#include "magic.hh"
 #include "minizip.h"
 #include <stdlib.h>     // mkdtemp
 #include <sys/stat.h>   // mkdir
@@ -9,6 +10,12 @@
 #include <filesystem>
 
 #define SDEBUG(...)     Bse::debug ("storage", __VA_ARGS__)
+
+enum class StorageMagic : ptrdiff_t {
+  UNKNOWN = 0,
+  SCM     = 3,
+  ZIP     = 4,
+};
 
 namespace Bse {
 
@@ -325,8 +332,52 @@ public:
     return Path::stringread (fetch_file (filename), maxlength);
   }
   bool
+  import_as_scm (const String &filename)
+  {
+    return StorageMagic::SCM == match_file (filename);
+  }
+  StorageMagic
+  match_file (const String &filename)
+  {
+    static std::vector<FileMagic*> magics = [] () {
+      FileMagic *scm_magic = FileMagic::register_magic (".bse", "0 string ; Bse", "BseProject file");
+      scm_magic->sdata (std::shared_ptr<void> ((void*) StorageMagic::SCM, [] (auto) {}));
+      FileMagic *zip_magic = FileMagic::register_magic (".bse",
+                                                        "0  string  PK\003\004\n"
+                                                        "8  short   0x0000\n" // uncompressed first entry
+                                                        "26 leshort =8\n"     // file name length
+                                                        "28 leshort 0x0000\n" // no extra field
+                                                        "30 string mimetypeapplication/x-bsePK",
+                                                        "Bse::Project file (application/x-bse; zipped)");
+      zip_magic->sdata (std::shared_ptr<void> ((void*) StorageMagic::ZIP, [] (auto) {}));
+      return std::vector<FileMagic*> { scm_magic, zip_magic };
+    } ();
+    FileMagic *result = FileMagic::match_list (magics, filename);
+    if (result)                                         // have clear indicator for SCM vs ZIP
+      return StorageMagic (ptrdiff_t (result->sdata().get()));
+    const String head = Path::stringread (filename, 99); // fallback test
+    if (strstr (head.c_str(), "(bse-version \"") &&     // contains SCM version fragment
+        !(head[0] == 'P' && head[1] == 'K'))            // and no ZIP header
+      return StorageMagic::SCM; // we have reason to try SCM reading anyway
+    return StorageMagic::UNKNOWN;
+  }
+  bool
+  import_from_scm (const String &filename)
+  {
+    const String contents = Path::stringread (filename);
+    if (contents.size() &&
+        Path::stringwrite (tmpdir() + "/" + "bse_storage.scm", contents))
+      return true;
+    return false;
+  }
+  bool
   import_from (const String &filename)
   {
+    const StorageMagic magic = match_file (filename);
+    if (magic == StorageMagic::SCM)
+      return import_from_scm (filename);
+    if (magic != StorageMagic::ZIP)
+      return false;
     // setup reader and open file
     void *reader = NULL;
     mz_zip_reader_create (&reader);
@@ -372,6 +423,7 @@ bool     Storage::rm_file           (const String &filename)    { return impl_->
 bool     Storage::set_mimetype_bse  ()                          { return impl_->set_mimetype_bse(); }
 bool     Storage::export_as         (const String &filename)    { return impl_->export_as (filename); }
 bool     Storage::import_from       (const String &filename)    { return impl_->import_from (filename); }
+bool     Storage::import_as_scm     (const String &filename)    { return impl_->import_as_scm (filename); }
 String   Storage::fetch_file_buffer (const String &filename, ssize_t maxlength)
 { return impl_->fetch_file_buffer (filename, maxlength); }
 String   Storage::fetch_file        (const String &filename)    { return impl_->fetch_file (filename); }
