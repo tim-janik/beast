@@ -3,7 +3,7 @@
 #include "bsemain.hh"
 #include "gslcommon.hh"
 #include "gsldatahandle.hh"
-#include "gslmagic.hh"
+#include "magic.hh"
 #include "gslfilehash.hh"
 #include "bse/internal.hh"
 #include <string.h>

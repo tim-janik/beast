@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#ifndef __GSL_MAGIC_HH__
-#define __GSL_MAGIC_HH__
+#ifndef __BSE_MAGIC_HH__
+#define __BSE_MAGIC_HH__
 
 #include <bse/gsldefs.hh>
 
@@ -32,4 +32,4 @@ public:
 
 } // Bse
 
-#endif // __GSL_MAGIC_HH__
+#endif // __BSE_MAGIC_HH__
