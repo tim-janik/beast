@@ -2,7 +2,8 @@
 #ifndef __BSE_PROJECT_H__
 #define __BSE_PROJECT_H__
 
-#include        <bse/bsecontainer.hh>
+#include <bse/bsecontainer.hh>
+#include <bse/storage.hh>
 
 
 /* --- object type macros --- */
@@ -70,6 +71,7 @@ void    bse_project_push_undo_silent_deactivate (BseProject     *self);
 namespace Bse {
 
 class ProjectImpl : public ContainerImpl, public virtual ProjectIface {
+  Bse::Storage               zip_storage;
 protected:
   virtual void               post_init           () override;
   virtual                   ~ProjectImpl         ();
@@ -109,6 +111,7 @@ public:
   virtual MidiSynthIfaceP    create_midi_synth   (const String &name) override;
   virtual MidiNotifierIfaceP get_midi_notifier   () override;
   virtual void               remove_snet         (SNetIface &snet) override;
+  struct Internal; friend struct Internal;
 };
 typedef std::shared_ptr<ProjectImpl> ProjectImplP;
 

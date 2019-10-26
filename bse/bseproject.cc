@@ -19,7 +19,6 @@
 #include "bsepcmwriter.hh"
 #include "bsemidifile.hh"
 #include "bsesoundfontrepo.hh"
-#include "storage.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
@@ -394,10 +393,17 @@ compute_missing_supers (BseProject *self,
   return targets;
 }
 
+namespace Bse {
+struct ProjectImpl::Internal {
+  static Bse::Storage& zip_storage (ProjectImpl &p) { return p.zip_storage; }
+};
+} // Bse
+
 Bse::Error
 bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilename, gboolean self_contained)
 {
   assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
+  Bse::ProjectImplP cxxself = self->as<Bse::ProjectImplP>();
   if (super)
     {
       assert_return (BSE_IS_SUPER (super), Bse::Error::INTERNAL);
@@ -406,7 +412,7 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
   assert_return (bsefilename != NULL, Bse::Error::INTERNAL);
 
   // create container
-  Bse::Storage zip_storage;
+  Bse::Storage &zip_storage = Bse::ProjectImpl::Internal::zip_storage (*cxxself);
   if (!zip_storage.set_mimetype_bse())
     return Bse::Error::FILE_WRITE_FAILED;
   int fd = zip_storage.store_file_fd ("bse_storage.scm");
@@ -445,6 +451,7 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
   // create .bse file from container
   if (!zip_storage.export_as (bsefilename))
     return Bse::Error::FILE_WRITE_FAILED;
+  zip_storage.rm_file ("bse_storage.scm");
   return Bse::Error::NONE;
 }
 
@@ -1153,7 +1160,7 @@ ProjectImpl::restore_from_file (const String &file_name)
   Bse::Error error;
   if (!self->in_undo && !self->in_redo)
     {
-      Bse::Storage zip_storage;
+      Bse::Storage &zip_storage = Bse::ProjectImpl::Internal::zip_storage (*this);
       String scm_filename;
       if (zip_storage.import_as_scm (file_name))
         scm_filename = file_name;
@@ -1165,7 +1172,14 @@ ProjectImpl::restore_from_file (const String &file_name)
                 return bse_error_from_errno (errno, Bse::Error::IO);
               return Bse::Error::FORMAT_INVALID; // import failed
             }
-          scm_filename = zip_storage.fetch_file ("bse_storage.scm");
+          if (zip_storage.has_file ("bse_storage.scm"))
+            {
+              // move "bse_storage.scm" out of the way for future imports into this zip_storage
+              const String bsestorage_scm = zip_storage.move_to_temporary ("bse_storage.scm");
+              scm_filename = !bsestorage_scm.empty() ? zip_storage.fetch_file (bsestorage_scm) : "" /*error*/;
+              if (scm_filename.empty())
+                return Bse::Error::IO; // import failed
+            }
         }
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
       error = bse_storage_input_file (storage, scm_filename.c_str());
