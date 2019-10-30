@@ -1,0 +1,93 @@
+--- refman.orig
++++ refman.tex
+@@ -1 +1 @@
+-\documentclass[twoside]{book}
++\documentclass[oneside,9pt]{book}
+@@ -18,12 +18,5 @@
+ % Font selection
+-\usepackage[T1]{fontenc}
+-\usepackage[scaled=.90]{helvet}
+-\usepackage{courier}
+-\usepackage{amssymb}
++\usepackage{fontspec}
++\setmainfont{Charis SIL}
+ \usepackage{sectsty}
+-\renewcommand{\familydefault}{\sfdefault}
+-\allsectionsfont{%
+-  \fontseries{bc}\selectfont%
+-  \color{darkgray}%
+-}
+ \renewcommand{\DoxyLabelFont}{%
+@@ -46,4 +49,5 @@
++\geometry{a4paper,top=2cm,bottom=2.5cm,left=2cm,right=2cm}
+ \hbadness=750
+-\setlength{\emergencystretch}{15pt}
++\setlength{\emergencystretch}{1pt}
+ \setlength{\parindent}{0cm}
+-\setlength{\parskip}{3ex plus 2ex minus 2ex}
++%\setlength{\parskip}{3ex plus 2ex minus 2ex}
+@@ -73,1 +73,0 @@
+-\fancyfoot[CE]{\fancyplain{}{}}
+@@ -91,2 +93,9 @@
+ \setcounter{secnumdepth}{5}
++\setcounter{secnumdepth}{1}
++\setcounter{tocdepth}{1}
++\cftsetindents{section}{0.5in}{0.5in}
++\cftsetindents{subsection}{0.5in}{1.0in}
++%\cftsetindents{subsubsection}{0.5in}{1.5in}
++%\cftsetindents{paragraph}{0.5in}{1.5in}
++%\addtolength{\cftsecnumwidth}{30pt}
+ \makeindex
+@@ -101,5 +101,8 @@
++\usepackage{xcolor}
++\definecolor{darkblue}{HTML}{000080}
+ \hypersetup{%
+   colorlinks=true,%
+-  linkcolor=blue,%
+-  citecolor=blue,%
++  linkcolor=darkblue,%
++  citecolor=darkblue,%
++  urlcolor=darkblue,%
+   unicode%
+@@ -113,1 +113,22 @@
++\usepackage{multicol}
++\makeatletter
++\renewcommand\subitem{\@idxitem \hspace*{10\p@}}
++\renewenvironment{theindex}
++   {\if@twocolumn
++       \@restonecolfalse
++    \else
++       \@restonecoltrue
++    \fi
++    \setlength{\columnseprule}{0pt}
++    \setlength{\columnsep}{15pt}
++    \begin{multicols}{3}[\section*{\indexname}]
++    \markboth{\MakeUppercase\indexname}%
++             {\MakeUppercase\indexname}%
++    \thispagestyle{plain}
++    \setlength{\parindent}{0pt}
++    \setlength{\parskip}{0pt plus 0.3pt}
++    \relax
++    \let\item\@idxitem}%
++   {\end{multicols}\if@restonecol\onecolumn\else\clearpage\fi}
++\makeatother
+ \usepackage{caption}
+@@ -125,3 +125,3 @@
+-\pagenumbering{alph}
++\pagenumbering{arabic}
+ \begin{titlepage}
+-\vspace*{7cm}
++\vspace*{2.5cm}
+@@ -134,5 +134,4 @@
+-\clearemptydoublepage
+-\pagenumbering{roman}
++\setcounter{page}{2}
++\clearemptydoublepage
+ \tableofcontents
+ \clearemptydoublepage
+-\pagenumbering{arabic}
+@@ -324,1 +324,4 @@
++\begin{flushleft}
++\small
+ \printindex
++\end{flushleft}
