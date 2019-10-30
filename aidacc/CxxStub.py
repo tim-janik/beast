@@ -839,6 +839,8 @@ class Generator:
       sc_macro_prefix, sc_other_prefix = sc_other_prefix, sc_macro_prefix
     if self.gen_serverhh or self.gen_clienthh:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
+    if self.gen_serverhh:
+      s += '#ifndef DOXYGEN\n'
     # interface hooks
     if self.gen_clienthh:
       s += '#ifndef __%s_ifx__\n' % self.cppmacro
@@ -953,6 +955,22 @@ class Generator:
         for tp in spc_enums:
           s += self.generate_enum_info_impl (tp)
     s += self.open_namespace (None) # close all namespaces
+    # DOXYGEN
+    if self.gen_serverhh:
+      s += '\n#else // DOXYGEN\n'
+      for tp in types:
+        if not tp.is_forward and tp.storage == Decls.INTERFACE:
+          s += self.open_namespace (tp)
+          s += '\n'
+          s += '/// IDL interface class for %s\n' % self.type2cpp_absolute (tp)
+          s += '/// @extends %s\n' % self.type2cpp_absolute (tp)
+          s += 'class %s {};\n' % self.C (tp)
+          s += '\n'
+          s += '/// @class %sImpl\n' % self.type2cpp_absolute (tp)
+          s += '/// @implements %s\n' % self.type2cpp_absolute (tp)
+      s += '\n'
+      s += self.open_namespace (None) # close all namespaces
+      s += '#endif // DOXYGEN\n'
     # CPP guard
     if self.gen_serverhh or self.gen_clienthh:
       s += '\n#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
