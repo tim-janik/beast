@@ -927,6 +927,18 @@ ProjectImpl::post_init()
   sfrepo->set_flag (BSE_OBJECT_FLAG_FIXED_UNAME);
 }
 
+void
+ProjectImpl::xml_serialize (SerializationNode &xs)
+{
+  ContainerImpl::xml_serialize (xs);
+}
+
+void
+ProjectImpl::xml_reflink (SerializationNode &xs)
+{
+  ContainerImpl::xml_reflink (xs);
+}
+
 ProjectImpl::~ProjectImpl ()
 {}
 

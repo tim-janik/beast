@@ -72,6 +72,8 @@ class ProjectImpl : public ContainerImpl, public virtual ProjectIface {
   Bse::Storage               zip_storage;
 protected:
   virtual void               post_init           () override;
+  virtual void               xml_serialize       (SerializationNode &xs) override;
+  virtual void               xml_reflink         (SerializationNode &xs) override;
   virtual                   ~ProjectImpl         ();
 public:
   explicit                   ProjectImpl         (BseObject*);
