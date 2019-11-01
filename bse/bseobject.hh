@@ -4,25 +4,28 @@
 
 #include <bse/bseparam.hh>
 #include <bse/datalist.hh>
+#include <bse/serializable.hh>
 #include <bse/object.hh>
 
 namespace Bse {
 
-class LegacyObjectImpl : public ObjectImpl, public DataListContainer, public virtual LegacyObjectIface {
+class LegacyObjectImpl : public ObjectImpl, public virtual LegacyObjectIface, public virtual SerializableInterface, public DataListContainer {
   BseObject             *gobject_ = NULL;
   virtual Aida::SharedFromThisP __shared_from_this__ () override;
 protected:
-  virtual void          post_init   ();
+  virtual void          post_init     ();
+  virtual void          xml_serialize (SerializationNode &xs) override;
+  virtual void          xml_reflink   (SerializationNode &xs) override;
 public:
-  explicit              LegacyObjectImpl  (BseObject*);
-  virtual              ~LegacyObjectImpl  ();
-  operator              BseObject*  ()          { return gobject_; }
+  explicit              LegacyObjectImpl (BseObject*);
+  virtual              ~LegacyObjectImpl ();
+  operator              BseObject*    ()        { return gobject_; }
   // template<class BseObjectPtr> BseObjectPtr as (); // provided by LegacyObjectIface
-  virtual std::string   debug_name  () override;
-  virtual int32_t       unique_id   () override;
-  virtual std::string   uname       () const override;
-  virtual void          uname       (const std::string &newname) override;
-  virtual int64_t       proxy_id    () override;
+  virtual std::string   debug_name    () override;
+  virtual int32_t       unique_id     () override;
+  virtual std::string   uname         () const override;
+  virtual void          uname         (const std::string &newname) override;
+  virtual int64_t       proxy_id      () override;
   virtual StringSeq     find_typedata (const std::string &type_name) override;
   virtual BseObject*    as_bse_object () override { return gobject_; }
 };
