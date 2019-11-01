@@ -554,6 +554,13 @@ Const STANDARD_RDONLY = STANDARD ":ro:";
 Const NOTEHINTS       = STANDARD ":note";
 Const FINETUNEHINTS   = STANDARD ":finetune";
 Const VELOCITYHINTS   = STANDARD ":velocity";
+Const MIN_VOLUME_DB   = -144;
+Const MAX_VOLUME_DB   = 24;
+Const BUS_VOLUME_MIN  = 1.58489319246111e-05; /* -96dB */
+Const BUS_VOLUME_MAX  = 15.8489319246111;     /* +24dB */
+Const BUS_VOLUME_DEF  = 1;
+Const BUS_VOLUME_STEP = 0.1;
+Const MAX_MIDI_CHANNEL = 99;
 /* extra options */
 Const SKIP_DEFAULT    = ":skip-default:";
 Const SKIP_UNDO       = ":skip-undo:";
@@ -933,8 +940,6 @@ interface SubSynth : Source {
 };
 
 /// Interface for sequencing information and links to Part objects.
-Const MIDI_MAX_CHANNEL = 99;
-
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
@@ -955,7 +960,7 @@ interface Track : ContextMerger {
   };
   group _("MIDI Instrument") {
     int32 midi_channel = Range (_("MIDI Channel"), _("Midi channel assigned to this track, 0 uses internal per-track channel"),
-                                GUI STORAGE ":scale:skip-default:unprepared", 0, MIDI_MAX_CHANNEL, 1, 0);
+                                GUI STORAGE ":scale:skip-default:unprepared", 0, MAX_MIDI_CHANNEL, 1, 0);
   };
   group _("Synth Input") {
     int32 n_voices = Range (_("Max Voices"), _("Maximum number of voices for simultaneous playback"),
@@ -992,11 +997,6 @@ record TrackPart {
 sequence TrackPartSeq {
   TrackPart parts;
 };
-
-Const BUS_VOLUME_MIN = 1.58489319246111e-05; /* -96dB */
-Const BUS_VOLUME_MAX = 15.8489319246111;     /* +24dB */
-Const BUS_VOLUME_DEF = 1;
-Const BUS_VOLUME_STEP = 0.1;
 
 /// Interface for effect stacks and per-track audio signal routing to the master output.
 interface Bus : SubSynth {
@@ -1148,10 +1148,6 @@ interface MidiNotifier : Item {
 };
 
 /// Interface for MIDI synthesis networks.
-Const MAX_MIDI_CHANNEL = 99;
-Const MIN_VOLUME_DB    = -144;
-Const MAX_VOLUME_DB    = 24;
-
 interface MidiSynth : SNet {
   group _("MIDI Instrument") {
     int32 midi_channel = Range (_("MIDI Channel"), _("Midi channel assigned to this midi synthesizer"),

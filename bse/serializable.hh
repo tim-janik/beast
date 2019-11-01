@@ -1,4 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+#ifndef __BSE_SERIALIZABLE_HH__
+#define __BSE_SERIALIZABLE_HH__
 
 #include <bse/bseenums.hh>
 
@@ -333,3 +335,5 @@ struct DataConverter<T, typename ::std::enable_if<
 
 } // Xms
 } // Bse
+
+#endif // __BSE_SERIALIZABLE_HH__

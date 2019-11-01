@@ -54,7 +54,7 @@ template<typename>   struct IsSharedPtr                     : std::false_type {}
 template<typename T> struct IsSharedPtr<std::shared_ptr<T>> : std::true_type  {};
 
 /// Test string equality at compile time.
-extern inline constexpr bool
+static inline constexpr bool
 constexpr_equals (const char *a, const char *b, size_t n)
 {
   return n == 0 || (a[0] == b[0] && (a[0] == 0 || constexpr_equals (a + 1, b + 1, n - 1)));
@@ -76,14 +76,14 @@ string_demangle_cxx (const char *mangled_identifier)
 }
 
 /// Provide demangled stringified name for a type `T`.
-template<class T> std::string
+template<class T> static inline std::string
 rtti_typename()
 {
   return string_demangle_cxx (typeid (T).name());
 }
 
 /// Provide demangled stringified name for the runtime type of object `o`.
-template<class T> std::string
+template<class T> static inline std::string
 rtti_typename (T &o)
 {
   return string_demangle_cxx (typeid (o).name());
@@ -94,12 +94,12 @@ template<class, class = void> struct Has___typename__ : std::false_type {};
 template<typename T>          struct Has___typename__<T, std::void_t< decltype (std::declval<const T&>().__typename__()) > > : std::true_type {};
 
 /// Provide the __typename__() of @a object, or its rtti_typename().
-template<typename T, REQUIRES< Has___typename__<T>::value > = true> static std::string
+template<typename T, REQUIRES< Has___typename__<T>::value > = true> static inline std::string
 get___typename__ (const T &o)
 {
   return o.__typename__();
 }
-template<typename T, REQUIRES< !Has___typename__<T>::value > = true> static std::string
+template<typename T, REQUIRES< !Has___typename__<T>::value > = true> static inline std::string
 get___typename__ (const T &o)
 {
   return rtti_typename (o);
@@ -276,7 +276,7 @@ template<typename T>
 struct Convert<T const&> : Convert<T> {};
 
 /// Convert JsonValue to C++ value
-template<typename T> auto
+template<typename T> static inline auto
 from_json (const JsonValue &value)
   -> decltype (Convert<T>::from_json (value))
 {
@@ -284,7 +284,7 @@ from_json (const JsonValue &value)
 }
 
 /// Convert JsonValue to C++ value with fallback for failed conversions
-template<typename T> auto
+template<typename T> static inline auto
 from_json (const JsonValue &value, const T &fallback)
   -> decltype (Convert<T>::from_json (value, fallback))
 {
@@ -292,26 +292,26 @@ from_json (const JsonValue &value, const T &fallback)
 }
 
 /// Convert C++ value to JsonValue
-template<typename T> JsonValue
+template<typename T> static inline JsonValue
 to_json (const T &value, JsonAllocator &allocator)
 {
   return Convert<T>::to_json (value, allocator);
 }
 
 /// Convert C++ value to JsonValue
-template<> JsonValue
+template<> inline JsonValue
 to_json<const char*> (const char *const &value, JsonAllocator &allocator)
 {
   return Convert<const char*>::to_json (value, allocator);
 }
 
 /// Convert C++ char array to JsonValue
-template<size_t N> auto
+template<size_t N> static inline auto
 to_json (const char (&c)[N], JsonAllocator &allocator)
 {
   return Convert<const char*>::to_json (c, N - 1, allocator);
 }
-template<size_t N> auto
+template<size_t N> static inline auto
 to_json (const char (&c)[N], size_t l, JsonAllocator &allocator)
 {
   return Convert<const char*>::to_json (c, l, allocator);
@@ -417,7 +417,7 @@ struct CallTraits {
 };
 
 // == call_from_json ==
-template<typename T, typename F> typename FunctionTraits<F>::ReturnType
+template<typename T, typename F> static inline typename FunctionTraits<F>::ReturnType
 call_from_json (T &obj, const F &func, const CallbackInfo &args)
 {
   using CallTraits = CallTraits<F>;
@@ -434,6 +434,7 @@ struct InstanceMap {
   static Wrapper*
   lookup (size_t thisid)
   {
+    auto &wmap_ = wmap();
     auto it = wmap_.find (thisid);
     if (it != wmap_.end())
       return it->second;
@@ -442,13 +443,15 @@ struct InstanceMap {
   static size_t
   add (Wrapper *wrapper)
   {
-    const size_t id = ++counter_;
+    auto &wmap_ = wmap();
+    const size_t id = next_counter();
     wmap_[id] = wrapper;
     return id;
   }
   static bool
   remove (size_t thisid)
   {
+    auto &wmap_ = wmap();
     auto it = wmap_.find (thisid);
     if (it != wmap_.end())
       {
@@ -460,13 +463,12 @@ struct InstanceMap {
     return false;
   }
 private:
-  static std::map<size_t, Wrapper*> wmap_;
-  static size_t counter_;
+  using WrapperMap = std::map<size_t, Wrapper*>;
+  static WrapperMap& wmap        () { static WrapperMap wmap_; return wmap_; }
+  static size_t      next_counter() { static size_t counter_ = 0; return ++counter_; }
 };
-std::map<size_t, InstanceMap::Wrapper*> InstanceMap::wmap_;
-size_t InstanceMap::counter_ = 0;
 
-Closure*
+inline Closure*
 CallbackInfo::find_closure (const char *methodname)
 {
   InstanceMap::Wrapper *wrapper = InstanceMap::lookup (thisid());
@@ -841,7 +843,8 @@ private:
 // == Helper for known derived classes by RTTI typename ==
 using WrapObjectFromBase = size_t (const std::string&, void*, bool*);
 
-static inline WrapObjectFromBase*
+// This *MUST* use `extern inline` for the ODR to apply to its `static` variable
+extern inline WrapObjectFromBase*
 can_wrap_object_from_base (const std::string &rttiname, WrapObjectFromBase *handler = nullptr)
 {
   static std::map<std::string, WrapObjectFromBase*> downcastwrappers;
@@ -1205,7 +1208,7 @@ struct Convert<std::shared_ptr<T>, REQUIRESv< IsWrappableClass<T>::value >> {
 };
 
 /// Clear wrapped Class from lookup table
-template<typename T> bool
+template<typename T> static inline bool
 forget_json (const T &value)
 {
   using ClassType = typename std::remove_cv<T>::type;
