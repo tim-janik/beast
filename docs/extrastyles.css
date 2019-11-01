@@ -55,3 +55,7 @@ table.fieldtable		{ border: none; box-shadow: none; line-height: 1.5em; }
 table.fieldtable th		{ background-image: none; display: none; }
 table.fieldtable td.fieldname,
 table.fieldtable td.fielddoc	{ /*border-bottom: 1px solid #DEE4F0;*/ border: none; }
+
+table.memberdecls td.memTemplItemLeft,
+table.memberdecls td.memItemLeft	{ max-width: 20em; overflow: hidden; font-size: 70%; }
+table.memberdecls td.mdescRight		{ font-size: 85%; text-indent: 3em; }
