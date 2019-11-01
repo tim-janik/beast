@@ -225,7 +225,7 @@ split_extension (const std::string &filepath, const bool lastdot)
   const char *const fullpath = filepath.c_str();
   const char *const slash1 = strrchr (fullpath, '/'), *const slash2 = strrchr (fullpath, '\\');
   const char *const slash = slash2 > slash1 ? slash2 : slash1;
-  const char *const dot = (lastdot ? strrchr : strchr) (slash ? slash : fullpath, '.');
+  const char *const dot = lastdot ? strrchr (slash ? slash : fullpath, '.') : strchr (slash ? slash : fullpath, '.');
   if (dot)
     return std::make_pair (filepath.substr (0, dot - fullpath), filepath.substr (dot - fullpath));
   return std::make_pair (filepath, "");
@@ -596,7 +596,7 @@ file_memread (FILE *stream, size_t *lengthp, ssize_t maxlength)
           break;
         }
       current += bytes;
-      if (maxlength >= 0 && current - buffer >= size_t (maxlength))
+      if (maxlength >= 0 && current - buffer >= maxlength)
         {
           current = buffer + maxlength; // shorten if needed
           break;
