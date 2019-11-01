@@ -83,13 +83,16 @@ test_main (int argc, char *argv[])
   // integrity tests
   assert_return (Bse::IntegrityCheck::checks_enabled() == true, -1);
 
-  if (tests)
-    for (const auto &te : *tests)
-      { // note, more than one space after "TESTING:" confuses emacs file:line matches
-        printerr ("  TESTING: %s:%u: %s…\n", te.file, te.line, te.func);
-        te.test();
-        printerr ("    …DONE  (%s)\n", te.func);
-      }
+  if (!tests)
+    return 0;
+
+  std::sort (tests->begin(), tests->end(), [] (const TestEntry &a, const TestEntry &b) { return strcmp (a.func ? a.func : "", b.func ? b.func : "") < 0; });
+  for (const auto &te : *tests)
+    { // note, more than one space after "TESTING:" confuses emacs file:line matches
+      printerr ("  TESTING: %s:%u: %s…\n", te.file, te.line, te.func);
+      te.test();
+      printerr ("    …DONE  (%s)\n", te.func);
+    }
 
   return 0;
 }

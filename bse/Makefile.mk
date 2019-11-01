@@ -134,6 +134,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/randomhash.hh		\
 	bse/regex.hh			\
 	bse/serializable.hh		\
+	bse/storage.hh			\
 	bse/sfi.hh			\
 	bse/sficomport.hh		\
 	bse/sficomwire.hh		\
@@ -278,6 +279,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/gslwaveosc.cc		\
 	bse/magic.cc			\
 	bse/memory.cc			\
+	bse/minizip.c			\
 	bse/monitor.cc			\
 	bse/path.cc			\
 	bse/platform.cc			\
@@ -285,6 +287,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/randomhash.cc		\
 	bse/regex.cc			\
 	bse/serializable.cc		\
+	bse/storage.cc			\
 	bse/sficomport.cc		\
 	bse/sficomwire.cc		\
 	bse/sfifilecrawler.cc		\
@@ -374,6 +377,20 @@ bse/integrity.sources	   ::= bse/integrity.cc
 bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
 bse/integrity.objects.FLAGS  = -O0	# compile fast
 bse/all: $(bse/integrity)
+
+# == external/minizip ==
+$>/external/minizip/mz_zip.h:			| $>/external/
+	$(QECHO) FETCH "minizip-2.9.0"
+	$Q cd $>/external/ \
+	     $(call AND_DOWNLOAD_SHAURL, \
+		0c68fc9653203ca59a4b83598c89a86156c9142e08edbea9ae2430ee1e31babb, \
+			https://github.com/nmoinvaz/minizip/archive/2.9.0.zip)
+	$(QGEN)
+	$Q cd $>/external/ && rm -rf minizip-2.9.0/ && unzip -q 2.9.0.zip
+	$Q rm $>/external/2.9.0.zip && rm -rf $>/external/minizip/
+	$Q mv $>/external/minizip-2.9.0/ $>/external/minizip/
+CLEANDIRS += $>/external/minizip
+$(bse/libbse.objects): $>/external/minizip/mz_zip.h
 
 # == subdirs ==
 include bse/icons/Makefile.mk

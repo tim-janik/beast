@@ -117,6 +117,7 @@ main (int argc, char *argv[])
 
   // hook up Bse aida IDL with main loop
   bst_init_aida_idl();
+  bse_server.purge_stale_cachedirs();
 
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);

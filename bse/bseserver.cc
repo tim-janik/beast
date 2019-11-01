@@ -12,6 +12,7 @@
 #include "gslvorbis-enc.hh"
 #include "bseladspa.hh"
 #include "devicecrawler.hh"
+#include "storage.hh"
 #include "bse/internal.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -941,6 +942,12 @@ ServerImpl::get_custom_instrument_dir ()
 {
   StringVector strings = string_split (Bse::global_config->instrument_path, G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
+}
+
+void
+ServerImpl::purge_stale_cachedirs ()
+{
+  beastbse_cachedir_cleanup();
 }
 
 void

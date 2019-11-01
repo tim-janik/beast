@@ -497,7 +497,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super_proxy, const String &file_
                 bool self_contained, bool want_overwrite)
 {
   Bse::SuperH super = Bse::SuperH::__cast__ (bse_server.from_proxy (super_proxy));
-  Bse::Error error = project.store_bse (super, file_name, self_contained);
+  Bse::Error error = super ? project.store_bse (super, file_name, self_contained) : project.store (file_name, self_contained);
   const String title = Bse::string_format (saving_message_format.c_str(), super ? super.get_name() : project.get_name());
   gboolean handled = TRUE;
   gchar *msg = NULL;

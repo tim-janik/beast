@@ -31,7 +31,8 @@ static_assert (sizeof (int) == 4 && sizeof (uint) == 4 && sizeof (unichar) == 4,
 using   std::map;
 using   std::vector;
 typedef std::string String;             ///< Convenience alias for std::string.
-typedef vector<String> StringVector;    ///< Convenience alias for a std::vector<std::string>.
+using StringVector = vector<String>;    ///< Convenience alias for a std::vector<std::string>.
+using StringPair = std::pair<std::string, std::string>;
 using   Aida::Any;
 using   Aida::EventFd;
 using   Aida::EventHandlerF;

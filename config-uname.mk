@@ -37,7 +37,7 @@ MODEFLAGS	::= -O0
 else ifeq ($(MODE),production)
 MODEFLAGS	::= -O3 -DNDEBUG
 else ifeq ($(MODE),debug)
-MODEFLAGS	::= -O0 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -ggdb3 -DG_ENABLE_DEBUG -fverbose-asm
+MODEFLAGS	::= -gdwarf-4 -O0 -fno-omit-frame-pointer -fno-inline -fstack-protector-all -DG_ENABLE_DEBUG -fverbose-asm
 else ifeq ($(MODE),ubsan)
 MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -DG_ENABLE_DEBUG -fsanitize=undefined
 LDMODEFLAGS	 += -lubsan

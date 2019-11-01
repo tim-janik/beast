@@ -219,6 +219,18 @@ config_names (const String &names)
   access_config_names (&names);
 }
 
+StringPair
+split_extension (const std::string &filepath, const bool lastdot)
+{
+  const char *const fullpath = filepath.c_str();
+  const char *const slash1 = strrchr (fullpath, '/'), *const slash2 = strrchr (fullpath, '\\');
+  const char *const slash = slash2 > slash1 ? slash2 : slash1;
+  const char *const dot = (lastdot ? strrchr : strchr) (slash ? slash : fullpath, '.');
+  if (dot)
+    return std::make_pair (filepath.substr (0, dot - fullpath), filepath.substr (dot - fullpath));
+  return std::make_pair (filepath, "");
+}
+
 /// Expand a "~/" or "~user/" @a path which refers to user home directories.
 String
 expand_tilde (const String &path)

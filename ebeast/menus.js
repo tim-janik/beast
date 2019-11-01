@@ -45,7 +45,7 @@ export async function setup_app_menu()
 	if (item.role === undefined && item.id !== undefined)
 	  item.role = item.id;
 	if (item.click === undefined && item.role !== undefined)
-	  item.click = (menuitem, _focusedBrowserWindow, _event) => menu_command (menuitem);
+	  item.click = (menuitem, _focusedBrowserWindow, _event) => { menu_command (menuitem); return true; };
       }
   }
   complete_menu_items (menubar_menuitems);
@@ -80,7 +80,7 @@ function menu_sentinel (menuitem)
 }
 
 // handle menu activations
-function menu_command (menuitem)
+async function menu_command (menuitem)
 {
   const BrowserWindow = Electron.getCurrentWindow(); // http://electron.atom.io/docs/api/browser-window/
   menu_sentinel (menuitem);
@@ -172,7 +172,7 @@ function menu_command (menuitem)
 					defaultPath: save_dialog_lastdir,
 					filters: [ { name: 'BSE Projects', extensions: ['bse'] }, ],
 				      },
-				      (savepath) => {
+				      async (savepath) => {
 					if (!savepath)
 					  return;
 					const Path = require ('path');
@@ -182,24 +182,25 @@ function menu_command (menuitem)
 					const Fs = require ('fs');
 					if (Fs.existsSync (savepath))
 					  Fs.unlinkSync (savepath);
-					let err = Shell.save_project (savepath);
+					const err = await Shell.save_project (savepath);
 					if (err == Bse.Error.NONE)
 					  {
 					    save_same_filename = savepath;
 					    check_all_menu_items();
 					  }
-					else
-					  console.log ('Save:', savepath, err);
+					console.log ('Save-As:', savepath, err);
 				      });
       break;
     case 'save-same':
       if (save_same_filename)
 	{
+	  const savepath = save_same_filename;
 	  const Fs = require ('fs');
-	  if (Fs.existsSync (save_same_filename))
-	    Fs.unlinkSync (save_same_filename);
+	  if (Fs.existsSync (savepath))
+	    Fs.unlinkSync (savepath);
 	  // TODO: instead of calling unlinkSync(), BSE should support atomically replacing bse files
-	  Shell.save_project (save_same_filename);
+	  const err = await Shell.save_project (savepath);
+	  console.log ('Save-As:', savepath, err);
 	}
       break;
     default:

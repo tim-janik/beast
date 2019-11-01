@@ -2,6 +2,7 @@
 #include "bsetool.hh"
 #include <bse/bsemain.hh>
 #include <bse/magic.hh>
+#include <bse/storage.hh>
 #include <bse/gslcommon.hh>
 #include <bse/bseloader.hh>
 #include <bse/gsldatahandle.hh>
@@ -36,14 +37,10 @@ magic_test (const ArgParser &ap)
   guint i;
   gboolean test_open = FALSE;
   /* initialization */
-  FileMagic::register_magic (".bse", "0 string ; Bse", "BseProject file");
-  FileMagic::register_magic (".bse",
-                             "0  string  PK\003\004\n"
-                             "8  short   0x0000\n" // uncompressed first entry
-                             "26 leshort =8\n"     // file name length
-                             "28 leshort 0x0000\n" // no extra field
-                             "30 string mimetypeapplication/x-bsePK",
-                             "Bse::Project file (application/x-bse; zipped)");
+  {
+    Bse::Storage dummy;
+    dummy.import_as_scm ("dummy"); // force '.bse' FileMagic setup
+  }
   for (i = 0; i < n_magic_presets; i++)
     FileMagic::register_magic ("", magic_presets[i][1], magic_presets[i][0]);
   if (ap["t"] == "1")
