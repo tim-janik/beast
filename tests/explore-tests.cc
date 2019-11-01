@@ -4,7 +4,6 @@
 #include <cmath>
 #include <bse/testing.hh>
 #include <bse/bseutils.hh>
-#include <bse/serialize.hh>
 using namespace Aida;
 
 static void
@@ -43,12 +42,6 @@ struct A1DerivedImpl : public virtual A1::DerivedIface, public virtual EnableSha
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
   { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
 };
-
-static inline void
-serialize_content (A1DerivedImpl &o, Bse::SerializeContext &sc)
-{}
-
-BSE_SERIALIZATION_EXPORT (A1DerivedImpl);
 
 void
 fill_big_data_pack (A1::BigDataPack &big)

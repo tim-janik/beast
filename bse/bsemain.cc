@@ -12,7 +12,7 @@
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "bseglue.hh"
-#include "serialize.hh"
+#include "serializable.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
@@ -545,6 +545,16 @@ global_config_beastrc()
   return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "bserc.xml") : argv_bse_rcfile;
 }
 
+struct BseRc : public virtual Xms::SerializableInterface {
+  Configuration config;
+  String        config_tag = "Configuration";
+  void
+  xml_serialize (Xms::SerializationNode &xs) override
+  {
+    xs[config_tag] & config;
+  }
+};
+
 static const Configuration&
 global_config_load ()
 {
@@ -553,13 +563,27 @@ global_config_load ()
     {
       Configuration config = GlobalConfig::defaults();
       // load from rcfile
-      String fileconfig = Path::stringread (global_config_beastrc());
-      if (!fileconfig.empty())
+      const String xmltext = Path::stringread (global_config_beastrc());
+      if (!xmltext.empty())
         {
           Configuration tmp = config;
-          SerializeFromXML si (fileconfig);
-          if (si.load (tmp))
-            config = tmp;
+          Xms::SerializationNode xs;
+          if (Bse::Error::NONE == xs.parse_xml ("", xmltext)) // "BseRc" but allow "configuration"
+            {
+              BseRc rc;
+              rc.config = config; // pre-load with defaults
+              if (xs.name() == "BseRc")
+                {
+                  xs.load (rc);
+                  config = rc.config;
+                }
+              else if (xs.name() == "configuration" && xs.has ("record")) // serialize.hh compat
+                {
+                  rc.config_tag = "record";
+                  xs.load (rc);
+                  config = rc.config;
+                }
+            }
         }
       loaded_once = true;
       global_config_rcsettings = config;
@@ -588,9 +612,11 @@ GlobalConfig::flush ()
 {
   if (global_config_dirty)
     {
-      SerializeToXML so ("configuration", version());
-      so.save (global_config_rcsettings);
-      Path::stringwrite (global_config_beastrc(), so.to_xml(), true);
+      BseRc rc;
+      rc.config = global_config_rcsettings;
+      Xms::SerializationNode xs;
+      xs.save (rc);
+      Path::stringwrite (global_config_beastrc(), xs.write_xml ("BseRc"), true);
       global_config_dirty = false;
     }
 }
