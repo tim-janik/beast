@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#define PDEBUG(...)     Bse::debug ("project", __VA_ARGS__)
 
 typedef struct {
   GType    base_type;
@@ -60,6 +61,8 @@ static void	bse_project_prepare		(BseSource		*source);
 static gboolean project_check_restore		(BseContainer           *container,
 						 const gchar            *child_type);
 static BseUndoStack* bse_project_get_undo       (BseItem                *item);
+static Bse::Error    bse_project_restore        (BseProject             *project,
+						 BseStorage             *storage);
 
 
 /* --- variables --- */
@@ -415,11 +418,11 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
   Bse::Storage &zip_storage = Bse::ProjectImpl::Internal::zip_storage (*cxxself);
   if (!zip_storage.set_mimetype_bse())
     return Bse::Error::FILE_WRITE_FAILED;
+
+  // bse_storage.scm serialization (s-expr)
   int fd = zip_storage.store_file_fd ("bse_storage.scm");
   if (fd < 0)
     return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
-
-  // s-expr serialization
   BseStorage *bse_storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
   long l, flags = 0;
   if (self_contained)
@@ -447,6 +450,13 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
   g_object_unref (bse_storage);
   if (error != Bse::Error::NONE)
     return error;
+
+  // project.xml serialization
+  {
+    Bse::SerializationNode xs;
+    xs.save (*cxxself);
+    zip_storage.store_file_buffer ("project.xml", xs.write_xml ("Project"));
+  }
 
   // create .bse file from container
   if (!zip_storage.export_as (bsefilename))
@@ -1160,8 +1170,9 @@ ProjectImpl::restore_from_file (const String &file_name)
   Bse::Error error;
   if (!self->in_undo && !self->in_redo)
     {
+      // open container
       Bse::Storage &zip_storage = Bse::ProjectImpl::Internal::zip_storage (*this);
-      String scm_filename;
+      String scm_filename, project_xml;
       if (zip_storage.import_as_scm (file_name))
         scm_filename = file_name;
       else
@@ -1172,26 +1183,45 @@ ProjectImpl::restore_from_file (const String &file_name)
                 return bse_error_from_errno (errno, Bse::Error::IO);
               return Bse::Error::FORMAT_INVALID; // import failed
             }
+          if (zip_storage.has_file ("project.xml"))
+            project_xml = zip_storage.fetch_file ("project.xml");
           if (zip_storage.has_file ("bse_storage.scm"))
             {
               // move "bse_storage.scm" out of the way for future imports into this zip_storage
               const String bsestorage_scm = zip_storage.move_to_temporary ("bse_storage.scm");
               scm_filename = !bsestorage_scm.empty() ? zip_storage.fetch_file (bsestorage_scm) : "" /*error*/;
-              if (scm_filename.empty())
-                return Bse::Error::IO; // import failed
             }
+          if (project_xml.empty() && scm_filename.empty())
+            return Bse::Error::IO; // import failed
         }
-      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-      error = bse_storage_input_file (storage, scm_filename.c_str());
-      if (error == 0)
-        error = bse_project_restore (self, storage);
-      bse_storage_reset (storage);
-      g_object_unref (storage);
+      // bse_storage.scm deserialization (s-expr)
+      if (!scm_filename.empty())
+        {
+          BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
+          error = bse_storage_input_file (storage, scm_filename.c_str());
+          if (error == 0)
+            error = bse_project_restore (self, storage);
+          bse_storage_reset (storage);
+          g_object_unref (storage);
+        }
+      // project.xml deserialization
+      if (!project_xml.empty())
+        {
+          String errmsg;
+          SerializationNode xs;
+          Bse::Error error = xs.parse_xml ("Project", Path::stringread (project_xml), &errmsg);
+          if (error != Bse::Error::NONE)
+            {
+              PDEBUG ("%s: %s: %s\n", file_name, errmsg, bse_error_blurb (error));
+              return error;
+            }
+          xs.load (*this);
+        }
       bse_project_clear_undo (self);
     }
   else
     error = Bse::Error::PROC_BUSY;
-  return Bse::Error (error);
+  return error;
 }
 
 ProjectState

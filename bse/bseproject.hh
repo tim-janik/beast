@@ -42,8 +42,6 @@ void		bse_project_keep_activated	(BseProject	*project,
 						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
 						 Bse::ProjectState state);
-Bse::Error	bse_project_restore		(BseProject	*project,
-						 BseStorage	*storage);
 Bse::Error	bse_project_store_bse		(BseProject	*project,
 						 BseSuper       *super,
 						 const gchar	*bse_file,
