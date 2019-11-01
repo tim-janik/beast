@@ -398,6 +398,10 @@ SerializationNode::parse_xml (const String &root, const String &xmltext, String 
 
 // SerializableInterface
 void
+SerializableInterface::xml_serialize (SerializationNode &xs)
+{}
+
+void
 SerializableInterface::xml_reflink (SerializationNode &xs)
 {}
 

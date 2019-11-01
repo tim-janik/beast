@@ -334,6 +334,10 @@ struct DataConverter<T, typename ::std::enable_if<
 {};
 
 } // Xms
+
+using SerializationNode = Xms::SerializationNode;
+using SerializableInterface = Xms::SerializableInterface;
+
 } // Bse
 
 #endif // __BSE_SERIALIZABLE_HH__
