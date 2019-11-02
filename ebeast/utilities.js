@@ -124,10 +124,12 @@ export function equals_recursively (a, b) {
   // check Objects, note: typeof null === 'object' && null instanceof Object === false
   if (!(a instanceof Object && b instanceof Object))
     return false;
-  if (a.constructor !== b.constructor)
-    return false;
   // functions must be exactly equal, due to scoping
   if (a instanceof Function)
+    return false;
+  // check inheritance
+  if (a.constructor !== b.constructor ||
+      !equals_recursively (Object.getPrototypeOf (a), Object.getPrototypeOf (b)))
     return false;
   // compare Array lengths
   if (Array.isArray (a) && a.length != b.length)
@@ -135,19 +137,34 @@ export function equals_recursively (a, b) {
   // compare RegExp
   if (a instanceof RegExp)
     return a.source == b.source && a.flags == b.flags && a.lastIndex  == b.lastIndex;
-  // compare Objects by properties
-  let ak = [], i = 0;
-  for (const k in a)
+  // compare Objects by non-inherited named properties
+  let ak = Object.getOwnPropertyNames (a), bk = Object.getOwnPropertyNames (b);
+  if (ak.length != bk.length)
+    return false;
+  for (let i = 0; i < ak.length; i++)
     {
+      const k = ak[i];
+      if (k != bk[i])
+	return false;
       const av = a[k], bv = b[k];
       if (!(av === bv || equals_recursively (av, bv)))
 	return false;
-      ak.push (k);
     }
-  for (const k in b)
-    if (ak[i++] != k)
-      return false;
-  ak = undefined;
+  // compare Objects by non-inherited symbol properties
+  ak = Object.getOwnPropertySymbols (a), bk = Object.getOwnPropertySymbols (b);
+  if (ak.length != bk.length)
+    return false;
+  for (let i = 0; i < ak.length; i++)
+    {
+      const k = ak[i];
+      if (k != bk[i])
+	return false;
+      const av = a[k], bv = b[k];
+      if (!(av === bv || equals_recursively (av, bv)))
+	return false;
+    }
+  ak = null;
+  bk = null;
   // compare non-Array iterables (e.g. Set)
   if (!Array.isArray (a) && typeof a[Symbol.iterator] == 'function')
     {
@@ -171,7 +188,7 @@ export function equals_recursively (a, b) {
 if (AUTOTEST)
   {
     function eqr (a, b) { return equals_recursively (a, b) && equals_recursively (b, a); }
-    const a = [ 0, 2, 3, 4, 5, 70, {a:null} ], b = [ 1, 2, 3, 4, 5, 70, {a:null} ]; console.assert (!eqr (a, b)); a[0] = 1; console.assert (eqr (a, b));
+    let a = [ 0, 2, 3, 4, 5, 70, {a:null} ], b = [ 1, 2, 3, 4, 5, 70, {a:null} ]; console.assert (!eqr (a, b)); a[0] = 1; console.assert (eqr (a, b));
     a.x = 9; console.assert (!eqr (a, b)); b.x = 9.0; console.assert (eqr (a, b));
     const c = copy_recursively (a); console.assert (eqr (a, c)); c[6].q = 'q'; console.assert (!eqr (a, c));
     const as = new Set (a), bs = new Set (b); console.assert (eqr (as, bs));
@@ -181,6 +198,14 @@ if (AUTOTEST)
     console.assert (eqr (clamp, clamp) && !eqr (clamp, eqr));
     console.assert (eqr ({ a: 1, b: 2 }, { a: 1, b: 2 }));
     console.assert (!eqr ({ a: 1, b: 2 }, { b: 2, a: 1 }));
+    a = {}; b = {};
+    console.assert (eqr (a, b));
+    Object.defineProperty (a, '$id', { value: 1 });
+    Object.defineProperty (b, '$id', { value: 1 });
+    console.assert (eqr (a, b));
+    b = {};
+    Object.defineProperty (b, '$id', { value: 2 });
+    console.assert (!eqr (a, b));
   }
 
 /** Return @a x clamped into @a min and @a max. */
