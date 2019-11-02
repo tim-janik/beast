@@ -3,14 +3,17 @@
 #define __BSE_OBJECT_HH__
 
 #include <bse/bseutils.hh>
+#include <bse/serializable.hh>
 
 namespace Bse {
 
-class ObjectImpl : public Aida::EnableSharedFromThis<ObjectImpl>, public virtual ObjectIface {
+class ObjectImpl : public Aida::EnableSharedFromThis<ObjectImpl>, public virtual ObjectIface, public virtual SerializableInterface {
   Aida::EventDispatcher  event_dispatcher_;
 protected:
   using KV = Aida::KeyValue;
   virtual           ~ObjectImpl ();
+  virtual void       xml_serialize (SerializationNode &xs) override;
+  virtual void       xml_reflink   (SerializationNode &xs) override;
 public:
   explicit          ObjectImpl  ();
   virtual bool      set_prop    (const std::string &name, const Any &value) override;
