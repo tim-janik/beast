@@ -124,7 +124,7 @@ Bse::MusicalTuning bse_item_current_musical_tuning (BseItem *self);
 
 namespace Bse {
 
-class ItemImpl : public ObjectImpl, public virtual ItemIface {
+class ItemImpl : public LegacyObjectImpl, public virtual ItemIface {
 public: typedef std::function<Error (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
 private:
   void push_item_undo (const String &blurb, const UndoLambda &lambda);

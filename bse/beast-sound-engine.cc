@@ -1,219 +1,12 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+#include "beast-sound-engine.hh"
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-#include <jsonipc/jsonipc.hh>
-
-#include <bse/bseenums.hh>      // enums API interfaces, etc
-#include <bse/platform.hh>
-#include <bse/randomhash.hh>
-#include <bse/regex.hh>
-#include <bse/bse.hh>   // Bse::init_async
 #include <limits.h>
 #include <stdlib.h>
-
-// == Aida Workarounds ==
-// Manually convert between Aida Handle types (that Jsonipc cannot know about)
-// and shared_ptr to Iface types.
-// Bse::*Seq as std::vector
-template<typename Bse_Seq, typename Bse_IfaceP>
-struct ConvertSeq {
-  static Bse_Seq
-  from_json (const Jsonipc::JsonValue &jarray)
-  {
-    std::vector<Bse_IfaceP> pointers = Jsonipc::from_json<std::vector<Bse_IfaceP>> (jarray);
-    Bse_Seq seq;
-    seq.reserve (pointers.size());
-    for (auto &ptr : pointers)
-      seq.emplace_back (ptr->__handle__());
-    return seq;
-  }
-  static Jsonipc::JsonValue
-  to_json (const Bse_Seq &vec, Jsonipc::JsonAllocator &allocator)
-  {
-    std::vector<Bse_IfaceP> pointers;
-    pointers.reserve (vec.size());
-    for (auto &itemhandle : vec)
-      pointers.emplace_back (itemhandle.__iface__()->template as<Bse_IfaceP>());
-    return Jsonipc::to_json (pointers, allocator);
-  }
-};
-
-/// Convert between Aida::Any and Jsonipc::JsonValue
-struct ConvertAny {
-  static Aida::Any
-  from_json (const Jsonipc::JsonValue &v, const Aida::Any &fallback = Aida::Any())
-  {
-    Aida::Any any;
-    switch (v.GetType())
-      {
-      case rapidjson::kNullType:
-        return fallback;
-      case rapidjson::kFalseType:
-        any.set<bool> (false);
-        break;
-      case rapidjson::kTrueType:
-        any.set<bool> (true);
-        break;
-      case rapidjson::kStringType:
-        any.set<std::string> (Jsonipc::from_json<std::string> (v));
-        break;
-      case rapidjson::kNumberType:
-        if      (v.IsInt())     any.set<int32_t>  (v.GetInt());
-        else if (v.IsUint())    any.set<int64_t>  (v.GetUint());
-        else if (v.IsInt64())   any.set<int64_t>  (v.GetInt64());
-        else if (v.IsUint64())  any.set<uint64_t> (v.GetUint64());
-        else                    any.set<double>   (v.GetDouble());
-        break;
-      case rapidjson::kArrayType:
-        sequence_from_json_array (any, v);
-        break;
-      case rapidjson::kObjectType:
-        record_from_json_object (any, v);
-        break;
-    };
-    return any;
-  }
-  static Jsonipc::JsonValue
-  to_json (const Aida::Any &any, Jsonipc::JsonAllocator &allocator)
-  {
-    using namespace Jsonipc;
-    switch (int (any.kind()))
-      {
-      case Aida::BOOL:          return JsonValue (any.get<bool>());
-      case Aida::INT32:         return JsonValue (any.get<int32_t>());
-      case Aida::INT64:         return JsonValue (any.get<int64_t>());
-      case Aida::FLOAT64:       return JsonValue (any.get<double>());
-      case Aida::ENUM:          return Jsonipc::to_json (any.get<std::string>(), allocator);
-      case Aida::STRING:        return Jsonipc::to_json (any.get<std::string>(), allocator);
-      case Aida::SEQUENCE:      return sequence_to_json_array (any.get<const Aida::AnySeq&>(), allocator);
-      case Aida::RECORD:        return record_to_json_object (any.get<const Aida::AnyRec&>(), allocator);
-      case Aida::INSTANCE:      return instance_to_json_object (any, allocator);
-      }
-    return JsonValue(); // null
-  }
-  static void
-  sequence_from_json_array (Aida::Any &any, const Jsonipc::JsonValue &v)
-  {
-    const size_t l = v.Size();
-    Aida::AnySeq s;
-    for (size_t i = 0; i < l; ++i)
-      s.push_back (ConvertAny::from_json (v[i]));
-    any.set (s);
-  }
-  static Jsonipc::JsonValue
-  sequence_to_json_array (const Aida::AnySeq &seq, Jsonipc::JsonAllocator &allocator)
-  {
-    const size_t l = seq.size();
-    Jsonipc::JsonValue jarray (rapidjson::kArrayType);
-    jarray.Reserve (l, allocator);
-    for (size_t i = 0; i < l; ++i)
-      jarray.PushBack (ConvertAny::to_json (seq[i], allocator).Move(), allocator);
-    return jarray;
-  }
-  static void
-  record_from_json_object (Aida::Any &any, const Jsonipc::JsonValue &v)
-  {
-    Aida::AnyRec r;
-    for (const auto &field : v.GetObject())
-      {
-        const std::string key = field.name.GetString();
-        if (key == "$class" || key == "$id")    // actually Aida::INSTANCE
-          return instance_from_json_object (any, v);
-        r[key] = ConvertAny::from_json (field.value);
-      }
-    any.set (r);
-  }
-  static Jsonipc::JsonValue
-  record_to_json_object (const Aida::AnyRec &r, Jsonipc::JsonAllocator &allocator)
-  {
-    Jsonipc::JsonValue jobject (rapidjson::kObjectType);
-    jobject.MemberReserve (r.size(), allocator);
-    for (auto const &field : r)
-      jobject.AddMember (Jsonipc::JsonValue (field.name.c_str(), allocator),
-                         ConvertAny::to_json (field, allocator).Move(), allocator);
-    return jobject;
-  }
-  static void
-  instance_from_json_object (Aida::Any &any, const Jsonipc::JsonValue &v)
-  {
-    Aida::ImplicitBaseP basep = Jsonipc::Convert<Aida::ImplicitBaseP>::from_json (v);
-    if (!basep)
-      return;
-    // FIXME: remove special casing of base object types once RemoteHandle is gone
-    Bse::ObjectIfaceP objectp = std::dynamic_pointer_cast<Bse::ObjectIface> (basep);
-    if (objectp)
-      any.set (objectp);
-    Bse::SignalMonitorIfaceP signalmonitorp = std::dynamic_pointer_cast<Bse::SignalMonitorIface> (basep);
-    if (signalmonitorp)
-      any.set (signalmonitorp);
-  }
-  static Jsonipc::JsonValue
-  instance_to_json_object (const Aida::Any &any, Jsonipc::JsonAllocator &allocator)
-  {
-    Aida::ImplicitBaseP basep = any.get<Aida::ImplicitBaseP> ();
-    return Jsonipc::Convert<Aida::ImplicitBaseP>::to_json (basep, allocator);
-  }
-};
-
-
-namespace Jsonipc {
-// Bse::ItemSeq as std::vector
-template<>      struct Convert<Bse::ItemSeq>    : ConvertSeq<Bse::ItemSeq, Bse::ItemIfaceP> {};
-// Bse::PartSeq as std::vector
-template<>      struct Convert<Bse::PartSeq>    : ConvertSeq<Bse::PartSeq, Bse::PartIfaceP> {};
-// Bse::SuperSeq as std::vector
-template<>      struct Convert<Bse::SuperSeq>   : ConvertSeq<Bse::SuperSeq, Bse::SuperIfaceP> {};
-// Bse::WaveOscSeq as std::vector
-template<>      struct Convert<Bse::WaveOscSeq> : ConvertSeq<Bse::WaveOscSeq, Bse::WaveOscIfaceP> {};
-
-// Aida::Any
-template<>      struct Convert<Aida::Any> : ConvertAny {};
-
-// Bse::PartHandle as Bse::PartIfaceP (in records)
-template<>
-struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
-  static Aida::RemoteMember<Bse::PartHandle>
-  from_json (const Jsonipc::JsonValue &jvalue)
-  {
-    Bse::PartIfaceP ptr = Jsonipc::from_json<Bse::PartIfaceP> (jvalue);
-    return ptr->__handle__();
-  }
-  static Jsonipc::JsonValue
-  to_json (const Aida::RemoteMember<Bse::PartHandle> &handle, Jsonipc::JsonAllocator &allocator)
-  {
-    Bse::PartIfaceP ptr = handle.__iface__()->template as<Bse::PartIfaceP>();
-    return Jsonipc::to_json (ptr, allocator);
-  }
-};
-
-} // Jsonipc
-
-
-#include "bsebus.hh"
-#include "bsecontextmerger.hh"
-#include "bsecsynth.hh"
-#include "bseeditablesample.hh"
-#include "bsemidinotifier.hh"
-#include "bsemidisynth.hh"
-#include "bsepart.hh"
-#include "bsepcmwriter.hh"
-#include "bseproject.hh"
-#include "bseserver.hh"
-#include "devicecrawler.hh"
-#include "bsesnet.hh"
-#include "bsesong.hh"
-#include "bsesong.hh"
-#include "bsesoundfont.hh"
-#include "bsesoundfontrepo.hh"
-#include "bsetrack.hh"
-#include "bsewave.hh"
-#include "bsewaveosc.hh"
-#include "bsewaverepo.hh"
-#include "monitor.hh"
-#include "bse/bseapi_jsonipc.cc"    // Bse_jsonipc_stub
 
 #undef B0 // undo pollution from termios.h
 
@@ -697,7 +490,10 @@ main (int argc, char *argv[])
     auto handle_wsmsg = [print_jsbse, &sem] () {
       if (print_jsbse)
         Jsonipc::ClassPrinter::recording (true);
-      Bse_jsonipc_stub();
+      bse_jsonipc_stub1();
+      bse_jsonipc_stub2();
+      bse_jsonipc_stub3();
+      bse_jsonipc_stub4();
       if (print_jsbse)
         Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
       // fixups, we know Bse::Server is a singleton

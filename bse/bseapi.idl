@@ -645,24 +645,29 @@ record TrackPart;
 sequence TrackPartSeq;
 interface Item;
 interface Source;
+interface WaveOsc;
 interface Project;
 
-/** Base type for all BSE objects.
+/// Base type for all new style C++ objects.
+interface Object {
+  // dynamic properties
+  bool      set_prop   (String name, Any value); ///< Set dynamic property `name` to `value`.
+  Any       get_prop   (String name);            ///< Get value of dynamic property `name`.
+  StringSeq find_prop  (String name);            ///< Query `key=value` meta info for dynamic property `name`.
+  StringSeq list_props ();                       ///< List names of all dynamic properties.
+  void      notify     (String detail);          ///< Emit notification event for object state or property changes.
+};
+
+/** Base type for all legacy objects, derived from `struct BseObject`.
  *
  * ### Events:
  * - **notify** - A notification event for property changes, the event field *detail* contains the property name.
  */
-interface Object {
+interface LegacyObject : Object {
   String        uname           = String ("UName", "Unique object name", GUI);
   String        debug_name      ();                     ///< Object name useful for debugging output.
   int32         unique_id       ();                     ///< Generate a unique stable ID for this object, similar to a hash of its address.
-  void          notify          (String detail);        ///< Emit notification event for object state or property changes.
   int64         proxy_id        ();                     ///< Helper ID for the old SfiGlue interface.
-  // dynamic properties
-  bool          set_prop        (String name, Any value);       ///< Set dynamic property `name` to `value`.
-  Any           get_prop        (String name);                  ///< Get value of dynamic property `name`.
-  StringSeq     find_prop       (String name);                  ///< Query `key=value` meta info for dynamic property `name`.
-  StringSeq     list_props      ();                             ///< List names of all dynamic properties.
   StringSeq     find_typedata   (String type_name);             ///< Query `key=value` meta info for type `type_name`.
 };
 
@@ -682,7 +687,7 @@ record PropertyCandidates {
 };
 
 /// Base interface type for objects that can be added to a container.
-interface Item : Object {
+interface Item : LegacyObject {
   Icon    icon = Record ("Icon", "State dependent icon representation of this item", "rw:G");
   Item    use               (); ///< Increment use count to keep an item alive.
   void    unuse             (); ///< Decrement use count for when an item is not needed anymore.
@@ -810,7 +815,7 @@ record ProbeFeatures {
 };
 
 /// Interface for monitoring output signals.
-interface SignalMonitor {
+interface SignalMonitor : Object {
   Source        get_osource        ();                  ///< Retrieve output module the SignalMonitor is connected to.
   int32         get_ochannel       ();                  ///< Retrieve output channel the SignalMonitor is connected to.
   int64         get_mix_freq       ();                  ///< Mix frequency at which monitor values are calculated.
@@ -874,10 +879,6 @@ interface Source : Item {
   SignalMonitor create_signal_monitor (int32 ochannel);
 };
 
-/// Source module for merging multiple synthesis contexts, used to implement polyphony.
-interface ContextMerger : Source {
-};
-
 /** Base interface type for containers of Item derived types.
  * ### Events:
  * - **treechange** - Detail: 'additem' or 'removeitem' - a notification event is sent when an item is added to or removed from the container.
@@ -886,6 +887,10 @@ interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
   Item get_item    (String item_type, int32 seq_id); ///< Retrieve the immediate child of type @a item_type by its sequential id (the 'nth' child).
   ItemSeq list_children (); ///< List all immediate children of a container.
+};
+
+/// Source module for merging multiple synthesis contexts, used to implement polyphony.
+interface ContextMerger : Container {
 };
 
 /// Base interface type for Item managers.
@@ -939,12 +944,55 @@ interface SubSynth : Source {
   // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  STANDARD ":skip-default");
 };
 
+/// Info for module types.
+record ModuleTypeInfo {
+  String id;
+  String label;
+  String blurb;
+  String category;
+};
+
+/// Interface for the encapsulation of audio processors.
+interface Module : Object {
+  // module type determination
+  String         get_module_type  ();                           ///< Retrieve type of module to be created.
+  ModuleTypeInfo module_type_info ();                           ///< Describe this module type.
+};
+sequence ModuleSeq { Module modules; };
+
+/// Info for device types.
+record DeviceTypeInfo {
+  String id;
+  String label;
+  String category;
+};
+
+/// Interface for the encapsulation of audio processors.
+interface Device : Object {
+  // create modules
+  ModuleSeq      list_modules      ();                 ///< List modules in order of processing.
+  Module         create_module     (String module_id); ///< Create a new module with `module_type`.
+  ModuleTypeInfo module_type_info  (String module_id); ///< Describe `module_type`.
+  StringSeq      list_module_types ();                 ///< List known module types.
+
+  // device type determination
+  String         get_device_type  ();                           ///< Retrieve type of device to be created.
+  DeviceTypeInfo device_type_info ();                           ///< Describe this device type.
+};
+sequence DeviceSeq { Device devices; };
+
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
   void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
+
+  // create devices
+  DeviceSeq      list_devices      ();                 ///< List devices in order of processing.
+  Device         create_device     (String device_id); ///< Create a new device with `device_type`.
+  DeviceTypeInfo device_type_info  (String device_id); ///< Describe `device_type`.
+  StringSeq      list_device_types ();                 ///< List known device types.
 
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
@@ -964,12 +1012,17 @@ interface Track : ContextMerger {
   };
   group _("Synth Input") {
     int32 n_voices = Range (_("Max Voices"), _("Maximum number of voices for simultaneous playback"),
-			    GUI STORAGE ":scale:unprepared", 1, 256, 16, 1);
+			    GUI STORAGE ":scale:unprepared", 1, 64, 1, 1);
   };
   // property CSynth snet;         ///< _("Synthesis network to be used as instrument.")
   // property Wave wave;           ///< _("Wave to be used as instrument.")
   // property CSynth pnet;         ///< _("Synthesis network to be used as postprocessor.")
   ItemSeq outputs;      ///< _("Mixer busses used as output for this track.")
+};
+
+/// Sequence of Track objects.
+sequence TrackSeq {
+  Track tracks;
 };
 
 /// Record representing the use of a Part within a Track at a specific position.
@@ -1036,6 +1089,7 @@ interface Song : SNet {
   void       remove_bus              (Bus bus);     ///< Delete a mixer bus from a Song.
   Part       create_part             ();            ///< Create a new Part in a Song.
   void       remove_part             (Part part);   ///< Delete a Part from a Song.
+  TrackSeq   list_tracks             ();            ///< List all tracks of this song.
   Track      create_track            ();            ///< Create a new Track for a Song.
   void       remove_track            (Track track); ///< Delete a Track from a Song.
   Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
@@ -1115,7 +1169,6 @@ interface WaveRepo : Super {
 };
 
 /// A list of part note events.
-interface WaveOsc;
 sequence WaveOscSeq {
   WaveOsc wave_oscs;
 };
@@ -1195,7 +1248,7 @@ interface Project : Container {
   bool         is_dirty            (); ///< Check whether a project needs saving.
   SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
   Error        store               (String file_name, bool self_contained);     ///< Save project to file.
-  Error        store_bse           (Super super, String file_name,
+  Error        store_bse           (Container super, String file_name,
                                     bool self_contained);                       ///< Save effect or intrument.
   Song         create_song         (String name); ///< Create a song for this project.
   WaveRepo     get_wave_repo       ();            ///< Retrieve the project's unique wave repository.
@@ -1312,7 +1365,7 @@ record DeviceEntry {
   DeviceEntrySeq  entries;
 };
 
-interface DeviceCrawler {
+interface DeviceCrawler : Object {
   DeviceEntry list_device_origin (DeviceOrigin origin);
 };
 
@@ -1356,7 +1409,7 @@ sequence ShmFragmentSeq {
 interface Server : Container {
   // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.
   void          send_user_message (UserMessage umsg);   ///< Send a user messages from BSE.
-  Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
+  LegacyObject       from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   bool          engine_active   ();                     ///< Retrieve DSP engine activateion state, see also: "enginechange" Event.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.

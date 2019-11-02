@@ -213,7 +213,7 @@ vue_directives['inlineblur'] = {
     el.cancelled = false;
   },
   inserted (el, binding, vnode) {
-    assert (document.body.contains (el));
+    console.assert (document.body.contains (el));
     el.focus();
     if (el == document.activeElement)
       {
@@ -1457,14 +1457,37 @@ export function is_navigation_key_code (keycode)
   return in_array (keycode, navigation_keys);
 }
 
+// https://github.com/WICG/keyboard-map/blob/master/explainer.md
+let keyboard_map = {
+  get (key) {
+    return key.startsWith ('Key') ? key.substr (3).toLowerCase() : key;
+  },
+};
+async function refresh_keyboard_map () {
+  if (navigator && navigator.keyboard && navigator.keyboard.getLayoutMap)
+    keyboard_map = await navigator.keyboard.getLayoutMap();
+}
+(() => {
+  refresh_keyboard_map();
+  if (navigator && navigator.keyboard && navigator.keyboard.addEventListener)
+    navigator.keyboard.addEventListener ("layoutchange", () => refresh_keyboard_map());
+}) ();
+
+/// Retrieve user-printable name for a keyboard button, useful to describe KeyboardEvent.code.
+export function keyboard_map_name (keyname) {
+  const name = keyboard_map.get (keyname);
+  return name || keyname;
+}
+
 /// Match an event's key code, considering modifiers.
 export function match_key_event (event, keyname)
 {
   // SEE: http://unixpapa.com/js/key.html & https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/Gecko_keypress_event
   // split_hotkey (hotkey)
   const rex = new RegExp (/\s*[+]\s*/); // Split 'Shift+Ctrl+Alt+Meta+SPACE'
-  const parts = keyname.toLowerCase().split (rex);
-  const char = String.fromCharCode (event.which || event.keyCode);
+  const parts = keyname.split (rex);
+  const keycode = event.code; // fallback: search KeyCode[] for value()==event.keyCode
+  const keychar = event.key || String.fromCharCode (event.which || event.keyCode);
   let need_meta = 0, need_alt = 0, need_ctrl = 0, need_shift = 0;
   for (let i = 0; i < parts.length; i++)
     {
@@ -1477,18 +1500,17 @@ export function match_key_event (event, keyname)
 	case 'control': case 'ctrl':	need_ctrl  = 1; continue;
 	case 'shift':		  	need_shift = 1; continue;
       }
-      // match named keys (special)
-      const key_val = KeyCode[parts[i].toUpperCase()];
-      if (key_val !== undefined && char.length == 1 && key_val == char.charCodeAt (0))
+      // match named keys
+      if (parts[i] == keycode)
 	continue;
-      // match characters
-      if (char.toLowerCase() == parts[i])
-	continue;
+      // match character keys
+      //if (keychar.toLowerCase() == parts[i].toLowerCase())
+      //  continue;
       // failed to match
       return false;
     }
   // ignore shift for case insensitive characters (except for navigations)
-  if (char.toLowerCase() == char.toUpperCase() &&
+  if (keychar.toLowerCase() == keychar.toUpperCase() &&
       !is_navigation_key_code (event.keyCode))
     need_shift = -1;
   // match meta keys
@@ -1500,38 +1522,68 @@ export function match_key_event (event, keyname)
   return true;
 }
 
+const hotkey_list = [];
+
 function hotkey_handler (event) {
   const log = console.log ? console.log : () => 0;
   // give precedence to navigatable element with focus
-  if (Util.is_navigation_key_code (event.keyCode) &&
-      (is_nav_input (document.activeElement) ||
-       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement))))
+  if (is_nav_input (document.activeElement) ||
+      (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement)))
     {
-      log ("IGNORE-NAV: " + event.keyCode + ' (' + document.activeElement.tagName + ')');
+      log ("IGNORE-NAV: " + event.code + ' (' + document.activeElement.tagName + ')');
       return false;
     }
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
       event.preventDefault();
-      Util.keyboard_click (document.activeElement);
       log ("KEYBOARD_CLICK: " + ' (' + document.activeElement.tagName + ')');
+      Util.keyboard_click (document.activeElement);
       return true;
     }
+  // activate global hotkeys
+  const array = hotkey_list;
+  for (let i = 0; i < array.length; i++)
+    if (match_key_event (event, array[i][0]))
+      {
+	const callback = array[i][1];
+	event.preventDefault();
+	log ("HOTKEY-HANDLER: '" + array[i][0] + "'", callback.name);
+	callback.call (null, event);
+	return true;
+      }
+  // activate elements with data-hotkey=""
   const hotkey_elements = document.querySelectorAll ('[data-hotkey]');
   for (const el of hotkey_elements)
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
 	event.preventDefault();
-	Util.keyboard_click (el);
 	log ("HOTKEY: '" + el.getAttribute ('data-hotkey') + "'", el);
+	Util.keyboard_click (el);
 	return true;
       }
-  Shell.status ('KEYDOWN: ' + event.keyCode + ' ' + event.which + ' ' + event.charCode +
-		' (' + document.activeElement.tagName + ')', document.querySelectorAll ('[data-hotkey]'));
+  log ('KEYDOWN: ' + event.code + ' ' + event.which + ' ' + event.charCode +
+       ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
+
+/// Add a global hotkey handler.
+export function add_hotkey (hotkey, callback) {
+  hotkey_list.push ([ hotkey, callback ]);
+}
+
+/// Remove a global hotkey handler.
+export function remove_hotkey (hotkey, callback) {
+  const array = hotkey_list;
+  for (let i = 0; i < array.length; i++)
+    if (hotkey === array[i][0] && callback === array[i][1])
+      {
+	array.splice (i, 1);
+	return true;
+      }
+  return false;
+}
 
 class FallbackResizeObserver {
   constructor (resize_handler) {

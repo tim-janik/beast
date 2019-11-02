@@ -86,7 +86,13 @@ compilecxxflags = $(pkgcxxflags) $(EXTRA_FLAGS) $($<.FLAGS) $($@.FLAGS) -MQ '$@'
 $>/%.o: %.c
 	$(QECHO) CC $@
 	$(Q) $(CCACHE) $(CC) $(CSTD) -fPIC $(compiledefs) $(compilecflags) -o $@ -c $<
+$>/%.o: $>/%.c
+	$(QECHO) CC $@
+	$(Q) $(CCACHE) $(CC) $(CSTD) -fPIC $(compiledefs) $(compilecflags) -o $@ -c $<
 $>/%.o: %.cc
+	$(QECHO) CXX $@
+	$(Q) $(CCACHE) $(CXX) $(CXXSTD) -fPIC $(compiledefs) $(compilecxxflags) -o $@ -c $<
+$>/%.o: $>/%.cc
 	$(QECHO) CXX $@
 	$(Q) $(CCACHE) $(CXX) $(CXXSTD) -fPIC $(compiledefs) $(compilecxxflags) -o $@ -c $<
 

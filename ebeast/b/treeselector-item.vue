@@ -74,7 +74,7 @@ module.exports = {
   data: function() { return { is_active: false, }; },
   methods: {
     caret_keydown: function (event) {
-      if (Util.match_key_event (event, 'right'))
+      if (Util.match_key_event (event, 'ArrowRight'))
 	{
 	  if (!this.is_active)
 	    this.is_active = true;
@@ -86,7 +86,7 @@ module.exports = {
 	    }
 	  event.preventDefault();
 	}
-      if (Util.match_key_event (event, 'left'))
+      if (Util.match_key_event (event, 'ArrowLeft'))
 	{
 	  if (this.is_active)
 	    {
@@ -98,7 +98,7 @@ module.exports = {
 	}
     },
     leaf_keydown (event) {
-      if (Util.match_key_event (event, 'left'))
+      if (Util.match_key_event (event, 'ArrowLeft'))
 	{
 	  if (this.$el.parentElement && this.$el.parentElement.tagName == 'UL' &&
 	      this.$el.parentElement.parentElement && this.$el.parentElement.parentElement.tagName == 'LI' &&

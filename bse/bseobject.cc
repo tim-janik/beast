@@ -25,127 +25,74 @@ BseObject::change_flags (uint16 f, bool ason)
 namespace Bse {
 
 static void
-object_impl_unref_bse_object (Bse::ObjectImpl *cxxo)
+object_impl_unref_bse_object (Bse::LegacyObjectImpl *cxxo)
 {
   BseObject *const object = cxxo->as_bse_object();
   g_object_unref (object);
 }
 
 Aida::SharedFromThisP
-ObjectImpl::__shared_from_this__ ()
+LegacyObjectImpl::__shared_from_this__ ()
 {
   BseObject *const object = as_bse_object();
   if (!object->cxxobjref_)
     {
       g_object_ref (object);
-      object->cxxobjref_ = new Bse::ObjectImplP (this, object_impl_unref_bse_object);
+      object->cxxobjref_ = new Bse::LegacyObjectImplP (this, object_impl_unref_bse_object);
     }
   return *object->cxxobjref_;
 }
 
-static void (ObjectImpl::*object_impl_post_init) () = NULL;
+static void (LegacyObjectImpl::*object_impl_post_init) () = NULL;
 
-ObjectImpl::ObjectImpl (BseObject *bobj) :
+LegacyObjectImpl::LegacyObjectImpl (BseObject *bobj) :
   gobject_ (bobj)
 {
   assert_return (gobject_);
   assert_return (gobject_->cxxobject_ == NULL);
   gobject_->cxxobject_ = this;
   if (BSE_UNLIKELY (!object_impl_post_init))
-    object_impl_post_init = &ObjectImpl::post_init;
+    object_impl_post_init = &LegacyObjectImpl::post_init;
 }
 
 void
-ObjectImpl::post_init ()
+LegacyObjectImpl::post_init ()
 {
   // this->BasetypeImpl::post_init(); // must chain
 }
 
-ObjectImpl::~ObjectImpl ()
+LegacyObjectImpl::~LegacyObjectImpl ()
 {
   assert_return (gobject_->cxxobject_ == this);
   gobject_->cxxobject_ = NULL;
-  // ObjectImplP keeps BseObject alive until it is destroyed
-  // BseObject keeps ObjectImpl alive until finalize()
-}
-
-Aida::ExecutionContext&
-ObjectImpl::__execution_context_mt__ () const
-{
-  return execution_context();
-}
-
-Aida::IfaceEventConnection
-ObjectImpl::__attach__ (const String &eventselector, EventHandlerF handler)
-{
-  return event_dispatcher_.attach (eventselector, handler);
+  // LegacyObjectImplP keeps BseObject alive until it is destroyed
+  // BseObject keeps LegacyObjectImpl alive until finalize()
 }
 
 std::string
-ObjectImpl::debug_name ()
+LegacyObjectImpl::debug_name ()
 {
   return bse_object_debug_name (this->as<BseObject*>());
 }
 
 int32_t
-ObjectImpl::unique_id ()
+LegacyObjectImpl::unique_id ()
 {
   BseObject *bo = *this;
   return bo->unique_id;
 }
 
 int64_t
-ObjectImpl::proxy_id ()
+LegacyObjectImpl::proxy_id ()
 {
   BseObject *bo = *this;
   return bo->unique_id;
 }
 
-void
-ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, const KV &a3,
-                        const KV &a4, const KV &a5, const KV &a6, const KV &a7)
-{
-  const char ident_chars[] =
-    "0123456789"
-    "abcdefghijklmnopqrstuvwxyz"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const char *const ctype = type.c_str(), *const colon = strchr (ctype, ':');
-  const String name = colon ? type.substr (0, colon - ctype) : type;
-  const String detail = colon ? type.substr (colon - ctype + 1) : "";
-  for (size_t i = 0; name[i]; i++)
-    if (!strchr (ident_chars, name[i]))
-      {
-        Bse::warning ("invalid characters in Event type: %s", type);
-        break;
-      }
-  for (size_t i = 0; detail[i]; i++)
-    if (!strchr (ident_chars, detail[i]) and detail[i] != '_')
-      {
-        Bse::warning ("invalid characters in Event type: %s", type);
-        break;
-      }
-  Aida::Event ev (type);
-  const KV *args[] = { &a1, &a2, &a3, &a4, &a5, &a6, &a7 };
-  for (size_t i = 0; i < sizeof (args) / sizeof (args[0]); i++)
-    if (!args[i]->key.empty())
-      ev[args[i]->key] = args[i]->value;
-  ev["name"] = name;
-  ev["detail"] = detail;
-  event_dispatcher_.emit (ev);  // emits "notify:detail" as type="notify:detail" name="notify" detail="detail"
-  // using namespace Aida::KeyValueArgs; emit_event ("notification", "value"_v = 5);
-}
-
-void
-ObjectImpl::notify (const String &detail)
-{
-  assert_return (detail.empty() == false);
-  emit_event ("notify:" + detail);
-}
-
 std::string
-ObjectImpl::uname () const
+LegacyObjectImpl::uname () const
 {
-  BseObject *object = *const_cast<ObjectImpl*> (this);
+  BseObject *object = *const_cast<LegacyObjectImpl*> (this);
   gchar *gstring = NULL;
   g_object_get (object, "uname", &gstring, NULL);
   std::string u = gstring ? gstring : "";
@@ -154,70 +101,14 @@ ObjectImpl::uname () const
 }
 
 void
-ObjectImpl::uname (const std::string &newname)
+LegacyObjectImpl::uname (const std::string &newname)
 {
   BseObject *object = *this;
   g_object_set (object, "uname", newname.c_str(), NULL);
 }
 
-bool
-ObjectImpl::set_prop (const std::string &name, const Any &value)
-{
-  if (!name.empty())
-    {
-      auto collector = [&value] (const Aida::PropertyAccessor &ps) {
-        ps.set (value);
-        return true;
-      };
-      return __access__ (name, collector);
-    }
-  return false;
-}
-
-Any
-ObjectImpl::get_prop (const std::string &name)
-{
-  Any any;
-  if (!name.empty())
-    {
-      auto collector = [&any] (const Aida::PropertyAccessor &ps) {
-        ps.get().swap (any);
-        return true;
-      };
-      __access__ (name, collector);
-    }
-  return any;
-}
-
 StringSeq
-ObjectImpl::find_prop (const std::string &name)
-{
-  StringSeq kvinfo;
-  if (!name.empty())
-    {
-      auto collector = [&kvinfo] (const Aida::PropertyAccessor &ps) {
-        ps.typedata().swap (kvinfo);
-        return false;
-      };
-      __access__ (name, collector);
-    }
-  return kvinfo;
-}
-
-StringSeq
-ObjectImpl::list_props ()
-{
-  StringSeq props;
-  auto collector = [&props] (const Aida::PropertyAccessor &ps) {
-    props.push_back (ps.name());
-    return false;
-  };
-  __access__ ("", collector);
-  return props;
-}
-
-StringSeq
-ObjectImpl::find_typedata (const std::string &type_name)
+LegacyObjectImpl::find_typedata (const std::string &type_name)
 {
   const Aida::StringVector &sv = Aida::Introspection::find_type (type_name);
   StringSeq kvinfo;
@@ -379,7 +270,7 @@ bse_object_do_dispose (GObject *gobject)
   g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
 
   {
-    Bse::ObjectImpl *self = object->as<Bse::ObjectImpl*>();
+    Bse::LegacyObjectImpl *self = object->as<Bse::LegacyObjectImpl*>();
     if (self)
       self->emit_event ("dispose");
   }
@@ -391,7 +282,7 @@ bse_object_do_dispose (GObject *gobject)
 
   if (object->cxxobjref_)
     {
-      Bse::ObjectImplP *cxxobjref = object->cxxobjref_;
+      Bse::LegacyObjectImplP *cxxobjref = object->cxxobjref_;
       object->cxxobjref_ = NULL;
       cxxobjref->reset();
       delete cxxobjref;
@@ -427,7 +318,7 @@ static void
 bse_object_do_set_uname (BseObject   *object,
 			 const gchar *uname)
 {
-  Bse::ObjectImpl *self = object->as<Bse::ObjectImpl*>();
+  Bse::LegacyObjectImpl *self = object->as<Bse::LegacyObjectImpl*>();
   g_object_set_qdata_full ((GObject*) object, bse_quark_uname, g_strdup (uname), uname ? g_free : NULL);
   if (self)
     self->notify ("uname");
@@ -765,7 +656,7 @@ bse_object_notify_icon_changed (BseObject *object)
   assert_return (BSE_IS_OBJECT (object));
 
   g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
-  Bse::ObjectImpl *self = object->as<Bse::ObjectImpl*>();
+  Bse::LegacyObjectImpl *self = object->as<Bse::LegacyObjectImpl*>();
   if (self)
     self->notify ("icon");
 }
@@ -1126,7 +1017,7 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   in_bse_object_new--;
   assert_return (object->cxxobject_ == NULL, NULL);
   assert_return (object->cxxobjref_ == NULL, NULL);
-  Bse::ObjectImpl *cxxo;
+  Bse::LegacyObjectImpl *cxxo;
   if      (g_type_is_a (object_type, BSE_TYPE_SERVER))
     cxxo = new Bse::ServerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PCM_WRITER))
@@ -1157,12 +1048,12 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::SNetImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SUPER))
     cxxo = new Bse::SuperImpl (object);
-  else if (g_type_is_a (object_type, BSE_TYPE_CONTAINER))
-    cxxo = new Bse::ContainerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_TRACK))
     cxxo = new Bse::TrackImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_CONTEXT_MERGER))
     cxxo = new Bse::ContextMergerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CONTAINER))
+    cxxo = new Bse::ContainerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PART))
     cxxo = new Bse::PartImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_BUS))
@@ -1174,7 +1065,7 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   else if (g_type_is_a (object_type, BSE_TYPE_ITEM))
     cxxo = new Bse::ItemImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_OBJECT))
-    cxxo = new Bse::ObjectImpl (object);
+    cxxo = new Bse::LegacyObjectImpl (object);
   else
     assert_return_unreached (NULL);
   assert_return (object->cxxobject_ == cxxo, NULL);

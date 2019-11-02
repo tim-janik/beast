@@ -19,13 +19,13 @@
 
   <b-button-bar
       class="b-playcontrols" >
-    <b-button hotkey="L"     @click="pcall ('...Last')"      ><b-icon fw lg fa="fast-backward" /></b-button>
-    <b-button hotkey="B"     @click="pcall ('...Backwards')" ><b-icon fw lg fa="backward"      /></b-button>
-    <b-button hotkey="S"     @click="pcall ('stop')"         ><b-icon fw lg fa="stop"          /></b-button>
+    <b-button hotkey="KeyL"  @click="pcall ('...Last')"      ><b-icon fw lg fa="fast-backward" /></b-button>
+    <b-button hotkey="KeyB"  @click="pcall ('...Backwards')" ><b-icon fw lg fa="backward"      /></b-button>
+    <b-button hotkey="KeyS"  @click="pcall ('stop')"         ><b-icon fw lg fa="stop"          /></b-button>
     <b-button hotkey="Space" @click="toggle_play()"          ><b-icon fw lg fa="play"          /></b-button>
-    <b-button hotkey="R"     @click="pcall ('...Record')"    ><b-icon fw lg fa="circle"        /></b-button>
-    <b-button hotkey="F"     @click="pcall ('...Forwards')"  ><b-icon fw lg fa="forward"       /></b-button>
-    <b-button hotkey="N"     @click="pcall ('...Next')"      ><b-icon fw lg fa="fast-forward"  /></b-button>
+    <b-button hotkey="KeyR"  @click="pcall ('...Record')"    ><b-icon fw lg fa="circle"        /></b-button>
+    <b-button hotkey="KeyF"  @click="pcall ('...Forwards')"  ><b-icon fw lg fa="forward"       /></b-button>
+    <b-button hotkey="KeyN"  @click="pcall ('...Next')"      ><b-icon fw lg fa="fast-forward"  /></b-button>
   </b-button-bar>
 
 </template>

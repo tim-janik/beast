@@ -22,7 +22,11 @@
 	  <b-track-list class="grow1" :song="song"></b-track-list>
 	</b-hflex>
 	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
-	  <b-piano-roll class="grow1" :part="piano_roll_part" ></b-piano-roll>
+	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="panel2 == 0" ></b-piano-roll>
+	  <b-vflex v-show="panel2 == 1">
+	    Device Panel
+	    <b-devicepanel :track="current_track" />
+	  </b-vflex>
 	</b-hflex>
       </b-vflex>
 
@@ -76,7 +80,9 @@ module.exports = {
     show_preferences_dialog: false,
     project: undefined,
     song: undefined,
+    current_track: undefined,
     notifynameclear: () => 0,
+    panel2: 0,
   },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
@@ -96,11 +102,18 @@ module.exports = {
     this.load_project (Bse.server.last_project());
     // load_project() also forces an update with new Shell properties in place
   },
+  mounted() {
+    Util.add_hotkey ('Backquote', this.switch_panel2);
+  },
   destroyed() {
+    Util.remove_hotkey ('Backquote', this.switch_panel2);
     this.notifynameclear();
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
+    switch_panel2() {
+      this.panel2 = (this.panel2 + 1) % 2;
+    },
     sidebar_mouse (e) {
       const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);
@@ -197,7 +210,7 @@ module.exports = {
 	  }
       if (!track)
 	{
-	  const track = await song.create_track ('Master');
+	  track = await song.create_track ('Master');
 	  track.ensure_output();
 	}
       // shut down old project
@@ -211,6 +224,7 @@ module.exports = {
       // reaplce project & song without await, to synchronously trigger Vue updates for both
       this.project = newproject;
       this.song = song;
+      this.current_track = track;
       const update_title = async () => {
 	const name = this.project ? await this.project.get_name_or_type() : undefined;
 	document.title = Util.format_title ('Beast', name);

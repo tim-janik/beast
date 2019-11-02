@@ -159,7 +159,7 @@ bst_snet_router_update_links (BstSNetRouter   *self,
       guint j, n_joints = csource->source.ichannel_get_n_joints (i);
       for (j = 0; j < n_joints; j++)
         {
-          Bse::ObjectH obj = csource->source;
+          Bse::LegacyObjectH obj = csource->source;
           assert_return (obj != NULL);
           Bse::SourceH isource = csource->source;
           assert_return (isource != NULL);

@@ -108,7 +108,7 @@ bse_track_init (BseTrack *self)
   self->sound_font_preset = NULL;
   self->wave = NULL;
   self->wnet = NULL;
-  self->max_voices = 16;
+  self->max_voices = 1;
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));
@@ -1319,6 +1319,25 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
 {
   BseTrack *self = as<BseTrack*>();
   bse_bus_or_track_set_outputs (self, newoutputs);
+}
+
+DeviceIfaceP
+TrackImpl::create_device (const String &device_id)
+{
+  DeviceImplP devicep = FriendAllocator<DeviceImpl>::make_shared (device_id);
+  assert_return (devicep, nullptr);
+  devices_.push_back (devicep);
+  notify ("devices");
+  return nullptr;
+}
+
+DeviceSeq
+TrackImpl::list_devices ()
+{
+  DeviceSeq devices;
+  for (auto &d : devices_)
+    devices.push_back (d->__handle__());
+  return devices;
 }
 
 } // Bse

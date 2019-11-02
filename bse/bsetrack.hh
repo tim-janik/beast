@@ -5,6 +5,7 @@
 #include <bse/bseitem.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsecontextmerger.hh>
+#include <bse/device.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
@@ -84,6 +85,7 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 namespace Bse {
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
+  std::vector<DeviceImplP> devices_;
 protected:
   virtual             ~TrackImpl         ();
 public:
@@ -106,6 +108,10 @@ public:
   virtual void         midi_channel      (int val) override;
   virtual int          n_voices          () const override;
   virtual void         n_voices          (int val) override;
+  virtual DeviceSeq      list_devices      () override;
+  virtual DeviceIfaceP   create_device     (const String &device_id) override;
+  virtual DeviceTypeInfo device_type_info  (const String &device_id) override { return DeviceImpl::device_type_info (device_id); }
+  virtual StringSeq      list_device_types () override                        { return DeviceImpl::list_device_types (); }
 };
 
 } // Bse

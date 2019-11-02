@@ -95,8 +95,8 @@
 		  @click.prevent="menuedit ('track-details')" > Show / Hide Track Details </b-menuitem>
       <b-menuseparator style="margin: 7px" />
       <b-menurow>
-	<!-- <b-menuitem fa="clone"            role="clone-track" >    Dupl.			</b-menuitem>
-	<b-menuitem fa="times-circle"     role="delete-track" >   Delete		</b-menuitem> -->
+	<!-- <b-menuitem fa="clone"            role="clone-track" >    Dupl.			</b-menuitem> -->
+	<b-menuitem fa="times-circle"     role="delete-track" >   Delete		</b-menuitem>
 	<b-menuitem fa="scissors"         role="cut-track" >      Cut			</b-menuitem>
 	<b-menuitem fa="files-o"          role="copy-track" >     Copy			</b-menuitem>
 	<b-menuitem fa="clipboard"        role="paste-track" >    Paste			</b-menuitem>
@@ -219,6 +219,10 @@ module.exports = {
       console.log ("menuactivation:", role);
       // close popup to remove focus guards
       this.$refs.cmenu.close();
+      if (role == 'add-track')
+	Shell.song.create_track ('Track');
+      if (role == 'delete-track')
+	Shell.song.remove_track (this.track);
       if (role == 'rename-track')
 	this.nameedit_ = 1;
       if (role.startsWith ('mc-'))
@@ -236,6 +240,8 @@ module.exports = {
     menucheck (role, component) {
       switch (role)
       {
+	case 'add-track':    return true;
+	case 'delete-track': return true;
 	case 'rename-track': return true;
       }
       if (role.startsWith ('mc-'))

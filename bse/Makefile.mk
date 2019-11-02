@@ -127,7 +127,10 @@ bse/libbse.headers ::= $(strip		\
 	bse/ladspa.hh			\
 	bse/magic.hh			\
 	bse/memory.hh			\
+	bse/module.hh			\
+	bse/device.hh			\
 	bse/monitor.hh			\
+	bse/object.hh			\
 	bse/path.hh			\
 	bse/platform.hh			\
 	bse/pugixml.hh			\
@@ -280,7 +283,10 @@ bse/libbse.sources ::= $(strip		\
 	bse/magic.cc			\
 	bse/memory.cc			\
 	bse/minizip.c			\
+	bse/module.cc			\
+	bse/device.cc			\
 	bse/monitor.cc			\
+	bse/object.cc			\
 	bse/path.cc			\
 	bse/platform.cc			\
 	bse/pugixml.cc			\
@@ -361,7 +367,8 @@ endif
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
 bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
-bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources))
+bse/BeastSoundEngine.gensources ::= $>/bse/bse_jsonipc_stub1.cc $>/bse/bse_jsonipc_stub2.cc $>/bse/bse_jsonipc_stub3.cc $>/bse/bse_jsonipc_stub4.cc
+bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources)) $(bse/BeastSoundEngine.gensources:.cc=.o)
 bse/all: $(lib/BeastSoundEngine)
 
 # == bseprocidl defs ==
@@ -535,8 +542,36 @@ endef
 # == bseapi_jsonipc.cc ==
 $>/bse/bseapi_jsonipc.cc: bse/bseapi.idl aidacc/JsonipcStub.py $(aidacc/aidacc)	| $>/bse/
 	$(QECHO) AIDACC $@
-	$Q $(aidacc/aidacc) -x aidacc/JsonipcStub.py $< -o $@.tmp -G strip-path=$(abspath $>)/
+	$Q $(aidacc/aidacc) -x aidacc/JsonipcStub.py $< -o $@.tmp -G nblocks=4 -G strip-path=$(abspath $>)/
 	$Q rm -f $@ && chmod -w $@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bse_jsonipc_stub1.cc: $>/bse/bseapi_jsonipc.cc
+	$(QGEN)
+	$Q echo '#include "bse/beast-sound-engine.hh"'			> $@.tmp
+	$Q echo '#define BLOCK_TYPES 1'					>>$@.tmp
+	$Q echo '#include "bseapi_jsonipc.cc"'				>>$@.tmp
+	$Q echo 'void bse_jsonipc_stub1 () { Bse_jsonipc_stub(); }'	>>$@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bse_jsonipc_stub2.cc: $>/bse/bseapi_jsonipc.cc
+	$(QGEN)
+	$Q echo '#include "bse/beast-sound-engine.hh"'			> $@.tmp
+	$Q echo '#define BLOCK_TYPES 2'					>>$@.tmp
+	$Q echo '#include "bseapi_jsonipc.cc"'				>>$@.tmp
+	$Q echo 'void bse_jsonipc_stub2 () { Bse_jsonipc_stub(); }'	>>$@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bse_jsonipc_stub3.cc: $>/bse/bseapi_jsonipc.cc
+	$(QGEN)
+	$Q echo '#include "bse/beast-sound-engine.hh"'			> $@.tmp
+	$Q echo '#define BLOCK_TYPES 3'					>>$@.tmp
+	$Q echo '#include "bseapi_jsonipc.cc"'				>>$@.tmp
+	$Q echo 'void bse_jsonipc_stub3 () { Bse_jsonipc_stub(); }'	>>$@.tmp
+	$Q mv $@.tmp $@
+$>/bse/bse_jsonipc_stub4.cc: $>/bse/bseapi_jsonipc.cc
+	$(QGEN)
+	$Q echo '#include "bse/beast-sound-engine.hh"'			> $@.tmp
+	$Q echo '#define BLOCK_TYPES 4'					>>$@.tmp
+	$Q echo '#include "bseapi_jsonipc.cc"'				>>$@.tmp
+	$Q echo 'void bse_jsonipc_stub4 () { Bse_jsonipc_stub(); }'	>>$@.tmp
 	$Q mv $@.tmp $@
 
 # == BeastSoundEngine ==

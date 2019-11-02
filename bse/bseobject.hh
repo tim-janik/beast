@@ -4,39 +4,29 @@
 
 #include <bse/bseparam.hh>
 #include <bse/datalist.hh>
+#include <bse/object.hh>
 
 namespace Bse {
 
-class ObjectImpl : public virtual ObjectIface, public virtual DataListContainer {
+class LegacyObjectImpl : public ObjectImpl, public DataListContainer, public virtual LegacyObjectIface {
   BseObject             *gobject_ = NULL;
-  Aida::EventDispatcher  event_dispatcher_;
   virtual Aida::SharedFromThisP __shared_from_this__ () override;
 protected:
   virtual void          post_init   ();
 public:
-  explicit              ObjectImpl  (BseObject*);
-  virtual              ~ObjectImpl  ();
+  explicit              LegacyObjectImpl  (BseObject*);
+  virtual              ~LegacyObjectImpl  ();
   operator              BseObject*  ()          { return gobject_; }
-  // template<class BseObjectPtr> BseObjectPtr as (); // provided by ObjectIface
+  // template<class BseObjectPtr> BseObjectPtr as (); // provided by LegacyObjectIface
   virtual std::string   debug_name  () override;
   virtual int32_t       unique_id   () override;
   virtual std::string   uname       () const override;
   virtual void          uname       (const std::string &newname) override;
-  virtual void          notify      (const String &detail) override;
   virtual int64_t       proxy_id    () override;
-  virtual bool          set_prop    (const std::string &name, const Any &value) override;
-  virtual Any           get_prop    (const std::string &name) override;
-  virtual StringSeq     find_prop   (const std::string &name) override;
-  virtual StringSeq     list_props  () override;
   virtual StringSeq     find_typedata (const std::string &type_name) override;
-  virtual BseObject*                    as_bse_object            () override { return gobject_; }
-  virtual Aida::ExecutionContext&       __execution_context_mt__ () const override;
-  virtual Aida::IfaceEventConnection    __attach__               (const String &eventselector, EventHandlerF handler) override;
-  typedef Aida::KeyValue KV;
-  void  emit_event (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
-                    const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
+  virtual BseObject*    as_bse_object () override { return gobject_; }
 };
-typedef std::shared_ptr<ObjectImpl> ObjectImplP;
+typedef std::shared_ptr<LegacyObjectImpl> LegacyObjectImplP;
 
 } // Bse
 
@@ -71,8 +61,8 @@ typedef enum				/*< skip >*/
 
 /* --- typedefs & structures --- */
 struct BseObject : GObject {
-  Bse::ObjectImpl       *cxxobject_;
-  Bse::ObjectImplP      *cxxobjref_; // shared_ptr that keeps a reference on cxxobject_ until dispose()
+  Bse::LegacyObjectImpl       *cxxobject_;
+  Bse::LegacyObjectImplP      *cxxobjref_; // shared_ptr that keeps a reference on cxxobject_ until dispose()
 private:
   uint16_t	         flags_;
 protected:
@@ -83,28 +73,28 @@ public:
   inline uint16_t        get_flags() const      { return flags_; }
   uint16_t	         lock_count;
   uint		         unique_id;
-  operator               Bse::ObjectImpl* ()          { return cxxobject_; }
+  operator               Bse::LegacyObjectImpl* ()          { return cxxobject_; }
   // DERIVES_shared_ptr (uses void_t to prevent errors for T without shared_ptr's typedefs)
   template<class T, typename = void> struct DERIVES_shared_ptr : std::false_type {};
   template<class T> struct DERIVES_shared_ptr<T, Bse::void_t< typename T::element_type > > :
   std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
   // as<T*>()
-  template<class ObjectImplPtr, typename ::std::enable_if<std::is_pointer<ObjectImplPtr>::value, bool>::type = true>
-  ObjectImplPtr          as ()
+  template<class LegacyObjectImplPtr, typename ::std::enable_if<std::is_pointer<LegacyObjectImplPtr>::value, bool>::type = true>
+  LegacyObjectImplPtr          as ()
   {
-    static_assert (std::is_pointer<ObjectImplPtr>::value, "");
-    typedef typename std::remove_pointer<ObjectImplPtr>::type ObjectImplT;
-    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
-    return dynamic_cast<ObjectImplPtr> (cxxobject_);
+    static_assert (std::is_pointer<LegacyObjectImplPtr>::value, "");
+    typedef typename std::remove_pointer<LegacyObjectImplPtr>::type LegacyObjectImplT;
+    static_assert (std::is_base_of<Aida::ImplicitBase, LegacyObjectImplT>::value, "");
+    return dynamic_cast<LegacyObjectImplPtr> (cxxobject_);
   }
   // as<shared_ptr<T>>()
-  template<class ObjectImplP, typename ::std::enable_if<DERIVES_shared_ptr<ObjectImplP>::value, bool>::type = true>
-  ObjectImplP            as ()
+  template<class LegacyObjectImplP, typename ::std::enable_if<DERIVES_shared_ptr<LegacyObjectImplP>::value, bool>::type = true>
+  LegacyObjectImplP            as ()
   {
-    typedef typename ObjectImplP::element_type ObjectImplT;
-    static_assert (std::is_base_of<Aida::ImplicitBase, ObjectImplT>::value, "");
-    ObjectImplT *impl = cxxobject_ ? as<ObjectImplT*>() : NULL;
-    return impl ? Bse::shared_ptr_cast<ObjectImplT> (impl) : NULL;
+    typedef typename LegacyObjectImplP::element_type LegacyObjectImplT;
+    static_assert (std::is_base_of<Aida::ImplicitBase, LegacyObjectImplT>::value, "");
+    LegacyObjectImplT *impl = cxxobject_ ? as<LegacyObjectImplT*>() : NULL;
+    return impl ? Bse::shared_ptr_cast<LegacyObjectImplT> (impl) : NULL;
   }
 };
 

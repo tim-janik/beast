@@ -1213,13 +1213,19 @@ ProjectImpl::remove_snet (SNetIface &snet_iface)
 }
 
 Error
-ProjectImpl::store_bse (SuperIface &super_iface, const String &file_name, bool self_contained)
+ProjectImpl::store_bse (ContainerIface &super_iface, const String &file_name, bool self_contained)
 {
   BseProject *self = as<BseProject*>();
+  ContainerImpl *container = dynamic_cast<ContainerImpl*> (&super_iface);
+  BseSuper *bsesuper = NULL;
   SuperImpl *super = dynamic_cast<SuperImpl*> (&super_iface);
-  BseSuper *bsesuper = super ? super->as<BseSuper*>() : NULL;
   if (super)
-    assert_return (super->parent() == this, Error::INTERNAL);
+    {
+      assert_return (super->parent() == this, Error::INTERNAL);
+      bsesuper = super->as<BseSuper*>();
+    }
+  else
+    assert_return (container == this, Error::INTERNAL);
   return bse_project_store_bse (self, bsesuper, file_name.c_str(), self_contained);
 }
 
