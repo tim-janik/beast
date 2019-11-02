@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#define PDEBUG(...)     Bse::debug ("project", __VA_ARGS__)
 
 typedef struct {
   GType    base_type;
@@ -60,6 +61,8 @@ static void	bse_project_prepare		(BseSource		*source);
 static gboolean project_check_restore		(BseContainer           *container,
 						 const gchar            *child_type);
 static BseUndoStack* bse_project_get_undo       (BseItem                *item);
+static Bse::Error    bse_project_restore        (BseProject             *project,
+						 BseStorage             *storage);
 
 
 /* --- variables --- */
@@ -393,60 +396,73 @@ compute_missing_supers (BseProject *self,
   return targets;
 }
 
-Bse::Error
-bse_project_store_bse (BseProject  *self,
-                       BseSuper    *super,
-		       const gchar *bse_file,
-		       gboolean     self_contained)
-{
-  BseStorage *storage;
-  GSList *slist = NULL;
-  gchar *string;
-  guint l, flags;
-  gint fd;
+namespace Bse {
+struct ProjectImpl::Internal {
+  static Bse::Storage& zip_storage (ProjectImpl &p) { return p.zip_storage; }
+};
+} // Bse
 
+Bse::Error
+bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilename, gboolean self_contained)
+{
   assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
+  Bse::ProjectImplP cxxself = self->as<Bse::ProjectImplP>();
   if (super)
     {
       assert_return (BSE_IS_SUPER (super), Bse::Error::INTERNAL);
       assert_return (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::Error::INTERNAL);
     }
-  assert_return (bse_file != NULL, Bse::Error::INTERNAL);
+  assert_return (bsefilename != NULL, Bse::Error::INTERNAL);
 
-  fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
+  // create container
+  Bse::Storage &zip_storage = Bse::ProjectImpl::Internal::zip_storage (*cxxself);
+  if (!zip_storage.set_mimetype_bse())
+    return Bse::Error::FILE_WRITE_FAILED;
+
+  // bse_storage.scm serialization (s-expr)
+  int fd = zip_storage.store_file_fd ("bse_storage.scm");
   if (fd < 0)
     return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
-
-  storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-  flags = 0;
+  BseStorage *bse_storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
+  long l, flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
-  bse_storage_prepare_write (storage, BseStorageMode (flags));
-
-  slist = g_slist_prepend (slist, super ? (void*) super : (void*) self);
+  bse_storage_prepare_write (bse_storage, BseStorageMode (flags));
+  GSList *slist = g_slist_prepend (NULL, super ? (void*) super : (void*) self);
   while (slist)
     {
       BseItem *item = (BseItem*) g_slist_pop_head (&slist);
       if (item == (BseItem*) self)
-        bse_storage_store_item (storage, item);
+        bse_storage_store_item (bse_storage, item);
       else
-        bse_storage_store_child (storage, item);
-      slist = g_slist_concat (compute_missing_supers (self, storage), slist);
+        bse_storage_store_child (bse_storage, item);
+      slist = g_slist_concat (compute_missing_supers (self, bse_storage), slist);
     }
-
-  string = g_strdup_format ("; BseProject\n\n"); /* %010o mflags */
+  gchar *string = g_strdup_format ("; BseProject\n\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
   g_free (string);
-
-  Bse::Error error = bse_storage_flush_fd (storage, fd);
+  Bse::Error error = bse_storage_flush_fd (bse_storage, fd);
   if (close (fd) < 0 && error == Bse::Error::NONE)
     error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
-  bse_storage_reset (storage);
-  g_object_unref (storage);
+  bse_storage_reset (bse_storage);
+  g_object_unref (bse_storage);
+  if (error != Bse::Error::NONE)
+    return error;
 
-  return error;
+  // project.xml serialization
+  {
+    Bse::SerializationNode xs;
+    xs.save (*cxxself);
+    zip_storage.store_file_buffer ("project.xml", xs.write_xml ("Project"));
+  }
+
+  // create .bse file from container
+  if (!zip_storage.export_as (bsefilename))
+    return Bse::Error::FILE_WRITE_FAILED;
+  zip_storage.rm_file ("bse_storage.scm");
+  return Bse::Error::NONE;
 }
 
 Bse::Error
@@ -911,6 +927,18 @@ ProjectImpl::post_init()
   sfrepo->set_flag (BSE_OBJECT_FLAG_FIXED_UNAME);
 }
 
+void
+ProjectImpl::xml_serialize (SerializationNode &xs)
+{
+  ContainerImpl::xml_serialize (xs);
+}
+
+void
+ProjectImpl::xml_reflink (SerializationNode &xs)
+{
+  ContainerImpl::xml_reflink (xs);
+}
+
 ProjectImpl::~ProjectImpl ()
 {}
 
@@ -1154,17 +1182,58 @@ ProjectImpl::restore_from_file (const String &file_name)
   Bse::Error error;
   if (!self->in_undo && !self->in_redo)
     {
-      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-      error = bse_storage_input_file (storage, file_name.c_str());
-      if (error == 0)
-        error = bse_project_restore (self, storage);
-      bse_storage_reset (storage);
-      g_object_unref (storage);
+      // open container
+      Bse::Storage &zip_storage = Bse::ProjectImpl::Internal::zip_storage (*this);
+      String scm_filename, project_xml;
+      if (zip_storage.import_as_scm (file_name))
+        scm_filename = file_name;
+      else
+        {
+          if (!zip_storage.import_from (file_name))
+            {
+              if (!Path::check (file_name, "r"))
+                return bse_error_from_errno (errno, Bse::Error::IO);
+              return Bse::Error::FORMAT_INVALID; // import failed
+            }
+          if (zip_storage.has_file ("project.xml"))
+            project_xml = zip_storage.fetch_file ("project.xml");
+          if (zip_storage.has_file ("bse_storage.scm"))
+            {
+              // move "bse_storage.scm" out of the way for future imports into this zip_storage
+              const String bsestorage_scm = zip_storage.move_to_temporary ("bse_storage.scm");
+              scm_filename = !bsestorage_scm.empty() ? zip_storage.fetch_file (bsestorage_scm) : "" /*error*/;
+            }
+          if (project_xml.empty() && scm_filename.empty())
+            return Bse::Error::IO; // import failed
+        }
+      // bse_storage.scm deserialization (s-expr)
+      if (!scm_filename.empty())
+        {
+          BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
+          error = bse_storage_input_file (storage, scm_filename.c_str());
+          if (error == 0)
+            error = bse_project_restore (self, storage);
+          bse_storage_reset (storage);
+          g_object_unref (storage);
+        }
+      // project.xml deserialization
+      if (!project_xml.empty())
+        {
+          String errmsg;
+          SerializationNode xs;
+          Bse::Error error = xs.parse_xml ("Project", Path::stringread (project_xml), &errmsg);
+          if (error != Bse::Error::NONE)
+            {
+              PDEBUG ("%s: %s: %s\n", file_name, errmsg, bse_error_blurb (error));
+              return error;
+            }
+          xs.load (*this);
+        }
       bse_project_clear_undo (self);
     }
   else
     error = Bse::Error::PROC_BUSY;
-  return Bse::Error (error);
+  return error;
 }
 
 ProjectState
