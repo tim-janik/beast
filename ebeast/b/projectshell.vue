@@ -72,18 +72,27 @@
 </style>
 
 <script>
+function project_data () {
+  const pdata = {
+    // TODO: tracks: { getter: c => list_tracks.call (this), notify: n => this.song.on ("treechange", n), },
+    // update current_track if tracks change
+  };
+  return this.observable_from_getters (pdata, () => this.project);
+}
+
 module.exports = {
   name: 'b-projectshell',
-  data_tmpl: {
+  data() { return {
+    project: undefined,
+    pdata: project_data.call (this),
+    current_track: undefined,
     piano_roll_part: undefined,
     show_about_dialog: false,
     show_preferences_dialog: false,
-    project: undefined,
     song: undefined,
-    current_track: undefined,
     notifynameclear: () => 0,
     panel2: 0,
-  },
+  }; },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
     show_preferences_dialog: function (newval) { if (newval && this.show_about_dialog) this.show_about_dialog = false; },
