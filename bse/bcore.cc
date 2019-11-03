@@ -128,6 +128,14 @@ feature_toggle_bool (const char *config, const char *feature)
   return false;         // just whitespace
 }
 
+/// Check if `feature` is enabled via $BSE_FEATURE.
+bool
+feature_check (const char *feature)
+{
+  const char *const bsefeature = getenv ("BSE_FEATURE");
+  return bsefeature ? feature_toggle_bool (bsefeature, feature) : false;
+}
+
 // == External Helpers ==
 /**
  * Find a suitable WWW user agent (taking user configurations into account) and
