@@ -17,9 +17,10 @@
 
 <template>
   <b-hflex class="b-deviceeditor" style="width: 100%; height: 100%" @contextmenu.stop="menuopen" >
-    <b-vflex class="b-deviceeditor-entry" center style="margin: 5px"
-	     v-for="device in modules" :key="device.$id" >
-      <span > ModulePlaceholder </span>
+    <slot />
+    <b-vflex v-for="module in modules" :key="module.$id"
+	     class="b-deviceeditor-entry" center style="margin: 5px" >
+      <span > Module {{ module.$id }} </span>
     </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
