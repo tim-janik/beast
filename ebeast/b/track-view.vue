@@ -34,7 +34,7 @@
     will-change: transform;
     transform: scaleX(1);
   }
-  .b-track-view-cm0, .b-track-view-cm1	{ width: 100%; -x-background-color: red; }
+  .b-track-view-cm0, .b-track-view-cm1	{ width: 100%; }
   .b-track-view-meter {
     height: $b-track-view-level-height + $b-track-view-level-space + $b-track-view-level-height;
     position: relative;
@@ -51,6 +51,7 @@
     background-color: $b-button-border;
     border: 1px solid $b-button-border;
     border-radius: $b-button-radius; }
+  .b-track-view-current { background-color: lighten($b-button-border, 15%); }
   .b-track-view-label {
     display: inline-flex; position: relative; width: 7em; overflow: hidden;
     .b-track-view-label-el {
@@ -68,7 +69,8 @@
 </style>
 
 <template>
-  <div class="b-track-view" @contextmenu.prevent="menuopen" >
+  <div class="b-track-view" @contextmenu.prevent="menuopen" @click.prevent="click0"
+       :class="EQ (Shell.current_track, track) ? 'b-track-view-current' : ''" >
     <div class="b-track-view-control">
       <span class="b-track-view-label"
 	    @dblclick="nameedit_++" >
@@ -215,12 +217,16 @@ module.exports = {
       else
 	return ' ';
     },
-    menuactivation (role) {
+    async menuactivation (role) {
       console.log ("menuactivation:", role);
       // close popup to remove focus guards
       this.$refs.cmenu.close();
       if (role == 'add-track')
-	Shell.song.create_track ('Track');
+	{
+	  const track = await Shell.song.create_track ('Track');
+	  if (track)
+	    Shell.current_track = track;
+	}
       if (role == 'delete-track')
 	Shell.song.remove_track (this.track);
       if (role == 'rename-track')
@@ -234,7 +240,12 @@ module.exports = {
     menuedit (role) {
       console.log ("menuedit", role, "(preventDefault)");
     },
+    click0 (event) {
+      if (event.button == 0 && this.track)
+	Shell.current_track = this.track;
+    },
     menuopen (event) {
+      Shell.current_track = this.track;
       this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this) });
     },
     menucheck (role, component) {
