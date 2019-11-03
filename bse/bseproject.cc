@@ -27,7 +27,8 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define PDEBUG(...)     Bse::debug ("project", __VA_ARGS__)
+#define PDEBUG(...)             Bse::debug ("project", __VA_ARGS__)
+#define FEATURE_XML_PROJECT     Bse::feature_check ("xml-project")
 
 typedef struct {
   GType    base_type;
@@ -421,7 +422,11 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
     return Bse::Error::FILE_WRITE_FAILED;
 
   // bse_storage.scm serialization (s-expr)
-  int fd = zip_storage.store_file_fd ("bse_storage.scm");
+  int fd;
+  if (FEATURE_XML_PROJECT)
+    fd = zip_storage.store_file_fd ("bse_storage.scm");
+  else
+    fd = open (bsefilename, O_WRONLY | O_CREAT | O_EXCL, 0644);
   if (fd < 0)
     return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
   BseStorage *bse_storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
@@ -453,14 +458,15 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
     return error;
 
   // project.xml serialization
-  {
-    Bse::SerializationNode xs;
-    xs.save (*cxxself);
-    zip_storage.store_file_buffer ("project.xml", xs.write_xml ("Project"));
-  }
+  if (FEATURE_XML_PROJECT)
+    {
+      Bse::SerializationNode xs;
+      xs.save (*cxxself);
+      zip_storage.store_file_buffer ("project.xml", xs.write_xml ("Project"));
+    }
 
   // create .bse file from container
-  if (!zip_storage.export_as (bsefilename))
+  if (FEATURE_XML_PROJECT && !zip_storage.export_as (bsefilename))
     return Bse::Error::FILE_WRITE_FAILED;
   zip_storage.rm_file ("bse_storage.scm");
   return Bse::Error::NONE;
