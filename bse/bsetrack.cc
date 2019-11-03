@@ -1120,6 +1120,22 @@ TrackImpl::TrackImpl (BseObject *bobj) :
 TrackImpl::~TrackImpl ()
 {}
 
+void
+TrackImpl::xml_serialize (SerializationNode &xs)
+{
+  ContextMergerImpl::xml_serialize (xs);
+  for (auto &xc : xs.children ("Device"))       // in_load
+    xc.load (*dynamic_cast<DeviceImpl*> (create_device (xc.get ("type")).get()));
+  for (DeviceImplP device : devices_)           // in_save
+    xs.save_under ("Device", *device);
+}
+
+void
+TrackImpl::xml_reflink (SerializationNode &xs)
+{
+  ContextMergerImpl::xml_reflink (xs);
+}
+
 bool
 TrackImpl::muted() const
 {
@@ -1328,7 +1344,7 @@ TrackImpl::create_device (const String &device_id)
   assert_return (devicep, nullptr);
   devices_.push_back (devicep);
   notify ("devices");
-  return nullptr;
+  return devices_.back();
 }
 
 DeviceSeq

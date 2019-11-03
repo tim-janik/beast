@@ -88,6 +88,8 @@ class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
   std::vector<DeviceImplP> devices_;
 protected:
   virtual             ~TrackImpl         ();
+  virtual void         xml_serialize     (SerializationNode &xs) override;
+  virtual void         xml_reflink       (SerializationNode &xs) override;
 public:
   explicit             TrackImpl         (BseObject*);
   virtual SongTiming   get_timing        (int tick) override;
@@ -113,6 +115,7 @@ public:
   virtual DeviceTypeInfo device_type_info  (const String &device_id) override { return DeviceImpl::device_type_info (device_id); }
   virtual StringSeq      list_device_types () override                        { return DeviceImpl::list_device_types (); }
 };
+using TrackImplP = std::shared_ptr<TrackImpl>;
 
 } // Bse
 
