@@ -99,6 +99,8 @@
   // utilities.js
   import * as Util from './utilities.js'; // depends on Vue
   window.Util = Util;
+  window.EQ = Util.equals_recursively;
+  Vue.prototype.EQ = window.EQ;
   Vue.prototype.observable_from_getters = Util.vue_observable_from_getters;
   for (let directivename in Util.vue_directives) // register all utility directives
     Vue.directive (directivename, Util.vue_directives[directivename]);
