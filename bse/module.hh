@@ -11,6 +11,8 @@ class ModuleImpl : public ObjectImpl, public virtual ModuleIface {
 protected:
   friend class           FriendAllocator<ModuleImpl>;
   virtual               ~ModuleImpl       ();
+  virtual void           xml_serialize     (SerializationNode &xs) override;
+  virtual void           xml_reflink       (SerializationNode &xs) override;
 public:
   explicit               ModuleImpl       (const String &module_type);
   virtual String         get_module_type  () override;
