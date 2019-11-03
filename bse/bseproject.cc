@@ -4,6 +4,7 @@
 #include "bsesuper.hh"
 #include "bsestorage.hh"
 #include "bsesong.hh"
+#include "bsetrack.hh"
 #include "bsesnet.hh"
 #include "bsecsynth.hh"
 #include "bsewaverepo.hh"
@@ -930,7 +931,21 @@ ProjectImpl::post_init()
 void
 ProjectImpl::xml_serialize (SerializationNode &xs)
 {
+  BseProject *self = as<BseProject*>();
   ContainerImpl::xml_serialize (xs);
+  BseSong *bsesong = bse_project_get_song (self);
+  SongImplP song = bsesong ? bsesong->as<Bse::SongImplP>() : nullptr;
+  if (xs.in_load())
+    {
+      if (!song)
+        song = create_song ("Song")->as<SongImplP>();
+      for (auto &xc : xs.children ("Track"))
+        xc.load (*dynamic_cast<TrackImpl*> (song->create_track().get()));
+    }
+  if (xs.in_save() && song)
+    for (auto trackh : song->list_tracks())
+      if (!trackh.__iface__()->list_devices().empty())
+        xs.save_under ("Track", *trackh.__iface__()->as<TrackImplP>());
 }
 
 void
