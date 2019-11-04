@@ -61,18 +61,6 @@ LegacyObjectImpl::post_init ()
   // this->BasetypeImpl::post_init(); // must chain
 }
 
-void
-LegacyObjectImpl::xml_serialize (SerializationNode &xs)
-{
-  SerializableInterface::xml_serialize (xs); // always chain to parent's method
-}
-
-void
-LegacyObjectImpl::xml_reflink (SerializationNode &xs)
-{
-  SerializableInterface::xml_reflink (xs); // always chain to parent's method
-}
-
 LegacyObjectImpl::~LegacyObjectImpl ()
 {
   assert_return (gobject_->cxxobject_ == this);

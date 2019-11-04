@@ -11,6 +11,29 @@ DeviceImpl::DeviceImpl (const String &device_type) :
 DeviceImpl::~DeviceImpl ()
 {}
 
+void
+DeviceImpl::xml_serialize (SerializationNode &xs)
+{
+  if (xs.in_save())
+    {
+      String dtype = device_type_;
+      xs["type"] & dtype; // used by TrackImpl.create_device()
+    }
+
+  ObjectImpl::xml_serialize (xs); // always chain to parent's method
+
+  for (ModuleImplP module : modules_)           // in_save
+    xs.save_under ("Module", *module);
+  for (auto &xc : xs.children ("Module"))       // in_load
+    xc.load (*dynamic_cast<ModuleImpl*> (create_module (xc.get ("type")).get()));
+}
+
+void
+DeviceImpl::xml_reflink (SerializationNode &xs)
+{
+  ObjectImpl::xml_reflink (xs); // always chain to parent's method
+}
+
 DeviceTypeInfo
 DeviceImpl::device_type_info (const String &device_id)
 {
@@ -43,7 +66,7 @@ DeviceImpl::create_module (const String &module_id)
   assert_return (modulep, nullptr);
   modules_.push_back (modulep);
   notify ("modules");
-  return nullptr;
+  return modules_.back();
 }
 
 } // Bse

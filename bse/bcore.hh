@@ -46,6 +46,7 @@ using   Aida::void_t;
 // == Feature Toggles ==
 String                              feature_toggle_find  (const String &config, const String &feature, const String &fallback = "0");
 bool                                feature_toggle_bool  (const char *config, const char *feature);
+bool                                feature_check        (const char *feature);
 
 // == Diagnostics ==
 enum class DebugFlags {

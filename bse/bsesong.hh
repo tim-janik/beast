@@ -107,6 +107,7 @@ public:
   virtual void              synthesize_note         (TrackIface &track, int duration, int note, int fine_tune, double velocity) override;
   virtual int64_t           get_shm_offset          (SongTelemetry fld) override;
 };
+using SongImplP = std::shared_ptr<SongImpl>;
 
 } // Bse
 

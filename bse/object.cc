@@ -10,6 +10,18 @@ ObjectImpl::ObjectImpl ()
 ObjectImpl::~ObjectImpl ()
 {}
 
+void
+ObjectImpl::xml_serialize (SerializationNode &xs)
+{
+  SerializableInterface::xml_serialize (xs); // always chain to parent's method
+}
+
+void
+ObjectImpl::xml_reflink (SerializationNode &xs)
+{
+  SerializableInterface::xml_reflink (xs); // always chain to parent's method
+}
+
 bool
 ObjectImpl::set_prop (const std::string &name, const Any &value)
 {

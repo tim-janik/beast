@@ -4,18 +4,15 @@
 
 #include <bse/bseparam.hh>
 #include <bse/datalist.hh>
-#include <bse/serializable.hh>
 #include <bse/object.hh>
 
 namespace Bse {
 
-class LegacyObjectImpl : public ObjectImpl, public virtual LegacyObjectIface, public virtual SerializableInterface, public DataListContainer {
+class LegacyObjectImpl : public ObjectImpl, public virtual LegacyObjectIface, public DataListContainer {
   BseObject             *gobject_ = NULL;
   virtual Aida::SharedFromThisP __shared_from_this__ () override;
 protected:
   virtual void          post_init     ();
-  virtual void          xml_serialize (SerializationNode &xs) override;
-  virtual void          xml_reflink   (SerializationNode &xs) override;
 public:
   explicit              LegacyObjectImpl (BseObject*);
   virtual              ~LegacyObjectImpl ();

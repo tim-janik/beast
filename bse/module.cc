@@ -11,6 +11,24 @@ ModuleImpl::ModuleImpl (const String &module_type) :
 ModuleImpl::~ModuleImpl ()
 {}
 
+void
+ModuleImpl::xml_serialize (SerializationNode &xs)
+{
+  if (xs.in_save())
+    {
+      String mtype = module_type_;
+      xs["type"] & mtype; // used by DeviceImpl.create_module()
+    }
+
+  ObjectImpl::xml_serialize (xs); // always chain to parent's method
+}
+
+void
+ModuleImpl::xml_reflink (SerializationNode &xs)
+{
+  ObjectImpl::xml_reflink (xs); // always chain to parent's method
+}
+
 ModuleTypeInfo
 ModuleImpl::module_type_info (const String &module_id)
 {

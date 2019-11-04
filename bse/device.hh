@@ -12,6 +12,8 @@ class DeviceImpl : public ObjectImpl, public virtual DeviceIface {
 protected:
   friend class           FriendAllocator<DeviceImpl>;
   virtual               ~DeviceImpl        ();
+  virtual void           xml_serialize     (SerializationNode &xs) override;
+  virtual void           xml_reflink       (SerializationNode &xs) override;
 public:
   explicit               DeviceImpl        (const String &device_type);
   virtual ModuleSeq      list_modules      () override;

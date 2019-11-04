@@ -12,6 +12,7 @@ module.exports = {
     "Bse": false,
     "Shell": false,
     "Util": false,
+    "EQ": false,
     "_": false,
     "CONFIG": false,
     "module": true /* allow mods */
