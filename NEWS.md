@@ -4,6 +4,66 @@
 Beware of file format instabilities and report any bugs you find in it.*
 
 
+## Beast 0.15.0:					(2019-11-05)
+
+#### System Requirements
+* Linux - Ubuntu 18.04 or Fedora-28 are needed to run the Beast AppImage.
+
+#### User Interface EBEAST
+* Added Beast HTTP manual popup window.
+* Added scrollable track view.
+* Integrated material-icons and fork-awesome sprites.
+* Added popup menus, modal dialog and preferences.
+* Added proper command line argument handling to ebeast.
+* Tracks now have a context menu with various editing functions.
+* Support secondary UI via URL with auth-cookie.
+* Support UI rendering in Firefox 68.
+* Added song position pointer with realtime updates.
+* Added bpm and song position counter display with realtime updates.
+* Added focus handling for piano roll notes.
+* Started file system selector for instrument assignments.
+* Added user interface for manual PCM/MIDI driver selection.
+
+#### Synthesis Changes
+* Added support for separate fluidsynth instances per track. #102 [stw]
+* Rewrote PCM driver integration and selection.
+* Added optional PCM driver support for Jack. #128 [stw]
+
+#### Jsonipc
+* A dedicated Rapidjson based IPC layer was developed to move the synthesis
+  engine out of the UI process (Electron based). This solved several major
+  stability issues and also allowes use of Firefox for UI rendering.
+* Added Json based IPC layer between Javascript and C++17.
+* Moved Electron <-> Bse communication to Websocket-based IPC.
+* Moved BSE sound engine functionality into a separate executable
+  BeastSoundEngine with async Javascript bindings.
+* Added a Websocket binary message bridge for realtime monitoring of
+  shared memory region changes.
+
+#### Upgrades
+* Integrated Rapidjson 20190628 (> v1.1.0).
+* Upgraded to Electron 6.0.11
+* Upgraded babel to 7.6.2.
+* Upgraded node-sass to 4.12.
+* Managed to eliminate jQuery dependency.
+* Depend on fluidsynth to 2.0.5. #108 [stw]
+* The v8pp binding was superceeded by Jsonipc.
+* Depend on pandoc >= 2.
+* Depend on clang++-6 and g++-8.3.0 for full C++17 support.
+* Updated CI builds to use Fedora-28.
+
+#### Other Changes
+* Modernized several property implementations. [stw] #109 #110 #112 #114 #115 #116 #117 #118
+* Rewrote Vue data dependency integration for async Javascript calls.
+* Several code areas got modernized, making use of C++ >= 11.
+* Support proper versioning information even from Github ZIP files.
+* Added PDF generation for the BSE API reference manual.
+* Resampler cleanups. #121 [stw]
+* Added new XML serialzation infrastructure (defaults to OFF, MVP roadmap goal).
+* Added ZIP storage for BSE files (defaults to OFF, MVP roadmap goal).
+* Added infrastructure for stereo device/effect chains (still disabled, MVP roadmap goal).
+
+
 ## Beast 0.14.0:					(2019-07-02)
 
 #### System Requirements
