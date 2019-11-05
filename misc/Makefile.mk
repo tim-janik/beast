@@ -164,7 +164,9 @@ release-news:
 
 # == release-increment ==
 release-commits:
+	$(QGEN)
 	@ # Ensure master is on a *.0-alpha tag
+	$(Q) test `git rev-parse --abbrev-ref HEAD` = master || { set -x; test `git rev-parse --abbrev-ref HEAD` = master ; }
 	$(Q) LAST_TAG=`./version.sh --last` \
 	&& EXPECTED_TAG=`git describe --match '[0-9]*.[0-9]*.0-alpha' --abbrev=0 --first-parent HEAD` \
 	&& set -x \

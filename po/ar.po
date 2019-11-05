@@ -19,13 +19,13 @@ msgstr ""
 "3 && n <= 10 ? 3 : n >= 11 && n <= 99 ? 4 : 5;\n"
 "X-Poedit-Language: Arabic\n"
 
-#: bse/bsemain.cc:142
+#: bse/bsemain.cc:163
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr ""
 
-#: bse/bsemain.cc:140
+#: bse/bsemain.cc:154
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -156,7 +156,7 @@ msgstr "حفظ _بإسم..."
 msgid "&View"
 msgstr "_اعرض"
 
-#: beast-gtk/bstcanvassource.cc:969
+#: beast-gtk/bstcanvassource.cc:966
 #, fuzzy
 msgid "(Hint)"
 msgstr "_تلميحة"
@@ -227,7 +227,7 @@ msgstr ""
 msgid "/Input & Output/PCM Input"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bsepcmoutput.cc:67
+#: bse/bsepcmoutput.cc:68
 #, fuzzy
 msgid "/Input & Output/PCM Output"
 msgstr "جهاز خرج الصوت"
@@ -866,46 +866,16 @@ msgstr ""
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr ""
 
-#: bse/bsebus.cc:931 bse/bsebus.cc:933 bse/bsebus.cc:935 bse/bsebus.cc:937
-#: bse/bsebus.cc:941 bse/bsemidisynth.cc:365 bse/bsemidisynth.cc:371
-#: bse/bsemidisynth.cc:378 bse/bsetrack.cc:1111
+#. /< Ensure that a bus has an output connection.
+#. /< Add a bus to the input list of a bus.
+#. /< Add a track to the input list of a bus.
+#. /< Remove a bus from the input list of a bus.
+#. /< Remove a track from the input list of a bus.
+#. ItemSeq   inputs        = Object ("Input Signals", "Synthesis signals (from tracks and busses) used as bus input", GUI ":item-sequence");
+#. ItemSeq   outputs       = Object ("Output Signals", "Mixer busses used as output for synthesis signals", GUI ":item-sequence");
+#. CSynth    snet          = Object ("SNet", "Synthesis network used internally to implement effect stack", READWRITE ":skip-undo");
+#: bse/bseapi.idl:1006 bse/bseapi.idl:1064 bse/bseapi.idl:1213
 msgid "Adjustments"
-msgstr ""
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsemididevice-alsa.cc:330
-#, c-format
-msgid ""
-"Advanced Linux Sound Architecture MIDI driver, using\n"
-"ALSA %s.\n"
-"The device specification follows the ALSA device naming\n"
-"conventions, a detailed description of which is available\n"
-"at the project's website:\n"
-"    http://alsa-project.org/alsa-doc/alsa-lib/midi.html\n"
-"Various ALSA plugins can be used here, 'hw' allows direct\n"
-"adressing of hardware channels by card, device and subdevice.\n"
-"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
-"  CARD   - the card number for plugins like 'hw'\n"
-"  DEV    - the device number for plugins like 'hw'\n"
-"  SUBDEV - the subdevice number for plugins like 'hw'\n"
-msgstr ""
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsepcmdevice-alsa.cc:582
-#, c-format
-msgid ""
-"Advanced Linux Sound Architecture PCM driver, using\n"
-"ALSA %s.\n"
-"The device specification follows the ALSA device naming\n"
-"conventions, a detailed description of which is available\n"
-"at the project's website:\n"
-"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
-"Various ALSA plugins can be used here, 'hw' allows direct\n"
-"adressing of hardware channels by card, device and subdevice.\n"
-"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
-"  CARD   - the card number for plugins like 'hw'\n"
-"  DEV    - the device number for plugins like 'hw'\n"
-"  SUBDEV - the subdevice number for plugins like 'hw'\n"
 msgstr ""
 
 #: bse/bseinstrumentinput.cc:122 bse/bsemidiinput.cc:97
@@ -942,7 +912,7 @@ msgstr ""
 msgid "Amplified audio output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bseserver.cc:352
+#: bse/bseserver.cc:1509
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -950,7 +920,7 @@ msgid ""
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
 
-#: bse/bseserver.cc:491
+#: bse/bseserver.cc:352
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -1040,7 +1010,7 @@ msgid "Attenuate the level of control input 2"
 msgstr ""
 
 #. category
-#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/vc/track-list.vue:60
+#: data/bse.keys.in:11 data/bse.keys.in:23 ebeast/b/track-list.vue:146
 #, fuzzy
 msgid "Audio"
 msgstr "الصوت"
@@ -1055,7 +1025,7 @@ msgstr "الصوت"
 msgid "Audio Gate"
 msgstr "اخرج"
 
-#: bse/bseserver.cc:404
+#: bse/bseserver.cc:1485
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "اخرج"
@@ -1162,7 +1132,7 @@ msgstr "مُلحق الصوت"
 msgid "Audio Output"
 msgstr "<b>مخرج الصوت</b>"
 
-#: bse/bseserver.cc:350
+#: bse/bseserver.cc:1507
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1186,11 +1156,6 @@ msgstr "مُلحق الصوت"
 msgid "Audio Sum2"
 msgstr "مُلحق الصوت"
 
-#: bse/bseserver.cc:357
-#, c-format
-msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
-msgstr ""
-
 #: plugins/davbassfilter.idl:14 plugins/davchorus.idl:11
 #, fuzzy
 msgid "Audio input"
@@ -1206,12 +1171,12 @@ msgstr "جهاز دخل الصوت"
 msgid "Audio input 2"
 msgstr "جهاز دخل الصوت"
 
-#: bse/bsesuper.cc:182
+#: bse/bseapi.idl:898
 #, fuzzy
 msgid "Author"
 msgstr "<b>المؤلف:</b>"
 
-#: bse/bseapi.idl:896
+#: bse/bseapi.idl:915
 #, fuzzy
 msgid "Auto Activate"
 msgstr "قص المنتقى"
@@ -1226,17 +1191,18 @@ msgstr "جهاز الخرج:"
 msgid "Auto cut"
 msgstr "قص المنتقى"
 
-#. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsedevice.cc:325
-msgid ""
-"Auto is a special driver, it acts as a placeholder for\n"
-"automatic driver selection."
+#: bse/driver.cc:196
+msgid "Automatic MIDI driver selection"
 msgstr ""
 
-#: bse/bseapi.idl:897
+#: bse/bseapi.idl:916
 msgid ""
 "Automatic activation only needs to be enabled for synthesis networks that "
 "don't use virtual ports for their input and output"
+msgstr ""
+
+#: bse/driver.cc:143
+msgid "Automatic driver selection"
 msgstr ""
 
 #: plugins/standardsaturator.idl:43
@@ -1245,7 +1211,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.cc:118
+#: bse/bsebus.cc:112
 #, fuzzy
 msgid "Available Inputs"
 msgstr "التهييئات المتوفّرة"
@@ -1256,32 +1222,32 @@ msgstr "التهييئات المتوفّرة"
 msgid "Available Items:"
 msgstr "إنشاء عناصر"
 
-#: bse/bsebus.cc:133 bse/bsetrack.cc:296
+#: bse/bsebus.cc:127 bse/bsetrack.cc:297
 #, fuzzy
 msgid "Available Outputs"
 msgstr "التهييئات المتوفّرة"
 
-#: bse/bsemidisynth.cc:136 bse/bsesong.cc:113 bse/bsetrack.cc:291
+#: bse/bsemidisynth.cc:130 bse/bsesong.cc:114 bse/bsetrack.cc:292
 #, fuzzy
 msgid "Available Postprocessors"
 msgstr "التهييئات المتوفّرة"
 
-#: bse/bsesoundfontosc.cc:307
+#: bse/bsesoundfontosc.cc:268
 #, fuzzy
 msgid "Available Presets"
 msgstr "التهييئات المتوفّرة"
 
-#: beast-gtk/bsttrackview.cc:329
+#: beast-gtk/bsttrackview.cc:326
 #, fuzzy
 msgid "Available Sound Fonts"
 msgstr "التهييئات المتوفّرة"
 
-#: bse/bsemidisynth.cc:131 bse/bsesubsynth.cc:137 bse/bsetrack.cc:286
+#: bse/bsemidisynth.cc:125 bse/bsesubsynth.cc:137 bse/bsetrack.cc:287
 #, fuzzy
 msgid "Available Synthesizers"
 msgstr "التهييئات المتوفّرة"
 
-#: beast-gtk/bsttrackview.cc:326 bse/bsetrack.cc:269 bse/bsewaveosc.cc:108
+#: beast-gtk/bsttrackview.cc:323 bse/bsetrack.cc:270 bse/bsewaveosc.cc:108
 #, fuzzy
 msgid "Available Waves"
 msgstr "التهييئات المتوفّرة"
@@ -1301,26 +1267,26 @@ msgstr ""
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:909
+#: beast-gtk/bstmain.cc:901
 #, fuzzy
 msgid "BEAST About"
 msgstr "_حول الملحق"
 
-#: beast-gtk/bstmain.cc:183
+#: beast-gtk/bstmain.cc:184
 #, fuzzy
 msgid "BEAST Startup"
 msgstr "برامج بدء التشغيل"
 
-#: beast-gtk/bstmain.cc:910
+#: beast-gtk/bstmain.cc:902
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "اصدارة الرزمة"
 
-#: bse/bseapi.idl:1021
+#: bse/bseapi.idl:1110
 msgid "BPM"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:231
+#: beast-gtk/bstmain.cc:232
 #, fuzzy
 msgid "BSE Core"
 msgstr "الكلمات النووية"
@@ -1368,7 +1334,7 @@ msgstr ""
 msgid "Background image used by the piano-roll editor."
 msgstr ""
 
-#: bse/bseapi.idl:77
+#: bse/bseapi.idl:68
 #, fuzzy
 msgid "Bad loopback"
 msgstr "حلقة خلفية محلية"
@@ -1419,7 +1385,7 @@ msgstr ""
 msgid "Beast &Manual..."
 msgstr ""
 
-#: bse/bseapi.idl:1021
+#: bse/bseapi.idl:1110
 #, fuzzy
 msgid "Beats per minute"
 msgstr "أقسام بـ %02i دقيقة"
@@ -1480,7 +1446,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "اسم الموصول"
 
-#: bse/bsebus.cc:990
+#: bse/bsebus.cc:863
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1509,7 +1475,7 @@ msgstr "المعالج:"
 msgid "CPU%"
 msgstr "المعالج:"
 
-#: beast-gtk/bstapp.cc:576
+#: beast-gtk/bstapp.cc:575
 #, fuzzy
 msgid "Cancel"
 msgstr "إلغاء"
@@ -1545,7 +1511,7 @@ msgstr ""
 msgid "Change..."
 msgstr "تغيير كلمة المرور"
 
-#: beast-gtk/bstapp.cc:571
+#: beast-gtk/bstapp.cc:570
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1616,7 +1582,7 @@ msgstr "امسح"
 msgid "Clear the current selection"
 msgstr "تعويض المنتقى الحالي"
 
-#: beast-gtk/bstapp.cc:569
+#: beast-gtk/bstapp.cc:568
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "أ_غلق"
@@ -1631,7 +1597,7 @@ msgstr "اخفاء كل النوافذ و تركيز المكتب"
 msgid "Close the project"
 msgstr "غلق النّافذة"
 
-#: bse/bseapi.idl:51
+#: bse/bseapi.idl:74
 #, fuzzy
 msgid "Codec failure"
 msgstr "فشل التحقق!\n"
@@ -1642,8 +1608,8 @@ msgstr "فشل التحقق!\n"
 msgid "Color Entry"
 msgstr "إدخال مباشر"
 
-#: beast-gtk/bstitemview.cc:197 beast-gtk/bsttrackview.cc:661
-#: bse/bseobject.cc:1042
+#: beast-gtk/bstitemview.cc:197 beast-gtk/bsttrackview.cc:659
+#: bse/bseobject.cc:947
 #, fuzzy
 msgid "Comment"
 msgstr "ملاحظة"
@@ -1809,7 +1775,7 @@ msgstr "م_ستمر"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:911
+#: beast-gtk/bstmain.cc:903
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "الاثنان(جنبا بجنب)"
@@ -2154,7 +2120,7 @@ msgstr "نسخ"
 msgid "Copy the current selection into clipboard"
 msgstr ""
 
-#: bse/bsesuper.cc:187
+#: bse/bseapi.idl:899
 msgid "Copyright license applying to this object"
 msgstr ""
 
@@ -2177,7 +2143,7 @@ msgstr ""
 msgid "Create new project"
 msgstr "انشاء موضوع جديد"
 
-#: bse/bsesuper.cc:195
+#: bse/bsesuper.cc:145
 #, fuzzy
 msgid "Creation Time"
 msgstr "وقت الإنشاء"
@@ -2244,11 +2210,6 @@ msgstr "ال_درجة (هيرتز)"
 msgid "DCA"
 msgstr ""
 
-#: bse/bsepcmdevice-oss.cc:617
-#, fuzzy
-msgid "DEVICE,MODE"
-msgstr "نسق القطعة"
-
 #: beast-gtk/bstapp.cc:133
 #, fuzzy
 msgid "DSP Engine..."
@@ -2287,27 +2248,27 @@ msgstr ""
 msgid "Decay [%]"
 msgstr ""
 
-#: bse/bseapi.idl:1199 bse/bsebasics.idl:118
+#: bse/bseapi.idl:1304 bse/bsebasics.idl:118
 #, fuzzy
 msgid "Default Author"
 msgstr "معلموات المؤلف"
 
-#: bse/bseapi.idl:1200 bse/bsebasics.idl:119
+#: bse/bseapi.idl:1305 bse/bsebasics.idl:119
 #, fuzzy
 msgid "Default License"
 msgstr "ترخيص البرنامج"
 
-#: bse/bseapi.idl:1198 bse/bsebasics.idl:117
+#: bse/bseapi.idl:1303 bse/bsebasics.idl:117
 #, fuzzy
 msgid "Default Values"
 msgstr "<b>القيم النسبيّة</b>"
 
-#: bse/bseapi.idl:1199 bse/bsebasics.idl:118
+#: bse/bseapi.idl:1304 bse/bsebasics.idl:118
 #, fuzzy
 msgid "Default value for 'Author' fields"
 msgstr "ضبط قائمة القيم الإفتراضية لـ %s\n"
 
-#: bse/bseapi.idl:1200 bse/bsebasics.idl:119
+#: bse/bseapi.idl:1305 bse/bsebasics.idl:119
 #, fuzzy
 msgid "Default value for 'License' fields"
 msgstr "ضبط قائمة القيم الإفتراضية لـ %s\n"
@@ -2385,7 +2346,7 @@ msgstr "لغة الخطوط المختارة حاليا"
 msgid "Delete the currently selected wave"
 msgstr "لغة الخطوط المختارة حاليا"
 
-#: bse/bseapi.idl:1020
+#: bse/bseapi.idl:1109
 msgid "Denominator"
 msgstr ""
 
@@ -2414,23 +2375,23 @@ msgstr "تنشيط الملحقات %s"
 msgid "Development..."
 msgstr "تطوير"
 
-#: bse/bseapi.idl:60
+#: bse/bseapi.idl:51
 #, fuzzy
 msgid "Device busy"
 msgstr "الدليل مشغول"
 
-#: bse/bseapi.idl:66
+#: bse/bseapi.idl:57
 #, fuzzy
 msgid "Device configurations mismatch"
 msgstr "عدم تطابق بين الموضوع/المُصدر"
 
-#: bse/bseapi.idl:59
+#: bse/bseapi.idl:50
 #, fuzzy
 msgid "Device not async capable"
 msgstr "لم أتمكّن من التعرف التّلقائي على جهاز المودم"
 
 #. file errors
-#: bse/bseapi.idl:24
+#: bse/bseapi.idl:29
 msgid "Device or resource busy"
 msgstr ""
 
@@ -2444,7 +2405,7 @@ msgstr "اتصال"
 msgid "Dial (Logarithmic)"
 msgstr "الاتصال السريع"
 
-#: beast-gtk/bstmain.cc:292
+#: beast-gtk/bstmain.cc:293
 msgid "Dialogs"
 msgstr ""
 
@@ -2469,32 +2430,23 @@ msgstr ""
 msgid "Direction"
 msgstr "الاتجاه"
 
-#: beast-gtk/bstapp.cc:575
+#: beast-gtk/bstapp.cc:574
 #, fuzzy
 msgid "Discard Changes"
 msgstr "التراجع عن التغييرات؟"
 
-#. syntax
-#. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.cc:130
-msgid ""
-"Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list.\n"
-"Normally the null driver sleeps regularily to give CPU cycles to\n"
-"other apps, which is helpful when running at high priority.\n"
-"Sleeping can be disabled by passing \"nosleep\" as option.\n"
+#: bse/driver.cc:334
+#, fuzzy
+msgid "Discard all MIDI events"
+msgstr "أصوات لأحداث إكيجا"
+
+#: bse/driver.cc:288
+msgid "Discard all PCM output and provide zeros as PCM input"
 msgstr ""
 
 #. tooltip=
 #: res/gxk/radgets-beast.xml:578
 msgid "Discard changes and close dialog"
-msgstr ""
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-null.cc:63
-msgid ""
-"Discards all output events and generates no input events. This driver\n"
-"is not part of the automatic device selection list for MIDI devices."
 msgstr ""
 
 #: bse/bsemidivoice.cc:121
@@ -2515,7 +2467,7 @@ msgstr "اخرج"
 msgid "Disconnect Outputs"
 msgstr ""
 
-#: bse/bseserver.cc:489
+#: bse/bseserver.cc:350
 #, fuzzy
 msgid "Disk Recording Failed"
 msgstr "جاري تسجيل صوتك"
@@ -2541,13 +2493,13 @@ msgstr ""
 msgid "Distorted Audio Output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bsesoundfontosc.cc:179 bse/bsewaveosc.cc:582
+#: bse/bsesoundfontosc.cc:129 bse/bsewaveosc.cc:582
 #: plugins/bsesimpleadsr.cc:102 plugins/standardguspatchenvelope.idl:31
 #, fuzzy
 msgid "Done Out"
 msgstr "اخرج"
 
-#: bse/bsesoundfontosc.cc:179 bse/bsewaveosc.cc:582
+#: bse/bsesoundfontosc.cc:129 bse/bsewaveosc.cc:582
 #, fuzzy
 msgid "Done Output"
 msgstr "اخرج"
@@ -2605,6 +2557,14 @@ msgstr ""
 
 #: beast-gtk/bstapi.idl:114
 msgid "Draw synthesis networks anti-aliased?"
+msgstr ""
+
+#: bse/bseapi.idl:1300
+msgid "Driver and device to be used for MIDI input and output"
+msgstr ""
+
+#: bse/bseapi.idl:1287
+msgid "Driver and device to be used for PCM input and output"
 msgstr ""
 
 #: beast-gtk/bstparam-choice.cc:135
@@ -2690,7 +2650,7 @@ msgstr "<b>أسلوب القطعة:</b>"
 msgid "Effect Control 2"
 msgstr "<b>أسلوب القطعة:</b>"
 
-#: bse/bseapi.idl:1205 bse/bsebasics.idl:125
+#: bse/bseapi.idl:1310 bse/bsebasics.idl:125
 #, fuzzy
 msgid "Effect Path"
 msgstr "مسار الجهاز"
@@ -2725,7 +2685,7 @@ msgstr ""
 msgid "Enable or disable message display of a specific message type"
 msgstr ""
 
-#: bse/bseapi.idl:26
+#: bse/bseapi.idl:31
 #, fuzzy
 msgid "End of file"
 msgstr "مصفاة ذات الأولويّة \"%s\""
@@ -2849,7 +2809,7 @@ msgstr "<b>أسلوب القطعة:</b>"
 msgid "Exponential FM"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:253
+#: beast-gtk/bstapp.cc:260
 #, fuzzy
 msgid "Export Audio"
 msgstr "مُلحق الصوت"
@@ -2859,27 +2819,27 @@ msgstr "مُلحق الصوت"
 msgid "Expression"
 msgstr "تعبير"
 
-#: bse/bseapi.idl:62
+#: bse/bseapi.idl:53
 #, fuzzy
 msgid "Failed to configure device buffer"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseapi.idl:61
+#: bse/bseapi.idl:52
 #, fuzzy
 msgid "Failed to configure device format"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseapi.idl:65
+#: bse/bseapi.idl:56
 #, fuzzy
 msgid "Failed to configure device frequency"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseapi.idl:63
+#: bse/bseapi.idl:54
 #, fuzzy
 msgid "Failed to configure device latency"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseapi.idl:64
+#: bse/bseapi.idl:55
 msgid "Failed to configure number of device channels"
 msgstr ""
 
@@ -2889,7 +2849,7 @@ msgstr ""
 msgid "Failed to detect header"
 msgstr "فشل فتح الدليل الحاوي على الصور الترويسية: %s"
 
-#: beast-gtk/bstmain.cc:379
+#: beast-gtk/bstmain.cc:380
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "لم يمكن تحميل البريمج %s"
@@ -2899,28 +2859,28 @@ msgstr "لم يمكن تحميل البريمج %s"
 msgid "Failed to load sound font \"%s\": %s"
 msgstr "لم يمكن تحميل البريمج %s"
 
-#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:326
-#: beast-gtk/bstmain.cc:342
+#: beast-gtk/bstfiledialog.cc:745 beast-gtk/bstmain.cc:327
+#: beast-gtk/bstmain.cc:343
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "خطأ في إعراب ملف XML"
 
-#: beast-gtk/bstmain.cc:385
+#: beast-gtk/bstmain.cc:386
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "فشل فتح الجهاز"
 
-#: bse/bseserver.cc:435
+#: bse/bseserver.cc:1452
 #, fuzzy, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "فشل فتح رسالة التنقيح: %s\n"
 
-#: bse/bseserver.cc:408
+#: bse/bseserver.cc:1489
 #, fuzzy, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "فشل فتح رسالة التنقيح: %s\n"
 
-#: bse/bseserver.cc:493
+#: bse/bseserver.cc:354
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "فشل فتح ملف الحالة المحفوظ: %s"
@@ -2959,17 +2919,17 @@ msgid ""
 "%s"
 msgstr "الملف الذي فيه سيحفظ تقرير الخلال"
 
-#: bse/bseapi.idl:56
+#: bse/bseapi.idl:79
 #, fuzzy
 msgid "Failed to spawn child process"
 msgstr "فشل إنشاء العمليّة الإبنة '%s': %s"
 
-#: bse/bseserver.cc:490
+#: bse/bseserver.cc:351
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "فشلت كتابة بعض بيانات الإعداد إلى القرص\n"
 
-#: bse/bseserver.cc:351
+#: bse/bseserver.cc:1508
 msgid "Failed to start recording from audio device."
 msgstr ""
 
@@ -2987,12 +2947,12 @@ msgstr ""
 msgid "File Selection"
 msgstr "خيارات إنتقاء الملف"
 
-#: bse/bseapi.idl:27
+#: bse/bseapi.idl:32
 #, fuzzy
 msgid "File empty"
 msgstr "ملف _فارغ"
 
-#: bse/bseapi.idl:25
+#: bse/bseapi.idl:30
 #, fuzzy
 msgid "File exists already"
 msgstr "الملف موجود مسبّقا."
@@ -3144,7 +3104,7 @@ msgstr ""
 msgid "Format"
 msgstr "التهيئة"
 
-#: bse/bseobject.cc:1042
+#: bse/bseobject.cc:947
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3197,7 +3157,7 @@ msgstr "<b>جهاز الإدخال</b>"
 msgid "Frequency Signal"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: bse/bseapi.idl:1191 bse/bsebasics.idl:108
+#: bse/bseapi.idl:1295 bse/bsebasics.idl:108
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3221,7 +3181,7 @@ msgstr "الوظيفة"
 msgid "Function used to create new key bindings"
 msgstr ""
 
-#: bse/bseapi.idl:52
+#: bse/bseapi.idl:75
 #, fuzzy
 msgid "Functionality not implemented"
 msgstr "الأمر غير مركّب"
@@ -3492,11 +3452,11 @@ msgstr "قياس عمودي"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:197
+#: beast-gtk/bstmain.cc:198
 msgid "Initializers"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.cc:956 beast-gtk/bstsnetrouter.cc:1013
+#: beast-gtk/bstcanvassource.cc:953 beast-gtk/bstsnetrouter.cc:1013
 #, fuzzy
 msgid "Input"
 msgstr "إدخال"
@@ -3534,12 +3494,12 @@ msgid "Input Port %u"
 msgstr "منفذ الاستماع"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.cc:948
+#: bse/bsebus.cc:825
 #, fuzzy
 msgid "Input Signals"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bseapi.idl:73
+#: bse/bseapi.idl:64
 #, fuzzy
 msgid "Input channel already in use"
 msgstr "توثيق المفتاح (%s) مستعمَل\n"
@@ -3549,7 +3509,7 @@ msgstr "توثيق المفتاح (%s) مستعمَل\n"
 msgid "Input channel in use"
 msgstr "استخدام خط في الشارة"
 
-#: bse/bseapi.idl:72
+#: bse/bseapi.idl:63
 msgid "Input channel is private"
 msgstr ""
 
@@ -3557,11 +3517,11 @@ msgstr ""
 msgid "Input port name to interface to"
 msgstr ""
 
-#: bse/bseapi.idl:71
+#: bse/bseapi.idl:62
 msgid "Input/Output channels not connected"
 msgstr ""
 
-#: bse/bseapi.idl:74
+#: bse/bseapi.idl:65
 #, fuzzy
 msgid "Input/output channels already connected"
 msgstr "توثيق المفتاح (%s) مستعمَل\n"
@@ -3657,7 +3617,7 @@ msgstr ""
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr ""
 
-#: bse/bseapi.idl:1207 bse/bsebasics.idl:128
+#: bse/bseapi.idl:1312 bse/bsebasics.idl:128
 #, fuzzy
 msgid "Instrument Path"
 msgstr "مسار الجهاز"
@@ -3677,11 +3637,11 @@ msgstr "رُفض التّصريح"
 msgid "Internal error (please report)"
 msgstr "خطأ داخلي عند passwdexpired"
 
-#: bse/bsebus.cc:960
+#: bse/bseapi.idl:1073
 msgid "Internals"
 msgstr ""
 
-#: bse/bseapi.idl:54
+#: bse/bseapi.idl:77
 #, fuzzy
 msgid "Invalid MIDI control type"
 msgstr "cdr_type غير صالح \"%s\" في <%s>"
@@ -3696,7 +3656,7 @@ msgstr "مدة المكالمة"
 msgid "Invalid format"
 msgstr "نمط الملف غير صحيح."
 
-#: bse/bseapi.idl:53
+#: bse/bseapi.idl:76
 #, fuzzy
 msgid "Invalid object property"
 msgstr "بيانات جسم محرّر الخاصيات"
@@ -3711,11 +3671,11 @@ msgstr "إنحراف الذاكرة الإفتراضية"
 msgid "Invalid overlap"
 msgstr " (يونيكود غير صحيح)"
 
-#: bse/bseapi.idl:75
+#: bse/bseapi.idl:66
 msgid "Invalid synthesis module connection"
 msgstr ""
 
-#: bse/bseapi.idl:79
+#: bse/bseapi.idl:70
 #, fuzzy
 msgid "Invalid synthsis module type"
 msgstr "cdr_type غير صالح \"%s\" في <%s>"
@@ -3725,7 +3685,7 @@ msgstr "cdr_type غير صالح \"%s\" في <%s>"
 msgid "Invert"
 msgstr "_إعكس"
 
-#: bse/bseapi.idl:1196 bse/bsebasics.idl:113
+#: bse/bseapi.idl:1301 bse/bsebasics.idl:113
 #, fuzzy
 msgid "Invert Sustain Pedal"
 msgstr "تشغيل/ايقاف عكس الخلفية"
@@ -3735,12 +3695,12 @@ msgstr "تشغيل/ايقاف عكس الخلفية"
 msgid "Invert the current selection"
 msgstr "تعويض المنتقى الحالي"
 
-#: bse/bseapi.idl:1196 bse/bsebasics.idl:114
+#: bse/bseapi.idl:1301 bse/bsebasics.idl:114
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 
-#: bse/bseapi.idl:29
+#: bse/bseapi.idl:34
 #, fuzzy
 msgid "Is a directory"
 msgstr "دليل"
@@ -3792,7 +3752,7 @@ msgstr ""
 msgid "Knob (Logarithmic)"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:260
+#: beast-gtk/bstmain.cc:261
 #, fuzzy
 msgid "LADSPA Plugins"
 msgstr "تنشيط الملحقات %s"
@@ -3802,12 +3762,12 @@ msgstr "تنشيط الملحقات %s"
 msgid "Label"
 msgstr "علامة"
 
-#: bse/bsesuper.cc:199
+#: bse/bsesuper.cc:149
 #, fuzzy
 msgid "Last modification time"
 msgstr "إظهار وقت آخر تعديل"
 
-#: bse/bseapi.idl:1184 bse/bsebasics.idl:99
+#: bse/bseapi.idl:1288 bse/bsebasics.idl:99
 #, fuzzy
 msgid "Latency [ms]"
 msgstr "أدنى زمن:\t%s ملّي ثانية\n"
@@ -3828,7 +3788,7 @@ msgstr "اليسار"
 msgid "Left Audio"
 msgstr "مُلحق الصوت"
 
-#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:110
+#: bse/bsebus.cc:838 bse/bsepcmoutput.cc:111
 #: plugins/freeverb/bsefreeverb.cc:100
 #, fuzzy
 msgid "Left Audio In"
@@ -3839,7 +3799,7 @@ msgstr "عرض الهامش ا?يسر بالبكسل"
 msgid "Left Audio Input"
 msgstr "جهاز دخل الصوت"
 
-#: bse/bsebus.cc:969 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
+#: bse/bsebus.cc:842 bse/bsepcminput.cc:110 plugins/freeverb/bsefreeverb.cc:102
 #, fuzzy
 msgid "Left Audio Out"
 msgstr "<b>رسالة خارج المكتب:</b>"
@@ -3864,7 +3824,7 @@ msgstr "تكبير"
 msgid "Left Input"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bsemidivoice.cc:123 bse/bsesoundfontosc.cc:175 plugins/bsebalance.idl:21
+#: bse/bsemidivoice.cc:123 bse/bsesoundfontosc.cc:125 plugins/bsebalance.idl:21
 #: plugins/davcanyondelay.cc:102
 #, fuzzy
 msgid "Left Out"
@@ -3875,7 +3835,7 @@ msgstr "اخرج"
 msgid "Left Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.cc:938
+#: bse/bseapi.idl:1068
 #, fuzzy
 msgid "Left Volume"
 msgstr "متحكم شدة الصوت"
@@ -3885,12 +3845,12 @@ msgstr "متحكم شدة الصوت"
 msgid "Left audio output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bsebus.cc:965 bse/bsepcmoutput.cc:110
+#: bse/bsebus.cc:838 bse/bsepcmoutput.cc:111
 #, fuzzy
 msgid "Left channel input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebus.cc:969 bse/bsepcminput.cc:110
+#: bse/bsebus.cc:842 bse/bsepcminput.cc:110
 #, fuzzy
 msgid "Left channel output"
 msgstr "جهاز خرج الصوت"
@@ -3909,7 +3869,7 @@ msgstr "علامة"
 msgid "Lib..."
 msgstr ""
 
-#: bse/bsesuper.cc:187
+#: bse/bseapi.idl:899
 #, fuzzy
 msgid "License"
 msgstr "الترخيص"
@@ -3934,31 +3894,31 @@ msgstr "وصلة التنزيل"
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr ""
 
-#: bse/bsebus.cc:134
+#: bse/bsebus.cc:128
 msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
-#: bse/bsetrack.cc:297
+#: bse/bsetrack.cc:298
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 
-#: bse/bsesoundfontosc.cc:308
+#: bse/bsesoundfontosc.cc:269
 msgid "List of available sound font presets to choose as fluid synth preset"
 msgstr ""
 
-#: bse/bsetrack.cc:280
+#: bse/bsetrack.cc:281
 msgid "List of available sound font presets to choose as track instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:330
+#: beast-gtk/bsttrackview.cc:327
 msgid "List of available sound fonts to choose track instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:132
+#: bse/bsemidisynth.cc:126
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:137 bse/bsesong.cc:114 bse/bsetrack.cc:292
+#: bse/bsemidisynth.cc:131 bse/bsesong.cc:115 bse/bsetrack.cc:293
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3966,15 +3926,15 @@ msgstr ""
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr ""
 
-#: bse/bsetrack.cc:287
+#: bse/bsetrack.cc:288
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 
-#: bse/bsebus.cc:119
+#: bse/bsebus.cc:113
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:327
+#: beast-gtk/bsttrackview.cc:324
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
@@ -3982,7 +3942,7 @@ msgstr ""
 msgid "List of available waves to choose as oscillator source"
 msgstr ""
 
-#: bse/bsetrack.cc:270
+#: bse/bsetrack.cc:271
 msgid "List of available waves to choose as track instrument"
 msgstr ""
 
@@ -4059,12 +4019,12 @@ msgstr ""
 msgid "Load..."
 msgstr "_تحميل"
 
-#: beast-gtk/bstmain.cc:322 beast-gtk/bstmain.cc:324
+#: beast-gtk/bstmain.cc:323 beast-gtk/bstmain.cc:325
 #, fuzzy, c-format
 msgid "Loading \"%s\""
 msgstr "تحميل..."
 
-#: beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:724
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "تحميل \"%s\"..."
@@ -4079,7 +4039,7 @@ msgstr "تحميل \"%s\"..."
 msgid "Loading wave `%s'"
 msgstr "نيو ويف"
 
-#: beast-gtk/bstmain.cc:302
+#: beast-gtk/bstmain.cc:303
 #, fuzzy
 msgid "Loading..."
 msgstr "تحميل..."
@@ -4090,21 +4050,21 @@ msgstr "تحميل..."
 msgid "Location"
 msgstr "الموقع"
 
-#: bse/bseapi.idl:1032
+#: bse/bseapi.idl:1121
 msgid "Loop Enabled"
 msgstr ""
 
-#: bse/bseapi.idl:1033
+#: bse/bseapi.idl:1122
 #, fuzzy
 msgid "Loop Left"
 msgstr "اليسار"
 
-#: bse/bseapi.idl:1034
+#: bse/bseapi.idl:1123
 #, fuzzy
 msgid "Loop Right"
 msgstr "ووجهت وصلات دائرية"
 
-#: bse/bseapi.idl:1031
+#: bse/bseapi.idl:1120
 #, fuzzy
 msgid "Looping"
 msgstr "ووجهت وصلات دائرية"
@@ -4143,24 +4103,26 @@ msgstr "ال_درجة (هيرتز)"
 msgid "Lowpass filter frequency for the control signal"
 msgstr ""
 
-#: bse/bseapi.idl:1195 bse/bsebasics.idl:112
+#: bse/bseapi.idl:1299 bse/bsebasics.idl:112
 #, fuzzy
 msgid "MIDI"
 msgstr "ميدي"
 
-#: beast-gtk/bstparam-automation.cc:9 bse/bsemidisynth.cc:348
-#: bse/bsetrack.cc:1138
+#: beast-gtk/bstparam-automation.cc:9 bse/bseapi.idl:1010 bse/bseapi.idl:1206
 #, fuzzy
 msgid "MIDI Channel"
 msgstr "قناة الفيديو"
 
-#: bse/bseserver.cc:431
+#: bse/bseapi.idl:1300
+msgid "MIDI Driver"
+msgstr ""
+
+#: bse/bseserver.cc:1449
 msgid "MIDI I/O Failed"
 msgstr ""
 
-#: bse/bsemidisynth.cc:346 bse/bsemidisynth.cc:351 bse/bsemidisynth.cc:356
-#: bse/bsemidisynth.cc:360 bse/bsesong.cc:608 bse/bsetrack.cc:1136
-#: bse/bsetrack.cc:1142
+#: bse/bseapi.idl:1009 bse/bseapi.idl:1205 bse/bsemidisynth.cc:290
+#: bse/bsemidisynth.cc:294 bse/bsesong.cc:609 bse/bsetrack.cc:1102
 msgid "MIDI Instrument"
 msgstr ""
 
@@ -4184,7 +4146,7 @@ msgstr "<b>قوّة الإشارة</b>"
 msgid "MIDI Signal 4"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: beast-gtk/bstapp.cc:436
+#: beast-gtk/bstapp.cc:435
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr ""
@@ -4194,12 +4156,8 @@ msgstr ""
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr ""
 
-#: bse/bseserver.cc:436
+#: bse/bseserver.cc:1453
 msgid "MIDI device selections problems"
-msgstr ""
-
-#: bse/bseserver.cc:432
-msgid "MIDI input or output is not available."
 msgstr ""
 
 #: beast-gtk/bstpatterncolumns.cc:689
@@ -4212,12 +4170,12 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:487
+#: bse/bsesong.cc:488
 #, fuzzy
 msgid "Master"
 msgstr "جاري تعليق السيد..."
 
-#: bse/bsebus.cc:962
+#: bse/bseapi.idl:1074
 #, fuzzy
 msgid "Master Output"
 msgstr "جهاز الخرج:"
@@ -4227,35 +4185,36 @@ msgstr "جهاز الخرج:"
 msgid "Master Volume"
 msgstr "متحكم شدة الصوت"
 
-#: bse/bsemidisynth.cc:380
+#: bse/bseapi.idl:1216
 #, fuzzy
 msgid "Master [%]"
 msgstr "جاري تعليق السيد..."
 
-#: bse/bsemidisynth.cc:373
+#. +24dB
+#: bse/bseapi.idl:1215
 #, fuzzy
 msgid "Master [dB]"
 msgstr "جاري تعليق السيد..."
 
-#: bse/bsemidisynth.cc:367
+#: bse/bseapi.idl:1214
 #, fuzzy
 msgid "Master [float]"
 msgstr "جاري تعليق السيد..."
 
-#: bse/bsemidisynth.cc:353 bse/bsetrack.cc:1133
+#: bse/bseapi.idl:1014 bse/bseapi.idl:1209
 #, fuzzy
 msgid "Max Voices"
 msgstr "<كل الأصوات>"
 
-#: beast-gtk/bsttrackview.cc:646 bse/bsemidisynth.cc:353 bse/bsetrack.cc:1133
+#: beast-gtk/bsttrackview.cc:644 bse/bseapi.idl:1014 bse/bseapi.idl:1209
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: bse/bseapi.idl:1020
+#: bse/bseapi.idl:1109
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bseapi.idl:1019
+#: bse/bseapi.idl:1108
 msgid "Measure numerator"
 msgstr ""
 
@@ -4317,15 +4276,19 @@ msgstr ""
 msgid "Middle Bar Color"
 msgstr "لون GDK fill"
 
-#: bse/bsetrack.cc:1139
+#: bse/bseapi.idl:1206
+msgid "Midi channel assigned to this midi synthesizer"
+msgstr ""
+
+#: bse/bseapi.idl:1010
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:652
+#: beast-gtk/bsttrackview.cc:650
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
-#: bse/bsemidisynth.cc:82
+#: bse/bsemidisynth.cc:77
 msgid "Midi-Synth"
 msgstr ""
 
@@ -4348,15 +4311,15 @@ msgstr "جهاز خرج الصوت"
 msgid "Mixer"
 msgstr " فتح جهاز هندسة الصوت"
 
-#: beast-gtk/bsttrackview.cc:655
+#: beast-gtk/bsttrackview.cc:653
 msgid "Mixer busses connected to track output"
 msgstr ""
 
-#: bse/bsebus.cc:957
+#: bse/bsebus.cc:834
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:418 bse/bsetrack.cc:1149
+#: beast-gtk/bsttrackview.cc:415 bse/bsetrack.cc:1109
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4397,7 +4360,7 @@ msgstr "<b>جهاز الإدخال</b>"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.cc:429
+#: beast-gtk/bstcanvassource.cc:426
 #, fuzzy
 msgid "Module Info"
 msgstr "معلومات التّرتيب"
@@ -4515,25 +4478,29 @@ msgstr "متحكمات لوحة المفاتيح"
 msgid "Music Composer"
 msgstr "تفضيلات المؤلّف"
 
-#: bse/bseapi.idl:1024
+#: bse/bseapi.idl:1113
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.cc:932
+#: bse/bseapi.idl:1065
 #, fuzzy
 msgid "Mute"
 msgstr "صمت"
 
-#: bse/bsebus.cc:932
+#: bse/bseapi.idl:1007
+msgid "Mute this track by ignoring it in the sequencer."
+msgstr ""
+
+#: bse/bseapi.idl:1065
 msgid "Mute: turn off the bus volume"
 msgstr ""
 
-#: bse/bsetrack.cc:1113
+#: bse/bseapi.idl:1007
 msgid "Muted"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:121 beast-gtk/bstitemview.cc:194
-#: beast-gtk/bsttrackview.cc:640 bse/bseobject.cc:1032
+#: beast-gtk/bsttrackview.cc:638 bse/bseobject.cc:937
 #, fuzzy
 msgid "Name"
 msgstr "اسم"
@@ -4542,7 +4509,7 @@ msgstr "اسم"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 
-#: bse/bseserver.cc:116
+#: bse/bseapi.idl:1454
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
@@ -4579,6 +4546,11 @@ msgstr "اعرض ال_مجلدات الجديدة باستخدام:"
 msgid "Nice"
 msgstr "Nice"
 
+#: bse/bseserver.cc:1450
+#, fuzzy
+msgid "No MIDI input is available."
+msgstr "لا وجود لوصف."
+
 #: beast-gtk/bsttrackrollctrl.cc:395
 #, fuzzy
 msgid "No Part"
@@ -4589,19 +4561,17 @@ msgstr "لا تاريخ"
 msgid "No Track"
 msgstr "قطعة مجهولة"
 
-#: bse/bseserver.cc:433
-msgid ""
-"No available MIDI device could be found and opened successfully. Reverting "
-"to null device, no MIDI events will be received or sent."
+#: bse/bseserver.cc:1451
+msgid "No available MIDI device could be found and opened successfully."
 msgstr ""
 
-#: bse/bseserver.cc:406
+#: bse/bseserver.cc:1487
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
 
-#: bse/bseserver.cc:405
+#: bse/bseserver.cc:1486
 msgid "No available audio device was found."
 msgstr ""
 
@@ -4611,7 +4581,7 @@ msgid "No data available"
 msgstr "لا وجود لوصف."
 
 #. Device errors
-#: bse/bseapi.idl:58
+#: bse/bseapi.idl:49
 #, fuzzy
 msgid "No device (driver) available"
 msgstr "لا يوجد لغات"
@@ -4621,7 +4591,7 @@ msgstr "لا يوجد لغات"
 msgid "No quantization selected"
 msgstr "لم يتم انتقاء أيّة تطبيقات"
 
-#: bse/bseapi.idl:37
+#: bse/bseapi.idl:27
 #, fuzzy
 msgid "No space left on device"
 msgstr "لا توجد مساحة كافية على الجهاز"
@@ -4637,16 +4607,16 @@ msgstr "لا رسالة بهذا الإسم"
 msgid "No such event"
 msgstr "لا رسالة بهذا الإسم"
 
-#: bse/bseapi.idl:28
+#: bse/bseapi.idl:33
 msgid "No such file, device or directory"
 msgstr ""
 
-#: bse/bseapi.idl:69
+#: bse/bseapi.idl:60
 #, fuzzy
 msgid "No such input channel"
 msgstr "أجهزة الإدخال دون امتدادات"
 
-#: bse/bseapi.idl:70
+#: bse/bseapi.idl:61
 #, fuzzy
 msgid "No such output channel"
 msgstr "ليس ثمّة رسالة %s في %s"
@@ -4658,12 +4628,12 @@ msgid "No such procedure"
 msgstr "لا رسالة بهذا الإسم"
 
 #. BseSource errors
-#: bse/bseapi.idl:68
+#: bse/bseapi.idl:59
 #, fuzzy
 msgid "No such synthesis module"
 msgstr "ليس ثمّة رسالة %s في %s"
 
-#: bse/bseapi.idl:50
+#: bse/bseapi.idl:73
 #, fuzzy
 msgid "No such wave"
 msgstr "لا رسالة بهذا الإسم"
@@ -4778,7 +4748,7 @@ msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:643
+#: beast-gtk/bsttrackview.cc:641
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -4801,11 +4771,11 @@ msgstr "عدد السطور في البكسبف"
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
-#: bse/bseapi.idl:1018
+#: bse/bseapi.idl:1107
 msgid "Number of ticks per quarter note"
 msgstr ""
 
-#: bse/bseapi.idl:1019
+#: bse/bseapi.idl:1108
 msgid "Numerator"
 msgstr ""
 
@@ -4847,31 +4817,12 @@ msgstr ""
 msgid "Open Project"
 msgstr "فتح ملف"
 
-#. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.cc:240
-msgid ""
-"Open Sound System MIDI driver:\n"
-"  DEVICE - MIDI device file name.\n"
-"  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
-"           read-only, read-write or write-only access."
-msgstr ""
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-oss.cc:619
-msgid ""
-"Open Sound System PCM driver:\n"
-"  DEVICE - PCM device file name\n"
-"  MODE   - may contain \"rw\", \"ro\" or \"wo\" for\n"
-"           read-only, read-write or write-only access;\n"
-"           adding \"hs\" forces hard sync on underruns.\n"
-msgstr ""
-
 #: beast-gtk/bstapp.cc:51
 #, fuzzy
 msgid "Open existing project"
 msgstr "فتح مستند مسبق"
 
-#: bse/bseapi.idl:30
+#: bse/bseapi.idl:35
 #, fuzzy
 msgid "Open failed"
 msgstr "فشل فتح \"%s\": %s\n"
@@ -4881,7 +4832,7 @@ msgstr "فشل فتح \"%s\": %s\n"
 msgid "Open file browser"
 msgstr "لوح متصفح الملفات"
 
-#: beast-gtk/bstapp.cc:658 beast-gtk/bstapp.cc:666
+#: beast-gtk/bstapp.cc:657 beast-gtk/bstapp.cc:665
 #: beast-gtk/bstfiledialog.cc:431 beast-gtk/bstfiledialog.cc:439
 #, fuzzy, c-format
 msgid "Opening project `%s'"
@@ -4926,7 +4877,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.cc:1062
+#: bse/bsesong.cc:1089
 #, fuzzy
 msgid "Orphan Parts"
 msgstr "<b>الأجزاء الشفّافة</b>"
@@ -4972,12 +4923,13 @@ msgstr "تشفيرات أخرى"
 msgid "Other Sources/Simple ADSR"
 msgstr "تشفيرات أخرى"
 
-#: bse/bseapi.idl:38
+#. out of resource conditions
+#: bse/bseapi.idl:24
 #, fuzzy
 msgid "Out of memory"
 msgstr "نفذت الذّاكرة"
 
-#: beast-gtk/bstcanvassource.cc:965 beast-gtk/bstsnetrouter.cc:1017
+#: beast-gtk/bstcanvassource.cc:962 beast-gtk/bstsnetrouter.cc:1017
 #: plugins/bseamplifier.idl:48
 #, fuzzy
 msgid "Output"
@@ -5008,7 +4960,7 @@ msgstr "منفذ الاستماع"
 msgid "Output Signal Monitor"
 msgstr "مراقبة شدة صوت الإخراج الصوتي"
 
-#: beast-gtk/bsttrackview.cc:418 bse/bsebus.cc:956 bse/bsetrack.cc:1148
+#: beast-gtk/bsttrackview.cc:415 bse/bsebus.cc:833 bse/bsetrack.cc:1108
 #, fuzzy
 msgid "Output Signals"
 msgstr "جهاز الخرج:"
@@ -5023,7 +4975,7 @@ msgstr "متحكم شدة الصوت"
 msgid "Output [dB]"
 msgstr "جهاز الخرج:"
 
-#: bse/bsesoundfontosc.cc:175 bse/bsesoundfontosc.cc:177
+#: bse/bsesoundfontosc.cc:125 bse/bsesoundfontosc.cc:127
 msgid "Output of the fluid synth soundfont synthesizer"
 msgstr ""
 
@@ -5046,6 +4998,10 @@ msgstr ""
 msgid "Ownership mismatch"
 msgstr "لخبطة في النوع"
 
+#: bse/bseapi.idl:1287
+msgid "PCM Driver"
+msgstr ""
+
 #: beast-gtk/bstsnetrouter.cc:1013
 #, fuzzy
 msgid "PCM Input module"
@@ -5056,11 +5012,16 @@ msgstr "خطأ عند فتح الوحدة `%s': %s\n"
 msgid "PCM Output module"
 msgstr "خطأ عند فتح الوحدة `%s': %s\n"
 
-#: bse/bseserver.cc:409
+#: bse/bseserver.cc:1514
+#, c-format
+msgid "PCM audio device is not open for input: %s"
+msgstr ""
+
+#: bse/bseserver.cc:1490
 msgid "PCM device selections problems"
 msgstr ""
 
-#: bse/bseserver.cc:494
+#: bse/bseserver.cc:355
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "عرض خيارات إنتقاء الملفّات"
@@ -5069,10 +5030,6 @@ msgstr "عرض خيارات إنتقاء الملفّات"
 #, fuzzy, c-format
 msgid "PID:     %u\n"
 msgstr "PID"
-
-#: drivers/bsemididevice-alsa.cc:328 drivers/bsepcmdevice-alsa.cc:580
-msgid "PLUGIN:CARD,DEV,SUBDEV"
-msgstr ""
 
 #: bse/bsestandardosc.cc:185
 #, fuzzy
@@ -5103,12 +5060,12 @@ msgstr ""
 msgid "Parameters"
 msgstr "ال_مُعامِلات:"
 
-#: bse/bseapi.idl:76
+#: bse/bseapi.idl:67
 #, fuzzy
 msgid "Parent mismatch"
 msgstr "لخبطة في النوع"
 
-#: bse/bseapi.idl:55
+#: bse/bseapi.idl:78
 #, fuzzy
 msgid "Parsing error"
 msgstr "خطأ أثناء ترجمة المصفات: %s: %s"
@@ -5171,7 +5128,7 @@ msgstr ""
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
-#: bse/bsesuper.cc:182
+#: bse/bseapi.idl:898
 msgid "Person changing or creating this object"
 msgstr ""
 
@@ -5215,7 +5172,7 @@ msgstr "العزف"
 #. /< Insert a new module into a synthesis network.
 #. /< Remove an existing module from its synthesis network.
 #. signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
-#: bse/bseapi.idl:895
+#: bse/bseapi.idl:914
 #, fuzzy
 msgid "Playback Settings"
 msgstr "اختر الإعدادات"
@@ -5243,12 +5200,12 @@ msgstr ""
 msgid "Pluck the string"
 msgstr "اختر الإعدادات"
 
-#: bse/bseapi.idl:1209 bse/bsebasics.idl:131
+#: bse/bseapi.idl:1314 bse/bsebasics.idl:131
 #, fuzzy
 msgid "Plugin Path"
 msgstr "مسار الجهاز"
 
-#: beast-gtk/bstmain.cc:238
+#: beast-gtk/bstmain.cc:239
 #, fuzzy
 msgid "Plugins"
 msgstr "ملحقات"
@@ -5278,16 +5235,16 @@ msgstr "تاريخ أخذ الصورة"
 msgid "Positive Value Color"
 msgstr "لون GDK fill"
 
-#: bse/bsemidisynth.cc:362 bse/bsesong.cc:610 bse/bsetrack.cc:1144
+#: bse/bsemidisynth.cc:296 bse/bsesong.cc:611 bse/bsetrack.cc:1104
 msgid "Postprocessor"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:858
+#: beast-gtk/bstapp.cc:857
 #, fuzzy
 msgid "Preferences"
 msgstr "تفضيلات"
 
-#: bse/bsesoundfontosc.cc:172
+#: bse/bsesoundfontosc.cc:122
 msgid "Preset"
 msgstr ""
 
@@ -5324,7 +5281,7 @@ msgstr "ليس دليل مستخدمين صحيح"
 msgid "Process: %s\n"
 msgstr "قيد العمل"
 
-#: bse/bseapi.idl:1185 bse/bsebasics.idl:100
+#: bse/bseapi.idl:1289 bse/bsebasics.idl:100
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -5510,7 +5467,7 @@ msgid ""
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:208
+#: beast-gtk/bstmain.cc:209
 #, fuzzy
 msgid "RC Files"
 msgstr "كل الملفّات"
@@ -5534,7 +5491,7 @@ msgstr "تكبير"
 msgid "Ratio [x:1]"
 msgstr "النسبة"
 
-#: bse/bseapi.idl:32
+#: bse/bseapi.idl:37
 #, fuzzy
 msgid "Read failed"
 msgstr "فشل في قراءة الملف '%s': %s"
@@ -5708,7 +5665,7 @@ msgstr "اليمين"
 msgid "Right Audio"
 msgstr "مُلحق الصوت"
 
-#: bse/bsebus.cc:967 bse/bsepcmoutput.cc:112
+#: bse/bsebus.cc:840 bse/bsepcmoutput.cc:113
 #: plugins/freeverb/bsefreeverb.cc:101
 #, fuzzy
 msgid "Right Audio In"
@@ -5719,7 +5676,7 @@ msgstr "عرض الهامش ا?يمن بالبكسل"
 msgid "Right Audio Input"
 msgstr "جهاز دخل الصوت"
 
-#: bse/bsebus.cc:971 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
+#: bse/bsebus.cc:844 bse/bsepcminput.cc:112 plugins/freeverb/bsefreeverb.cc:103
 #, fuzzy
 msgid "Right Audio Out"
 msgstr "<b>رسالة خارج المكتب:</b>"
@@ -5744,7 +5701,7 @@ msgstr "تكبير"
 msgid "Right Input"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bsemidivoice.cc:125 bse/bsesoundfontosc.cc:177 plugins/bsebalance.idl:23
+#: bse/bsemidivoice.cc:125 bse/bsesoundfontosc.cc:127 plugins/bsebalance.idl:23
 #: plugins/davcanyondelay.cc:104
 #, fuzzy
 msgid "Right Out"
@@ -5755,7 +5712,7 @@ msgstr "اخرج"
 msgid "Right Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.cc:942
+#: bse/bseapi.idl:1070
 #, fuzzy
 msgid "Right Volume"
 msgstr "متحكم شدة الصوت"
@@ -5765,17 +5722,17 @@ msgstr "متحكم شدة الصوت"
 msgid "Right audio output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bsepcmoutput.cc:112
+#: bse/bsepcmoutput.cc:113
 #, fuzzy
 msgid "Right channel Input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebus.cc:967
+#: bse/bsebus.cc:840
 #, fuzzy
 msgid "Right channel input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebus.cc:971 bse/bsepcminput.cc:112
+#: bse/bsebus.cc:844 bse/bsepcminput.cc:112
 #, fuzzy
 msgid "Right channel output"
 msgstr "جهاز خرج الصوت"
@@ -5814,7 +5771,7 @@ msgstr "صف المؤشّر"
 msgid "STime"
 msgstr ""
 
-#: bse/bseapi.idl:1203 bse/bsebasics.idl:122
+#: bse/bseapi.idl:1308 bse/bsebasics.idl:122
 #, fuzzy
 msgid "Sample Path"
 msgstr "مسار الجهاز"
@@ -5863,7 +5820,7 @@ msgstr "حفظ الملف كـ"
 msgid "Save As Instrument..."
 msgstr "حفظ الملف كـ"
 
-#: beast-gtk/bstapp.cc:574
+#: beast-gtk/bstapp.cc:573
 #, fuzzy
 msgid "Save Changes"
 msgstr "التراجع عن التغييرات؟"
@@ -5891,7 +5848,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:573
+#: beast-gtk/bstapp.cc:572
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5935,31 +5892,31 @@ msgstr "<small><i>لا شيء</i></small>"
 msgid "Scroll Right"
 msgstr "الإلتفاف إلى جهة اليمين"
 
-#: bse/bseapi.idl:1202 bse/bsebasics.idl:121
+#: bse/bseapi.idl:1307 bse/bsebasics.idl:121
 #, fuzzy
 msgid "Search Paths"
 msgstr "المسارات المستثناة للبحث السّريع"
 
-#: bse/bseapi.idl:1205 bse/bsebasics.idl:126
+#: bse/bseapi.idl:1310 bse/bsebasics.idl:126
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
 "files."
 msgstr ""
 
-#: bse/bseapi.idl:1207 bse/bsebasics.idl:129
+#: bse/bseapi.idl:1312 bse/bsebasics.idl:129
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
 "files."
 msgstr ""
 
-#: bse/bseapi.idl:1210 bse/bsebasics.idl:132
+#: bse/bseapi.idl:1315 bse/bsebasics.idl:132
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
 "This path is searched for in addition to the standard BSE plugin location on "
 "this system."
 msgstr ""
 
-#: bse/bseapi.idl:1203 bse/bsebasics.idl:123
+#: bse/bseapi.idl:1308 bse/bsebasics.idl:123
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
 msgstr ""
@@ -5990,7 +5947,7 @@ msgstr "تكبير نافذة الإدخال"
 msgid "Second filter cutoff frequency"
 msgstr "الصدر الأوسط"
 
-#: bse/bseapi.idl:31
+#: bse/bseapi.idl:36
 #, fuzzy
 msgid "Seek failed"
 msgstr "فشل الاختبار %d"
@@ -6041,9 +5998,22 @@ msgstr "خطأ عند فتح الوحدة `%s': %s\n"
 msgid "Select output module"
 msgstr "خطأ عند فتح الوحدة `%s': %s\n"
 
+#: bse/driver.cc:197
+msgid "Select the first available MIDI device"
+msgstr ""
+
+#: bse/driver.cc:144
+msgid "Select the first available PCM card or server"
+msgstr ""
+
 #: beast-gtk/bstpianorollctrl.cc:68
 msgid "Select tick range vertically"
 msgstr ""
+
+#: ebeast/b/fed-object.vue:148
+#, fuzzy
+msgid "Selection"
+msgstr "إنتقاء ملف"
 
 #: bse/bsestandardosc.cc:163
 #, fuzzy
@@ -6178,12 +6148,12 @@ msgstr "منطقة خارطة الصورة"
 msgid "Signal In"
 msgstr "تكبير"
 
-#: bse/bsebus.cc:945
+#: bse/bsebus.cc:822
 #, fuzzy
 msgid "Signal Inputs"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: bse/bsebus.cc:954 bse/bsetrack.cc:1146
+#: bse/bsebus.cc:831 bse/bsetrack.cc:1106
 #, fuzzy
 msgid "Signal Outputs"
 msgstr "<b>قوّة الإشارة</b>"
@@ -6279,38 +6249,38 @@ msgstr ""
 msgid "Sole Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.cc:934
+#: bse/bseapi.idl:1066
 #, fuzzy
 msgid "Solo"
 msgstr "سولو الطبل"
 
-#: bse/bsebus.cc:934
+#: bse/bseapi.idl:1066
 msgid "Solo: mute all other busses"
 msgstr ""
 
-#: bse/bsesong.cc:454
+#: bse/bsesong.cc:455
 #, fuzzy
 msgid "Song"
 msgstr "فا_صل جديد"
 
-#: beast-gtk/bstapp.cc:431
+#: beast-gtk/bstapp.cc:430
 #, c-format
 msgid "Song: %s"
 msgstr ""
 
-#: bse/bsesoundfontosc.cc:170 bse/bsetrack.cc:1127
+#: bse/bsesoundfontosc.cc:120 bse/bsetrack.cc:1098
 msgid "Sound Font Preset"
 msgstr ""
 
-#: bse/bsesoundfontosc.cc:172
+#: bse/bsesoundfontosc.cc:122
 msgid "Sound Font Preset to be used during replay"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:279
+#: beast-gtk/bstsupershell.cc:224 bse/bsetrack.cc:280
 msgid "Sound Fonts"
 msgstr ""
 
-#: bse/bsetrack.cc:1128
+#: bse/bsetrack.cc:1099
 msgid "Sound font preset to be used as instrument"
 msgstr ""
 
@@ -6330,7 +6300,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "الزر اللولبي للتحديث"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:216
+#: beast-gtk/bstmain.cc:217
 #, fuzzy
 msgid "Splash Image"
 msgstr "صورة الفيديو"
@@ -6399,7 +6369,7 @@ msgstr "إبدأ"
 msgid "Starting Playback"
 msgstr "عرض الصوت:"
 
-#: beast-gtk/bstmain.cc:190
+#: beast-gtk/bstmain.cc:191
 #, fuzzy
 msgid "Startup"
 msgstr "<b>بدأ التشغيل</b>"
@@ -6479,7 +6449,7 @@ msgstr "قاطعات"
 msgid "SynDrum Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.cc:936
+#: bse/bseapi.idl:1067
 #, fuzzy
 msgid "Sync"
 msgstr "أصناف المزامنة:"
@@ -6494,6 +6464,11 @@ msgstr "تكبير"
 msgid "Sync Out"
 msgstr "اخرج"
 
+#: bse/bseapi.idl:1067
+#, fuzzy
+msgid "Synchronize left and right volume"
+msgstr "حرّك الفأرة ثمّ اضغط على زرّها اليسار واليمين"
+
 #: bse/bsestandardosc.cc:187 bse/bsewaveosc.cc:574
 #, fuzzy
 msgid "Syncronization Input"
@@ -6504,17 +6479,12 @@ msgstr "<b>جهاز الإدخال</b>"
 msgid "Syncronization Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.cc:936
-#, fuzzy
-msgid "Syncronize left and right volume"
-msgstr "حرّك الفأرة ثمّ اضغط على زرّها اليسار واليمين"
-
 #: bse/bsecsynth.cc:59
 #, fuzzy
 msgid "Synth"
 msgstr "تم الاختبار %d"
 
-#: bse/bseapi.idl:1190 bse/bsebasics.idl:107
+#: bse/bseapi.idl:1294 bse/bsebasics.idl:107
 #, fuzzy
 msgid "Synth Control Frequency"
 msgstr "مجموعة تحكم الاستمارة"
@@ -6524,13 +6494,13 @@ msgstr "مجموعة تحكم الاستمارة"
 msgid "Synth Done"
 msgstr "تم الاختبار %d"
 
-#: bse/bsetrack.cc:1115 bse/bsetrack.cc:1120 bse/bsetrack.cc:1125
-#: bse/bsetrack.cc:1131
+#: bse/bseapi.idl:1013 bse/bsetrack.cc:1086 bse/bsetrack.cc:1091
+#: bse/bsetrack.cc:1096
 #, fuzzy
 msgid "Synth Input"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bseapi.idl:1187 bse/bsebasics.idl:103
+#: bse/bseapi.idl:1291 bse/bsebasics.idl:103
 #, fuzzy
 msgid "Synth Mixing Frequency"
 msgstr "تفعيل تخليط الصوت البرمجي"
@@ -6541,16 +6511,16 @@ msgstr "تفعيل تخليط الصوت البرمجي"
 msgid "Synthesis Modules"
 msgstr "كل الوحدات"
 
-#: bse/bseapi.idl:1183 bse/bsebasics.idl:97
+#: bse/bseapi.idl:1286 bse/bsebasics.idl:97
 #, fuzzy
 msgid "Synthesis Settings"
 msgstr "اختر الإعدادات"
 
-#: bse/bseapi.idl:1188 bse/bsebasics.idl:104
+#: bse/bseapi.idl:1292 bse/bsebasics.idl:104
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bseapi.idl:78
+#: bse/bseapi.idl:69
 msgid "Synthesis module currently busy"
 msgstr ""
 
@@ -6558,20 +6528,20 @@ msgstr ""
 msgid "Synthesis module used internally by BseBus"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:649
+#: beast-gtk/bsttrackview.cc:647
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
-#: bse/bsemidisynth.cc:358
+#: bse/bsemidisynth.cc:292
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr ""
 
-#: bse/bsetrack.cc:1117
+#: bse/bsetrack.cc:1088
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:658 bse/bsemidisynth.cc:362 bse/bsesong.cc:610
-#: bse/bsetrack.cc:1144
+#: beast-gtk/bsttrackview.cc:656 bse/bsemidisynth.cc:296 bse/bsesong.cc:611
+#: bse/bsetrack.cc:1104
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -6582,11 +6552,11 @@ msgstr ""
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.cc:952
+#: bse/bsebus.cc:829
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: bse/bsemidisynth.cc:358 bse/bsesubsynth.cc:491 bse/bsetrack.cc:1117
+#: bse/bsemidisynth.cc:292 bse/bsesubsynth.cc:491 bse/bsetrack.cc:1088
 msgid "Synthesizer"
 msgstr ""
 
@@ -6596,7 +6566,7 @@ msgstr ""
 msgid "Synthesizer Selection: %s"
 msgstr "<b>الحرف المنتقى:</b>"
 
-#: beast-gtk/bstapp.cc:441
+#: beast-gtk/bstapp.cc:440
 #, c-format
 msgid "Synthesizer: %s"
 msgstr ""
@@ -6609,7 +6579,7 @@ msgstr ""
 msgid "TID"
 msgstr ""
 
-#: bse/bseapi.idl:1018
+#: bse/bseapi.idl:1107
 msgid "TPQN"
 msgstr ""
 
@@ -6618,7 +6588,7 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
 #. miscellaneous errors
-#: bse/bseapi.idl:49
+#: bse/bseapi.idl:72
 #, fuzzy
 msgid "Temporary error"
 msgstr ""
@@ -6755,7 +6725,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:570
+#: beast-gtk/bstapp.cc:569
 #, fuzzy
 msgid "The project has been modified."
 msgstr "تمّ حذف الرّسالة"
@@ -6788,7 +6758,7 @@ msgstr ""
 msgid "The time for the right to left delay"
 msgstr ""
 
-#: bse/bseapi.idl:1025
+#: bse/bseapi.idl:1114
 msgid ""
 "The tuning system which specifies the tones or pitches to be used. Due to "
 "the psychoacoustic properties of tones, various pitch combinations can sound "
@@ -6882,7 +6852,7 @@ msgstr ""
 msgid "Threshold [dB]"
 msgstr "عتبة الطّول"
 
-#: bse/bseapi.idl:1035
+#: bse/bseapi.idl:1124
 msgid "Tick Pointer"
 msgstr ""
 
@@ -6896,11 +6866,12 @@ msgstr "الوقت"
 msgid "Time Entry"
 msgstr "إدخال مباشر"
 
+#. /< Offset into SharedMemory for SongTelemetry fields.
 #. signal void   pointer_changed (int32 a);
 #. group _("MIDI Instrument") {
 #. CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
 #. };
-#: bse/bseapi.idl:1017
+#: bse/bseapi.idl:1106
 msgid "Timing"
 msgstr ""
 
@@ -6931,13 +6902,12 @@ msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 
-#. out of resource conditions
-#: bse/bseapi.idl:35
+#: bse/bseapi.idl:25
 #, fuzzy
 msgid "Too many open files"
 msgstr "الملفات المفتوحة كثيرة جدا"
 
-#: bse/bseapi.idl:36
+#: bse/bseapi.idl:26
 msgid "Too many open files in system"
 msgstr ""
 
@@ -7040,7 +7010,7 @@ msgstr ""
 msgid "Triplet whole note"
 msgstr "<b>خصائص المذكرة الافتراضية</b>"
 
-#: bse/bseapi.idl:1023
+#: bse/bseapi.idl:1112
 #, fuzzy
 msgid "Tuning"
 msgstr "معلومات جدول التّوجيه"
@@ -7084,7 +7054,7 @@ msgstr "اشارة معرفة من طرف المستخدم 1"
 msgid "Unfiltered Input"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bseobject.cc:1032
+#: bse/bseobject.cc:937
 #, fuzzy
 msgid "Unique name of this object"
 msgstr "الدور الميسر لهذا الجسم"
@@ -7100,7 +7070,7 @@ msgid "Unknown format"
 msgstr "تهيئة الصورة مجهولة"
 
 #. default to 'Unnamed-###' unames
-#: bse/bsesuper.cc:38
+#: bse/bsesuper.cc:33
 #, fuzzy
 msgid "Unnamed"
 msgstr "اعادة التسمية"
@@ -7129,8 +7099,8 @@ msgstr ""
 msgid "Up"
 msgstr "أعلى"
 
-#: beast-gtk/bstutils.cc:354 beast-gtk/bstutils.cc:376
-#: beast-gtk/bstutils.cc:379
+#: beast-gtk/bstutils.cc:353 beast-gtk/bstutils.cc:375
+#: beast-gtk/bstutils.cc:378
 #, fuzzy
 msgid "Updating View"
 msgstr "وضعية _ العرض"
@@ -7251,20 +7221,20 @@ msgstr "جهاز الخرج:"
 msgid "Volume"
 msgstr "شدة الصوت"
 
-#: bse/bsebus.cc:938
+#: bse/bseapi.idl:1068
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr ""
 
-#: bse/bsebus.cc:942
+#: bse/bseapi.idl:1070
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr ""
 
-#: bse/bseserver.cc:115
+#: bse/bseapi.idl:1454
 #, fuzzy
 msgid "WAVE File"
 msgstr "إنتقاء ملف"
 
-#: bse/bsestandardosc.cc:117 bse/bsetrack.cc:1122 bse/bsewaveosc.cc:540
+#: bse/bsestandardosc.cc:117 bse/bsetrack.cc:1093 bse/bsewaveosc.cc:540
 #: bse/bsewaveosc.cc:542 bse/bsewaveosc.cc:544
 #, fuzzy
 msgid "Wave"
@@ -7285,12 +7255,12 @@ msgstr "شكل الاختصارات"
 msgid "Wave Output"
 msgstr "جهاز الخرج:"
 
-#: beast-gtk/bstapp.cc:426
+#: beast-gtk/bstapp.cc:425
 #, fuzzy
 msgid "Wave Repository"
 msgstr "المستودع غير متّصل"
 
-#: bse/bsetrack.cc:1122
+#: bse/bsetrack.cc:1093
 msgid "Wave to be used as instrument"
 msgstr ""
 
@@ -7304,7 +7274,7 @@ msgstr ""
 msgid "Wave_s"
 msgstr "نيو ويف"
 
-#: beast-gtk/bstapp.cc:424 beast-gtk/bstsupershell.cc:210
+#: beast-gtk/bstapp.cc:423 beast-gtk/bstsupershell.cc:210
 msgid "Waves"
 msgstr ""
 
@@ -7341,7 +7311,7 @@ msgstr "ملحوظة المركّب"
 msgid "Window Size"
 msgstr "حجم نافذة المحادثة"
 
-#: bse/bseapi.idl:33
+#: bse/bseapi.idl:38
 #, fuzzy
 msgid "Write failed"
 msgstr "فشلت كتابة \"%s\": %s\n"
@@ -7385,10 +7355,6 @@ msgstr "التكبير"
 #, fuzzy
 msgid "Zoom:"
 msgstr "التكبير"
-
-#: bse/bsepcmdevice-null.cc:128
-msgid "[nosleep]"
-msgstr ""
 
 #: beast-gtk/bstapp.cc:78
 #, fuzzy
@@ -7662,7 +7628,7 @@ msgstr "_اعرض"
 msgid "_Virtualization"
 msgstr ""
 
-#: bse/bseserver.cc:361
+#: bse/bseserver.cc:1515
 #, fuzzy
 msgid "audio input problems"
 msgstr "جهاز دخل الصوت"
@@ -7947,7 +7913,7 @@ msgstr "قطعة"
 msgid "control-90"
 msgstr "<b>أسلوب القطعة:</b>"
 
-#: tools/bsewavetool.cc:1159
+#: tools/bsewavetool.cc:1158
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
@@ -7987,6 +7953,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "Create a new Part in a Song."
 #~ msgstr "إنشاء تسجيلات جديدة في نوافذ معششة"
+
+#, fuzzy
+#~ msgid "DEVICE,MODE"
+#~ msgstr "نسق القطعة"
 
 #, fuzzy
 #~ msgid "Delete a Part from a Song."
