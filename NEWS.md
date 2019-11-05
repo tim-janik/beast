@@ -1,8 +1,4 @@
-## Beast 0.15.0-alpha:
-
-*Note: This is the master branch of Beast, which contains alpha version software.
-Beware of file format instabilities and report any bugs you find in it.*
-
+## Beast 0.15.0:					(2019-11-05)
 
 ## Beast 0.15.0:					(2019-11-05)
 
