@@ -8,6 +8,9 @@ dist:     xenial
 language: generic
 services: docker
 
+# conditionalize build to ignore tags: https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
+if: tag IS blank
+
 cache:
   directories:
     - ~/cache/
