@@ -6,8 +6,6 @@ Beware of file format instabilities and report any bugs you find in it.*
 
 ## Beast 0.15.0:					(2019-11-05)
 
-## Beast 0.15.0:					(2019-11-05)
-
 #### System Requirements
 * Linux - Ubuntu 18.04 or Fedora-28 are needed to run the Beast AppImage.
 
