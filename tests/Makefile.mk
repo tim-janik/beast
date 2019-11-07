@@ -35,7 +35,7 @@ tests/suite1			::= $>/tests/suite1
 tests/suite1.objects		::= $(call BUILDDIR_O, $(tests/suite1.sources))
 
 # == explore.idl ==
-tests/explore.idl.outputs	::= $>/tests/explore_interfaces.hh $>/tests/explore_interfaces.cc $>/tests/explore_handles.hh $>/tests/explore_handles.cc
+tests/explore.idl.outputs	::= $>/tests/explore_interfaces.hh $>/tests/explore_interfaces.cc
 
 # == subdirs ==
 include tests/audio/Makefile.mk
@@ -54,9 +54,9 @@ tests/all: $(tests/suite1)
 # == explore.idl rules ==
 $(tests/suite1.objects):	$(tests/explore.idl.outputs)
 $(call MULTIOUTPUT, $(tests/explore.idl.outputs)): tests/explore.idl $(aidacc/aidacc)	| $>/tests/
-	$(QECHO) GEN $(tests/explore.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
+	$(QECHO) GEN $(tests/explore.idl.outputs) # aidacc generates %_interfaces.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
 	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ -o $>/tests/ $<
-	$Q sed -e '1i#define _(x) x' -i $>/tests/explore_interfaces.cc $>/tests/explore_handles.cc
+	$Q sed -e '1i#define _(x) x' -i $>/tests/explore_interfaces.cc
 
 # == check-loading ==
 # This test checks that all .bse files contained in the beast tarball
