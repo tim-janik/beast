@@ -1028,7 +1028,7 @@ Any::operator= (const Any &clone)
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
     case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
     case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
-    case INSTANCE:      new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
+    case INSTANCE:      new (&u_.ibasep()) ImplicitBaseP (clone.u_.ibasep());                      break;
     default:            u_ = clone.u_;                                                               break;
     }
   return *this;
@@ -1044,7 +1044,7 @@ swap_any_unions (TypeKind kind, U &u, U &v)
     case STRING:        std::swap (u.vstring(), v.vstring()); break;
     case SEQUENCE:      std::swap (u.vanys(), v.vanys());     break;
     case RECORD:        std::swap (u.vfields(), v.vfields()); break;
-    case INSTANCE:      std::swap (u.rhandle(), v.rhandle()); break;
+    case INSTANCE:      std::swap (u.ibasep(), v.ibasep());   break;
     case ANY:           std::swap (u.vany, v.vany);           break;
     default:            AIDA_ASSERT_RETURN_UNREACHED();       break;
     }
@@ -1081,7 +1081,7 @@ Any::clear()
     case ANY:           delete u_.vany;                         break;
     case SEQUENCE:      u_.vanys().~AnySeq();                   break;
     case RECORD:        u_.vfields().~AnyRec();                 break;
-    case INSTANCE:      u_.rhandle().~ARemoteHandle();          break;
+    case INSTANCE:      u_.ibasep().~ImplicitBaseP();           break;
     default: ;
     }
   type_kind_ = UNTYPED;
@@ -1106,7 +1106,7 @@ Any::rekind (TypeKind _kind)
     case ANY:      u_.vany = NULL;                      break;
     case SEQUENCE: new (&u_.vanys()) AnySeq();          break;
     case RECORD:   new (&u_.vfields()) AnyRec();        break;
-    case INSTANCE: new (&u_.rhandle()) ARemoteHandle(); break;
+    case INSTANCE: new (&u_.ibasep()) ImplicitBaseP();  break;
     default:                                            break;
     }
 }
@@ -1209,7 +1209,7 @@ Any::to_string() const
     case STRING:     s += u_.vstring();                                                                          break;
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
-    case INSTANCE:   s += posix_sprintf ("(RemoteHandle (ptr=%p))", &*u_.rhandle().__iface_ptr__());             break;
+    case INSTANCE:   s += posix_sprintf ("(ImplicitBaseP (ptr=%p))", u_.ibasep().get());             break;
     case ANY:
       s += "(Any (";
       if (u_.vany && u_.vany->kind() == STRING)
@@ -1247,7 +1247,7 @@ Any::operator== (const Any &clone) const
       else
         return *u_.vany == *clone.u_.vany;
     case INSTANCE:
-      return u_.rhandle().__iface_ptr__() == clone.u_.rhandle().__iface_ptr__();
+      return u_.ibasep().get() == clone.u_.ibasep().get();
     default:
       AIDA_ASSERT_RETURN_UNREACHED (false);
       return false;
@@ -1272,7 +1272,7 @@ Any::get_bool () const
     case STRING:        return !u_.vstring().empty();
     case SEQUENCE:      return !u_.vanys().empty();
     case RECORD:        return !u_.vfields().empty();
-    case INSTANCE:      return u_.rhandle().__iface_ptr__() != NULL;
+    case INSTANCE:      return u_.ibasep().get() != NULL;
     default: ;
     }
   return 0;
@@ -1401,13 +1401,11 @@ ImplicitBaseP
 Any::get_ibasep () const
 {
   if (kind() == INSTANCE)
-    {
-      RemoteHandle rh = u_.rhandle();
-      return rh.__iface_ptr__();
-    }
+    return u_.ibasep();
   return ImplicitBaseP();
 }
 
+#if 0
 /// Use Any.get<DerivedType>() instead.
 RemoteHandle
 Any::get_untyped_remote_handle () const
@@ -1417,13 +1415,23 @@ Any::get_untyped_remote_handle () const
     rh = u_.rhandle();
   return rh;
 }
+#endif
 
+void
+Any::set_ibasep (ImplicitBaseP ibaseptr)
+{
+  ensure (INSTANCE);
+  u_.ibasep() = ibaseptr;
+}
+
+#if 0
 void
 Any::set_handle (const RemoteHandle &handle)
 {
   ensure (INSTANCE);
   u_.rhandle() = handle;
 }
+#endif
 
 const Any*
 Any::get_any () const
