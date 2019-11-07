@@ -247,15 +247,15 @@ bse_bus_set_inputs (BseBus *self, const Bse::ItemSeq &inputs_iseq)
   std::stable_sort (bus_inputs.begin(), bus_inputs.end());                      // self->inputs
   // sort the new set of input items
   std::vector<BseItem*> inputs;
-  for (const auto &itemhandle : inputs_iseq)
-    inputs.push_back (itemhandle.__iface__()->as<BseItem*>());
+  for (const auto &itemi : inputs_iseq)
+    inputs.push_back (itemi->as<BseItem*>());
   std::stable_sort (inputs.begin(), inputs.end());                              // inputs == inputs_iseq
   // fetch all input candidates
   Bse::ItemSeq iseq;
   bus_list_input_candidates (self, iseq);
   std::vector<BseItem*> candidates;
-  for (const auto &itemhandle : iseq)
-    candidates.push_back (itemhandle.__iface__()->as<BseItem*>());
+  for (const auto &itemi : iseq)
+    candidates.push_back (itemi->as<BseItem*>());
   std::stable_sort (candidates.begin(), candidates.end());
   // constrain the new output list
   std::vector<BseItem*> tmp;
@@ -283,8 +283,8 @@ bse_bus_set_inputs (BseBus *self, const Bse::ItemSeq &inputs_iseq)
   for (SfiRing *ring = self->inputs; ring; ring = sfi_ring_walk (ring, self->inputs))
     bus_inputs.push_back ((BseItem*) ring->data);                               // self->inputs
   inputs.clear();
-  for (const auto &itemhandle : inputs_iseq)
-    inputs.push_back (itemhandle.__iface__()->as<BseItem*>());
+  for (const auto &itemi : inputs_iseq)
+    inputs.push_back (itemi->as<BseItem*>());
   Bse::copy_reordered (bus_inputs.begin(), bus_inputs.end(), inputs.begin(), inputs.end(), std::back_inserter (tmp));
   assert_return (bus_inputs.size() == tmp.size());
   SfiRing *newring = NULL;
@@ -312,15 +312,15 @@ bse_bus_or_track_set_outputs (BseItem *trackbus, const Bse::ItemSeq &outputs_ise
   std::stable_sort (bus_outputs.begin(), bus_outputs.end());
   // sort the new set of output items
   std::vector<BseItem*> outputs;
-  for (const auto &itemhandle : outputs_iseq)
-    outputs.push_back (itemhandle.__iface__()->as<BseItem*>());
+  for (const auto &itemi : outputs_iseq)
+    outputs.push_back (itemi->as<BseItem*>());
   std::stable_sort (outputs.begin(), outputs.end());
   // fetch all output candidates
   Bse::ItemSeq iseq;
   bse_bus_or_track_list_output_candidates (trackbus, iseq);
   std::vector<BseItem*> candidates;
-  for (const auto &itemhandle : iseq)
-    candidates.push_back (itemhandle.__iface__()->as<BseItem*>());
+  for (const auto &itemi : iseq)
+    candidates.push_back (itemi->as<BseItem*>());
   std::stable_sort (candidates.begin(), candidates.end());
   // constrain the new output list
   std::vector<BseItem*> tmp;
@@ -348,8 +348,8 @@ bse_bus_or_track_set_outputs (BseItem *trackbus, const Bse::ItemSeq &outputs_ise
   for (SfiRing *ring = *pbus_outputs; ring; ring = sfi_ring_walk (ring, *pbus_outputs))
     bus_outputs.push_back ((BseItem*) ring->data);
   outputs.clear();
-  for (const auto &itemhandle : outputs_iseq)
-    outputs.push_back (itemhandle.__iface__()->as<BseItem*>());
+  for (const auto &itemi : outputs_iseq)
+    outputs.push_back (itemi->as<BseItem*>());
   Bse::copy_reordered (bus_outputs.begin(), bus_outputs.end(), outputs.begin(), outputs.end(), std::back_inserter (tmp));
   assert_return (bus_outputs.size() == tmp.size());
   SfiRing *newring = NULL;
@@ -615,7 +615,7 @@ bse_bus_connect (BseBus *self, BseItem *trackbus)
   // find trackbus
   bool found_candidate = false;
   for (size_t i = 0; i < iseq.size(); i++)
-    if (iseq[i].__iface__()->as<BseItem*>() == trackbus)
+    if (iseq[i]->as<BseItem*>() == trackbus)
       {
         found_candidate = true;
         break;

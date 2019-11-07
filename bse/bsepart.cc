@@ -424,15 +424,15 @@ part_link_lesser (const Bse::PartLink &a, const Bse::PartLink &b)
     return a.duration < b.duration;
   //if (a.count != b.count)
   //  return a.count < b.count;
-  Bse::TrackIface *atrack = a.track.__iface__();
-  Bse::TrackIface *btrack = b.track.__iface__();
+  Bse::TrackIface *atrack = a.track.get();
+  Bse::TrackIface *btrack = b.track.get();
   int64_t aid, bid;
   aid = atrack ? atrack->proxy_id() : 0;
   bid = btrack ? btrack->proxy_id() : 0;
   if (aid != bid)
     return aid < bid;
-  Bse::PartIface *apart = a.part.__iface__();
-  Bse::PartIface *bpart = b.part.__iface__();
+  Bse::PartIface *apart = a.part.get();
+  Bse::PartIface *bpart = b.part.get();
   aid = apart ? apart->proxy_id() : 0;
   bid = bpart ? bpart->proxy_id() : 0;
   if (aid != bid)

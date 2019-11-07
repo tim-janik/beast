@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "beast-sound-engine.hh"
+#include "bsemain.hh"
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
@@ -10,7 +11,6 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 #undef B0 // undo pollution from termios.h
 
-static Bse::ServerH bse_server;
 static Jsonipc::IpcDispatcher *dispatcher = NULL;
 static bool verbose = false, verbose_binary = false;
 static GPollFD embedding_pollfd = { -1, 0, 0 };
@@ -153,7 +153,7 @@ ws_close (websocketpp::connection_hdl hdl)
   const auto B0 = color (BOLD_OFF);
   const ptrdiff_t conid = ptrdiff_t (con.get());
   auto it = std::find (ws_opened_connections.begin(), ws_opened_connections.end(), con);
-  Bse::printout ("%p: %sCLOSED%s%s\n", ptrdiff_t (con.get()), B1, B0,
+  Bse::printout ("%p: %sCLOSED%s%s\n", conid, B1, B0,
                  it != ws_opened_connections.end() ? "" : " (unknown)");
   if (it != ws_opened_connections.end())
     ws_opened_connections.erase (it);
@@ -174,17 +174,13 @@ ws_message (websocketpp::connection_hdl hdl, server::message_ptr msg)
 {
   const std::string &message = msg->get_payload();
   // send message to BSE thread and block until its been handled
-  Aida::ScopedSemaphore sem;
-  auto handle_wsmsg = [&message, &hdl, &sem] () {
+  Bse::jobs += [&message, &hdl] () {
     bse_current_websocket_hdl = &hdl;
     std::string reply = handle_jsonipc (message, hdl);
     bse_current_websocket_hdl = NULL;
     if (!reply.empty())
       websocket_server.send (hdl, reply, websocketpp::frame::opcode::text);
-    sem.post();
   };
-  bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
-  sem.wait();
 }
 
 /// Provide an IPC handler implementation that marshals and sends binary data onto the wire.
@@ -501,6 +497,7 @@ print_usage (bool help)
   Bse::printout ("  --version    Print program version\n");
   Bse::printout ("  --verbose    Print requests and replies\n");
   Bse::printout ("  --binary     Print binary requests\n");
+  Bse::printout ("  --js-bseapi  Print Javascript bindings for Bse\n");
   Bse::printout ("  --embed <fd> Parent process socket for embedding\n");
 }
 
@@ -509,40 +506,35 @@ main (int argc, char *argv[])
 {
   Bse::this_thread_set_name ("BeastSoundEngineMain");
   Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
-  bse_server = Bse::init_server_instance();
   IpcHandlerImpl ipchandlerimpl;
   Bse::ServerImpl::instance().set_ipc_handler (&ipchandlerimpl);
 
   randomize_subprotocol();
 
   // Ensure Bse has everything properly loaded
-  bse_server.load_assets();
+  Bse::jobs += [] () {
+    BSE_SERVER.load_assets();
+  };
 
   // Register BSE bindings
   const bool print_jsbse = argc >= 2 && std::string ("--js-bseapi") == argv[1];
-  {
-    Aida::ScopedSemaphore sem;
-    auto handle_wsmsg = [print_jsbse, &sem] () {
-      if (print_jsbse)
-        Jsonipc::ClassPrinter::recording (true);
-      bse_jsonipc_stub1();
-      bse_jsonipc_stub2();
-      bse_jsonipc_stub3();
-      bse_jsonipc_stub4();
-      if (print_jsbse)
-        Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
-      // fixups, we know Bse::Server is a singleton
-      Jsonipc::Class<Bse::ServerIface> jsonipc__Bse_ServerIface;
-      jsonipc__Bse_ServerIface.eternal();
-      Jsonipc::Class<Bse::ServerImpl> jsonipc__Bse_ServerImpl;
-      jsonipc__Bse_ServerImpl.eternal();
-      sem.post();
-    };
-    bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
-    sem.wait();
+  Bse::jobs += [print_jsbse] () {
     if (print_jsbse)
-      return 0;
-  }
+      Jsonipc::ClassPrinter::recording (true);
+    bse_jsonipc_stub1();
+    bse_jsonipc_stub2();
+    bse_jsonipc_stub3();
+    bse_jsonipc_stub4();
+    if (print_jsbse)
+      Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
+    // fixups, we know Bse::Server is a singleton
+    Jsonipc::Class<Bse::ServerIface> jsonipc__Bse_ServerIface;
+    jsonipc__Bse_ServerIface.eternal();
+    Jsonipc::Class<Bse::ServerImpl> jsonipc__Bse_ServerImpl;
+    jsonipc__Bse_ServerImpl.eternal();
+  };
+  if (print_jsbse)
+    return 0;
 
   // Setup Jsonipc dispatcher
   dispatcher = new Jsonipc::IpcDispatcher();
@@ -601,9 +593,8 @@ main (int argc, char *argv[])
   // add keep-alive-fd monitoring
   if (embedding_pollfd.fd >= 0)
     {
-      Aida::ScopedSemaphore sem;
       nonblock_fd (embedding_pollfd.fd);
-      auto handle_wsmsg = [&sem] () {
+      Bse::jobs += [] () {
         embedding_pollfd.events = G_IO_IN | G_IO_HUP; // G_IO_PRI | (G_IO_IN | G_IO_HUP) | (G_IO_OUT | G_IO_ERR);
         GSource *source = g_source_simple (BSE_PRIORITY_NORMAL,
                                            [] (void*, int *timeoutp) -> int { // pending
@@ -638,10 +629,7 @@ main (int argc, char *argv[])
                                            nullptr, // destroy,
                                            &embedding_pollfd, nullptr);
         g_source_attach (source, bse_main_context);
-        sem.post();
       };
-      bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (handle_wsmsg);
-      sem.wait();
     }
 
   const int BEAST_AUDIO_ENGINE_PORT = 27239;    // 0x3ea67 % 32768

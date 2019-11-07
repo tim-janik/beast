@@ -248,7 +248,7 @@ gather_child (BseItem *child,
   if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
-    gdata->iseq.push_back (child->as<Bse::ItemIface*>()->__handle__());
+    gdata->iseq.push_back (child->as<Bse::ItemIfaceP>());
   return TRUE;
 }
 

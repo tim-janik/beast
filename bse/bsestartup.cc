@@ -79,6 +79,7 @@ TaskRegistry::list ()
 }
 
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
+#if 0 // FIXME
 ServerHandle
 init_server_instance () // bse.hh
 {
@@ -86,7 +87,8 @@ init_server_instance () // bse.hh
   server = BSE_SERVER.__handle__();
   return server;
 }
+#endif
 
 } // Bse
 
-#include "bse/bseapi_handles.cc"        // build IDL client interface
+// #include "bse/bseapi_handles.cc"        // build IDL client interface

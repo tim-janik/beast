@@ -757,12 +757,12 @@ TrackSeq
 SongImpl::list_tracks ()
 {
   TrackSeq tracks;
-  for (auto &hnd : list_children())
+  for (auto &childp : list_children())
     {
-      ItemIface *item = hnd.__iface__();
+      ItemIface *item = childp.get();
       TrackIfaceP track = item->as<TrackIfaceP>();
       if (track)
-        tracks.push_back (track->__handle__());
+        tracks.push_back (track);
     }
   return tracks;
 }

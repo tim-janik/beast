@@ -215,7 +215,7 @@ gather_presets (BseItem    *item,
   if (BSE_IS_SOUND_FONT (item) || BSE_IS_SOUND_FONT_REPO (item))
     bse_container_forall_items (BSE_CONTAINER (item), gather_presets, &items);
   else if (BSE_IS_SOUND_FONT_PRESET (item))
-    items.push_back (item->as<Bse::ItemIface*>()->__handle__());
+    items.push_back (item->as<Bse::ItemIfaceP>());
   else
     Bse::warning ("Searching for sound font presets, an unexpected `%s' item was found", BSE_OBJECT_TYPE_NAME (item));
   return TRUE;

@@ -949,9 +949,9 @@ ProjectImpl::xml_serialize (SerializationNode &xs)
         xc.load (*dynamic_cast<TrackImpl*> (song->create_track().get()));
     }
   if (xs.in_save() && song)
-    for (auto trackh : song->list_tracks())
-      if (!trackh.__iface__()->list_devices().empty())
-        xs.save_under ("Track", *trackh.__iface__()->as<TrackImplP>());
+    for (auto trackp : song->list_tracks())
+      if (!trackp->list_devices().empty())
+        xs.save_under ("Track", *trackp->as<TrackImplP>());
 }
 
 void
@@ -1272,7 +1272,7 @@ ProjectImpl::get_supers ()
   for (GSList *slist = self->supers; slist; slist = slist->next)
     {
       BseItem *bseitem = (BseItem*) slist->data;
-      sseq.push_back (bseitem->as<SuperIface*>()->__handle__());
+      sseq.push_back (bseitem->as<SuperIfaceP>());
     }
   return sseq;
 }

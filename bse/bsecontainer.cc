@@ -1350,7 +1350,7 @@ static gboolean
 item_seq_add (BseItem *item, void *data)
 {
   ItemSeq *iseq = (ItemSeq*) data;
-  iseq->push_back (item->as<ItemIface*>()->__handle__());
+  iseq->push_back (item->as<ItemIfaceP>());
   return TRUE;
 }
 

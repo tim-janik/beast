@@ -1325,7 +1325,7 @@ TrackImpl::outputs () const
   for (SfiRing *ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
     {
       BseItem *item = (BseItem*) ring->data;
-      items.push_back (item->as<ItemIface*>()->__handle__());
+      items.push_back (item->as<ItemIfaceP>());
     }
   return items;
 }
@@ -1352,7 +1352,7 @@ TrackImpl::list_devices ()
 {
   DeviceSeq devices;
   for (auto &d : devices_)
-    devices.push_back (d->__handle__());
+    devices.push_back (d);
   return devices;
 }
 
