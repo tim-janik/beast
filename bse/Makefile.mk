@@ -331,7 +331,6 @@ bse/include.idls ::= $(strip		\
 	$>/bse/bsehack.idl		\
 )
 bse/libbse.deps     ::= $(strip		\
-	$>/bse/bseapi_handles.hh	\
 	$>/bse/bseapi_interfaces.hh	\
 	$>/bse/bsebasics.genidl.hh	\
 	$>/bse/bsebusmodule.genidl.hh	\
@@ -347,7 +346,7 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/gslfft.cc		\
 	$>/bse/zres.cc			\
 )
-bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
+bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc
 
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
@@ -363,6 +362,13 @@ ifneq ('','$(BSE_JACK_LIBS)')
   bse/all: $(lib/libbsejack.so)
 endif
 
+# == integrity defs ==
+bse/integrity		   ::= $>/bse/integrity
+bse/integrity.sources	   ::= bse/integrity.cc
+bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
+bse/integrity.objects.FLAGS  = -O0	# compile fast
+bse/all: $(bse/integrity)
+
 # == BeastSoundEngine defs ==
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
@@ -377,13 +383,6 @@ bse/bseprocidl.sources		::= bse/bseprocidl.cc
 bse/bseprocidl.objects		::= $(call BUILDDIR_O, $(bse/bseprocidl.sources))
 bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
 bse/all: $(bse/bseprocidl)
-
-# == integrity defs ==
-bse/integrity		   ::= $>/bse/integrity
-bse/integrity.sources	   ::= bse/integrity.cc
-bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
-bse/integrity.objects.FLAGS  = -O0	# compile fast
-bse/all: $(bse/integrity)
 
 # == external/minizip ==
 $>/external/minizip/mz_zip.h:			| $>/external/
@@ -437,7 +436,7 @@ endif
 
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc)	| $>/bse/
-	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
+	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
 	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.hh -o $>/bse $<
 	$Q sed '1i#define _(x) x' -i $>/bse/bseapi_interfaces.cc && sed '1i#undef _' -i $>/bse/bseapi_interfaces.cc
 
