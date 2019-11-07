@@ -171,8 +171,10 @@ class Generator:
   def M (self, type_node):                              # construct Member type
     if self.gen_mode == G4STUB and type_node.storage == Decls.INTERFACE:
       classH = self.C4client (type_node) # remote handle class name
-      classC = self.C4server (type_node) # servant class name
       return 'Aida::RemoteMember<%s>' % classH # classC
+    if self.gen_mode == G4SERVANT and type_node.storage == Decls.INTERFACE:
+      classC = self.C4server (type_node) # servant class name
+      return classC
     else:
       return self.R (type_node)
   def V (self, ident, type_node, f_delta = -999999):    # construct Variable
@@ -292,7 +294,7 @@ class Generator:
       self.foreach_seq.append (type_info)
       fl = type_info.elements
       #s += '/// @cond GeneratedRecords\n'
-      s += 'class ' + classC + ' : public std::vector<' + self.M (fl[1]) + '>\n'
+      s += 'class ' + classC + ' : public std::vector<' + self.R (fl[1]) + '>\n'
       s += '{\n'
     else:
       #s += '/// @cond GeneratedSequences\n'
@@ -306,10 +308,10 @@ class Generator:
         initializer = ''
         if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
           initializer = " = %s" % self.mkzero (fl[1])
-        s += '  ' + self.F (self.M (fl[1])) + fl[0] + '%s;\n' % initializer
+        s += '  ' + self.F (self.R (fl[1])) + fl[0] + '%s;\n' % initializer
       s += '  /// @endcond\n'
     elif type_info.storage == Decls.SEQUENCE:
-      s += '  typedef std::vector<' + self.M (fl[1]) + '> Sequence;\n'
+      s += '  typedef std::vector<' + self.R (fl[1]) + '> Sequence;\n'
       s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
       s += '  { resize (size() + 1); return back(); }\n'
     if type_info.storage == Decls.SEQUENCE:
@@ -516,7 +518,7 @@ class Generator:
       s += '  ' + self.F ('/*copy*/') + '%s (const %s&) = default;\n' % (classC, classC)
       s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
-      s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
+      # s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
       s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist_mt__    () const override;\n'
       s += self.generate_class_any_method_decls (type_info)
     else: # G4STUB
@@ -660,22 +662,23 @@ class Generator:
     s += '%s::%s ()' % (classC, classC) # ctor
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % (classC, classC) # dtor
-    s += '%s\n%s::__handle__()\n{\n' % (classH, classC)
-    s += '  Aida::ExecutionContext &ec = this->__execution_context_mt__();\n'
-    s += '  %s handle;\n' % classH
-    s += '  handle.__iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (this->shared_from_this()));\n' % classC
-    s += '  return handle;\n'
-    s += '}\n'
+    # FIXME:
+    #s += '%s\n%s::__handle__()\n{\n' % (classH, classC)
+    #s += '  Aida::ExecutionContext &ec = this->__execution_context_mt__();\n'
+    #s += '  %s handle;\n' % classH
+    #s += '  handle.__iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (this->shared_from_this()));\n' % classC
+    #s += '  return handle;\n'
+    #s += '}\n'
     # s += '  __%s_ifx__ ( /*conv*/    %s (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-    s += '%s::%s (const std::shared_ptr<%s> &ifacep)\n{\n' % (classH, classH, classC)
-    s += '  if (!ifacep)\n    return;\n'
-    s += '  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();\n'
-    s += '  __iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (ifacep));\n' % classC
-    s += '}\n'
+    #s += '%s::%s (const std::shared_ptr<%s> &ifacep)\n{\n' % (classH, classH, classC)
+    #s += '  if (!ifacep)\n    return;\n'
+    #s += '  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();\n'
+    #s += '  __iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (ifacep));\n' % classC
+    #s += '}\n'
     # s_ifx__ ( __iface__() )
-    s += '%s*\n%s::__iface__() const\n{\n' % (classC, classH)
-    s += '  return dynamic_cast<%s*> (const_cast<%s*> (this)->__iface_ptr__().get());\n' % (classC, classH)
-    s += '}\n'
+    #s += '%s*\n%s::__iface__() const\n{\n' % (classC, classH)
+    #s += '  return dynamic_cast<%s*> (const_cast<%s*> (this)->__iface_ptr__().get());\n' % (classC, classH)
+    #s += '}\n'
     # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
     s += 'Aida::StringVector\n'
     s += '%s::__typelist_mt__ () const\n{\n' % classC
@@ -856,7 +859,7 @@ class Generator:
           s += 'class %s;\n' % self.C (tp)
       s += self.open_namespace (None)
       s += '#define __%s_ifx__(interfacecodeextension)\tinterfacecodeextension\n\n' % self.cppmacro
-      s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
+      #s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
     if self.gen_clientcc and not self.gen_clienthh:
       s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_servercc and not self.gen_serverhh:
@@ -870,7 +873,7 @@ class Generator:
     if self.gen_inclusions and (self.gen_clientcc or self.gen_servercc):
       s += '#endif\n'
     s += self.insertion_text ('includes')
-    if self.gen_clienthh:
+    if self.gen_serverhh:
       s += '#include <aidacc/aida.hh>\n'
     if self.gen_servercc:
       s += text_expand (TmplFiles.CxxStub_server_cc) + '\n'
@@ -879,7 +882,7 @@ class Generator:
     self.tab_stop (30)
     s += self.open_namespace (None)
     # Generate Enum Declarations
-    if self.gen_clienthh:
+    if self.gen_serverhh:
       s += self.open_namespace (None)
       spc_enums = []
       for tp in types:
@@ -900,7 +903,7 @@ class Generator:
             s += self.generate_interface_pointerdefs (tp)
           else:
             s += 'class %s;\n' % self.C (tp)
-        elif self.gen_clienthh and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
+        elif self.gen_serverhh and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
           s += self.open_namespace (tp)
           s += self.generate_recseq_decl (tp)
         elif tp.storage == Decls.INTERFACE:
@@ -908,7 +911,7 @@ class Generator:
           s += self.generate_interface_class (tp, class_name_list)     # Class remote handle
       # template impls after *all* types are defined
       for tp in types:
-        if self.gen_clienthh and not tp.is_forward and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
+        if self.gen_serverhh and not tp.is_forward and tp.storage in (Decls.RECORD, Decls.SEQUENCE):
           s += self.open_namespace (tp)
           s += self.generate_recseq_visitors (tp)
       s += self.open_namespace (None)
@@ -924,10 +927,10 @@ class Generator:
       for tp in types:
         if tp.is_forward:
           continue
-        if tp.storage == Decls.RECORD and self.gen_clientcc:
+        if tp.storage == Decls.RECORD and self.gen_servercc:
           s += self.open_namespace (tp)
           s += self.generate_record_impl (tp)
-        elif tp.storage == Decls.SEQUENCE and self.gen_clientcc:
+        elif tp.storage == Decls.SEQUENCE and self.gen_servercc:
           s += self.open_namespace (tp)
           s += self.generate_sequence_impl (tp)
         elif tp.storage == Decls.INTERFACE:
@@ -943,7 +946,7 @@ class Generator:
             for m in tp.methods:
               s += self.generate_client_method_stub (tp, m)
     # Generate Enum Implementations
-    if self.gen_clientcc:
+    if self.gen_servercc:
       spc_enums = []
       for tp in types:
         if tp.is_forward:
@@ -958,7 +961,7 @@ class Generator:
           s += self.generate_enum_info_impl (tp)
     s += self.open_namespace (None) # close all namespaces
     # foreach sequence macro
-    if self.gen_clienthh:
+    if self.gen_serverhh:
       s += '#define %s_FOREACH_IFACE_SEQ() \\\n' % self.cppmacro
       for tp in self.foreach_seq:
         if tp.elements[1].storage != Decls.INTERFACE:
@@ -1022,7 +1025,7 @@ def generate (namespace_list, **args):
   gg.filename_servercc = base_filename + '_interfaces.cc'
   gg.filename_clienthh = base_filename + '_handles.hh'
   gg.filename_clientcc = base_filename + '_handles.cc'
-  for i in range (1, 5):
+  for i in range (1, 3):
     gg.gen_serverhh = i == 1
     gg.gen_servercc = i == 2
     gg.gen_clienthh = i == 3
