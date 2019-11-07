@@ -30,6 +30,38 @@ inline GlobalConfigPtr global_config;
 
 bool* register_driver_loader (const char *staticwhat, Error (*loader) ());
 
+class JobQueue {
+  static void call_remote (const std::function<void()>&);
+  template<typename T, typename = void>
+  struct LambdaTraits;
+  template<typename R> struct LambdaTraits<R (*)()> { using ReturnType = R; };
+  template<typename R, typename C>
+  struct LambdaTraits<R (C::*)() const> { using ReturnType = R; };
+  template<typename T> struct LambdaTraits<T, void_t< decltype (&T::operator()) > > :
+    public LambdaTraits<decltype (&T::operator())> {};
+public:
+  template<typename F> typename LambdaTraits<F>::ReturnType
+  operator+= (const F &job)
+  {
+    using R = typename LambdaTraits<F>::ReturnType;
+    if constexpr (std::is_same<R, void>::value)
+      {
+        call_remote (job);
+        return;
+      }
+    else // R != void
+      {
+        R result;
+        call_remote ([&job, &result] () {
+            result = job();
+          });
+        return result;
+      }
+  }
+};
+/// Execute a lambda job in the Bse main loop and wait for its result.
+extern JobQueue jobs;
+
 } // Bse
 
 
