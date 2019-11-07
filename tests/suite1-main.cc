@@ -2,6 +2,7 @@
 #include <bse/testing.hh>
 #include <bse/bsemain.hh>
 #include <bse/bse.hh>
+#include <bse/bseserver.hh>
 #include "ipc.hh"
 
 #define DEBUG(...)              do { break; Bse::printerr (__VA_ARGS__); } while (0)
@@ -69,8 +70,6 @@ test_sfi_ring (void)
 }
 TEST_ADD (test_sfi_ring);
 
-static Bse::ServerS bse_server;
-
 static void
 bench_aida()
 {
@@ -78,13 +77,13 @@ bench_aida()
   double calls = 0, slowest = 0, fastest = 9e+9;
   for (uint j = 0; j < 37; j++)
     {
-      bse_server.test_counter_set (0);
+      Bse::jobs += [] () { BSE_SERVER.test_counter_set (0); };
       const int count = 2999;
       const uint64_t ts0 = timestamp_benchmark();
       for (int i = 0; i < count; i++)
-        bse_server.test_counter_inc_fetch ();
+        Bse::jobs += [] () { BSE_SERVER.test_counter_inc_fetch(); };
       const uint64 ts1 = timestamp_benchmark();
-      TASSERT (bse_server.test_counter_get() == count);
+      TASSERT (count == (Bse::jobs += [] () { return BSE_SERVER.test_counter_get(); }));
       double t0 = ts0 / 1000000000.;
       double t1 = ts1 / 1000000000.;
       double call1 = (t1 - t0) / count;
@@ -184,7 +183,6 @@ main (int argc, char *argv[])
   if (argc >= 2 && argv[1] && std::string ("--aida-bench") == argv[1])
     {
       Bse::init_async (&argc, argv, argv[0], args);
-      bse_server = Bse::init_server_instance();
       bench_aida();
       return 0;
     }

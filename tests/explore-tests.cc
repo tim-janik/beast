@@ -67,10 +67,10 @@ fill_big_data_pack (A1::BigDataPack &big)
   big.any1.set ("Foohoo");
   big.anys.push_back (Any (7));
   big.anys.push_back (Any ("seven"));
-  big.anys.push_back (Any (std::make_shared<A1DerivedImpl>()->__handle__()));
-  big.derived = std::make_shared<A1DerivedImpl>()->__handle__();
-  big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
-  big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
+  big.anys.push_back (Any (std::make_shared<A1DerivedImpl>()));
+  big.derived = std::make_shared<A1DerivedImpl>();
+  big.bases.push_back (std::make_shared<A1DerivedImpl>());
+  big.bases.push_back (std::make_shared<A1DerivedImpl>());
 }
 
 static void
@@ -144,4 +144,3 @@ test_explore_enums()
 TEST_ADD (test_explore_enums);
 
 #include "explore_interfaces.cc"
-#include "explore_handles.cc"
