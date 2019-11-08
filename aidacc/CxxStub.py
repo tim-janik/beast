@@ -65,7 +65,6 @@ def type_name_parts (type_node, include_empty = False):
     parts = [p for p in parts if p]
   return parts
 
-class G4STUB: pass    # generate stub classes (remote handles)
 class G4SERVANT: pass    # generate servants classes (interfaces)
 
 class Generator:
@@ -150,28 +149,15 @@ class Generator:
     elif type_node.storage in (Decls.SEQUENCE, Decls.RECORD):
       return self.prefix_namespaced_identifier ('', tname)
     return tname
-  def C4client (self, type_node):
-    tname = self.type2cpp (type_node)
-    if type_node.storage == Decls.INTERFACE:
-      return tname + 'Handle'                           # construct client class RemoteHandle
-    elif type_node.storage in (Decls.SEQUENCE, Decls.RECORD):
-      return self.prefix_namespaced_identifier ('', tname)
-    return tname
   def C (self, type_node, mode = None):                 # construct Class name
     mode = mode or self.gen_mode
-    if mode == G4SERVANT:
-      return self.C4server (type_node)
-    else: # G4STUB
-      return self.C4client (type_node)
+    return self.C4server (type_node)
   def R (self, type_node):                              # construct Return type
     tname = self.C (type_node)
     if self.gen_mode == G4SERVANT and type_node.storage == Decls.INTERFACE:
       tname += 'P'
     return tname
   def M (self, type_node):                              # construct Member type
-    if self.gen_mode == G4STUB and type_node.storage == Decls.INTERFACE:
-      classH = self.C4client (type_node) # remote handle class name
-      return 'Aida::RemoteMember<%s>' % classH # classC
     if self.gen_mode == G4SERVANT and type_node.storage == Decls.INTERFACE:
       classC = self.C4server (type_node) # servant class name
       return classC
@@ -331,8 +317,6 @@ class Generator:
       s += '  ' + self.F ('bool') + 'operator!=   (const %s &other) const { return !operator== (other); }\n' % classC
       s += '  ' + self.F ('operator') + 'Aida::AnyRec () const { Aida::AnyRec r; const_cast<%s*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }\n' % classC
       s += '  ' + self.F ('template<class Visitor> void') + '__visit__    (Visitor &&_visitor_);\n'
-    if self.gen_mode == G4STUB:
-      s += self.insertion_text ('handle_scope:' + type_info.name)
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
     s += '};\n'
@@ -494,7 +478,7 @@ class Generator:
     self.declared_pointerdefs.add (classC)
     return s
   def generate_interface_class (self, type_info, class_name_list):
-    s, classC, classH, classFull = '\n', self.C (type_info), self.C4client (type_info), self.namespaced_identifier (type_info.name)
+    s, classC, classFull = '\n', self.C (type_info), self.namespaced_identifier (type_info.name)
     type_identifier = self.type_identifier (type_info)
     class_name_list += [ classFull ]
     if self.gen_mode == G4SERVANT:
@@ -513,19 +497,9 @@ class Generator:
       s += '  explicit' + self.F (' ') + '%s ();\n' % self.C (type_info) # ctor
       s += '  virtual ' + self.F (' /*dtor*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info)
     s += 'public:\n'
-    if self.gen_mode == G4STUB:
-      s += '  ' + self.F ('virtual /*dtor*/ ', -1) + '~%s () override;\n' % classC
-      s += '  ' + self.F ('/*copy*/') + '%s (const %s&) = default;\n' % (classC, classC)
-      s += '  ' + self.F (classC + '&') + 'operator= (const %s&) = default;\n' % classC
     if self.gen_mode == G4SERVANT:
-      # s += '  ' + self.F ('%s' % classH) + '        __handle__         ();\n'
       s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist_mt__    () const override;\n'
       s += self.generate_class_any_method_decls (type_info)
-    else: # G4STUB
-      s += '  ' + self.F ('static %s' % classH) + '__cast__ (const RemoteHandle &smh);\n'
-      s += '  ' + self.F ('explicit') + '%s ();\n' % classH # ctor
-      #s += '  ' + self.F ('inline') + '%s (const %s &src)' % (classH, classH) # copy ctor
-      #s += ' : ' + ' (src), '.join (cl) + ' (src) {}\n'
     # properties
     il = 0
     if type_info.fields:
@@ -539,19 +513,11 @@ class Generator:
       il = max (il, len (self.C (type_info)))
     for m in type_info.methods:
       s += self.generate_method_decl (type_info, m, il)
-    if self.gen_mode == G4STUB:
-      s += '  __%s_ifx__ ( %s*  __iface__ () const );\n' % (self.cppmacro, self.C4server (type_info))
-      # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-      s += '  __%s_ifx__ ( /*conv*/    %s (const std::shared_ptr<%s>&) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-      s += self.insertion_text ('handle_scope:' + type_info.name)
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
     # accept
     s += self.generate_class_accept_accessor (type_info)
     s += '};\n'
-    # typedef alias
-    if self.gen_mode == G4STUB:
-      s += self.generate_handle_typedefs (type_info)
     return s
   def generate_shortdoc (self, type_info):      # doxygen snippets
     classC = self.C (type_info) # class name
@@ -559,14 +525,6 @@ class Generator:
     s  = '/** @interface %s\n' % type_info.name
     s += ' * See also the corresponding C++ %s class %s. */\n' % (xkind, classC)
     s += '/// See also the corresponding IDL class %s.\n' % type_info.name
-    return s
-  def generate_handle_typedefs (self, type_info):
-    assert self.gen_mode == G4STUB
-    s = ''
-    cxxtypename = self.type2cpp (type_info)
-    s += 'typedef %s %sH;' % (self.C (type_info), cxxtypename)
-    s += ' ///< Convenience alias for the IDL type %s.\n' % type_info.name
-    s += 'typedef ::Aida::ScopedHandle<%sH> %sS;\n' % (cxxtypename, cxxtypename)
     return s
   def generate_method_decl (self, class_info, functype, pad):
     s = '  '
@@ -644,42 +602,12 @@ class Generator:
     s += '  return false;\n'
     s += '}\n'
     return s
-  def generate_client_class_methods (self, class_info):
-    s, classH, classC = '', self.C4client (class_info), self.C4server (class_info)
-    classH2 = (classH, classH)
-    precls, heritage, cl, ddc = self.interface_class_inheritance (class_info)
-    s += '%s::%s ()' % classH2 # ctor
-    s += '\n{}\n'
-    s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % classH2 # dtor
-    s += '%s\n%s::__cast__ (const Aida::RemoteHandle &other)\n{\n' % classH2 # similar to ctor
-    s += '  Aida::ImplicitBaseP &ifacep = const_cast<Aida::RemoteHandle&> (other).__iface_ptr__();\n'
-    s += '  return std::dynamic_pointer_cast<%s> (ifacep);\n' % classC
-    s += '}\n'
-    return s
   def generate_server_class_methods (self, tp):
     assert self.gen_mode == G4SERVANT
-    s, classC, classH = '\n', self.C (tp), self.C4client (tp)
+    s, classC = '\n', self.C (tp)
     s += '%s::%s ()' % (classC, classC) # ctor
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % (classC, classC) # dtor
-    # FIXME:
-    #s += '%s\n%s::__handle__()\n{\n' % (classH, classC)
-    #s += '  Aida::ExecutionContext &ec = this->__execution_context_mt__();\n'
-    #s += '  %s handle;\n' % classH
-    #s += '  handle.__iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (this->shared_from_this()));\n' % classC
-    #s += '  return handle;\n'
-    #s += '}\n'
-    # s += '  __%s_ifx__ ( /*conv*/    %s (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
-    #s += '%s::%s (const std::shared_ptr<%s> &ifacep)\n{\n' % (classH, classH, classC)
-    #s += '  if (!ifacep)\n    return;\n'
-    #s += '  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();\n'
-    #s += '  __iface_ptr__() = std::dynamic_pointer_cast<%s> (ec.adopt_deleter_mt (ifacep));\n' % classC
-    #s += '}\n'
-    # s_ifx__ ( __iface__() )
-    #s += '%s*\n%s::__iface__() const\n{\n' % (classC, classH)
-    #s += '  return dynamic_cast<%s*> (const_cast<%s*> (this)->__iface_ptr__().get());\n' % (classC, classH)
-    #s += '}\n'
-    # s += '  __%s_ifx__ ( %s  operator= (%s*) );\n' % (self.cppmacro, classC, self.C4server (type_info))
     s += 'Aida::StringVector\n'
     s += '%s::__typelist_mt__ () const\n{\n' % classC
     s += '  return { '
@@ -707,18 +635,6 @@ class Generator:
         s += ', ' + argprefix + a[0]
     s += ');\n'
     return s
-  def generate_client_method_stub (self, class_info, mtype):
-    s,copydoc = '', ''
-    hasret = mtype.rtype.storage != Decls.VOID
-    if self.gen_docs:
-      copydoc = ' /// See ' + self.type2cpp (class_info) + '::' + mtype.name + '()'
-    # prototype
-    s += self.C (mtype.rtype) + '\n'
-    q = '%s::%s (' % (self.C (class_info), mtype.name)
-    s += q + self.Args (mtype, 'arg_', len (q)) + ')%s\n{\n' % copydoc
-    # generate wrapped lambda call
-    s += self.generate_remote_call (self.C4server (class_info), mtype.name, mtype.rtype.storage, 'arg_', mtype.args)
-    return s + '}\n'
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''
     if self.gen_docs:
@@ -738,25 +654,6 @@ class Generator:
     elif ftype.storage == Decls.INTERFACE:
       s += '  ' + v + self.F (tname + rptr)  + pid + ' () const%s;%s\n' % (v0, copydoc)
       s += '  ' + v + self.F ('void') + pid + ' (' + tname + ptr + ')%s;%s\n' % (v0, copydoc)
-    return s
-  def generate_client_property_stub (self, class_info, fident, ftype):
-    s, tname, copydoc = '', self.C (ftype), ''
-    if self.gen_docs:
-      copydoc = ' /// See ' + self.type2cpp (class_info) + '::' + fident
-    # getter prototype
-    s += tname + '\n'
-    q = '%s::%s (' % (self.C (class_info), fident)
-    s += q + ') const%s\n{\n' % copydoc
-    s += self.generate_remote_call (self.C4server (class_info), fident, ftype.storage, 'c')
-    s += '}\n'
-    # setter prototype
-    s += 'void\n'
-    if ftype.storage in (Decls.STRING, Decls.RECORD, Decls.SEQUENCE, Decls.ANY):
-      s += q + 'const ' + tname + ' &value)%s\n{\n' % copydoc
-    else:
-      s += q + tname + ' value)%s\n{\n' % copydoc
-    s += self.generate_remote_call (self.C4server (class_info), fident, Decls.VOID, '&', [ ('value', ftype) ])
-    s += '}\n'
     return s
   def c_long_postfix (self, number):
     if number >= 9223372036854775808:
@@ -829,7 +726,7 @@ class Generator:
     def text_expand (txt):
       txt = txt.replace ('$AIDA_iface_base$', self.iface_base)
       return txt
-    self.gen_mode = G4SERVANT if self.gen_serverhh or self.gen_servercc else G4STUB
+    self.gen_mode = G4SERVANT # self.gen_serverhh or self.gen_servercc
     if self.cppmacro == None:
       self.cppmacro = re.sub (r'(^[^A-Z_a-z])|([^A-Z_a-z0-9])', '_', self.idl_path())
     s = '// --- Generated by AidaCxxStub ---\n'
@@ -839,18 +736,11 @@ class Generator:
       if tp.isimpl:
         types += [ tp ]
     # CPP guards
-    sc_macro_prefix, sc_other_prefix = '__CLNT__', '__SRVT__' # for G4STUB
-    if self.gen_mode == G4SERVANT:
-      sc_macro_prefix, sc_other_prefix = sc_other_prefix, sc_macro_prefix
-    if self.gen_serverhh or self.gen_clienthh:
+    sc_macro_prefix, sc_other_prefix = '__SRVT__', '__OTHER__'
+    if self.gen_serverhh:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
     if self.gen_serverhh:
       s += '#ifndef DOXYGEN\n'
-    # interface hooks
-    if self.gen_clienthh:
-      s += '#ifndef __%s_ifx__\n' % self.cppmacro
-      s += '#define __%s_ifx__(...) /**/\n' % self.cppmacro
-      s += '#endif\n\n'
     # inclusions
     if self.gen_serverhh:
       for tp in types:  # we need to pre-declare classes for Handle<->Iface conversions
@@ -859,26 +749,21 @@ class Generator:
           s += 'class %s;\n' % self.C (tp)
       s += self.open_namespace (None)
       s += '#define __%s_ifx__(interfacecodeextension)\tinterfacecodeextension\n\n' % self.cppmacro
-      #s += '#include "%s"\n' % os.path.basename (self.filename_clienthh)
-    if self.gen_clientcc and not self.gen_clienthh:
-      s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_servercc and not self.gen_serverhh:
       s += '#include "%s"\n' % os.path.basename (self.filename_serverhh)
     if self.gen_inclusions:
       s += '\n// --- Custom Includes ---\n'
-    if self.gen_inclusions and (self.gen_clientcc or self.gen_servercc):
+    if self.gen_inclusions and self.gen_servercc:
       s += '#ifndef __AIDA_UTILITIES_HH__\n'
     for i in self.gen_inclusions:
       s += '#include %s\n' % i
-    if self.gen_inclusions and (self.gen_clientcc or self.gen_servercc):
+    if self.gen_inclusions and self.gen_servercc:
       s += '#endif\n'
     s += self.insertion_text ('includes')
     if self.gen_serverhh:
       s += '#include <aidacc/aida.hh>\n'
     if self.gen_servercc:
       s += text_expand (TmplFiles.CxxStub_server_cc) + '\n'
-    if self.gen_clientcc:
-      s += text_expand (TmplFiles.CxxStub_client_cc) + '\n'
     self.tab_stop (30)
     s += self.open_namespace (None)
     # Generate Enum Declarations
@@ -892,9 +777,9 @@ class Generator:
           s += self.open_namespace (tp)
           s += self.generate_enum_decl (tp)
           spc_enums += [ tp ]
-    # generate client/server decls
-    if self.gen_clienthh or self.gen_serverhh:
-      self.gen_mode = G4SERVANT if self.gen_serverhh else G4STUB
+    # generate server decls
+    if self.gen_serverhh:
+      self.gen_mode = G4SERVANT # self.gen_serverhh
       class_name_list = []
       for tp in types:
         if tp.is_forward:
@@ -920,9 +805,9 @@ class Generator:
         for i in class_name_list:
           s += ' \\\n\t  %s_INTERFACE_NAME (%s)' % (self.cppmacro, i)
         s += '\n'
-    # generate client/server impls
-    if self.gen_clientcc or self.gen_servercc:
-      self.gen_mode = G4SERVANT if self.gen_servercc else G4STUB
+    # generate server impls
+    if self.gen_servercc:
+      self.gen_mode = G4SERVANT # self.gen_servercc
       s += '\n// --- Implementations ---\n'
       for tp in types:
         if tp.is_forward:
@@ -938,13 +823,6 @@ class Generator:
             s += self.open_namespace (tp)
             s += self.generate_server_class_methods (tp)
             s += self.generate_server_class_any_method_impls (tp)
-          if self.gen_clientcc:
-            s += self.open_namespace (tp)
-            s += self.generate_client_class_methods (tp)
-            for fl in tp.fields:
-              s += self.generate_client_property_stub (tp, fl[0], fl[1])
-            for m in tp.methods:
-              s += self.generate_client_method_stub (tp, m)
     # Generate Enum Implementations
     if self.gen_servercc:
       spc_enums = []
@@ -986,7 +864,7 @@ class Generator:
       s += self.open_namespace (None) # close all namespaces
       s += '#endif // DOXYGEN\n'
     # CPP guard
-    if self.gen_serverhh or self.gen_clienthh:
+    if self.gen_serverhh:
       s += '\n#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
     return s
 
@@ -1023,14 +901,10 @@ def generate (namespace_list, **args):
     base_filename = os.path.join (outdir, os.path.basename (base_filename))
   gg.filename_serverhh = base_filename + '_interfaces.hh'
   gg.filename_servercc = base_filename + '_interfaces.cc'
-  gg.filename_clienthh = base_filename + '_handles.hh'
-  gg.filename_clientcc = base_filename + '_handles.cc'
   for i in range (1, 3):
     gg.gen_serverhh = i == 1
     gg.gen_servercc = i == 2
-    gg.gen_clienthh = i == 3
-    gg.gen_clientcc = i == 4
-    destfilename = [ gg.filename_serverhh, gg.filename_servercc, gg.filename_clienthh, gg.filename_clientcc ][i-1]
+    destfilename = [ gg.filename_serverhh, gg.filename_servercc ][i-1]
     textstring = gg.generate_impl_types (config['implementation_types']) # namespace_list
     fout = open (destfilename, 'w')
     fout.write (textstring)
