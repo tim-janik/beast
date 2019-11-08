@@ -42,25 +42,20 @@ class SoundModuleIface;
 
 namespace MandatoryNamespace {
 
-/// @cond GeneratedEnums
 enum class Enum1 : int64_t {
   E1_A = 1,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum1);
 inline std::string to_string   (Enum1 ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum1 &ev) { ev = Aida::enum_value_from_string<Enum1> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum1c : int64_t {
   E1C_A = 1,
 };
 AIDA_DEFINE_ENUM_EQUALITY (Enum1c);
 inline std::string to_string   (Enum1c ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum1c &ev) { ev = Aida::enum_value_from_string<Enum1c> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum2 : int64_t {
   E2_A = 1,
   E2_B = 2,
@@ -68,9 +63,7 @@ enum class Enum2 : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum2);
 inline std::string to_string   (Enum2 ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum2 &ev) { ev = Aida::enum_value_from_string<Enum2> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum2c : int64_t {
   E2C_A = 1,
   E2C_B = 2,
@@ -78,9 +71,7 @@ enum class Enum2c : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum2c);
 inline std::string to_string   (Enum2c ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum2c &ev) { ev = Aida::enum_value_from_string<Enum2c> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum3 : int64_t {
   E3_A = 1,
   E3_B = 2,
@@ -89,9 +80,7 @@ enum class Enum3 : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum3);
 inline std::string to_string   (Enum3 ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum3 &ev) { ev = Aida::enum_value_from_string<Enum3> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum3c : int64_t {
   E3C_A = 1,
   E3C_B = 2,
@@ -100,9 +89,7 @@ enum class Enum3c : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum3c);
 inline std::string to_string   (Enum3c ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum3c &ev) { ev = Aida::enum_value_from_string<Enum3c> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum4a : int64_t {
   E4A_A = 1,
   E4A_B = 2,
@@ -112,9 +99,7 @@ enum class Enum4a : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum4a);
 inline std::string to_string   (Enum4a ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum4a &ev) { ev = Aida::enum_value_from_string<Enum4a> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum4b : int64_t {
   E4B_A = 1,
   E4B_B = 2,
@@ -124,9 +109,7 @@ enum class Enum4b : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum4b);
 inline std::string to_string   (Enum4b ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum4b &ev) { ev = Aida::enum_value_from_string<Enum4b> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum4c : int64_t {
   E4C_A = 1,
   E4C_B = 2,
@@ -136,9 +119,7 @@ enum class Enum4c : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum4c);
 inline std::string to_string   (Enum4c ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum4c &ev) { ev = Aida::enum_value_from_string<Enum4c> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class Enum4d : int64_t {
   E4D_A = 1,
   E4D_B = 2,
@@ -148,9 +129,7 @@ enum class Enum4d : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (Enum4d);
 inline std::string to_string   (Enum4d ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, Enum4d &ev) { ev = Aida::enum_value_from_string<Enum4d> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class ExtensiveEnum : int64_t {
   V1a = 1,
   V1b = 1,
@@ -191,24 +170,20 @@ enum class ExtensiveEnum : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (ExtensiveEnum);
 inline std::string to_string   (ExtensiveEnum ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, ExtensiveEnum &ev) { ev = Aida::enum_value_from_string<ExtensiveEnum> (en); return true; }
-/// @endcond
 } // MandatoryNamespace
 
 namespace InterfaceTests {
 
-/// @cond GeneratedEnums
 enum class QuickEnum : int64_t {
   ZERO = 0,
 };
 AIDA_DEFINE_ENUM_EQUALITY (QuickEnum);
 inline std::string to_string   (QuickEnum ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, QuickEnum &ev) { ev = Aida::enum_value_from_string<QuickEnum> (en); return true; }
-/// @endcond
 } // InterfaceTests
 
 namespace RapicornAidaTest {
 
-/// @cond GeneratedEnums
 enum class ClickType : int64_t {
   CLICK_ON_PRESS = 1,
   CLICK_ON_RELEASE = 2,
@@ -219,9 +194,7 @@ enum class ClickType : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (ClickType);
 inline std::string to_string   (ClickType ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, ClickType &ev) { ev = Aida::enum_value_from_string<ClickType> (en); return true; }
-/// @endcond
 
-/// @cond GeneratedEnums
 enum class MathExpressions : int64_t {
   RESULT_2 = 2,
   RESULT_5 = 5,
@@ -239,7 +212,6 @@ enum class MathExpressions : int64_t {
 AIDA_DEFINE_ENUM_EQUALITY (MathExpressions);
 inline std::string to_string   (MathExpressions ev)                         { return Aida::enum_value_to_string (ev); }
 inline bool        from_string (const std::string &en, MathExpressions &ev) { ev = Aida::enum_value_from_string<MathExpressions> (en); return true; }
-/// @endcond
 } // RapicornAidaTest
 
 namespace MandatoryNamespace {
@@ -264,7 +236,6 @@ public:
 class XFooRecord
 {
 public:
-  /// @cond GeneratedFields
   bool                          single_bool = 0;
   int                           single_num = 0;
   int64_t                       num64 = 0;
@@ -283,7 +254,6 @@ public:
   Aida::Any                     any1;
   Aida::Any                     any2;
   Aida::Any                     any3;
-  /// @endcond
   inline                        XFooRecord () = default;
   inline                        XFooRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
@@ -298,8 +268,6 @@ class XFooSequence : public std::vector<bool>
 {
 public:
   typedef std::vector<bool> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        XFooSequence () = default;
   inline                        XFooSequence (const Aida::AnySeq &s);
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -312,8 +280,6 @@ class IntSequence : public std::vector<int>
 {
 public:
   typedef std::vector<int> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        IntSequence () = default;
   inline                        IntSequence (const Aida::AnySeq &s);
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -326,8 +292,6 @@ class FloatSequence : public std::vector<double>
 {
 public:
   typedef std::vector<double> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        FloatSequence () = default;
   inline                        FloatSequence (const Aida::AnySeq &s);
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -340,8 +304,6 @@ class StringSequence : public std::vector<std::string>
 {
 public:
   typedef std::vector<std::string> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        StringSequence () = default;
   inline                        StringSequence (const Aida::AnySeq &s);
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -354,8 +316,6 @@ class ExtensiveEnumSequence : public std::vector<ExtensiveEnum>
 {
 public:
   typedef std::vector<ExtensiveEnum> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        ExtensiveEnumSequence () = default;
   inline                        ExtensiveEnumSequence (const Aida::AnySeq &s);
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -368,8 +328,6 @@ class RecordSequence : public std::vector<XFooRecord>
 {
 public:
   typedef std::vector<XFooRecord> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        RecordSequence () = default;
   inline                        RecordSequence (const Aida::AnySeq &s);
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -382,8 +340,6 @@ class SequenceSequence : public std::vector<IntSequence>
 {
 public:
   typedef std::vector<IntSequence> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        SequenceSequence () = default;
   inline                        SequenceSequence (const Aida::AnySeq &s);
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -396,8 +352,6 @@ class InterfaceSequence : public std::vector<FirstInterfaceIfaceP>
 {
 public:
   typedef std::vector<FirstInterfaceIfaceP> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        InterfaceSequence () = default;
   inline                        InterfaceSequence (const Aida::AnySeq &s);
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -410,8 +364,6 @@ class AnySequence : public std::vector<Aida::Any>
 {
 public:
   typedef std::vector<Aida::Any> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        AnySequence () = default;
   inline                        AnySequence (const Aida::AnySeq &s);
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -426,10 +378,8 @@ class NestedTypesSeq;
 class NestedTypesRec
 {
 public:
-  /// @cond GeneratedFields
   XFooRecord                    rec;
   XFooSequence                  seq;
-  /// @endcond
   inline                        NestedTypesRec () = default;
   inline                        NestedTypesRec (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
@@ -444,8 +394,6 @@ class NestedTypesSeq : public std::vector<NestedTypesRec>
 {
 public:
   typedef std::vector<NestedTypesRec> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        NestedTypesSeq () = default;
   inline                        NestedTypesSeq (const Aida::AnySeq &s);
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -457,12 +405,10 @@ public:
 class NewRecord
 {
 public:
-  /// @cond GeneratedFields
   int                           i = 0;
   Enum1                         enum1 = Enum1 (0);
   XFooSequence                  xfs;
   NestedTypesRec                ntr;
-  /// @endcond
   inline                        NewRecord () = default;
   inline                        NewRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
@@ -478,11 +424,9 @@ namespace Inner {
 class InnerRecord
 {
 public:
-  /// @cond GeneratedFields
   int                           x = 0;
   int                           y = 0;
   NewRecord                     rec;
-  /// @endcond
   inline                        InnerRecord () = default;
   inline                        InnerRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
@@ -497,9 +441,7 @@ public:
 class Refer2Inner
 {
 public:
-  /// @cond GeneratedFields
   Inner::InnerRecord            r;
-  /// @endcond
   inline                        Refer2Inner () = default;
   inline                        Refer2Inner (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
@@ -516,12 +458,10 @@ namespace OtherNamespace {
 class SomeRecord
 {
 public:
-  /// @cond GeneratedFields
   MandatoryNamespace::NewRecord r1;
   MandatoryNamespace::NewRecord r2;
   MandatoryNamespace::Inner::InnerRecord r3;
   MandatoryNamespace::Inner::InnerRecord r4;
-  /// @endcond
   inline                        SomeRecord () = default;
   inline                        SomeRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
@@ -538,13 +478,11 @@ namespace Auxdata {
 class RecordWithAuxdata
 {
 public:
-  /// @cond GeneratedFields
   bool                          aux_bool = 0;
   int                           aux32 = 0;
   int64_t                       aux64 = 0;
   double                        auxf64 = 0;
   std::string                   aux_str;
-  /// @endcond
   inline                        RecordWithAuxdata () = default;
   inline                        RecordWithAuxdata (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
@@ -672,10 +610,8 @@ public:
 class QuickRecord
 {
 public:
-  /// @cond GeneratedFields
   int                           int1 = 0;
   int                           int2 = 0;
-  /// @endcond
   inline                        QuickRecord () = default;
   inline                        QuickRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
@@ -690,8 +626,6 @@ class QuickSequence : public std::vector<double>
 {
 public:
   typedef std::vector<double> Sequence;
-  reference append_back() ///< Append data at the end, returns write reference to data.
-  { resize (size() + 1); return back(); }
   inline                        QuickSequence () = default;
   inline                        QuickSequence (const Aida::AnySeq &s);
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
@@ -977,13 +911,11 @@ public:
 class RecordForGroups
 {
 public:
-  /// @cond GeneratedFields
   int                           i = 0;
   double                        ratio = 0;
   bool                          ordinary_bool = 0;
   double                        threshold1 = 0;
   double                        threshold2 = 0;
-  /// @endcond
   inline                        RecordForGroups () = default;
   inline                        RecordForGroups (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
   std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
