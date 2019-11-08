@@ -238,8 +238,6 @@ class Generator:
         s += '  ' + self.F (self.R (fl[1])) + fl[0] + '%s;\n' % initializer
     elif type_info.storage == Decls.SEQUENCE:
       s += '  typedef std::vector<' + self.R (fl[1]) + '> Sequence;\n'
-      s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
-      s += '  { resize (size() + 1); return back(); }\n'
     if type_info.storage == Decls.SEQUENCE:
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
       s += '  ' + self.F ('inline') + '%s (const Aida::AnySeq &s);\n' % classC # ctor
