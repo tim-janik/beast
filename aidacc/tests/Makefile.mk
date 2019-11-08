@@ -18,7 +18,7 @@ aidacc/tests/check--t302-fail.idl: aidacc/tests/t302-fail.idl aidacc/tests/t302-
 aidacc/check: aidacc/tests/check--t302-fail.idl
 
 # == check--t304-cxxserver-output ==
-# test CxxStub Generation for Client & Server
+# test CxxStub Generation for Interfaces
 aidacc/tests/check--t304-cxxserver-output: aidacc/tests/t301-pass.idl aidacc/tests/t304-cxxserver.ref $(aidacc/aidacc)	| $>/aidacc/tests/
 	$(QECHO) CHECK $@
 	$Q cp $< $>/aidacc/tests/t304-testpass.idl
