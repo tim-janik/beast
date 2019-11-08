@@ -3,20 +3,10 @@
 
 More details at https://beast.testbit.org/
 """
-import Decls, GenUtils, TmplFiles, re, os, collections
+import Decls, TmplFiles, re, os
 
-def reindent (prefix, lines):
-  return re.compile (r'^', re.M).sub (prefix, lines.rstrip())
 def backslash_quote (string):
   return re.sub (r'(\\|")', r'\\\1', string)
-def cquote (string):
-  string = backslash_quote (string)
-  return '"' + string + '"'
-def cunquote (string):
-  assert len (string) >= 2 and string.startswith ('"') and string.endswith ('"')
-  string = string[1:-1]
-  string = re.sub (r'\\(\\|")', r'\1', string)
-  return string
 def cunquote_chain (stringchain): # handle: "foo""bar""zonk" -> "foobarzonk"
   s, dq, sin = '', False, stringchain
   while sin:
@@ -56,14 +46,6 @@ def inherit_reduce (type_list):
     if not skip:
       reduced = [ p ] + reduced
   return reduced
-def bases (tp):
-  ancestors = [pr for pr in tp.prerequisites]
-  return inherit_reduce (ancestors)
-def type_name_parts (type_node, include_empty = False):
-  parts = [ns.name for ns in type_node.list_namespaces()] + [ type_node.name ]
-  if not include_empty:
-    parts = [p for p in parts if p]
-  return parts
 
 class G4SERVANT: pass    # generate servants classes (interfaces)
 
@@ -79,25 +61,10 @@ class Generator:
     self.ns_aida = None
     self.gen_inclusions = []
     self.iface_base = 'Aida::ImplicitBase'
-    self.property_list = 'Aida::PropertyList'
     self.foreach_seq = []
     self.gen_mode = None
     self.strip_path = ''
     self.declared_pointerdefs = set() # types for which pointerdefs have been generated
-    self.reset()
-  def warning (self, message, input_file = '', input_line = -1, input_col = -1):
-    import sys
-    if input_file:
-      if input_line > 0 and input_col > 0:
-        loc = '%s:%u:%u' % (input_file, input_line, input_col)
-      elif input_line > 0:
-        loc = '%s:%u' % (input_file, input_line)
-      else:
-        loc = input_file
-    else:
-      loc = self.idl_path()
-    input_file = input_file if input_file else self.idl_path()
-    print >>sys.stderr, '%s: WARNING: %s' % (loc, message)
   @staticmethod
   def prefix_namespaced_identifier (prefix, ident, postfix = ''):     # Foo::bar -> Foo::PREFIX_bar_POSTFIX
     cc = ident.rfind ('::')
@@ -157,21 +124,6 @@ class Generator:
     if self.gen_mode == G4SERVANT and type_node.storage == Decls.INTERFACE:
       tname += 'P'
     return tname
-  def M (self, type_node):                              # construct Member type
-    if self.gen_mode == G4SERVANT and type_node.storage == Decls.INTERFACE:
-      classC = self.C4server (type_node) # servant class name
-      return classC
-    else:
-      return self.R (type_node)
-  def V (self, ident, type_node, f_delta = -999999):    # construct Variable
-    s = ''
-    s += self.C (type_node)
-    s = self.F (s, f_delta)
-    if self.gen_mode == G4SERVANT and type_node.storage == Decls.INTERFACE:
-      s += '*'
-    else:
-      s += ' '
-    return s + ident
   def A (self, ident, type_node, defaultinit = None):   # construct call Argument
     constref = type_node.storage in (Decls.STRING, Decls.SEQUENCE, Decls.RECORD, Decls.ANY)
     needsref = constref or type_node.storage == Decls.INTERFACE
@@ -192,14 +144,6 @@ class Generator:
       else:
         s += ' = %s' % defaultinit                             # { = 3}
     return s
-  def Args (self, ftype, prefix, argindent = 2):        # construct list of call Arguments
-    l = []
-    for a in ftype.args:
-      l += [ self.A (prefix + a[0], a[1]) ]
-    return (',\n' + argindent * ' ').join (l)
-  def U (self, ident, type_node):                       # construct function call argument Use
-    s = '*' if type_node.storage == Decls.INTERFACE and self.gen_mode == G4SERVANT else ''
-    return s + ident
   def F (self, string, delta = 0):                      # Format string to tab stop
     return string + ' ' * max (1, self.ntab + delta - len (string))
   def tab_stop (self, n):
@@ -322,20 +266,6 @@ class Generator:
     s += '};\n'
     #s += '/// @endcond\n'
     return s
-  def generate_proto_add_args (self, fb, type_info, aprefix, arg_info_list, apostfix):
-    s = ''
-    for arg_it in arg_info_list:
-      ident, type_node = arg_it
-      ident = aprefix + ident + apostfix
-      s += '  %s <<= %s;\n' % (fb, ident)
-    return s
-  def generate_proto_pop_args (self, fbr, type_info, aprefix, arg_info_list, apostfix = ''):
-    s = ''
-    for arg_it in arg_info_list:
-      ident, type_node = arg_it
-      ident = aprefix + ident + apostfix
-      s += '  %s >>= %s;\n' % (fbr, ident)
-    return s
   def generate_aux_data_string (self, tp, fieldname = '', prefix = ''):
     s = ''
     # types
@@ -401,30 +331,12 @@ class Generator:
     s = ''
     s += self.generate_type_aux_data_registration (type_info)
     s += self.generate_recseq_aux_method_impls (type_info)
-    el = type_info.elements
     return s
   def generate_enum_info_impl (self, type_info):
-    u_typename, c_typename = '__'.join (type_name_parts (type_info)), '::'.join (type_name_parts (type_info))
     type_identifier = self.type_identifier (type_info)
-    s, varray = '\n', '_aida_enumvalues_%u' % self.idcounter
+    s = '\n'
     s += self.generate_type_aux_data_registration (type_info)
     return s
-  def digest2cbytes (self, digest):
-    return '0x%02x%02x%02x%02x%02x%02x%02x%02xULL, 0x%02x%02x%02x%02x%02x%02x%02x%02xULL' % digest
-  def method_digest (self, method_info):
-    return self.digest2cbytes (method_info.type_hash())
-  def class_digest (self, class_info):
-    return self.digest2cbytes (class_info.type_hash())
-  def internal_digest (self, class_info, tag):
-    return self.digest2cbytes (class_info.tag_hash (tag + ' # Aida:::internal'))
-  def any_method_digest (self, class_info, methodname):
-    return self.digest2cbytes (class_info.twoway_hash ('%s # internal-method' % methodname))
-  def setter_digest (self, class_info, fident, ftype):
-    setter_hash = class_info.property_hash ((fident, ftype), True)
-    return self.digest2cbytes (setter_hash)
-  def getter_digest (self, class_info, fident, ftype):
-    getter_hash = class_info.property_hash ((fident, ftype), False)
-    return self.digest2cbytes (getter_hash)
   def class_ancestry (self, type_info):
     def deep_ancestors (type_info):
       l = [ type_info ]
@@ -557,7 +469,6 @@ class Generator:
     s += '  {\n'
     for fname, ftype in tp.fields:
       ctype = self.C (ftype)
-      reftype = ctype
       if ftype.storage in (Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE, Decls.ANY):
         pass # reftype = 'const %s&' % ctype
       s += '    __visitor_ (*this, "%s", &%s::%s, &%s::%s);\n' % (fname, classH, fname, classH, fname)
@@ -616,24 +527,6 @@ class Generator:
       s += '"%s", ' % self.type_identifier (an)
     s += '};\n'
     s += '}\n'
-    return s
-  def generate_remote_call (self, classname, methodname, rstorage, specialcase = None, args = ()):
-    s = ''
-    asconst, argprefix, deref = False, '', '*'
-    if specialcase == 'c':      # property getters use const this
-      asconst = True
-    elif specialcase == '&':    # property setters may set NULL pointers, regular method args may not be NULL (FIXME?)
-      deref = ''
-    elif isinstance (specialcase, basestring):
-      argprefix = specialcase
-    variant = 'remote_callv' if rstorage == Decls.VOID else ('remote_callc' if asconst else 'remote_callr')
-    s += '  return __AIDA_Local__::%s (*this, &%s::%s' % (variant, classname, methodname)
-    for a in args:
-      if a[1].storage == Decls.INTERFACE:
-        s += ', ' + deref + argprefix + a[0] + '.__iface__()'
-      else:
-        s += ', ' + argprefix + a[0]
-    s += ');\n'
     return s
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''
@@ -719,10 +612,7 @@ class Generator:
             apath = apath[1:]
           break
     return apath
-  def reset (self):
-    self.idcounter = 1001
   def generate_impl_types (self, implementation_types):
-    self.reset()
     def text_expand (txt):
       txt = txt.replace ('$AIDA_iface_base$', self.iface_base)
       return txt
@@ -736,7 +626,7 @@ class Generator:
       if tp.isimpl:
         types += [ tp ]
     # CPP guards
-    sc_macro_prefix, sc_other_prefix = '__SRVT__', '__OTHER__'
+    sc_macro_prefix = '__SRVT__'
     if self.gen_serverhh:
       s += '#ifndef %s\n#define %s\n\n' % (sc_macro_prefix + self.cppmacro, sc_macro_prefix + self.cppmacro)
     if self.gen_serverhh:
@@ -868,13 +758,8 @@ class Generator:
       s += '\n#endif /* %s */\n' % (sc_macro_prefix + self.cppmacro)
     return s
 
-def error (msg):
-  import sys
-  print >>sys.stderr, sys.argv[0] + ":", msg
-  sys.exit (127)
-
 def generate (namespace_list, **args):
-  import sys, tempfile, os
+  import os
   config = {}
   config.update (args)
   idlfiles = config['files']
@@ -882,7 +767,6 @@ def generate (namespace_list, **args):
     raise RuntimeError ("CxxStub: exactly one IDL input file is required")
   outdir = config.get ('output', '')
   gg = Generator (idlfiles[0])
-  gg.gen_aidaids = True
   gg.gen_inclusions = config['inclusions']
   for opt in config['backend-options']:
     if opt == 'docs':
@@ -891,8 +775,6 @@ def generate (namespace_list, **args):
       gg.cppmacro = opt[6:]
     if opt.startswith ('strip-path='):
       gg.strip_path += opt[11:]
-    if opt.startswith ('property-list=') and opt[14:].lower() in ('0', 'no', 'none', 'false'):
-      gg.property_list = ""
   for ifile in config['insertions']:
     gg.insertion_file (ifile)
   gg.ns_aida = ( Decls.Namespace ('Aida', None, []), )  # Aida namespace tuple for open_namespace()
