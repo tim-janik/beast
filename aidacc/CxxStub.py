@@ -223,23 +223,19 @@ class Generator:
     if type_info.storage == Decls.SEQUENCE:
       self.foreach_seq.append (type_info)
       fl = type_info.elements
-      #s += '/// @cond GeneratedRecords\n'
       s += 'class ' + classC + ' : public std::vector<' + self.R (fl[1]) + '>\n'
       s += '{\n'
     else:
-      #s += '/// @cond GeneratedSequences\n'
       s += 'class %s\n' % classC
       s += '{\n'
     s += 'public:\n'
     if type_info.storage == Decls.RECORD:
-      s += '  /// @cond GeneratedFields\n'
       fieldlist = type_info.fields
       for fl in fieldlist:
         initializer = ''
         if fl[1].storage in (Decls.BOOL, Decls.INT32, Decls.INT64, Decls.FLOAT64, Decls.ENUM):
           initializer = " = %s" % self.mkzero (fl[1])
         s += '  ' + self.F (self.R (fl[1])) + fl[0] + '%s;\n' % initializer
-      s += '  /// @endcond\n'
     elif type_info.storage == Decls.SEQUENCE:
       s += '  typedef std::vector<' + self.R (fl[1]) + '> Sequence;\n'
       s += '  reference append_back() ///< Append data at the end, returns write reference to data.\n'
@@ -264,7 +260,6 @@ class Generator:
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
     s += '};\n'
-    #s += '/// @endcond\n'
     return s
   def generate_aux_data_string (self, tp, fieldname = '', prefix = ''):
     s = ''
@@ -558,7 +553,6 @@ class Generator:
     s = '\n'
     nm, type_identifier = type_info.name, self.type_identifier (type_info)
     l = []
-    s += '/// @cond GeneratedEnums\n'
     s += 'enum class %s : int64_t {\n' % type_info.name
     for opt in type_info.options:
       (ident, label, blurb, number) = opt
@@ -572,7 +566,6 @@ class Generator:
     s += 'inline bool        from_string (const std::string &en, %s &ev) { ev = Aida::enum_value_from_string<%s> (en); return true; }\n' % (nm, nm)
     if type_info.combinable: # enum as flags
       s += 'AIDA_DEFINE_FLAGS_ARITHMETIC (%s);\n' % nm
-    s += '/// @endcond\n'
     return s
   def insertion_text (self, key):
     text = self.insertions.get (key, '')
