@@ -87,52 +87,5 @@ record NoteSequence
 sequence P1xelSeq {
   Int	pixels;
 };
-/* BSE Part structures */
-interface Part;
-interface Track;
-interface Janitor;
-
-// == BSE Global Config ==
-record GConfig {
-  group _("Synthesis Settings") {
-    Int synth_latency =
-      SfiInt (_("Latency [ms]"),
-	      _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
-	      50, 1, 2000, 5, STANDARD);
-    Int synth_mixing_freq =
-      SfiInt (_("Synth Mixing Frequency"),
-	      _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
-	      44100, 8000, 192000, 0, STANDARD);
-    Int synth_control_freq =
-      SfiInt (_("Synth Control Frequency"),
-	      _("Frequency at which control values are evaluated, "
-		"should be much smaller than Synth Mixing Frequency to reduce CPU load"),
-	      1000, 1, 192000, 0, STANDARD);
-  };
-  group _("MIDI") {
-    Bool invert_sustain = SfiBool (_("Invert Sustain Pedal"),
-                           _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
-                           FALSE, STANDARD);
-  };
-  group _("Default Values") {
-    SfiString author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"), "$(defaultauthor)", STANDARD);
-    SfiString license_default = SfiString (_("Default License"), _("Default value for 'License' fields"), "$(defaultlicense)", STANDARD);
-  };
-  group _("Search Paths") {
-    SfiString sample_path     = SfiString (_("Sample Path"),
-					   _("Search path of directories, seperated by \";\", used to find audio samples."),
-					   "$(defaultsamplepath)", STANDARD ":searchpath");
-    SfiString effect_path     = SfiString (_("Effect Path"),
-					   _("Search path of directories, seperated by \";\", used to find BSE effect files."),
-					   "$(defaulteffectpath)", STANDARD ":searchpath");
-    SfiString instrument_path = SfiString (_("Instrument Path"),
-					   _("Search path of directories, seperated by \";\", used to find BSE instrument files."),
-					   "$(defaultinstrumentpath)", STANDARD ":searchpath");
-    SfiString plugin_path     = SfiString (_("Plugin Path"),
-					   _("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
-					     "is searched for in addition to the standard BSE plugin location on this system."),
-					   "$(defaultpluginpath)", STANDARD ":searchpath");
-  };
-};
 
 } // Bse
