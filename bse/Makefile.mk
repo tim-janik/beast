@@ -323,12 +323,10 @@ bse/libbsejack.sources ::= $(strip	\
 	bse/driver-jack.cc		\
 )
 bse/include.idls ::= $(strip		\
-	bse/bse.idl			\
 	bse/bsebasics.idl		\
 	bse/bsebusmodule.idl		\
 	bse/bsecxxbase.idl		\
 	bse/bsecxxmodule.idl		\
-	$>/bse/bsehack.idl		\
 )
 bse/libbse.deps     ::= $(strip		\
 	$>/bse/bseapi_interfaces.hh	\
@@ -376,13 +374,6 @@ bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
 bse/BeastSoundEngine.gensources ::= $>/bse/bse_jsonipc_stub1.cc $>/bse/bse_jsonipc_stub2.cc $>/bse/bse_jsonipc_stub3.cc $>/bse/bse_jsonipc_stub4.cc
 bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources)) $(bse/BeastSoundEngine.gensources:.cc=.o)
 bse/all: $(lib/BeastSoundEngine)
-
-# == bseprocidl defs ==
-bse/bseprocidl			::= $>/bse/bseprocidl
-bse/bseprocidl.sources		::= bse/bseprocidl.cc
-bse/bseprocidl.objects		::= $(call BUILDDIR_O, $(bse/bseprocidl.sources))
-bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
-bse/all: $(bse/bseprocidl)
 
 # == external/minizip ==
 $>/external/minizip/mz_zip.h:			| $>/external/
@@ -584,25 +575,6 @@ $(call BUILD_PROGRAM, \
 	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
 	../lib)
 $(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
-
-# == bseprocidl rules ==
-$(bse/bseprocidl.objects):	$(bse/libbse.deps)
-$(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(call BUILD_PROGRAM, \
-	$(bse/bseprocidl), \
-	$(bse/bseprocidl.objects), \
-	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
-
-# == bsehack.idl ==
-# currently generated from BSE introspection data, needed to build the old IDL bindings for beast-gtk
-$>/bse/bsehack.idl: bse/bse.idl bse/bsebasics.idl bse/bsecxxbase.idl bse/bsecxxmodule.idl | $>/bse/bseprocidl
-	$(QGEN)
-	$Q echo '// make $@'							> $@.tmp1
-	$Q grep -v 'include.*bsehack.idl' bse/bse.idl | \
-		$(sfi/sfidl) $(sfi/sfidl.includes) -Ibse --list-types -		> $@.tmp2
-	$Q $>/bse/bseprocidl $@.tmp2 --g-fatal-warnings				>>$@.tmp1
-	$Q mv $@.tmp1 $@ && rm -f $@.tmp2
 
 # == integrity rules ==
 $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
