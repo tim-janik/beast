@@ -84,8 +84,5 @@ record NoteSequence
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
   NoteSeq notes  = SfiSeq ("Notes", "Sequence of notes", ":readwrite");
 };
-sequence P1xelSeq {
-  Int	pixels;
-};
 
 } // Bse
