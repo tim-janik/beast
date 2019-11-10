@@ -229,8 +229,6 @@ public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          void_func           () = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class XFooRecord
@@ -530,11 +528,6 @@ public:
   virtual void                          void_method       () = 0;
   virtual std::string                   on_click2out      () = 0;
   virtual void                          on_click2in       (const std::string &command) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "dummy", &UIWidgetAreaIface::dummy, &UIWidgetAreaIface::dummy);
-    __visitor_ (*this, "on_click", &UIWidgetAreaIface::on_click, &UIWidgetAreaIface::on_click);
-  }
 };
 
 class ParentIface;
@@ -549,8 +542,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class ChildIface;
@@ -565,10 +556,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->ParentIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class DescendantIface;
@@ -583,10 +570,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->ChildIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class GrandChildIface;
@@ -601,10 +584,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->DescendantIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class QuickRecord
@@ -647,8 +626,6 @@ public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          simple_function (int i = 9) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class MethodTestInterfaceIface;
@@ -686,8 +663,6 @@ public:
                                                                   const Aida::Any &optval) = 0;
   virtual QuickIfaceIfaceP              method_with_quickiface   (QuickIfaceIface &input,
                                                                   QuickIfaceIface &iface0) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class SignalTestInterfaceIface;
@@ -702,8 +677,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class ChildInheritingSignalsIface;
@@ -718,10 +691,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class AnotherChildIface;
@@ -736,10 +705,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class PropertyTesterIface;
@@ -776,20 +741,6 @@ public:
   virtual void                          self_prop      (PropertyTesterIface*) = 0;
   virtual Aida::Any                     any_prop       () const = 0;
   virtual void                          any_prop       (const Aida::Any&) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "bool_prop", &PropertyTesterIface::bool_prop, &PropertyTesterIface::bool_prop);
-    __visitor_ (*this, "int32_prop", &PropertyTesterIface::int32_prop, &PropertyTesterIface::int32_prop);
-    __visitor_ (*this, "int64_prop", &PropertyTesterIface::int64_prop, &PropertyTesterIface::int64_prop);
-    __visitor_ (*this, "float64_prop", &PropertyTesterIface::float64_prop, &PropertyTesterIface::float64_prop);
-    __visitor_ (*this, "string_prop", &PropertyTesterIface::string_prop, &PropertyTesterIface::string_prop);
-    __visitor_ (*this, "enum_prop", &PropertyTesterIface::enum_prop, &PropertyTesterIface::enum_prop);
-    __visitor_ (*this, "record_prop", &PropertyTesterIface::record_prop, &PropertyTesterIface::record_prop);
-    __visitor_ (*this, "sequence_prop", &PropertyTesterIface::sequence_prop, &PropertyTesterIface::sequence_prop);
-    __visitor_ (*this, "interface_prop", &PropertyTesterIface::interface_prop, &PropertyTesterIface::interface_prop);
-    __visitor_ (*this, "self_prop", &PropertyTesterIface::self_prop, &PropertyTesterIface::self_prop);
-    __visitor_ (*this, "any_prop", &PropertyTesterIface::any_prop, &PropertyTesterIface::any_prop);
-  }
 };
 } // InterfaceTests
 
@@ -807,10 +758,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->IncludeCheck::SomeInterfaceIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class ButtonAreaIface;
@@ -833,13 +780,6 @@ public:
   virtual void                          on_click3  (const std::string&) = 0;
   virtual ClickType                     click_type () const = 0;
   virtual void                          click_type (ClickType) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "on_click", &ButtonAreaIface::on_click, &ButtonAreaIface::on_click);
-    __visitor_ (*this, "on_click2", &ButtonAreaIface::on_click2, &ButtonAreaIface::on_click2);
-    __visitor_ (*this, "on_click3", &ButtonAreaIface::on_click3, &ButtonAreaIface::on_click3);
-    __visitor_ (*this, "click_type", &ButtonAreaIface::click_type, &ButtonAreaIface::click_type);
-  }
 };
 
 class PureMethodsIface;
@@ -856,8 +796,6 @@ public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual int                           pure_method      (double f) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 } // RapicornAidaTest
 
@@ -878,8 +816,6 @@ public:
   virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
                                                                    const OtherNamespace::SomeRecord &sr) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 } // Other
 
@@ -901,11 +837,6 @@ public:
   virtual void                          threshold (double) = 0;
   virtual double                        ratio     () const = 0;
   virtual void                          ratio     (double) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "threshold", &CompressorIface::threshold, &CompressorIface::threshold);
-    __visitor_ (*this, "ratio", &CompressorIface::ratio, &CompressorIface::ratio);
-  }
 };
 
 class RecordForGroups
@@ -938,8 +869,6 @@ protected:
 public:
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 } // BseTest
 

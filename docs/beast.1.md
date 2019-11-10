@@ -31,9 +31,6 @@ starting with two dashes ('-').
 
 ### General options
 
-**--skinrc** *FILENAME*
-:   Read skin resources from *FILENAME*.
-
 **--print-dir** *RESOURCE*
 :   Print the directory for a specific resource (e.g. 'plugins' or
 	'images'). Giving just **–print-dir** without an extra argument
