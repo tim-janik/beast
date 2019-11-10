@@ -10,7 +10,6 @@ ALL_TARGETS += aidacc/all
 # == aidacc/ files ==
 aidacc/include.headers ::= $(strip	\
 	aidacc/aida.hh			\
-	aidacc/visitor.hh		\
 )
 aidacc/aidacc.imports ::= $(strip	\
 	aidacc/AuxData.py		\

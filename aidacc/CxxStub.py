@@ -420,8 +420,7 @@ class Generator:
       s += self.generate_method_decl (type_info, m, il)
     if self.gen_mode == G4SERVANT:
       s += self.insertion_text ('interface_scope:' + type_info.name)
-    # accept
-    s += self.generate_class_accept_accessor (type_info)
+    # done
     s += '};\n'
     return s
   def generate_shortdoc (self, type_info):      # doxygen snippets
@@ -452,22 +451,6 @@ class Generator:
       copydoc = 'See ' + self.type2cpp (class_info) + '::' + functype.name + '()'
       s += ' \t///< %s' % copydoc
     s += '\n'
-    return s
-  def generate_class_accept_accessor (self, tp):
-    s, classH = '', self.C (tp)
-    reduced_immediate_ancestors = self.interface_class_ancestors (tp)
-    s += '  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)\n'
-    if not tp.fields and not reduced_immediate_ancestors:
-      return s + '  {}\n'
-    s += '  {\n'
-    for fname, ftype in tp.fields:
-      ctype = self.C (ftype)
-      if ftype.storage in (Decls.SEQUENCE, Decls.RECORD, Decls.INTERFACE, Decls.ANY):
-        pass # reftype = 'const %s&' % ctype
-      s += '    __visitor_ (*this, "%s", &%s::%s, &%s::%s);\n' % (fname, classH, fname, classH, fname)
-    for atp in reduced_immediate_ancestors:
-      s += '    this->%s::__accept_accessor__ (__visitor_);\n' % self.C (atp)
-    s += '  }\n'
     return s
   def generate_type_aux_data_registration (self, tp):
     s = ''
