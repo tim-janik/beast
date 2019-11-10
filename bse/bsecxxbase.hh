@@ -23,10 +23,6 @@ public:
                        gboolean   (*editable_property) (BseObject*, guint,                         GParamSpec*) = NULL,
                        void       (*get_candidates)    (BseItem*,   guint, Bse::PropertyCandidates&, GParamSpec*) = NULL,
                        void       (*property_updated)  (BseSource*, guint, guint64, double,        GParamSpec*) = NULL);
-  guint add_signal    (const gchar *signal_name,
-                       GSignalFlags flags,
-                       guint        n_params,
-                       ...);
   void  add_ochannel  (const char  *ident,
                        const char  *label,
                        const char  *blurb,
@@ -65,19 +61,6 @@ public:
   void            get_property      (guint          prop_id,
                                      Value         &value,
                                      GParamSpec    *pspec);
-#if 0
-  gulong          connect           (const gchar   *signal,
-                                     GClosure      *closure,
-                                     bool           after);
-  gulong          connect           (const gchar   *signal,
-                                     GClosure      *closure) { return connect (signal, closure, false); }
-#endif
-  gulong          connect           (const gchar   *signal,
-                                     CxxClosure    *closure,
-                                     bool           after);
-  gulong          connect           (const gchar   *signal,
-                                     CxxClosure    *closure) { return connect (signal, closure, false); }
-  const String    tokenize_signal   (const gchar   *signal);
   GType           type              ();
   virtual void    compat_setup      (guint          vmajor,
                                      guint          vminor,
