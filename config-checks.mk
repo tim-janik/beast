@@ -158,10 +158,6 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && echo "GTK_CFLAGS ::= $$GTK_CFLAGS"			>>$@.tmp
 	$Q GTK_LIBS=$$($(PKG_CONFIG) --libs $(GTK_PACKAGES)) \
 	  && echo "GTK_LIBS ::= $$GTK_LIBS"			>>$@.tmp
-	$Q XKB_LIBS='-lX11' L='' \
-	  && $(call conftest_lib, X11/XKBlib.h, XkbGetKeyboard, $$XKB_LIBS) \
-	  && { ! $$CONFTEST || L="$$XKB_LIBS" ; } \
-	  && echo "XKB_LIBS ::= $$L"				>>$@.tmp
 	$Q echo 'config-stamps ::= $$>/config-stamps.sha256'	>>$@.tmp \
 	  && OLDSUM=$$(cat "$>/config-stamps.sha256" 2>/dev/null || :) \
 	  && TMPSUM=$$(sha256sum < $@.tmp) && CFGSUM="$${TMPSUM%-}$(@F)" \
