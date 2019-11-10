@@ -42,7 +42,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsefilter.hh		\
 	bse/bsegenclosures.hh		\
 	bse/bseglobals.hh		\
-	bse/bseglue.hh			\
 	bse/bseieee754.hh		\
 	bse/bseincluder.hh		\
 	bse/bseinstrumentinput.hh	\
@@ -142,9 +141,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/sficomwire.hh		\
 	bse/sficxx.hh			\
 	bse/sfifilecrawler.hh		\
-	bse/sfiglue.hh			\
-	bse/sfigluecodec.hh		\
-	bse/sfiglueproxy.hh		\
 	bse/sfimemory.hh		\
 	bse/sfinote.hh			\
 	bse/sfiparams.hh		\
@@ -197,7 +193,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsefilter-ellf.cc		\
 	bse/bsefilter.cc		\
 	bse/bseglobals.cc		\
-	bse/bseglue.cc			\
 	bse/bseinstrumentinput.cc	\
 	bse/bseinstrumentoutput.cc	\
 	bse/bseitem.cc			\
@@ -294,9 +289,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/sficomport.cc		\
 	bse/sficomwire.cc		\
 	bse/sfifilecrawler.cc		\
-	bse/sfiglue.cc			\
-	bse/sfigluecodec.cc		\
-	bse/sfiglueproxy.cc		\
 	bse/sfimemory.cc		\
 	bse/sfinote.cc			\
 	bse/sfiparams.cc		\

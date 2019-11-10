@@ -15,7 +15,6 @@ sfi_init (int *argcp, char **argv, const Bse::StringVector &args)
   _sfi_init_values ();
   _sfi_init_params ();
   _sfi_init_time ();
-  _sfi_init_glue ();
   _sfi_init_file_crawler ();
   initialized = true;
 }

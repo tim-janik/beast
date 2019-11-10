@@ -9,16 +9,6 @@ namespace Bse {
 
 // == BSE Initialization ==
 
-/** Create SFI glue layer context.
- * Create and push an SFI glue layer context for the calling thread, to enable communications with the
- * main BSE thread library.
- */
-SfiGlueContext*
-init_glue_context (const gchar *client, const std::function<void()> &caller_wakeup)
-{
-  return _bse_glue_context_create (client, caller_wakeup);
-}
-
 /** Initialize and start BSE.
  * Initialize the BSE library and start the main BSE thread. Arguments specific to BSE are removed
  * from @a argc / @a argv.

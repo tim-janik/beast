@@ -4,17 +4,9 @@
 #include "sfiparams.hh"
 #include "sfiprimitives.hh"
 #include "sfitime.hh"
-#include "sfiglue.hh"
 #include "sfifilecrawler.hh"
 #include "bse/internal.hh"
 #include <string.h>
-
-
-
-/* --- variables --- */
-
-
-/* --- functions --- */
 
 /* --- FIXME: hacks! */
 static inline gchar

@@ -11,7 +11,6 @@
 #include "gsldatacache.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
-#include "bseglue.hh"
 #include "serializable.hh"
 #include "bse/internal.hh"
 #include <string.h>
@@ -248,50 +247,6 @@ attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *ex
   GSource *gsource = execution_context->create_gsource ("BSE::ExecutionContext", BSE_PRIORITY_GLUE);
   g_source_attach (gsource, gmaincontext);
   g_source_unref (gsource);
-}
-
-struct AsyncData {
-  const gchar *client;
-  const std::function<void()> &caller_wakeup;
-  Bse::AsyncBlockingQueue<SfiGlueContext*> result_queue;
-};
-
-static gboolean
-async_create_context (gpointer data)
-{
-  AsyncData *adata = (AsyncData*) data;
-  SfiComPort *port1, *port2;
-  sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
-			      "Server", bse_main_wakeup, &port2);
-  SfiGlueContext *context = sfi_glue_encoder_context (port1);
-  bse_glue_setup_dispatcher (port2);
-  adata->result_queue.push (context);
-  return false; // run-once
-}
-
-SfiGlueContext*
-_bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
-{
-  assert_return (client && caller_wakeup, NULL);
-  AsyncData adata = { client, caller_wakeup };
-  // function runs in user threads and queues handler in BSE thread to create context
-  if (bse_initialization_stage < 2)
-    {
-      Bse::warning ("%s: called without prior %s()", __func__, "Bse::init_async");
-      return NULL;
-    }
-  // queue handler to create context
-  GSource *source = g_idle_source_new ();
-  g_source_set_priority (source, G_PRIORITY_HIGH);
-  adata.client = client;
-  g_source_set_callback (source, async_create_context, &adata, NULL);
-  g_source_attach (source, bse_main_context);
-  g_source_unref (source);
-  // wake up BSE thread
-  g_main_context_wakeup (bse_main_context);
-  // receive result asynchronously
-  SfiGlueContext *context = adata.result_queue.pop();
-  return context;
 }
 
 void

@@ -3,7 +3,6 @@
 #include "bseproject.hh"
 #include "bseengine.hh"
 #include "gslcommon.hh"
-#include "bseglue.hh"
 #include "bsemidinotifier.hh"
 #include "bsemain.hh"		/* threads enter/leave */
 #include "bsepcmwriter.hh"

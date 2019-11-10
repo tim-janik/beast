@@ -20,7 +20,6 @@ public:
 
 // == BSE Initialization ==
 
-SfiGlueContext*	init_glue_context   (const gchar *client, const std::function<void()> &caller_wakeup);
 void		init_async	    (int *argc, char **argv, const char *app_name, const StringVector &args = StringVector());
 bool		init_needed	    ();
 void		objects_debug_leaks ();
