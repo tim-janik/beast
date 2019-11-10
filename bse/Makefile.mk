@@ -76,7 +76,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsesequencer.hh		\
 	bse/bseserver.hh		\
 	bse/bsesnet.hh			\
-	bse/bsesnooper.hh		\
 	bse/bsesong.hh			\
 	bse/bsesoundfont.hh		\
 	bse/bsesoundfontosc.hh		\
@@ -238,7 +237,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsesequencer.cc		\
 	bse/bseserver.cc		\
 	bse/bsesnet.cc			\
-	bse/bsesnooper.cc		\
 	bse/bsesong.cc			\
 	bse/bsesoundfont.cc		\
 	bse/bsesoundfontosc.cc		\
