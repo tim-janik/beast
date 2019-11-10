@@ -47,12 +47,6 @@ test_aida_cxxaux()
   static_assert (IsComparable<std::shared_ptr<SimpleType> >::value == true, "testing IsComparable");
   static_assert (IsComparable<ComplexType>::value == false, "testing IsComparable");
   static_assert (IsComparable<std::shared_ptr<ComplexType> >::value == true, "testing IsComparable");
-  // check Has__aida_from_any__
-  struct AnyConvertible {
-    void __aida_from_any__ (const Aida::Any &any);
-  };
-  static_assert (Has__aida_from_any__<SimpleType>::value == false, "testing Has__aida_from_any__ == 0");
-  static_assert (Has__aida_from_any__<AnyConvertible>::value == true, "testing Has__aida_from_any__ == 1");
 }
 TEST_ADD (test_aida_cxxaux);
 

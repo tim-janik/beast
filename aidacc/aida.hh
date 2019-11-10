@@ -168,16 +168,6 @@ Has___visit__ : std::false_type {};
 template<class T> struct
 Has___visit__<T, void_t< decltype (std::declval<T&>().__visit__ (HasHelper::visitor_lambda)) > > : std::true_type {};
 
-/// Has__aida_from_any__<T> - Check if @a T provides a member __aida_from_any__(const Any&).
-template<class, class = void> struct Has__aida_from_any__ : std::false_type {};
-template<class T>
-struct Has__aida_from_any__<T, void_t< decltype (std::declval<T>().__aida_from_any__ (std::declval<Aida::Any>())) >> : std::true_type {};
-
-/// Has__aida_to_any__<T> - Check if @a T provides a member Has__aida_to_any__().
-template<class, class = void> struct Has__aida_to_any__ : std::false_type {};
-template<class T>
-struct Has__aida_to_any__<T, void_t< decltype (std::declval<T>().__aida_to_any__ ()) >> : std::true_type {};
-
 /// Provide the member typedef type which is the element_type of the shared_ptr type @a T.
 template<typename T> struct RemoveSharedPtr                                             { typedef T type; };
 template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>                       { typedef T type; };
