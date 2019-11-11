@@ -93,10 +93,9 @@ std::string
 LegacyObjectImpl::uname () const
 {
   BseObject *object = *const_cast<LegacyObjectImpl*> (this);
-  gchar *gstring = NULL;
-  g_object_get (object, "uname", &gstring, NULL);
+  // avoid during finalize: g_object_get (object, "uname", &gstring, NULL);
+  const gchar *gstring = BSE_OBJECT_UNAME (object); // works during ref_count==0
   std::string u = gstring ? gstring : "";
-  g_free (gstring);
   return u;
 }
 
