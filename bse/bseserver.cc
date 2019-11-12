@@ -441,15 +441,6 @@ bse_server_discard_pcm_input_module (BseServer *self,
 }
 
 void
-bse_server_registration (BseServer          *server,
-			 BseRegistrationType rtype,
-			 const gchar	    *what,
-			 const gchar	    *error)
-{
-  assert_return (BSE_IS_SERVER (server));
-}
-
-void
 bse_server_add_io_watch (BseServer      *server,
 			 gint            fd,
 			 GIOCondition    events,
@@ -915,20 +906,6 @@ ServerImpl::purge_stale_cachedirs ()
 }
 
 void
-ServerImpl::register_ladspa_plugins ()
-{
-  load_assets();
-  bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
-}
-
-void
-ServerImpl::register_core_plugins ()
-{
-  load_assets();
-  bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
-}
-
-void
 ServerImpl::load_assets ()
 {
   static bool done_once = false;
@@ -945,6 +922,14 @@ ServerImpl::load_assets ()
         printerr ("%s: Bse plugin registration failed: %s\n", name, error);
       g_free (name);
     }
+}
+
+void
+ServerImpl::load_ladspa ()
+{
+  static bool done_once = false;
+  return_unless (!done_once);
+  done_once = true;
   // load LADSPA plugins
   for (const std::string &ladspa_so : bse_ladspa_plugin_path_list_files ())
     {

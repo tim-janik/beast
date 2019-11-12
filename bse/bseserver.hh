@@ -39,7 +39,6 @@ void	    bse_server_discard_pcm_input_module   (BseServer *server, BseModule *mo
 void	    bse_server_add_io_watch		  (BseServer *server, int fd, GIOCondition events, BseIOWatch watch_func, void *data);
 void	    bse_server_remove_io_watch            (BseServer *server, BseIOWatch watch_func, void *data);
 // internal
-void	    bse_server_registration		  (BseServer *server, BseRegistrationType rtype, const char *what, const char *error);
 void	    bse_server_queue_kill_wire            (BseServer *server, SfiComWire *wire);
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
@@ -96,10 +95,9 @@ public:
   virtual String        get_custom_effect_dir () override;
   virtual String        get_custom_instrument_dir () override;
   virtual void   purge_stale_cachedirs   () override;
-  virtual void   register_ladspa_plugins () override;
-  virtual void   register_core_plugins   () override;
   virtual void   start_recording         (const String &wave_file, double n_seconds) override;
   virtual void   load_assets             () override;
+  virtual void   load_ladspa             () override;
   virtual bool   can_load                (const String &file_name) override;
   virtual ProjectIfaceP create_project   (const String &project_name) override;
   virtual ProjectIfaceP last_project     () override;

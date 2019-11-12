@@ -512,7 +512,7 @@ bsetool_main (int argc_int, char *argv[])
   // load BSE plugins, scripts, ladspa plugins, etc
   if (!string_to_bool (toolap["bse-no-load"]))
     {
-      BSE_SERVER.register_core_plugins();
+      BSE_SERVER.load_assets();
       while (g_main_context_pending (bse_main_context))
         g_main_context_iteration (bse_main_context, false);
     }
