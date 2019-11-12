@@ -134,8 +134,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/serializable.hh		\
 	bse/storage.hh			\
 	bse/sfi.hh			\
-	bse/sficomport.hh		\
-	bse/sficomwire.hh		\
 	bse/sficxx.hh			\
 	bse/sfifilecrawler.hh		\
 	bse/sfimemory.hh		\
@@ -280,8 +278,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/regex.cc			\
 	bse/serializable.cc		\
 	bse/storage.cc			\
-	bse/sficomport.cc		\
-	bse/sficomwire.cc		\
 	bse/sfifilecrawler.cc		\
 	bse/sfimemory.cc		\
 	bse/sfinote.cc			\

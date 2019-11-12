@@ -6,7 +6,6 @@
 #include <bse/sfiwrapper.hh>    // Introduces bcore.hh
 
 /* no bin-compat: #include <bse/sficomwire.hh> */
-#include <bse/sficomport.hh>
 #include <bse/sfifilecrawler.hh>
 #include <bse/sfimemory.hh>
 #include <bse/sfinote.hh>

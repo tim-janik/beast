@@ -38,8 +38,6 @@ BseModule*  bse_server_retrieve_pcm_input_module  (BseServer *server, BseSource 
 void	    bse_server_discard_pcm_input_module   (BseServer *server, BseModule *module);
 void	    bse_server_add_io_watch		  (BseServer *server, int fd, GIOCondition events, BseIOWatch watch_func, void *data);
 void	    bse_server_remove_io_watch            (BseServer *server, BseIOWatch watch_func, void *data);
-// internal
-void	    bse_server_queue_kill_wire            (BseServer *server, SfiComWire *wire);
 
 #define BSE_SERVER      (Bse::ServerImpl::instance())
 

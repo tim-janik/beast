@@ -6,7 +6,6 @@
 #undef   G_DISABLE_CHECKS
 #include <bse/sfi.hh>
 #include <bse/sfistore.hh>	// FIXME
-#include <bse/sficomwire.hh>	// FIXME
 
 
 /* --- some globally used macros --- */
