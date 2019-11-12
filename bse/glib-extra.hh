@@ -52,9 +52,6 @@ typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*
 #define	g_object_set_data_full(o,k,d,f)	  g_object_set_data_full ((gpointer) o, k, d, (gpointer) f)
 #define	g_object_steal_data(o,k)	  g_object_steal_data ((gpointer) o, k)
 #endif  /* !__cplusplus */
-void g_object_disconnect_any (gpointer object,
-                              gpointer function,
-                              gpointer data); /* workaorund for g_object_disconnect() */
 
 // == printf variants ==
 #define g_intern_format(...)            g_intern_string (::Bse::string_format (__VA_ARGS__).c_str())
