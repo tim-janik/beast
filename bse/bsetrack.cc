@@ -60,8 +60,6 @@ static void         bse_track_update_midi_channel (BseTrack      *self);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint	   signal_changed = 0;
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseTrack)
@@ -644,7 +642,8 @@ bse_track_insert_part (BseTrack *self,
       entry = track_add_entry (self, entry ? i + 1 : 0, tick, part);
     }
   bse_part_links_changed (part);
-  g_signal_emit (self, signal_changed, 0);
+  auto impl = self->as<Bse::TrackImpl*>();
+  impl->notify ("changed");
   return entry ? entry->id : 0;
 }
 
@@ -662,7 +661,8 @@ bse_track_remove_tick (BseTrack *self,
       BsePart *part = entry->part;
       track_delete_entry (self, entry - self->entries_SL);
       bse_part_links_changed (part);
-      g_signal_emit (self, signal_changed, 0);
+      auto impl = self->as<Bse::TrackImpl*>();
+      impl->notify ("changed");
     }
 }
 
@@ -1100,7 +1100,6 @@ bse_track_class_init (BseTrackClass *klass)
                               bse_param_spec_boxed ("outputs", _("Output Signals"),
                                                     _("Mixer busses used as output for this track"),
                                                     BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
-  signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
 
 namespace Bse {

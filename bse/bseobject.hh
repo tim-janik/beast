@@ -131,21 +131,6 @@ void	bse_object_class_add_grouped_property	(BseObjectClass *oclass,
 						 guint		 property_id,
 						 GParamSpec	*pspec);
 #define	bse_object_class_add_param	         bse_object_class_add_property
-guint	bse_object_class_add_signal	        (BseObjectClass	*oclass,
-						 const gchar	*signal_name,
-						 GType           return_type,
-						 guint           n_params,
-						 ...);
-guint	bse_object_class_add_asignal    	(BseObjectClass	*oclass,
-						 const gchar	*signal_name,
-						 GType           return_type,
-						 guint           n_params,
-						 ...);
-guint	bse_object_class_add_dsignal    	(BseObjectClass	*oclass,
-						 const gchar	*signal_name,
-						 GType           return_type,
-						 guint           n_params,
-						 ...);
 
 
 /* --- object API --- */
@@ -172,11 +157,5 @@ void            bse_object_restore_finish       (BseObject      *object,
 
 /* --- implementation details --- */
 extern GQuark bse_quark_uname;
-void          bse_object_marshal_signal (GClosure       *closure,
-                                         GValue /*out*/ *return_value,
-                                         guint           n_param_values,
-                                         const GValue   *param_values,
-                                         gpointer        invocation_hint,
-                                         gpointer        marshal_data);
 
 #endif /* __BSE_OBJECT_H__ */

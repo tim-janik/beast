@@ -12,7 +12,6 @@ static void	   bse_midi_notifier_finalize		(GObject	      *object);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
-static guint    signal_midi_event = 0;
 static GQuark   number_quarks[BSE_MIDI_MAX_CHANNELS] = { 0, };
 static SfiRing *midi_notifier_list = NULL;
 
@@ -44,7 +43,6 @@ static void
 bse_midi_notifier_class_init (BseMidiNotifierClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   guint i;
 
   parent_class = g_type_class_peek_parent (klass);
@@ -53,10 +51,6 @@ bse_midi_notifier_class_init (BseMidiNotifierClass *klass)
 
   for (i = 0; i < BSE_MIDI_MAX_CHANNELS; i++)
     number_quarks[i] = g_quark_from_string (Bse::string_format ("%u", i).c_str());
-
-  signal_midi_event = bse_object_class_add_dsignal (object_class, "midi-event",
-						    G_TYPE_NONE, 1,
-						    BSE_TYPE_MIDI_CHANNEL_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 }
 
 static void
@@ -176,7 +170,7 @@ bse_midi_notifier_notify_event (BseMidiNotifier *self,
   cev.channel = event->channel;
   cev.tick_stamp = event->delta_time;
   if (cev.event_type)
-    g_signal_emit (self, signal_midi_event, number_quarks[event->channel], &cev);
+    ; // notify ("midievent");
 }
 
 void
@@ -188,9 +182,7 @@ bse_midi_notifier_dispatch (BseMidiNotifier *self)
   SfiRing *ring = bse_midi_receiver_fetch_notify_events (self->midi_receiver);
   if (!ring)
     return;
-  uint need_emission = g_signal_handler_find (self,
-                                              G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED,
-                                              signal_midi_event, 0, NULL, NULL, NULL);
+  uint need_emission = true; // is_connected ("midievent");
   while (ring)
     {
       BseMidiEvent *event = (BseMidiEvent*) sfi_ring_pop_head (&ring);

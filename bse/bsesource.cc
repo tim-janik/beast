@@ -42,7 +42,6 @@ static gint     contexts_compare        (gconstpointer	 bsearch_node1, /* key */
 
 /* --- variables --- */
 static GTypeClass          *parent_class = NULL;
-static guint                signal_io_changed = 0;
 static const GBSearchConfig context_config = {
   sizeof (BseSourceContext),
   contexts_compare,
@@ -1246,8 +1245,6 @@ bse_source_set_input (BseSource *source,
   g_object_ref (source);
   g_object_ref (osource);
   BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel, osource, ochannel);
-  g_signal_emit (source, signal_io_changed, 0);
-  g_signal_emit (osource, signal_io_changed, 0);
   g_object_unref (source);
   g_object_unref (osource);
 
@@ -1360,8 +1357,6 @@ bse_source_unset_input (BseSource *source,
   g_object_ref (source);
   g_object_ref (osource);
   BSE_SOURCE_GET_CLASS (source)->remove_input (source, ichannel, osource, ochannel);
-  g_signal_emit (source, signal_io_changed, 0);
-  g_signal_emit (osource, signal_io_changed, 0);
   g_object_unref (osource);
   g_object_unref (source);
 
@@ -1557,7 +1552,6 @@ bse_source_clear_ichannels (BseSource *source)
 	      io_changed = TRUE;
 	      g_object_ref (osource);
 	      BSE_SOURCE_GET_CLASS (source)->remove_input (source, i, osource, ochannel);
-	      g_signal_emit (osource, signal_io_changed, 0);
 	      g_object_unref (osource);
 	    }
 	}
@@ -1568,12 +1562,11 @@ bse_source_clear_ichannels (BseSource *source)
 	  io_changed = TRUE;
 	  g_object_ref (osource);
 	  BSE_SOURCE_GET_CLASS (source)->remove_input (source, i, osource, input->idata.ochannel);
-	  g_signal_emit (osource, signal_io_changed, 0);
 	  g_object_unref (osource);
 	}
     }
   if (io_changed)
-    g_signal_emit (source, signal_io_changed, 0);
+    ; // emit ("iochanged");
   g_object_unref (source);
 }
 
@@ -1636,7 +1629,6 @@ bse_source_clear_ochannels (BseSource *source)
 		  io_changed = TRUE;
 		  BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i,
 								source, input->jdata.joints[j].ochannel);
-		  g_signal_emit (isource, signal_io_changed, 0);
 		  break;
 		}
 	    }
@@ -1645,14 +1637,13 @@ bse_source_clear_ochannels (BseSource *source)
 	      io_changed = TRUE;
 	      BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i,
 							    source, input->idata.ochannel);
-	      g_signal_emit (isource, signal_io_changed, 0);
 	      break;
 	    }
 	}
       g_object_unref (isource);
     }
   if (io_changed)
-    g_signal_emit (source, signal_io_changed, 0);
+    ; // emit ("iochanged");
   g_object_unref (source);
 }
 
@@ -2018,8 +2009,6 @@ bse_source_class_init (BseSourceClass *klass)
   klass->reset = bse_source_real_reset;
   klass->add_input = bse_source_real_add_input;
   klass->remove_input = bse_source_real_remove_input;
-
-  signal_io_changed = bse_object_class_add_signal (object_class, "io-changed", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseSource)

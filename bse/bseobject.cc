@@ -145,19 +145,6 @@ enum
   PROP_UNAME,
   PROP_BLURB
 };
-enum
-{
-  SIGNAL_RELEASE,
-  SIGNAL_ICON_CHANGED,
-  SIGNAL_LAST
-};
-
-
-/* --- prototypes --- */
-static guint		eclosure_hash			(gconstpointer	 c);
-static gint		eclosure_equals			(gconstpointer	 c1,
-							 gconstpointer	 c2);
-
 
 /* --- variables --- */
 GQuark             bse_quark_uname = 0;
@@ -165,10 +152,8 @@ static GQuark	   bse_quark_icon = 0;
 static gpointer	   parent_class = NULL;
 static GQuark	   quark_blurb = 0;
 static GHashTable *object_unames_ht = NULL;
-static GHashTable *eclosures_ht = NULL;
 static SfiUStore  *object_id_ustore = NULL;
 static GQuark	   quark_property_changed_queue = 0;
-static guint       object_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -264,9 +249,6 @@ bse_object_do_dispose (GObject *gobject)
   assert_return (BSE_OBJECT_IN_RESTORE (object) == false);
 
   object->set_flag (BSE_OBJECT_FLAG_DISPOSING);
-
-  /* perform release notification */
-  g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
 
   {
     Bse::LegacyObjectImpl *self = object->as<Bse::LegacyObjectImpl*>();
@@ -423,116 +405,6 @@ bse_object_class_add_property (BseObjectClass *klass,
 }
 
 void
-bse_object_marshal_signal (GClosure       *closure,
-                           GValue /*out*/ *return_value,
-                           guint           n_param_values,
-                           const GValue   *param_values,
-                           gpointer        invocation_hint,
-                           gpointer        marshal_data)
-{
-  gpointer arg0, argN;
-
-  assert_return (return_value == NULL);
-  assert_return (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
-  assert_return (G_VALUE_HOLDS_OBJECT (param_values));
-
-  arg0 = g_value_get_object (param_values);
-  if (G_CCLOSURE_SWAP_DATA (closure))
-    {
-      argN = arg0;
-      arg0 = closure->data;
-    }
-  else
-    argN = closure->data;
-  sfi_vmarshal_void (((GCClosure*) closure)->callback,
-		     arg0,
-		     n_param_values - 1,
-		     param_values + 1,
-		     argN);
-}
-
-guint
-bse_object_class_add_signal (BseObjectClass    *oclass,
-			     const gchar       *signal_name,
-			     GType              return_type,
-			     guint              n_params,
-			     ...)
-{
-  va_list args;
-  guint signal_id;
-
-  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
-  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  assert_return (signal_name != NULL, 0);
-
-  va_start (args, n_params);
-  signal_id = g_signal_new_valist (signal_name,
-				   G_TYPE_FROM_CLASS (oclass),
-				   GSignalFlags (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS),
-				   NULL, NULL, NULL,
-				   bse_object_marshal_signal,
-				   return_type,
-				   n_params, args);
-  va_end (args);
-
-  return signal_id;
-}
-
-guint
-bse_object_class_add_asignal (BseObjectClass    *oclass,
-			      const gchar       *signal_name,
-			      GType              return_type,
-			      guint              n_params,
-			      ...)
-{
-  va_list args;
-  guint signal_id;
-
-  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
-  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  assert_return (signal_name != NULL, 0);
-
-  va_start (args, n_params);
-  signal_id = g_signal_new_valist (signal_name,
-				   G_TYPE_FROM_CLASS (oclass),
-				   GSignalFlags (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION),
-				   NULL, NULL, NULL,
-				   bse_object_marshal_signal,
-				   return_type,
-				   n_params, args);
-  va_end (args);
-
-  return signal_id;
-}
-
-guint
-bse_object_class_add_dsignal (BseObjectClass    *oclass,
-			      const gchar       *signal_name,
-			      GType              return_type,
-			      guint              n_params,
-			      ...)
-{
-  va_list args;
-  guint signal_id;
-
-  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
-  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  assert_return (signal_name != NULL, 0);
-
-  va_start (args, n_params);
-  signal_id = g_signal_new_valist (signal_name,
-				   G_TYPE_FROM_CLASS (oclass),
-				   GSignalFlags (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_DETAILED),
-				   NULL, NULL, NULL,
-				   bse_object_marshal_signal,
-				   return_type,
-				   n_params, args);
-  va_end (args);
-
-  return signal_id;
-}
-
-void
 bse_object_lock (gpointer _object)
 {
   BseObject *object = (BseObject*) _object;
@@ -654,7 +526,6 @@ bse_object_notify_icon_changed (BseObject *object)
 {
   assert_return (BSE_IS_OBJECT (object));
 
-  g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
   Bse::LegacyObjectImpl *self = object->as<Bse::LegacyObjectImpl*>();
   if (self)
     self->notify ("icon");
@@ -746,43 +617,6 @@ bse_object_restore_finish (BseObject *object,
     }
 }
 
-typedef struct {
-  GClosure closure;
-  guint    dest_signal;
-  GQuark   dest_detail;
-  guint    erefs;
-  gpointer src_object;
-  gulong   handler;
-  guint    src_signal;
-  guint    src_detail;
-} EClosure;
-
-static guint
-eclosure_hash (gconstpointer c)
-{
-  const EClosure *e = (const EClosure*) c;
-  guint h = G_HASH_LONG ((long) e->src_object) >> 2;
-  h += G_HASH_LONG ((long) e->closure.data) >> 1;
-  h += e->src_detail;
-  h += e->dest_detail << 1;
-  h += e->src_signal << 12;
-  h += e->dest_signal << 13;
-  return h;
-}
-
-static gint
-eclosure_equals (gconstpointer c1,
-		 gconstpointer c2)
-{
-  const EClosure *e1 = (const EClosure*) c1, *e2 = (const EClosure*) c2;
-  return (e1->src_object   == e2->src_object &&
-	  e1->closure.data == e2->closure.data &&
-	  e1->src_detail   == e2->src_detail &&
-	  e1->dest_detail  == e2->dest_detail &&
-	  e1->src_signal   == e2->src_signal &&
-	  e1->dest_signal  == e2->dest_signal);
-}
-
 static void
 bse_object_class_base_init (BseObjectClass *klass)
 {
@@ -806,7 +640,6 @@ bse_object_class_init (BseObjectClass *klass)
   quark_property_changed_queue = g_quark_from_static_string ("bse-property-changed-queue");
   quark_blurb = g_quark_from_static_string ("bse-object-blurb");
   object_unames_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
-  eclosures_ht = g_hash_table_new (eclosure_hash, eclosure_equals);
   object_id_ustore = sfi_ustore_new ();
 
   gobject_class->set_property = bse_object_do_set_property;
@@ -838,9 +671,6 @@ bse_object_class_init (BseObjectClass *klass)
 			      sfi_pspec_string ("blurb", _("Comment"), _("Free form comment or description"),
 						"",
 						SFI_PARAM_STANDARD ":skip-default"));
-
-  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (klass, "release", G_TYPE_NONE, 0);
-  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (klass, "icon_changed", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseObject)

@@ -44,7 +44,6 @@ static void     bse_wave_osc_update_modules     (BseWaveOsc             *self);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
-static guint    signal_notify_pcm_position = 0;
 
 
 /* --- functions --- */
@@ -464,7 +463,7 @@ pcm_pos_access_free (gpointer data)     /* UserThread */
   BseWaveOsc *self = pos->wosc;
 
   if (pos->perc < 0)
-    g_signal_emit (self, signal_notify_pcm_position, 0, pos->stamp, pos->module_pcm_position);
+    ; // emit ("pcmposition");
 
   g_object_unref (self);
   g_free (pos);
@@ -561,11 +560,6 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
                                               _("Number of octaves to be affected by exponential frequency modulation"),
                                               1.0, 0, 3.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
-
-  signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
-                                                            G_TYPE_NONE, 2,
-                                                            SFI_TYPE_NUM,
-                                                            G_TYPE_INT);
 
   ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
   assert_return (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);

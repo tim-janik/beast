@@ -33,8 +33,6 @@ static void         bse_song_init             (BseSong            *song);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint       signal_pointer_changed = 0;
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSong)
@@ -338,7 +336,6 @@ song_position_handler (gpointer data)
       BSE_SEQUENCER_LOCK ();
       self->last_position = *self->tick_SL;
       BSE_SEQUENCER_UNLOCK ();
-      g_signal_emit (self, signal_pointer_changed, 0, self->last_position);
     }
   return TRUE;
 }
@@ -608,9 +605,6 @@ bse_song_class_init (BseSongClass *klass)
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
-
-  signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
-							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }
 
 namespace Bse {

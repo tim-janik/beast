@@ -60,7 +60,7 @@ static void	engine_init			(BseServer	   *server,
 static void	engine_shutdown			(BseServer	   *server);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint       signal_registration = 0;
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseServer)
 {
@@ -85,7 +85,6 @@ static void
 bse_server_class_init (BseServerClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
 
@@ -101,12 +100,6 @@ bse_server_class_init (BseServerClass *klass)
   container_class->remove_item = bse_server_remove_item;
   container_class->forall_items = bse_server_forall_items;
   container_class->release_children = bse_server_release_children;
-
-  signal_registration = bse_object_class_add_signal (object_class, "registration",
-						     G_TYPE_NONE, 3,
-						     BSE_TYPE_REGISTRATION_TYPE,
-						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
-						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
 }
 
 static void
@@ -454,8 +447,6 @@ bse_server_registration (BseServer          *server,
 			 const gchar	    *error)
 {
   assert_return (BSE_IS_SERVER (server));
-
-  g_signal_emit (server, signal_registration, 0, rtype, what, error);
 }
 
 void
