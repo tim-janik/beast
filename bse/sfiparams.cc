@@ -93,8 +93,6 @@ _sfi_init_params (void)
   quark_boxed_info = g_quark_from_static_string ("sfi-boxed-info");
 
   /* pspec types */
-  info.instance_size = sizeof (SfiParamSpecProxy);
-  SFI_TYPE_PARAM_PROXY = g_type_register_static (G_TYPE_PARAM_POINTER, "SfiParamSpecProxy", &info, GTypeFlags (0));
   info.instance_size = sizeof (SfiParamSpecChoice);
   SFI_TYPE_PARAM_CHOICE = g_type_register_static (G_TYPE_PARAM_STRING, "SfiParamSpecChoice", &info, GTypeFlags (0));
   {
@@ -697,20 +695,6 @@ sfi_pspec_rec_generic (const gchar    *name,
 }
 
 GParamSpec*
-sfi_pspec_proxy (const gchar    *name,
-		 const gchar    *nick,
-		 const gchar    *blurb,
-		 const gchar    *hints)
-{
-  // SfiParamSpecProxy *xspec;
-  GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_PROXY, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
-  sfi_pspec_set_options (pspec, hints);
-  pspec->value_type = SFI_TYPE_PROXY;
-
-  return pspec;
-}
-
-GParamSpec*
 sfi_pspec_note (const gchar *name,
 		const gchar *nick,
 		const gchar *blurb,
@@ -1052,21 +1036,6 @@ sfi_pspec_choice_from_enum (GParamSpec *enum_pspec)
 }
 
 GParamSpec*
-sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
-{
-  GParamSpec *pspec;
-
-  assert_return (G_IS_PARAM_SPEC_OBJECT (object_pspec), NULL);
-
-  pspec = sfi_pspec_proxy (object_pspec->name,
-			   object_pspec->_nick,
-			   object_pspec->_blurb,
-			   NULL);
-  sfi_pspec_copy_commons (object_pspec, pspec);
-  return pspec;
-}
-
-GParamSpec*
 sfi_pspec_to_serializable (GParamSpec *xpspec)
 {
   GParamSpec *pspec = NULL;
@@ -1092,8 +1061,6 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
     }
   else if (G_IS_PARAM_SPEC_ENUM (xpspec))
     pspec = sfi_pspec_choice_from_enum (xpspec);
-  else if (G_IS_PARAM_SPEC_OBJECT (xpspec))
-    pspec = sfi_pspec_proxy_from_object (xpspec);
 
   if (!pspec)
     Bse::warning ("%s: unable to convert non serializable pspec \"%s\" of type `%s'",
@@ -1366,7 +1333,6 @@ sfi_category_type (SfiSCategory cat_type)
     case SFI_SCAT_PSPEC:       return SFI_TYPE_PSPEC;
     case SFI_SCAT_SEQ:         return SFI_TYPE_SEQ;
     case SFI_SCAT_REC:         return SFI_TYPE_REC;
-    case SFI_SCAT_PROXY:       return SFI_TYPE_PROXY;
     default:                   return 0;
     }
 }
@@ -1387,7 +1353,6 @@ sfi_category_param_type (SfiSCategory cat_type)
     case SFI_SCAT_PSPEC:        return SFI_TYPE_PARAM_PSPEC;
     case SFI_SCAT_SEQ:          return SFI_TYPE_PARAM_SEQ;
     case SFI_SCAT_REC:          return SFI_TYPE_PARAM_REC;
-    case SFI_SCAT_PROXY:        return SFI_TYPE_PARAM_PROXY;
     case SFI_SCAT_NOTE:         return SFI_TYPE_PARAM_NOTE;
     default:
       if (cat_type & ~SFI_SCAT_TYPE_MASK)
@@ -1422,9 +1387,6 @@ sfi_categorize_type (GType value_type)
       if (value_type == SFI_TYPE_REC)           return SFI_SCAT_REC;
       break;    /* FAIL */
       /* pointer types */
-    case G_TYPE_POINTER:
-      if (value_type == SFI_TYPE_PROXY)         return SFI_SCAT_PROXY;
-      break;    /* FAIL */
     }
   /* FAILED to determine category */
   return SFI_SCAT_INVAL;
@@ -1700,9 +1662,6 @@ sfi_pspec_from_rec (SfiRec *prec)
 	pspec = sfi_pspec_rec (name, nick, blurb,
 			       zero_rfields, hints);
       break;
-    case SFI_SCAT_PROXY:
-      pspec = sfi_pspec_proxy (name, nick, blurb, hints);
-      break;
     case SFI_SCAT_NOTE:
       pspec = sfi_pspec_note (name, nick, blurb,
 			      sfi_rec_get_int (prec, "default"),
@@ -1918,8 +1877,6 @@ introspection_field_to_param_spec (const std::string &fieldname, const Aida::Str
       if (rec_fields.n_fields)
         pspec = sfi_pspec_rec (fieldname.c_str(), label.c_str(), blurb.c_str(), rec_fields, hints.c_str());
     }
-  else if (fundamental == "INTERFACE")
-    pspec = sfi_pspec_proxy (fieldname.c_str(), label.c_str(), blurb.c_str(), hints.c_str());
   if (pspec)
     {
       if (!group.empty())

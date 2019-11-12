@@ -97,7 +97,6 @@ _sfi_init_values (void)
   SFI_TYPE_FBLOCK = g_boxed_type_register_static ("SfiFBlock", copy_fblock, free_fblock);
   SFI_TYPE_SEQ = g_boxed_type_register_static ("SfiSeq", copy_seq, free_seq);
   SFI_TYPE_REC = g_boxed_type_register_static ("SfiRec", copy_rec, free_rec);
-  SFI_TYPE_PROXY = g_pointer_type_register_static ("SfiProxy");
 }
 
 
@@ -133,7 +132,7 @@ sfi_check_value (const GValue *value)
 	    vtype == SFI_TYPE_FBLOCK ||
 	    vtype == SFI_TYPE_BBLOCK);
   else
-    return (vtype == SFI_TYPE_PROXY);
+    return false;
 }
 
 const char*
@@ -318,23 +317,6 @@ sfi_value_take_rec (GValue *value,
   assert_return (SFI_VALUE_HOLDS_REC (value));
 
   g_value_take_boxed (value, rec);
-}
-
-SfiProxy
-sfi_value_get_proxy (const GValue *value)
-{
-  assert_return (SFI_VALUE_HOLDS_PROXY (value), 0);
-
-  return (SfiProxy) g_value_get_pointer (value);
-}
-
-void
-sfi_value_set_proxy (GValue  *value,
-		     SfiProxy proxy)
-{
-  assert_return (SFI_VALUE_HOLDS_PROXY (value));
-
-  g_value_set_pointer (value, (gpointer) proxy);
 }
 
 void
@@ -590,15 +572,6 @@ sfi_value_new_take_rec (SfiRec *vrec)
     sfi_rec_unref (vrec);
   return value;
 }
-
-GValue*
-sfi_value_proxy (SfiProxy vproxy)
-{
-  GValue *value = alloc_value (SFI_TYPE_PROXY);
-  sfi_value_set_proxy (value, vproxy);
-  return value;
-}
-
 
 /* --- transformation --- */
 void
@@ -980,10 +953,6 @@ test_typed_serialization (SerialTest test_type)
 		 sfi_pspec_choice ("choice-nil", NULL, NULL, NULL, choice_values, SFI_PARAM_STANDARD));
   serialize_cmp (sfi_value_choice ("test-choice-with-valid-characters_9876543210"),
 		 sfi_pspec_choice ("choice", NULL, NULL, NULL, choice_values, SFI_PARAM_STANDARD));
-  serialize_cmp (sfi_value_proxy (SFI_MAXINT),
-		 sfi_pspec_proxy ("proxy-max", NULL, NULL, SFI_PARAM_STANDARD));
-  serialize_cmp (sfi_value_proxy (G_MAXUINT),
-		 sfi_pspec_proxy ("proxy-umax", NULL, NULL, SFI_PARAM_STANDARD));
   serialize_cmp (sfi_value_bblock (NULL),
 		 sfi_pspec_bblock ("bblock-nil", NULL, NULL, SFI_PARAM_STANDARD));
   bblock = sfi_bblock_new ();
@@ -1071,11 +1040,7 @@ test_typed_serialization (SerialTest test_type)
   val = sfi_value_seq (seq);
   sfi_rec_set (rec, "seq-homogeneous", val);
   sfi_value_free (val);
-  val = sfi_value_proxy (102);
-  sfi_rec_set (rec, "baz-proxy", val);
-  sfi_value_free (val);
   rec_fields.fields = g_new (GParamSpec*, 20); /* should be static mem */
-  rec_fields.fields[rec_fields.n_fields++] = sfi_pspec_proxy ("baz-proxy", NULL, NULL, SFI_PARAM_STANDARD);
   rec_fields.fields[rec_fields.n_fields++] = sfi_pspec_string ("exo-string", NULL, NULL, NULL, SFI_PARAM_STANDARD);
   rec_fields.fields[rec_fields.n_fields++] = pspec_homo_seq;
   serialize_cmp (sfi_value_rec (rec),

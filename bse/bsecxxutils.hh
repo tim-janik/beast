@@ -21,7 +21,6 @@ typedef SfiBBlock   BBlock;
 typedef SfiFBlock   FBlock;
 typedef SfiSeq      Seq;
 typedef SfiRec      Rec;
-typedef SfiProxy    Proxy;
 };
 
 /* --- type alias frequently used standard lib things --- */

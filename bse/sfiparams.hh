@@ -40,9 +40,6 @@
 #define SFI_TYPE_PARAM_REC		(sfi__param_spec_types[4])
 #define SFI_IS_PSPEC_REC(pspec)		(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_REC))
 #define SFI_PSPEC_REC(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_REC, SfiParamSpecRec))
-#define SFI_TYPE_PARAM_PROXY		(sfi__param_spec_types[5])
-#define SFI_IS_PSPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_PROXY))
-#define SFI_PSPEC_PROXY(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_PROXY, SfiParamSpecProxy))
 #define SFI_TYPE_PARAM_NOTE		(sfi__param_spec_types[6])
 #define SFI_IS_PSPEC_NOTE(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_NOTE))
 #define SFI_PSPEC_NOTE(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_NOTE, SfiParamSpecNote))
@@ -91,9 +88,6 @@ typedef struct {
   GParamSpecBoxed    pspec;
   SfiRecFields       fields;
 } SfiParamSpecRec;
-typedef struct {
-  GParamSpecPointer  pspec;
-} SfiParamSpecProxy;
 typedef struct {
   GParamSpecInt      pspec;
   gboolean           allow_void;
@@ -185,10 +179,6 @@ GParamSpec*	sfi_pspec_rec_generic	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*hints);
-GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
-					 const gchar    *nick,
-					 const gchar    *blurb,
-					 const gchar	*hints);
 
 
 /* --- pspec wrappers --- */
@@ -208,7 +198,6 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 typedef SfiChoiceValues (*SfiChoiceValueGetter)     (GType                 enum_type);
 GParamSpec*  sfi_pspec_to_serializable              (GParamSpec           *pspec);
 GParamSpec*  sfi_pspec_choice_from_enum             (GParamSpec           *enum_pspec);
-GParamSpec*  sfi_pspec_proxy_from_object            (GParamSpec           *object_pspec);
 const char*  sfi_pspec_get_enum_typename            (GParamSpec           *pspec);
 void         sfi_enum_type_set_choice_value_getter  (GType                 gtype,
                                                      SfiChoiceValueGetter  cvgetter);

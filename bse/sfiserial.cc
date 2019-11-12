@@ -366,21 +366,6 @@ sfi_serialize_primitives (SfiSCategory scat,
 	    return G_TOKEN_IDENTIFIER;
 	}
       break;
-    case SFI_SCAT_PROXY:
-      if (gstring)
-	{
-	  SfiProxy proxy = sfi_value_get_proxy (value);
-	  gstring_format (gstring, "%lu", proxy);
-	}
-      else
-	{
-	  SfiNum num;
-	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num);
-          if (token != G_TOKEN_NONE)
-	    return token;
-	  sfi_value_set_proxy (value, num);
-	}
-      break;
     case SFI_SCAT_BBLOCK:
       if (gstring)
 	{
@@ -570,7 +555,6 @@ sfi_value_store_typed (const GValue *value,
     case SFI_SCAT_REAL:
     case SFI_SCAT_STRING:
     case SFI_SCAT_CHOICE:
-    case SFI_SCAT_PROXY:
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:
@@ -631,7 +615,6 @@ sfi_value_parse_typed (GValue   *value,
     case SFI_SCAT_REAL:
     case SFI_SCAT_STRING:
     case SFI_SCAT_CHOICE:
-    case SFI_SCAT_PROXY:
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:
@@ -705,7 +688,6 @@ value_store_param (const GValue *value,
     case SFI_SCAT_REAL:
     case SFI_SCAT_STRING:
     case SFI_SCAT_CHOICE:
-    case SFI_SCAT_PROXY:
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:
@@ -822,7 +804,6 @@ value_parse_param (GValue     *value,
     case SFI_SCAT_REAL:
     case SFI_SCAT_STRING:
     case SFI_SCAT_CHOICE:
-    case SFI_SCAT_PROXY:
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:

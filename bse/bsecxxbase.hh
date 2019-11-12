@@ -87,10 +87,7 @@ public:
   value_get_gobject (const GValue *v)
   {
     gpointer p;
-    if (SFI_VALUE_HOLDS_PROXY (v))
-      p = bse_object_from_id (sfi_value_get_proxy (v));
-    else
-      p = g_value_get_object (v);
+    p = g_value_get_object (v);
     return (OType*) p;
   }
   template<class CxxType> static inline CxxType
@@ -106,10 +103,7 @@ public:
   value_set_gobject (GValue  *value,
                      gpointer object)
   {
-    if (SFI_VALUE_HOLDS_PROXY (value))
-      sfi_value_set_proxy (value, BSE_IS_OBJECT (object) ? ((BseObject*) object)->unique_id : 0);
-    else
-      g_value_set_object (value, object);
+    g_value_set_object (value, object);
   }
   static inline void
   value_set_object (GValue        *value,
