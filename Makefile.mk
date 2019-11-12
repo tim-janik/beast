@@ -54,7 +54,7 @@ mandir		 ?= $(datadir)/man
 libdir		 ?= $(prefix)/lib
 pkgrootdir	 ?= $(libdir)
 pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
-.config.defaults += builddir prefix bindir datadir mandir libdir pkgrootdir pkglibdir
+.config.defaults += prefix bindir datadir mandir libdir pkgrootdir pkglibdir
 
 # == Target Collections ==
 ALL_TARGETS	::=
@@ -122,6 +122,7 @@ $>/%/:
 default: FORCE
 	$(QECHO) WRITE config-defaults.mk
 	$Q echo -e '# make $@\n'					> $@.tmp
+	$Q echo 'builddir = $(builddir)'				>>$@.tmp
 	$Q : $(foreach VAR, $(.config.defaults), &&					\
 	  if $(if $(filter command, $(origin $(VAR)) $($(VAR).origin)),			\
 		true, false) ; then							\
