@@ -20,7 +20,6 @@
 #include <bse/sfitypes.hh>
 #include <bse/sfiustore.hh>
 #include <bse/sfivalues.hh>
-#include <bse/sfivmarshal.hh>
 
 #endif /* __SFI_H__ */
 
