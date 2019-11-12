@@ -23,6 +23,19 @@ struct CustomServerConfig : public websocketpp::config::asio {
 using ServerEndpoint = websocketpp::server<CustomServerConfig>;
 static ServerEndpoint websocket_server;
 
+/// Check if two connection_hdl pointers are the same
+static inline bool
+websocketpp_connection_hdl_equals (const websocketpp::connection_hdl &a, const websocketpp::connection_hdl &b)
+{
+  // the connection_hdl is implemented as a weak_ptr, which provide no operator==().
+  // but a and b can be ordered via owner_before, by means of comparing the offsets of the
+  // weak_ptr control blocks. which means get_con_from_hdl() would yield the same connection_ptr.
+  return !a.owner_before (b) && !b.owner_before (a);
+}
+
+// Provide websocket connection dependent InstanceMap
+static std::vector<std::pair<websocketpp::connection_hdl, Jsonipc::InstanceMap*>> ws_instance_maps;
+
 static std::string
 handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &hdl)
 {
@@ -32,6 +45,19 @@ handle_jsonipc (const std::string &message, const websocketpp::connection_hdl &h
       conid = ptrdiff_t (websocket_server.get_con_from_hdl (hdl).get());
       Bse::printerr ("%p: REQUEST: %s\n", conid, message);
     }
+  Jsonipc::InstanceMap *imap = nullptr;
+  for (const auto &pair : ws_instance_maps)
+    if (websocketpp_connection_hdl_equals (pair.first, hdl))
+      {
+        imap = pair.second;
+        break;
+      }
+  if (!imap)
+    {
+      imap = new Jsonipc::InstanceMap();
+      ws_instance_maps.push_back (std::make_pair (hdl, imap));
+    }
+  Jsonipc::Scope message_scope (*imap);
   const std::string reply = dispatcher->dispatch_message (message);
   if (verbose)
     {
@@ -131,6 +157,14 @@ ws_close (websocketpp::connection_hdl hdl)
                  it != ws_opened_connections.end() ? "" : " (unknown)");
   if (it != ws_opened_connections.end())
     ws_opened_connections.erase (it);
+  for (auto it = ws_instance_maps.begin(); it != ws_instance_maps.end(); ++it)
+    if (websocketpp_connection_hdl_equals (it->first, hdl))
+      {
+        Jsonipc::InstanceMap *imap = it->second;
+        ws_instance_maps.erase (it);
+        delete imap;
+        break;
+      }
 }
 
 static websocketpp::connection_hdl *bse_current_websocket_hdl = NULL;
@@ -153,6 +187,7 @@ ws_message (websocketpp::connection_hdl hdl, server::message_ptr msg)
   sem.wait();
 }
 
+/// Provide an IPC handler implementation that marshals and sends binary data onto the wire.
 struct IpcHandlerImpl : Bse::IpcHandler {
   virtual
   ~IpcHandlerImpl()
