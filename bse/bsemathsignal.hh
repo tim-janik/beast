@@ -696,8 +696,6 @@ bse_saturate_branching (double value,
   return value;
 }
 
-void    _bse_init_signal (void);
-
 extern const double * const bse_cent_table;
 
 static inline double G_GNUC_CONST

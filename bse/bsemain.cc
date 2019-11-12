@@ -123,7 +123,6 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 
   // basic components
   bse_globals_init ();
-  _bse_init_signal();
   bse_type_init ();
   bse_cxx_init ();
   // FIXME: global spawn dir is evil
