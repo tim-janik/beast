@@ -19,14 +19,8 @@ Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
 Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
-/* standard sequences */
-sequence TypeSeq {
-  SfiString types;
-};
-sequence Flo4tSeq {
-  Real values;
-};
-enum MidiChannelEventType {
+
+ enum MidiChannelEventType {
   MIDI_EVENT_NONE = 0,
   /* channel voice messages */
   MIDI_EVENT_NOTE_OFF,
