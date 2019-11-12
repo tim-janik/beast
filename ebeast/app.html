@@ -135,6 +135,9 @@
     });
     console.assert (vue_root); // Vue.$root
     loadstatus.innerText += "Mounted Vue...\n";
+    // Load external BSE plugins
+    await Bse.server.load_ladspa();
+    loadstatus.innerText += "Loaded LADSPA plugins...\n";
     // Menu bar for Electron
     if (window.Electron)
       {
