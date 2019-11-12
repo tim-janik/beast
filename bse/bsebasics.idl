@@ -74,11 +74,6 @@ record MidiChannelEvent
 sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
-interface Item;
-sequence It3mSeq {
-  Info   blurb = ("A list of BSE items or derived types.");
-  Item   items;
-};
 record NoteSequence
 {
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");

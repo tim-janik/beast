@@ -576,9 +576,11 @@ bse_track_set_property (GObject      *object,
       break;
     case PROP_OUTPUTS:
       {
+#if 0
         BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
         Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
         bse_bus_or_track_set_outputs (BSE_ITEM (self), items);
+#endif
       }
       break;
     default:
@@ -597,8 +599,8 @@ bse_track_get_property (GObject    *object,
 
   switch (param_id)
     {
-      BseIt3mSeq *iseq;
-      SfiRing *ring;
+      // BseIt3mSeq *iseq;
+      // SfiRing *ring;
     case PROP_SNET:
       bse_value_set_object (value, self->snet);
       break;
@@ -606,10 +608,12 @@ bse_track_get_property (GObject    *object,
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_OUTPUTS:
+#if 0
       iseq = bse_it3m_seq_new();
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
         bse_it3m_seq_append (iseq, (BseItem*) ring->data);
       g_value_take_boxed (value, iseq);
+#endif
       break;
     case PROP_WAVE:
       bse_value_set_object (value, self->wave);
@@ -1095,11 +1099,13 @@ bse_track_class_init (BseTrackClass *klass)
 			      PROP_PNET,
 			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
 						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
+#if 0
   bse_object_class_add_param (object_class, _("Signal Outputs"),
                               PROP_OUTPUTS,
                               bse_param_spec_boxed ("outputs", _("Output Signals"),
                                                     _("Mixer busses used as output for this track"),
                                                     BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
+#endif
 }
 
 namespace Bse {

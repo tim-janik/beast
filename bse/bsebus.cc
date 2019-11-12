@@ -370,16 +370,20 @@ bse_bus_set_property (GObject      *object,
     {
     case PROP_INPUTS:
       {
+#if 0
         BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
         Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
         bse_bus_set_inputs (self, items);
+#endif
       }
       break;
     case PROP_OUTPUTS:
       {
+#if 0
         BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
         Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
         bse_bus_or_track_set_outputs (BSE_ITEM (self), items);
+#endif
       }
       break;
     case PROP_SNET:
@@ -400,16 +404,19 @@ bse_bus_get_property (GObject    *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
-      BseIt3mSeq *iseq;
-      SfiRing *ring;
+      // BseIt3mSeq *iseq;
+      // SfiRing *ring;
     case PROP_INPUTS:
+#if 0
       iseq = bse_it3m_seq_new();
       ring = bse_bus_list_inputs (self);
       while (ring)
         bse_it3m_seq_append (iseq, (BseItem*) sfi_ring_pop_head (&ring));
       g_value_take_boxed (value, iseq);
+#endif
       break;
     case PROP_OUTPUTS:
+#if 0
       iseq = bse_it3m_seq_new();
       ring = bse_bus_list_outputs (self);
       while (ring)
@@ -417,6 +424,7 @@ bse_bus_get_property (GObject    *object,
       if (!ring && get_master (self) == self)
         bse_it3m_seq_append (iseq, BSE_ITEM (self)->parent);    /* requires proxy_notifies on parent */
       g_value_take_boxed (value, iseq);
+#endif
       break;
     case PROP_SNET:
       g_object_get_property (G_OBJECT (self), "BseSubSynth::snet", value);
@@ -642,8 +650,8 @@ bse_bus_connect_unchecked (BseBus  *self,
       self->inputs = sfi_ring_append (self->inputs, trackbus);
       trackbus_update_outputs (trackbus, self, NULL);
       bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
-      g_object_notify (G_OBJECT (self), "inputs");
-      g_object_notify (G_OBJECT (trackbus), "outputs");
+      // g_object_notify (G_OBJECT (self), "inputs");
+      // g_object_notify (G_OBJECT (trackbus), "outputs");
     }
   return error;
 }
@@ -666,8 +674,8 @@ bse_bus_disconnect (BseBus  *self,
   trackbus_update_outputs (trackbus, NULL, self);
   Bse::Error error1 = bse_source_unset_input (self->summation, 0, osource, 0);
   Bse::Error error2 = bse_source_unset_input (self->summation, 1, osource, 1);
-  g_object_notify (G_OBJECT (self), "inputs");
-  g_object_notify (G_OBJECT (trackbus), "outputs");
+  // g_object_notify (G_OBJECT (self), "inputs");
+  // g_object_notify (G_OBJECT (trackbus), "outputs");
   return error1 != 0 ? error1 : error2;
 }
 
@@ -809,6 +817,7 @@ bse_bus_class_init (BseBusClass *klass)
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
 
+#if 0
   bse_object_class_add_param (object_class, _("Signal Inputs"),
                               PROP_INPUTS,
                               /* SYNC: type partitions determine the order of displayed objects */
@@ -823,6 +832,7 @@ bse_bus_class_init (BseBusClass *klass)
                               bse_param_spec_boxed ("outputs", _("Output Signals"),
                                                     _("Mixer busses used as output for synthesis signals"),
                                                     BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
+#endif
   bse_object_class_add_param (object_class, NULL, PROP_SNET, bse_param_spec_object ("snet", NULL, NULL, BSE_TYPE_CSYNTH, SFI_PARAM_READWRITE ":skip-undo"));
 
   channel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
