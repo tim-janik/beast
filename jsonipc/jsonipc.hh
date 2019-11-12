@@ -9,8 +9,10 @@
 #include <cxxabi.h> // abi::__cxa_demangle
 #include <algorithm>
 #include <functional>
+#include <typeindex>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 #include <map>
 #include <set>
 
@@ -105,28 +107,52 @@ get___typename__ (const T &o)
   return rtti_typename (o);
 }
 
+// == Forward Decls ==
+class InstanceMap;
+template<typename> struct Class;
+
 // == Scope ==
+/// Keep track of temporary instances during IpcDispatcher::dispatch_message().
 class Scope {
-  static std::vector<Scope*>& stack() { static thread_local std::vector<Scope*> stack_; return stack_; }
   std::vector<std::shared_ptr<void>> locals_;
+  InstanceMap                       &instance_map_;
+  static std::vector<Scope*>&
+  stack()
+  {
+    static thread_local std::vector<Scope*> stack_;
+    return stack_;
+  }
+  static Scope*
+  head()
+  {
+    auto &stack_ = stack();
+    return stack_.empty() ? nullptr : stack_.back();
+  }
 public:
-  static Scope* head()  { auto &stack_ = stack(); return stack_.empty() ? NULL : stack_.back(); }
   template<typename T> static std::shared_ptr<T>
   make_shared ()
   {
-    auto &stack_ = stack();
-    if (stack_.empty())
-      return NULL;
-    std::shared_ptr<T> sptr = std::make_shared<T>();
-    head()->add_shared_ptr (sptr);
+    Scope *scope = head();
+    if (!scope)
+      throw std::logic_error ("Jsonipc::Scope::make_shared(): invalid Scope: nullptr");
+    std::shared_ptr<T> sptr;
+    if (scope)
+      {
+        sptr = std::make_shared<T>();
+        scope->locals_.push_back (sptr);
+      }
     return sptr;
   }
-  void
-  add_shared_ptr (const std::shared_ptr<void> &sptr)
+  static InstanceMap*
+  instance_map ()
   {
-    locals_.push_back (sptr);
+    Scope *scope = head();
+    if (!scope)
+      throw std::logic_error ("Jsonipc::Scope::instance_map(): invalid Scope: nullptr");
+    return scope ? &scope->instance_map_ : nullptr;
   }
-  Scope()
+  Scope (InstanceMap &instance_map) :
+    instance_map_ (instance_map)
   {
     auto &stack_ = stack();
     stack_.push_back (this);
@@ -425,54 +451,123 @@ call_from_json (T &obj, const F &func, const CallbackInfo &args)
 }
 
 // == InstanceMap ==
-struct InstanceMap {
-  struct Wrapper {
-    virtual         ~Wrapper      () {}
-    virtual void     upcast       (const std::string &baseclass, void *sptrB) = 0;
-    virtual Closure* find_closure (const char *method) = 0;
+class InstanceMap {
+  struct TypeidKey {
+    const std::type_index tindex; void *ptr;
+    bool
+    operator< (const TypeidKey &other) const noexcept
+    {
+      return tindex < other.tindex || (tindex == other.tindex && ptr < other.ptr);
+    }
   };
-  static Wrapper*
-  lookup (size_t thisid)
+public:
+  class Wrapper {
+    virtual TypeidKey typeid_key     () = 0;
+    virtual          ~Wrapper        () {}
+    friend            class InstanceMap;
+  public:
+    virtual Closure*  lookup_closure (const char *method) = 0;
+    virtual void      try_upcast     (const std::string &baseclass, void *sptrB) = 0;
+  };
+private:
+  template<typename T>
+  class InstanceWrapper : public Wrapper {
+    std::shared_ptr<T> sptr_;
+    virtual
+    ~InstanceWrapper ()
+    {
+      // printf ("InstanceMap::Wrapper: %s: deleting %s wrapper: %p\n", __func__, rtti_typename<T>().c_str(), sptr_.get());
+    }
+  public:
+    explicit  InstanceWrapper (const std::shared_ptr<T> &sptr) : sptr_ (sptr) {}
+    Closure*  lookup_closure  (const char *method) override { return Class<T>::lookup_closure (method); }
+    TypeidKey typeid_key      () override { return create_typeid_key (sptr_); }
+    void      try_upcast      (const std::string &baseclass, void *sptrB) override
+    { Class<T>::try_upcast (sptr_, baseclass, sptrB); }
+    static TypeidKey
+    create_typeid_key (const std::shared_ptr<T> &sptr)
+    {
+      return { typeid (T), sptr.get() };
+    }
+  };
+  using WrapperMap = std::unordered_map<size_t, Wrapper*>;
+  using TypeidMap = std::map<TypeidKey, size_t>;
+  WrapperMap         wmap_;
+  TypeidMap          typeid_map_;
+  static size_t      next_counter() { static size_t counter_ = 0; return ++counter_; }
+public:
+  ~InstanceMap()
   {
-    auto &wmap_ = wmap();
-    auto it = wmap_.find (thisid);
-    if (it != wmap_.end())
-      return it->second;
-    return NULL;
+    WrapperMap old;
+    std::swap (old, wmap_);
+    typeid_map_.clear();
+    for (auto &pair : old)
+      {
+        Wrapper *wrapper = pair.second;
+        delete wrapper;
+      }
+    JSONIPC_ASSERT_RETURN (wmap_.size() == 0); // deleters shouldn't re-add
+    JSONIPC_ASSERT_RETURN (typeid_map_.size() == 0); // deleters shouldn't re-add
   }
-  static size_t
-  add (Wrapper *wrapper)
+  template<typename T> static size_t
+  make_wrapper_id (const std::shared_ptr<T> &sptr)
   {
-    auto &wmap_ = wmap();
+    JSONIPC_ASSERT_RETURN (sptr.get() != nullptr, 0);
+    const TypeidKey tkey = InstanceWrapper<T>::create_typeid_key (sptr);
+    InstanceMap *imap = Scope::instance_map();
+    auto it = imap->typeid_map_.find (tkey);
+    if (it != imap->typeid_map_.end())
+      return it->second;
     const size_t id = next_counter();
-    wmap_[id] = wrapper;
+    imap->wmap_[id] = new InstanceWrapper<T> (sptr);
+    imap->typeid_map_[tkey] = id;
     return id;
+    /* A note about TypeidKey:
+     * Two tuples (TypeX,ptr0x123) and (TypeY,ptr0x123) holding the same pointer address can
+     * occur if the RTII lookup to determine the actual Wrapper class fails, e.g. when
+     * Class<MostDerived> is unregisterd. In this case, ptr0x123 can be wrapped multiple
+     * times through different base classes.
+     */
   }
   static bool
-  remove (size_t thisid)
+  forget_id (size_t thisid)
   {
-    auto &wmap_ = wmap();
-    auto it = wmap_.find (thisid);
-    if (it != wmap_.end())
+    InstanceMap *imap = Scope::instance_map();
+    auto &wmap_ = imap->wmap_;
+    auto &typeid_map_ = imap->typeid_map_;
+    const auto w = wmap_.find (thisid);
+    if (w != wmap_.end())
       {
-        Wrapper *wrapper = it->second;
-        wmap_.erase (it);
+        Wrapper *wrapper = w->second;
+        wmap_.erase (w);
+        const auto t = typeid_map_.find (wrapper->typeid_key());
+        if (t != typeid_map_.end())
+          typeid_map_.erase (t);
         delete wrapper;
         return true;
       }
     return false;
   }
-private:
-  using WrapperMap = std::map<size_t, Wrapper*>;
-  static WrapperMap& wmap        () { static WrapperMap wmap_; return wmap_; }
-  static size_t      next_counter() { static size_t counter_ = 0; return ++counter_; }
+  static Wrapper*
+  lookup_wrapper (size_t thisid)
+  {
+    InstanceMap *imap = Scope::instance_map();
+    if (imap)
+      {
+        auto &wmap_ = imap->wmap_;
+        auto it = wmap_.find (thisid);
+        if (it != wmap_.end())
+          return it->second;
+      }
+    return nullptr;
+  }
 };
 
 inline Closure*
 CallbackInfo::find_closure (const char *methodname)
 {
-  InstanceMap::Wrapper *wrapper = InstanceMap::lookup (thisid());
-  return wrapper ? wrapper->find_closure (methodname) : NULL;
+  InstanceMap::Wrapper *wrapper = InstanceMap::lookup_wrapper (thisid());
+  return wrapper ? wrapper->lookup_closure (methodname) : NULL;
 }
 
 // == ClassPrinter ==
@@ -841,7 +936,7 @@ private:
 };
 
 // == Helper for known derived classes by RTTI typename ==
-using WrapObjectFromBase = size_t (const std::string&, void*, bool*);
+using WrapObjectFromBase = size_t (const std::string&, void*);
 
 // This *MUST* use `extern inline` for the ODR to apply to its `static` variable
 extern inline WrapObjectFromBase*
@@ -930,49 +1025,21 @@ struct Class : TypeInfo {
   {
     if (thisid)
       {
-        InstanceMap::Wrapper *iw = InstanceMap::lookup (thisid);
+        InstanceMap::Wrapper *iw = InstanceMap::lookup_wrapper (thisid);
         if (iw)
           {
-            std::shared_ptr<T> base_sptr = NULL;
-            iw->upcast (classname(), &base_sptr);
+            std::shared_ptr<T> base_sptr = nullptr;
+            iw->try_upcast (classname(), &base_sptr);
             if (base_sptr)
               return base_sptr;
           }
       }
-    return NULL;
+    return nullptr;
   }
   static size_t
-  wrap_object (const std::shared_ptr<T> &sptr, bool *newly_added = NULL)
+  wrap_object (const std::shared_ptr<T> &sptr)
   {
-    JSONIPC_ASSERT_RETURN (sptr != nullptr, 0);
-    auto it = idmap().find (sptr.get());
-    if (it != idmap().end())
-      {
-        if (newly_added)
-          *newly_added = false;
-        return it->second;
-      }
-    const size_t id = InstanceMap::add (new InstanceConverter (sptr));
-    idmap()[sptr.get()] = id;
-    if (newly_added)
-      *newly_added = true;
-    return id;
-  }
-  static bool
-  forget_object (T *ptr)
-  {
-    IdMap &imap = idmap();
-    if (ptr)
-      {
-        auto it = imap.find (ptr);
-        if (it != imap.end())
-          {
-            const size_t thisid = it->second;
-            return InstanceMap::remove (thisid);
-            // ^^^^^^^^^^^^^^^^^^^^^^^ deletes Wrapper which updates idmap, so it is invalidated
-          }
-      }
-    return false;
+    return InstanceMap::make_wrapper_id<T> (sptr);
   }
   static std::shared_ptr<T>
   convert_from_json (const JsonValue &value)
@@ -1039,22 +1106,20 @@ private:
       throw std::runtime_error ("duplicate method registration: " + name);
     mmap.insert (std::make_pair<std::string, Closure> (name.c_str(), std::move (closure)));
   }
-  using IdMap     = std::map<T*, size_t>;
   using MethodMap = std::map<std::string, Closure>;
-  static IdMap&     idmap    () { static IdMap idmap_;         return idmap_; }
   static MethodMap& methodmap() { static MethodMap methodmap_; return methodmap_; }
   struct BaseInfo {
     std::string basetypename;
     bool      (*upcast_impl)    (const std::shared_ptr<T>&, const std::string&, void*) = NULL;
     bool      (*downcast_impl)  (const std::string&, void*, std::shared_ptr<T>*) = NULL;
-    Closure*  (*closure_lookup) (const char*) = NULL;
+    Closure*  (*lookup_closure) (const char*) = NULL;
   };
   using BaseVec   = std::vector<BaseInfo>;
   template<typename B> void
   add_base ()
   {
     BaseVec &bvec = basevec();
-    BaseInfo binfo { typename_of<B>(), &upcast_impl<B>, &Class<B>::template downcast_impl<T>, &Class<B>::closure_lookup, };
+    BaseInfo binfo { typename_of<B>(), &upcast_impl<B>, &Class<B>::template downcast_impl<T>, &Class<B>::lookup_closure, };
     for (const auto &it : bvec)
       if (it.basetypename == binfo.basetypename)
         throw std::runtime_error ("duplicate base registration: " + binfo.basetypename);
@@ -1063,38 +1128,15 @@ private:
     bvec.push_back (binfo);
   }
   static BaseVec&   basevec  () { static BaseVec basevec_;     return basevec_; }
-  struct InstanceConverter : InstanceMap::Wrapper {
-    explicit      InstanceConverter (const std::shared_ptr<T> &sptr) :
-      sptr_ (sptr)
-    {}
-    virtual      ~InstanceConverter ()
-    {
-      idmap().erase (sptr_.get());
-    }
-    virtual Closure*
-    find_closure (const char *method) override
-    {
-      return closure_lookup (method);
-    }
-    virtual void
-    upcast (const std::string &baseclass, void *sptrB) override
-    {
-      upcast_lookup (sptr_, baseclass, sptrB);
-    }
-  private:
-    std::shared_ptr<T> sptr_;
-  };
   static size_t
-  wrap_object_from_base (const std::string &baseclass, void *sptrB, bool *newly_added = NULL)
+  wrap_object_from_base (const std::string &baseclass, void *sptrB)
   {
     std::shared_ptr<T> sptr;
     downcast_impl<T> (baseclass, sptrB, &sptr);
-    if (newly_added)
-      *newly_added = false;
     if (sptr)
       {
         JSONIPC_ASSERT_RETURN (rtti_typename (*sptr) == rtti_typename<T>(), 0);
-        return wrap_object (sptr, newly_added);
+        return wrap_object (sptr);
       }
     return 0;
   }
@@ -1102,11 +1144,11 @@ private:
   upcast_impl (const std::shared_ptr<T> &sptr, const std::string &baseclass, void *sptrB)
   {
     std::shared_ptr<B> bptr = sptr;
-    return Class<B>::upcast_lookup (bptr, baseclass, sptrB);
+    return Class<B>::try_upcast (bptr, baseclass, sptrB);
   }
 public:
   static Closure*
-  closure_lookup (const char *methodname)
+  lookup_closure (const char *methodname)
   {
     MethodMap &mmap = methodmap();
     auto it = mmap.find (methodname);
@@ -1115,14 +1157,14 @@ public:
     BaseVec &bvec = basevec();
     for (const auto &base : bvec)
       {
-        Closure *closure = base.closure_lookup (methodname);
+        Closure *closure = base.lookup_closure (methodname);
         if (closure)
           return closure;
       }
     return NULL;
   }
   static bool
-  upcast_lookup (std::shared_ptr<T> &sptr, const std::string &baseclass, void *sptrB)
+  try_upcast (std::shared_ptr<T> &sptr, const std::string &baseclass, void *sptrB)
   {
     if (classname() == baseclass)
       {
@@ -1191,7 +1233,7 @@ struct Convert<std::shared_ptr<T>, REQUIRESv< IsWrappableClass<T>::value >> {
         WrapObjectFromBase *wrap_object_from_base = can_wrap_object_from_base (wraptype);
         std::string basetype = rtti_typename<T>();
         if (wrap_object_from_base)
-          thisid = wrap_object_from_base (basetype, const_cast<std::shared_ptr<T>*> (&sptr), NULL);
+          thisid = wrap_object_from_base (basetype, const_cast<std::shared_ptr<T>*> (&sptr));
         // fallback to wrap sptr as baseclass T
         if (!thisid)
           {
@@ -1208,11 +1250,11 @@ struct Convert<std::shared_ptr<T>, REQUIRESv< IsWrappableClass<T>::value >> {
 };
 
 /// Clear wrapped Class from lookup table
-template<typename T> static inline bool
-forget_json (const T &value)
+static inline void
+forget_json_id (size_t id)
 {
-  using ClassType = typename std::remove_cv<T>::type;
-  return Class<ClassType>::forget_object (const_cast<T*> (&value));
+  InstanceMap *imap = Scope::instance_map();
+  imap->forget_id (id);
 }
 
 /// Convert wrapped Class pointer
@@ -1274,10 +1316,10 @@ struct IpcDispatcher {
   {
     extra_methods[methodname] = closure;
   }
+  // Dispatch JSON message and return result. Requires a live Scope instance in the current thread.
   std::string
   dispatch_message (const std::string &message)
   {
-    Scope temporary_scope; // needed by serialize_from_json
     rapidjson::Document document;
     document.Parse (message.data(), message.size());
     size_t id = 0;
