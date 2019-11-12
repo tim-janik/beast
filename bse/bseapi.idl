@@ -1196,10 +1196,6 @@ interface SoundFontRepo : Super {
   Error remove_sound_font (SoundFont sound_font);     ///< Remove a sound font from repository.
 };
 
-/// Interface for MIDI event notification.
-interface MidiNotifier : Item {
-};
-
 /// Interface for MIDI synthesis networks.
 interface MidiSynth : SNet {
   group _("MIDI Instrument") {
@@ -1255,7 +1251,6 @@ interface Project : Container {
   SoundFontRepo get_sound_font_repo ();            ///< Retrieve the project's unique sound font repository.
   CSynth       create_csynth       (String name); ///< Create a synthsizer network for this project.
   MidiSynth    create_midi_synth   (String name); ///< Create a MIDI synthesizer network for this project.
-  MidiNotifier get_midi_notifier   ();            ///< Retrieve the project's midi notifier object.
   void         remove_snet         (SNet snet);   ///< Remove an existing synthesizer network from this project.
   Error        restore_from_file   (String file_name); ///< Load a project from file.
   /// Inject a MIDI control event into the project's MIDI receiver.

@@ -5,7 +5,6 @@
 #include "bseengine.hh"
 #include "bsemathsignal.hh"
 #include "bsecxxutils.hh"
-#include "bsemidinotifier.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <bse/gbsearcharray.hh>
@@ -2193,9 +2192,6 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
     }
   else
     return FALSE;
-
-  if (need_wakeup)
-    bse_midi_notifiers_wakeup();
 
   return TRUE;
 }

@@ -197,7 +197,6 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 #include "bsecontextmerger.hh"
 #include "bsecsynth.hh"
 #include "bseeditablesample.hh"
-#include "bsemidinotifier.hh"
 #include "bsemidisynth.hh"
 #include "bsepart.hh"
 #include "module.hh"

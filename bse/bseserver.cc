@@ -3,7 +3,6 @@
 #include "bseproject.hh"
 #include "bseengine.hh"
 #include "gslcommon.hh"
-#include "bsemidinotifier.hh"
 #include "bsemain.hh"		/* threads enter/leave */
 #include "bsepcmwriter.hh"
 #include "bsecxxplugin.hh"
@@ -119,9 +118,6 @@ bse_server_init (BseServer *self)
 
   /* start dispatching main thread stuff */
   main_thread_source_setup (self);
-
-  /* dispatch midi notifiers */
-  bse_midi_notifiers_attach_source();
 }
 
 static void

@@ -56,7 +56,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsemidievent.hh		\
 	bse/bsemidifile.hh		\
 	bse/bsemidiinput.hh		\
-	bse/bsemidinotifier.hh		\
 	bse/bsemidireceiver.hh		\
 	bse/bsemidisynth.hh		\
 	bse/bsemidivoice.hh		\
@@ -210,7 +209,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsemidievent.cc		\
 	bse/bsemidifile.cc		\
 	bse/bsemidiinput.cc		\
-	bse/bsemidinotifier.cc		\
 	bse/bsemidireceiver.cc		\
 	bse/bsemidisynth.cc		\
 	bse/bsemidivoice.cc		\

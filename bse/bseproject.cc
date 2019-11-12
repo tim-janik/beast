@@ -14,7 +14,6 @@
 #include "bsemain.hh"
 #include "bsestandardsynths.hh"
 #include "bsemidireceiver.hh"
-#include "bsemidinotifier.hh"
 #include "gslcommon.hh"
 #include "bseengine.hh"
 #include "bsepcmwriter.hh"
@@ -649,21 +648,6 @@ bse_project_create_intern_csynth (BseProject *self,
   BseCSynth *csynth = (BseCSynth*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_CSYNTH, base_name, NULL);
   bse_item_set_internal (BSE_ITEM (csynth), TRUE);
   return csynth;
-}
-
-BseMidiNotifier*
-bse_project_get_midi_notifier (BseProject *self)
-{
-  GSList *slist;
-  for (slist = self->items; slist; slist = slist->next)
-    if (BSE_IS_MIDI_NOTIFIER (slist->data))
-      return (BseMidiNotifier*) slist->data;
-
-  BseMidiNotifier *mnot = (BseMidiNotifier*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_MIDI_NOTIFIER,
-                                                                            "%bse-intern-midi-notifier", NULL);
-  bse_midi_notifier_set_receiver (mnot, self->midi_receiver);
-  bse_item_set_internal (BSE_ITEM (mnot), TRUE);
-  return mnot;
 }
 
 static void
@@ -1425,14 +1409,6 @@ ProjectImpl::get_sound_font_repo ()
   BseProject *self = as<BseProject*>();
   BseSoundFontRepo *sfrepo = bse_project_get_sound_font_repo (self);
   return sfrepo ? sfrepo->as<SoundFontRepoIfaceP>() : NULL;
-}
-
-MidiNotifierIfaceP
-ProjectImpl::get_midi_notifier ()
-{
-  BseProject *self = as<BseProject*>();
-  BseMidiNotifier *notifier = bse_project_get_midi_notifier (self);
-  return notifier ? notifier->as<MidiNotifierIfaceP>() : NULL;
 }
 
 } // Bse
