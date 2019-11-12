@@ -4,7 +4,6 @@
 
 #include <bse/bsesource.hh>
 #include <bse/bsecxxvalue.hh>
-#include <bse/bsecxxclosure.hh>
 
 namespace Bse {
 #define BSE_CXX_INSTANCE_OFFSET    BSE_CXX_SIZEOF (BseSource)

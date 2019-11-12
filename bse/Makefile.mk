@@ -23,7 +23,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsecsynth.hh		\
 	bse/bsecxxarg.hh		\
 	bse/bsecxxbase.hh		\
-	bse/bsecxxclosure.hh		\
 	bse/bsecxxmodule.hh		\
 	bse/bsecxxplugin.hh		\
 	bse/bsecxxutils.hh		\
@@ -40,7 +39,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseenums.hh			\
 	bse/bseexports.hh		\
 	bse/bsefilter.hh		\
-	bse/bsegenclosures.hh		\
 	bse/bseglobals.hh		\
 	bse/bseieee754.hh		\
 	bse/bseincluder.hh		\
@@ -175,7 +173,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsecsynth.cc		\
 	bse/bsecxxarg.cc		\
 	bse/bsecxxbase.cc		\
-	bse/bsecxxclosure.cc		\
 	bse/bsecxxmodule.cc		\
 	bse/bsecxxplugin.cc		\
 	bse/bsecxxutils.cc		\
