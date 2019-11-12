@@ -63,15 +63,23 @@ bse_instrument_input_set_parent (BseItem *item,
 {
   BseInstrumentInput *self = BSE_INSTRUMENT_INPUT (item);
 
-  if (item->parent)
-    g_signal_handlers_disconnect_by_func (item->parent, (void*) bse_instrument_input_reset_names, self);
+  delete self->pcon;
+  self->pcon = nullptr;
 
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
 
   if (item->parent)
-    g_signal_connect_swapped (item->parent, "port_unregistered",
-			      G_CALLBACK (bse_instrument_input_reset_names), self);
+    {
+      Bse::SNetImpl *snet = item->parent->as<Bse::SNetImpl*>();
+      if (snet)
+        {
+          Aida::IfaceEventConnection con = snet->on ("portunregistered", [self] (const Aida::Event &event) {
+              bse_instrument_input_reset_names (self);
+            });
+          self->pcon = new Aida::IfaceEventConnection (con);
+        }
+    }
   else
     bse_instrument_input_reset_names (self);
 }

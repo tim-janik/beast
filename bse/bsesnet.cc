@@ -52,7 +52,6 @@ static GSList*	 snet_context_children		 (BseContainer	 *container);
 
 /* --- variables --- */
 static GTypeClass          *parent_class = NULL;
-static guint		    signal_port_unregistered = 0;
 static const GBSearchConfig port_array_config = {
   sizeof (BseSNetPort),
   snet_ports_compare,
@@ -147,10 +146,11 @@ static gboolean
 snet_notify_port_unregistered (gpointer data)
 {
   BseSNet *snet = BSE_SNET (data);
+  Bse::SNetImpl *impl = snet->as<Bse::SNetImpl*>();
 
   BSE_THREADS_ENTER ();
   snet->port_unregistered_id = 0;
-  g_signal_emit (snet, signal_port_unregistered, 0);
+  impl->emit_event ("portunregistered");
   BSE_THREADS_LEAVE ();
 
   return FALSE;
@@ -849,7 +849,6 @@ static void
 bse_snet_class_init (BseSNetClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
 
@@ -869,8 +868,6 @@ bse_snet_class_init (BseSNetClass *klass)
   container_class->forall_items = bse_snet_forall_items;
   container_class->context_children = snet_context_children;
   container_class->release_children = bse_snet_release_children;
-
-  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseSNet)

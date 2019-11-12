@@ -16,7 +16,9 @@
 /* --- BseInstrumentInput source --- */
 
 struct BseInstrumentInput : BseSubIPort
-{};
+{
+  Aida::IfaceEventConnection *pcon = nullptr;
+};
 struct BseInstrumentInputClass : BseSubIPortClass
 {};
 
