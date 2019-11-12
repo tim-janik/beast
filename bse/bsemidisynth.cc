@@ -167,7 +167,6 @@ bse_midi_synth_set_property (GObject      *object,
         {
           if (self->snet)
             {
-              bse_object_unproxy_notifies (self->snet, self, "notify::snet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), midi_synth_uncross_snet);
               self->snet = NULL;
             }
@@ -175,7 +174,6 @@ bse_midi_synth_set_property (GObject      *object,
           if (self->snet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), midi_synth_uncross_snet);
-              bse_object_proxy_notifies (self->snet, self, "notify::snet");
             }
           g_object_set (self->sub_synth, /* no undo */
                         "snet", self->snet,
@@ -187,7 +185,6 @@ bse_midi_synth_set_property (GObject      *object,
         {
           if (self->pnet)
             {
-              bse_object_unproxy_notifies (self->pnet, self, "notify::pnet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), midi_synth_uncross_pnet);
               self->pnet = NULL;
             }
@@ -195,7 +192,6 @@ bse_midi_synth_set_property (GObject      *object,
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), midi_synth_uncross_pnet);
-              bse_object_proxy_notifies (self->pnet, self, "notify::pnet");
             }
           if (self->postprocess)
             g_object_set (self->postprocess, /* no undo */

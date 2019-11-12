@@ -135,7 +135,6 @@ clear_wave_and_esample (BseWaveOsc *self)
     {
       BseWave *wave = self->wave;
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wave), wave_osc_uncross_wave);
-      bse_object_unproxy_notifies (self->wave, self, "notify::wave");
       self->wave = NULL;
       bse_wave_osc_update_config_wchunk (self);
       bse_wave_osc_update_modules (self);
@@ -210,7 +209,6 @@ bse_wave_osc_set_property (GObject      *object,
           if (self->wave)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), wave_osc_uncross_wave);
-              bse_object_proxy_notifies (self->wave, self, "notify::wave");
               bse_wave_request_index (self->wave);
               bse_wave_osc_update_config_wchunk (self);
               bse_wave_osc_update_modules (self);

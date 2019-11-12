@@ -446,14 +446,8 @@ bse_bus_set_parent (BseItem *item,
   BseBus *self = BSE_BUS (item);
   self->solo_muted = FALSE;
 
-  if (item->parent)
-    bse_object_unproxy_notifies (item->parent, self, "notify::outputs");
-
   /* chain parent class' handler */
   BSE_ITEM_CLASS (bus_parent_class)->set_parent (item, parent);
-
-  if (item->parent)
-    bse_object_proxy_notifies (item->parent, self, "notify::outputs");
 
   while (self->inputs)
     bse_bus_disconnect (self, BSE_ITEM (self->inputs->data));
@@ -647,8 +641,6 @@ bse_bus_connect_unchecked (BseBus  *self,
       bse_source_must_set_input (self->summation, 1, osource, 1);
       self->inputs = sfi_ring_append (self->inputs, trackbus);
       trackbus_update_outputs (trackbus, self, NULL);
-      bse_object_proxy_notifies (trackbus, self, "notify::inputs");
-      bse_object_proxy_notifies (self, trackbus, "notify::outputs");
       bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
       g_object_notify (G_OBJECT (self), "inputs");
       g_object_notify (G_OBJECT (trackbus), "outputs");
@@ -669,8 +661,6 @@ bse_bus_disconnect (BseBus  *self,
     return Bse::Error::SOURCE_TYPE_INVALID;
   if (!osource || !self->summation || !sfi_ring_find (self->inputs, trackbus))
     return Bse::Error::SOURCE_PARENT_MISMATCH;
-  bse_object_unproxy_notifies (trackbus, self, "notify::inputs");
-  bse_object_unproxy_notifies (self, trackbus, "notify::outputs");
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
   self->inputs = sfi_ring_remove (self->inputs, trackbus);
   trackbus_update_outputs (trackbus, NULL, self);

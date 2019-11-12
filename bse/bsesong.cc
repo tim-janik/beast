@@ -143,7 +143,6 @@ bse_song_set_property (GObject      *object,
         {
           if (self->pnet)
             {
-              bse_object_unproxy_notifies (self->pnet, self, "notify::pnet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
               self->pnet = NULL;
             }
@@ -151,7 +150,6 @@ bse_song_set_property (GObject      *object,
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
-              bse_object_proxy_notifies (self->pnet, self, "notify::pnet");
             }
           if (self->postprocess)
             g_object_set (self->postprocess, /* no undo */

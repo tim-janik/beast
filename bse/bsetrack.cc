@@ -462,14 +462,12 @@ clear_snet_and_wave_and_sfpreset (BseTrack *self)
 		  NULL);
   if (self->snet)
     {
-      bse_object_unproxy_notifies (self->snet, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
       self->snet = NULL;
       g_object_notify ((GObject*) self, "snet");
     }
   if (self->wave)
     {
-      bse_object_unproxy_notifies (self->wave, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
       self->wave = NULL;
       g_object_notify ((GObject*) self, "wave");
@@ -483,7 +481,6 @@ clear_snet_and_wave_and_sfpreset (BseTrack *self)
     }
   if (self->sound_font_preset)
     {
-      bse_object_unproxy_notifies (self->sound_font_preset, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
       self->sound_font_preset = NULL;
       g_object_notify ((GObject *) self, "sound_font_preset");
@@ -518,7 +515,6 @@ bse_track_set_property (GObject      *object,
 	      if (self->snet)
 		{
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
-		  bse_object_proxy_notifies (self->snet, self, "changed");
 		}
 	      if (self->sub_synth)
 		g_object_set (self->sub_synth, /* no undo */
@@ -540,7 +536,6 @@ bse_track_set_property (GObject      *object,
 		{
 		  create_wnet (self, wave);
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
-		  bse_object_proxy_notifies (self->wave, self, "changed");
 		}
 	    }
 	}
@@ -558,7 +553,6 @@ bse_track_set_property (GObject      *object,
 		{
 		  create_sound_font_net (self, sound_font_preset);
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
-		  bse_object_proxy_notifies (self->sound_font_preset, self, "changed");
 		}
 	    }
 	}
@@ -568,7 +562,6 @@ bse_track_set_property (GObject      *object,
 	{
           if (self->pnet)
             {
-              bse_object_unproxy_notifies (self->pnet, self, "notify::pnet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), track_uncross_pnet);
               self->pnet = NULL;
             }
@@ -576,7 +569,6 @@ bse_track_set_property (GObject      *object,
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), track_uncross_pnet);
-              bse_object_proxy_notifies (self->pnet, self, "notify::pnet");
             }
           if (self->postprocess)
             g_object_set (self->postprocess, /* no undo */

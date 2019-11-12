@@ -169,31 +169,6 @@ void            bse_object_restore_finish       (BseObject      *object,
                                                  guint            vmajor,
                                                  guint            vminor,
                                                  guint            vmicro);
-void		bse_object_reemit_signal	(gpointer	 src_object,
-						 const gchar	*src_signal,
-						 gpointer	 dest_obejct,
-						 const gchar	*dest_signal);
-void		bse_object_remove_reemit	(gpointer	 src_object,
-						 const gchar	*src_signal,
-						 gpointer	 dest_object,
-						 const gchar	*dest_signal);
-static inline void
-bse_object_proxy_notifies	(gpointer	 src_object,
-				 gpointer	 dest_object,
-				 const gchar	*dest_signal)
-{
-  bse_object_reemit_signal (src_object, "notify::uname", dest_object, dest_signal);
-  bse_object_reemit_signal (src_object, "icon-changed", dest_object, dest_signal);
-}
-static inline void
-bse_object_unproxy_notifies	(gpointer	 src_object,
-				 gpointer	 dest_object,
-				 const gchar	*dest_signal)
-{
-  bse_object_remove_reemit (src_object, "notify::uname", dest_object, dest_signal);
-  bse_object_remove_reemit (src_object, "icon-changed", dest_object, dest_signal);
-}
-
 
 /* --- implementation details --- */
 extern GQuark bse_quark_uname;
