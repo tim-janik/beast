@@ -1430,7 +1430,6 @@ interface Server : Container {
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
   Project       create_project  (String project_name); ///< Create a new project (name is modified to be unique if necessary.
   Project       last_project    ();                    ///< Retrieve the last created project.
-  void          destroy_project (Project project);     ///< Destroy a previously created new project.
   AuxDataSeq     list_module_types ();                   ///< A list of Source type names for create_source().
   AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
   Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.

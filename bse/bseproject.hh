@@ -77,6 +77,7 @@ protected:
   virtual                   ~ProjectImpl         ();
 public:
   explicit                   ProjectImpl         (BseObject*);
+  static std::vector<ProjectImpl*> project_list  ();
   virtual bool               dirty               () const override;
   virtual void               dirty               (bool val) override;
   virtual void               change_name         (const String &name) override;

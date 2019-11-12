@@ -116,7 +116,6 @@ bse_server_init (BseServer *self)
   self->set_flag (BSE_ITEM_FLAG_SINGLETON);
 
   self->engine_source = NULL;
-  self->projects = NULL;
   self->dev_use_count = 0;
   self->pcm_imodule = NULL;
   self->pcm_omodule = NULL;
@@ -255,35 +254,11 @@ bse_server_get (void)
   return server;
 }
 
-BseProject*
-bse_server_find_project (BseServer   *server,
-			 const gchar *name)
-{
-  GList *node;
-
-  assert_return (BSE_IS_SERVER (server), NULL);
-  assert_return (name != NULL, NULL);
-
-  for (node = server->projects; node; node = node->next)
-    {
-      BseProject *project = (BseProject*) node->data;
-      gchar *uname = BSE_OBJECT_UNAME (project);
-
-      if (uname && strcmp (name, uname) == 0)
-	return project;
-    }
-  return NULL;
-}
-
 void
 bse_server_stop_recording (BseServer *self)
 {
-  GList *node;
-  for (node = self->projects; node; node = node->next)
-    {
-      BseProject *project = (BseProject*) node->data;
-      bse_project_stop_playback (project);
-    }
+  for (auto project : ProjectImpl::project_list())
+    project->stop_playback();
   self->wave_seconds = 0;
   g_free (self->wave_file);
   self->wave_file = NULL;
@@ -376,11 +351,10 @@ bse_server_shutdown (BseServer *self)
 {
   assert_return (BSE_IS_SERVER (self));
   // projects in playback can hold an open device use count
-  for (GList *node = self->projects; node; node = node->next)
+  for (auto project : ProjectImpl::project_list())
     {
-      BseProject *project = (BseProject*) node->data;
-      bse_project_stop_playback (project);
-      bse_project_deactivate (project);
+      project->stop_playback();
+      project->deactivate();
     }
   while (self->dev_use_count)
     bse_server_close_devices (self);
@@ -1006,61 +980,18 @@ ServerImpl::can_load (const String &file_name)
   return finfo != NULL;
 }
 
-static void
-release_project (BseProject *project, BseServer *server)
-{
-  server->projects = g_list_remove (server->projects, project);
-  bse_item_unuse (project);
-}
-
 ProjectIfaceP
 ServerImpl::create_project (const String &project_name)
 {
-  BseServer *server = as<BseServer*>();
-  /* enforce unique name */
-  guint num = 1;
-  gchar *uname = g_strdup (project_name.c_str());
-  while (bse_server_find_project (server, uname))
-    {
-      g_free (uname);
-      uname = g_strdup_format ("%s-%u", project_name.c_str(), num++);
-    }
-  /* create project */
-  BseProject *project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", uname, NULL);
-  bse_item_use (project);
-  server->projects = g_list_prepend (server->projects, project);
-  g_object_unref (project);
-  g_free (uname);
-  g_object_connect (project,
-		    "signal::release", release_project, server,
-		    NULL);
+  BseProject *project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", project_name.c_str(), NULL);
   return project->as<ProjectIfaceP>();
 }
 
 ProjectIfaceP
 ServerImpl::last_project ()
 {
-  BseServer *server = as<BseServer*>();
-  if (server->projects)
-    {
-      BseProject *project = (BseProject*) server->projects->data;
-      return project->as<ProjectIfaceP>();
-    }
-  return nullptr;
-}
-
-void
-ServerImpl::destroy_project (ProjectIface &project_iface)
-{
-  BseServer *server = as<BseServer*>();
-  BseProject *project = project_iface.as<BseProject*>();
-  bool project_found_and_destroyed = false;
-  if (g_list_find (server->projects, project))
-    {
-      g_object_run_dispose (project);
-      project_found_and_destroyed = true;
-    }
-  assert_return (project_found_and_destroyed);
+  auto projectlist = ProjectImpl::project_list();
+  return !projectlist.empty() ? projectlist.back()->as<ProjectIfaceP>() : nullptr;
 }
 
 struct AuxDataAndIcon : AuxData {

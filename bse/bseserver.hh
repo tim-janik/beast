@@ -14,7 +14,6 @@
 
 struct BseServer : BseContainer {
   GSource	  *engine_source;
-  GList	          *projects;
   GSList	  *children;
   gchar		  *wave_file;
   double           wave_seconds;
@@ -28,7 +27,6 @@ struct BseServerClass : BseContainerClass
 {};
 
 BseServer*  bse_server_get			  (void);
-BseProject* bse_server_find_project		  (BseServer *server, const char *name);
 void        bse_server_stop_recording             (BseServer *server);
 void        bse_server_start_recording            (BseServer *server, const char *wave_file, double n_seconds);
 Bse::Error  bse_server_open_devices		  (BseServer *server);
@@ -105,7 +103,6 @@ public:
   virtual bool   can_load                (const String &file_name) override;
   virtual ProjectIfaceP create_project   (const String &project_name) override;
   virtual ProjectIfaceP last_project     () override;
-  virtual void          destroy_project  (ProjectIface &project) override;
   virtual AuxDataSeq list_module_types      () override;
   virtual AuxData    find_module_type       (const String &module_type) override;
   virtual Icon       module_type_icon       (const String &module_type) override;

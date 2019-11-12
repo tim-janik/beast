@@ -913,9 +913,31 @@ bse_project_deactivate (BseProject *self)
 
 namespace Bse {
 
+static std::vector<ProjectImpl*>&
+projectlist()
+{
+  // use new() to keep the list alive during atexit handlers
+  static auto &projectlist_ = *new std::vector<ProjectImpl*>();
+  return projectlist_;
+}
+
 ProjectImpl::ProjectImpl (BseObject *bobj) :
   ContainerImpl (bobj)
-{}
+{
+  projectlist().push_back (this);
+}
+
+ProjectImpl::~ProjectImpl ()
+{
+  auto &projectlist_ = projectlist();
+  projectlist_.erase (std::remove (projectlist_.begin(), projectlist_.end(), this), projectlist_.end());
+}
+
+std::vector<ProjectImpl*>
+ProjectImpl::project_list ()
+{
+  return projectlist();
+}
 
 void
 ProjectImpl::post_init()
@@ -959,9 +981,6 @@ ProjectImpl::xml_reflink (SerializationNode &xs)
 {
   ContainerImpl::xml_reflink (xs);
 }
-
-ProjectImpl::~ProjectImpl ()
-{}
 
 bool
 ProjectImpl::dirty() const

@@ -228,7 +228,7 @@ module.exports = {
 	  this.notifynameclear();
 	  this.open_part_edit (undefined);
 	  this.project.stop();
-	  Bse.server.destroy_project (this.project);
+	  this.project = null; // TODO: should trigger FinalizationGroup
 	}
       // reaplce project & song without await, to synchronously trigger Vue updates for both
       this.project = newproject;
