@@ -15,5 +15,8 @@ $(OBJECTS): %.o: %.cc $(DEPS)
 testjsonipc: $(OBJECTS) Makefile
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) -lboost_system
 
+check: testjsonipc
+	./testjsonipc
+
 clean:
 	rm -f $(OBJECTS) testjsonipc
