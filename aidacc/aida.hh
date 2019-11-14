@@ -109,7 +109,6 @@ typedef std::vector<String> StringVector;
 // == Forward Declarations ==
 class Any;
 class Event;
-class RemoteHandle;
 class ImplicitBase;
 class ExecutionContext;
 class CallableIface;
@@ -151,9 +150,6 @@ template<class T, typename = void> struct DerivesVector : std::false_type {};
 // use void_t to prevent errors for T without vector's typedefs
 template<class T> struct DerivesVector<T, void_t< typename T::value_type, typename T::allocator_type > > :
     std::is_base_of< std::vector<typename T::value_type, typename T::allocator_type>, T > {};
-
-/// IsRemoteHandleDerived<T> - Check if @a T derives from Aida::RemoteHandle.
-template<class T> using IsRemoteHandleDerived = ::std::integral_constant<bool, ::std::is_base_of<RemoteHandle, T>::value>;
 
 /// IsImplicitBaseDerived<T> - Check if @a T derives from Aida::ImplicitBase.
 template<class T> using IsImplicitBaseDerived = ::std::integral_constant<bool, ::std::is_base_of<ImplicitBase, T>::value>;
@@ -420,7 +416,7 @@ enum TypeKind {
   ENUM           = 'E', ///< Enumeration type to represent choices.
   SEQUENCE       = 'Q', ///< Type to form sequences of an other type.
   RECORD         = 'R', ///< Record type containing named fields.
-  INSTANCE       = 'C', ///< RemoteHandle type.
+  INSTANCE       = 'C', ///< ImplicitBase type.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
 
@@ -460,154 +456,6 @@ public:
 template<class Y> struct ValueType           { typedef Y T; };
 template<class Y> struct ValueType<Y&>       { typedef Y T; };
 template<class Y> struct ValueType<const Y&> { typedef Y T; };
-
-// == RemoteHandle ==
-/// Handle for a remote object living in a different thread or process.
-class RemoteHandle {
-  ImplicitBaseP     iface_ptr_;
-  struct EventHandlerRelay;
-public:
-  struct EventConnection : private std::weak_ptr<EventHandlerRelay> {
-    friend class RemoteHandle;
-    bool   connected  () const;
-    void   disconnect () const;
-  };
-public:
-  explicit                RemoteHandle         () = default;
-  /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
-  virtual                ~RemoteHandle         ();
-  EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
-  std::string             __typename__         () const;
-  StringVector            __typelist__         () const;
-  ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
-  RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
-  // Compare and determine if this RemoteHandle contains an object or null handle.
-  explicit    operator bool () const noexcept               { return !! iface_ptr_; }
-  bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_; }
-  bool        operator!=    (std::nullptr_t) const noexcept { return !! iface_ptr_; }
-  bool        operator==    (const RemoteHandle &rh) const noexcept { return iface_ptr_ == rh.iface_ptr_; }
-  bool        operator!=    (const RemoteHandle &rh) const noexcept { return !operator== (rh); }
-  bool        operator<     (const RemoteHandle &rh) const noexcept { return iface_ptr_ < rh.iface_ptr_; }
-  bool        operator<=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ <= rh.iface_ptr_; }
-  bool        operator>     (const RemoteHandle &rh) const noexcept { return iface_ptr_ > rh.iface_ptr_; }
-  bool        operator>=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ >= rh.iface_ptr_; }
-  friend bool operator==    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd == nullp; }
-  friend bool operator!=    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd != nullp; }
-};
-using HandleEventConnection = RemoteHandle::EventConnection;
-
-// == RemoteMember ==
-template<class RemoteHandle>
-class RemoteMember : public RemoteHandle {
-public:
-  inline   RemoteMember (const RemoteHandle &src) : RemoteHandle() { *this = src; }
-  explicit RemoteMember () : RemoteHandle() {}
-  void     operator=   (const RemoteHandle &src) { RemoteHandle::operator= (src); }
-};
-
-/// Auxillary class for the ScopedHandle<> implementation.
-class DetacherHooks {
-  std::vector<HandleEventConnection> connections_;
-protected:
-  void __swap_hooks__   (DetacherHooks &other);
-  void __clear_hooks__  (RemoteHandle *scopedhandle);
-  void __manage_event__ (RemoteHandle *scopedhandle, const String &type, EventHandlerF handler);
-  void __manage_event__ (RemoteHandle *scopedhandle, const String &type, std::function<void()> vfunc);
-};
-
-/// ScopedHandle<> is a std::move()-only RemoteHandle with automatic event handler cleanup.
-template<class RH>
-class ScopedHandle : public RH, private DetacherHooks {
-  static_assert (std::is_base_of<Aida::RemoteHandle, RH>::value, "");
-public:
-  /*copy*/      ScopedHandle    (const ScopedHandle&) = delete; ///< Not copy-constructible
-  ScopedHandle& operator=       (const ScopedHandle&) = delete; ///< Not copy-assignable
-  explicit      ScopedHandle    () : RH() {}                    ///< Default constructor
-  ScopedHandle& operator=       (std::nullptr_t);               ///< Reset / unset handle
-  explicit      ScopedHandle    (ScopedHandle &&rh) noexcept;   ///< Move constructor
-  ScopedHandle& operator=       (ScopedHandle &&rh);            ///< Move assignment
-  explicit      ScopedHandle    (const RH &rh);                 ///< Construct via RemoteHandle copy
-  ScopedHandle& operator=       (const RH &rh);                 ///< Assignment via RemoteHandle
-  virtual      ~ScopedHandle    ();                             ///< Destructor for handler cleanups.
-  /// Attach event handler and automatically detach the handler when the ScopedHandle is deleted or re-assigned.
-  void          on              (const ::std::string &type, EventHandlerF handler);
-  /// Attach event handler and automatically detach the handler when the ScopedHandle is deleted or re-assigned.
-  void          on              (const ::std::string &type, std::function<void()> vfunc);
-  /// Copy as RemoteHandle
-  RH            __copy_handle__ () const  { return *this; }
-  // Provide RemoteHandle boolean operations
-  using         RH::operator==;
-  using         RH::operator!=;
-  using         RH::operator bool;
-};
-
-// == Implementations ==
-template<class RH> ScopedHandle<RH>&
-ScopedHandle<RH>::operator= (std::nullptr_t)
-{
-  this->DetacherHooks::__clear_hooks__ (this);
-  RH::operator= (RH());
-  return *this;
-}
-
-template<class RH>
-ScopedHandle<RH>::ScopedHandle (const RH &rh)
-{
-  /* NOTE: We cannot use the RH copy constructor here, because for that to work, the C++ standard
-   * requires us to know about *all* virtual base classes and copy-construct those for this case.
-   * That's impossible for a template argument, so we need to default construct and after that
-   * use assignment. See: https://stackoverflow.com/a/34995780 */
-  RH::operator= (rh);
-}
-
-template<class RH>
-ScopedHandle<RH>::ScopedHandle (ScopedHandle &&sh) noexcept
-{
-  RH::operator= (sh);
-  this->DetacherHooks::__swap_hooks__ (sh);
-}
-
-template<class RH> ScopedHandle<RH>&
-ScopedHandle<RH>::operator= (const RH &rh)
-{
-  if (this != &rh)
-    {
-      this->DetacherHooks::__clear_hooks__ (this);
-      RH::operator= (rh);
-    }
-  return *this;
-}
-
-template<class RH> ScopedHandle<RH>&
-ScopedHandle<RH>::operator= (ScopedHandle<RH> &&sh)
-{
-  if (this != &sh)
-    {
-      this->DetacherHooks::__clear_hooks__ (this); // may throw
-      RH &t = *this, &r = sh;
-      t = std::move (r);
-      this->DetacherHooks::__swap_hooks__ (sh);
-    }
-  return *this;
-}
-
-template<class RH>
-ScopedHandle<RH>::~ScopedHandle ()
-{
-  this->DetacherHooks::__clear_hooks__ (this);
-}
-
-template<class RH> void
-ScopedHandle<RH>::on (const ::std::string &type, ::Aida::EventHandlerF handler)
-{
-  this->DetacherHooks::__manage_event__ (this, type, handler);
-}
-
-template<class RH> void
-ScopedHandle<RH>::on (const ::std::string &type, ::std::function<void()> vfunc)
-{
-  this->DetacherHooks::__manage_event__ (this, type, vfunc);
-}
 
 // == Any Type ==
 class Any /// Generic value type that can hold values of all other types.
@@ -1010,50 +858,6 @@ private:
   IPtr   (T::*getter_) () const = NULL;
   void   (T::*setter_) (I*) = NULL;
 };
-
-// == RemoteHandle remote_call<> ==
-template<class T, class... I, class... A> inline void
-remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
-{
-  ScopedSemaphore sem;
-  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
-  std::function<void()> wrapper = [&sem, self, mfp, &args...] () {
-    (self->*mfp) (args...);
-    sem.post();
-  };
-  self->__execution_context_mt__().enqueue_mt (wrapper);
-  sem.wait();
-}
-
-template<class T, class R, class... I, class... A> inline R
-remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
-{
-  ScopedSemaphore sem;
-  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
-  R r {};
-  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
-    r = (self->*mfp) (args...);
-    sem.post();
-  };
-  self->__execution_context_mt__().enqueue_mt (wrapper);
-  sem.wait();
-  return r;
-}
-
-template<class T, class R, class... I, class... A> inline R
-remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
-{
-  ScopedSemaphore sem;
-  T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());
-  R r {};
-  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
-    r = (self->*mfp) (args...);
-    sem.post();
-  };
-  self->__execution_context_mt__().enqueue_mt (wrapper);
-  sem.wait();
-  return r;
-}
 
 } // Aida
 

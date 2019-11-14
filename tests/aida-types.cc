@@ -51,9 +51,6 @@ test_aida_cxxaux()
 TEST_ADD (test_aida_cxxaux);
 
 // Dummy handles for test purposes
-struct OneHandle : RemoteHandle {
-  static OneHandle __cast__ (RemoteHandle smh) { OneHandle oh; return oh; }
-};
 class OneIface :
     public virtual ImplicitBase,
     public virtual EnableSharedFromThis<OneIface>
@@ -64,7 +61,6 @@ public:
   explicit         OneIface (int64 id) : testid_ (id) {}
   typedef std::shared_ptr<OneIface> OneIfaceP;
   // static Aida::BaseConnection* __aida_connection__();
-  OneHandle                          __handle__               () { return OneHandle(); }
   virtual Aida::StringVector         __typelist_mt__          () const override { return { "OneIface" }; }
   virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
   virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
@@ -125,16 +121,6 @@ test_aida_enum_info()
   TASSERT (i != Aida::TypeKind::INT64);
 }
 TEST_ADD (test_aida_enum_info);
-
-static void
-test_aida_handles()
-{
-  // RemoteHandle
-  TASSERT (RemoteHandle() == NULL);
-  TASSERT (!RemoteHandle());
-  TASSERT (RemoteHandle().__iface_ptr__().get() == 0);
-}
-TEST_ADD (test_aida_handles);
 
 static void
 test_aida_any_basics()
