@@ -226,13 +226,12 @@ jobclient (int jobfd)
   return 0;
 }
 
-#include <unistd.h> // setsid
-#include <sys/wait.h> // waitpid
+#include <unistd.h>     // fork exec
+#include <sys/wait.h>   // waitpid
 
 static int
 jobserver (const char *const argv0, Bse::StringVector &tests)
 {
-  BSE_UNUSED const pid_t pgid = setsid();       // keep server and spawned jobs in the same process group
   std::reverse (tests.begin(), tests.end());    // the IpcSharedMem counter is decremented
   const std::string testlist = Bse::string_join ("\n", tests);
   int fd = -1;
