@@ -130,6 +130,10 @@ test_jsonipc (bool dispatcher_shell = false)
     .set ("randomize", &Derived::randomize)
     ;
 
+  // Provide scope and instance ownership during dispatch_message()
+  InstanceMap imap;
+  Scope temporary_scope (imap); // needed by to_/from_json and dispatcher
+
   // test bindings
   Derived obja ("obja");
   JSONIPC_ASSERT_RETURN (to_json (obja, a) == to_json (obja, a));
@@ -162,7 +166,6 @@ test_jsonipc (bool dispatcher_shell = false)
   JSONIPC_ASSERT_RETURN (&from_json<Derived&> (jvc) == &objc);
 
   // Serializable tests
-  Scope temporary_scope; // needed by serialize_from_json
   std::string result;
   Copyable c1 { 2345, -0.5, "ehlo" };
   JsonValue jvc1 = to_json (c1, a);
@@ -196,11 +199,11 @@ test_jsonipc (bool dispatcher_shell = false)
     }
 
   // unregister thisids for objects living on the stack
-  forget_json (obja);
+  forget_json_id (json_objectid (jva));
   JSONIPC_ASSERT_RETURN (from_json<Derived*> (jva) == nullptr);
-  forget_json (objb);
+  forget_json_id (json_objectid (jvb));
   JSONIPC_ASSERT_RETURN (from_json<Derived*> (jvb) == (Derived*) nullptr);
-  forget_json (objc);
+  forget_json_id (json_objectid (jvc));
   JSONIPC_ASSERT_RETURN (from_json<Derived*> (jvc) == (Derived*) nullptr);
 }
 

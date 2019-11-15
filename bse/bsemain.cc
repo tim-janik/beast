@@ -320,6 +320,21 @@ bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester
   return retval;
 }
 
+namespace Bse {
+void
+JobQueue::call_remote (const std::function<void()> &job)
+{
+  Aida::ScopedSemaphore sem;
+  std::function<void()> wrapper = [&sem, &job] () {
+    job();
+    sem.post();
+  };
+  bse_execution_context->enqueue_mt (wrapper);
+  sem.wait();
+}
+JobQueue jobs;
+} // Bse
+
 // == parse args ==
 static String argv_bse_rcfile;
 
