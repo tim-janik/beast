@@ -83,10 +83,6 @@ config-checks.require.pkgconfig ::= $(strip	\
 	gmodule-no-export-2.0	>= 2.32.3	\
 	gthread-2.0		>= 2.32.3	\
 	gobject-2.0		>= 2.32.3	\
-	libart-2.0		>= 2.3.8	\
-        pangoft2        	>= 1.30.0	\
-	gtk+-2.0		>= 2.12.12	\
-	libgnomecanvas-2.0	>= 2.4.0	\
 )
 # mad.pc exists in Debian only:	mad >= 0.14.2
 # boost libraries have no .pc files
@@ -94,8 +90,7 @@ config-checks.require.pkgconfig ::= $(strip	\
 
 # == pkg-config variables ==
 # used for GLIB_CFLAGS and GLIB_LIBS
-GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0
-GTK_PACKAGES     ::= gtk+-2.0 libgnomecanvas-2.0 zlib
+GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0 zlib
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
 BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
 # used for BSE_JACK_LIBS
@@ -154,10 +149,6 @@ $>/config-cache.mk: config-checks.mk version.sh $(GITCOMMITDEPS) | $>/./
 	  && $(call conftest_require_lib, boost/system/error_code.hpp, boost::system::system_category, $$BOOST_SYSTEM_LIBS)
 	$Q $(PKG_CONFIG) --exists 'vorbisfile <= 1.3.4' && BAD_SEEK=1 || BAD_SEEK=0 \
 	  && echo "VORBISFILE_BAD_SEEK ::= $$BAD_SEEK"		>>$@.tmp
-	$Q GTK_CFLAGS=$$($(PKG_CONFIG) --cflags $(GTK_PACKAGES)) \
-	  && echo "GTK_CFLAGS ::= $$GTK_CFLAGS"			>>$@.tmp
-	$Q GTK_LIBS=$$($(PKG_CONFIG) --libs $(GTK_PACKAGES)) \
-	  && echo "GTK_LIBS ::= $$GTK_LIBS"			>>$@.tmp
 	$Q echo 'config-stamps ::= $$>/config-stamps.sha256'	>>$@.tmp \
 	  && OLDSUM=$$(cat "$>/config-stamps.sha256" 2>/dev/null || :) \
 	  && TMPSUM=$$(sha256sum < $@.tmp) && CFGSUM="$${TMPSUM%-}$(@F)" \
