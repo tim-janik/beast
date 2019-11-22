@@ -37,7 +37,6 @@ fill_simple_data_pack (A1::SimpleDataPack &simple)
 
 struct A1DerivedImpl : public virtual A1::DerivedIface, public virtual EnableSharedFromThis<A1DerivedImpl> {
   virtual void                       self_args                (DerivedIface &self) override {}
-  virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
   virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
   { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }

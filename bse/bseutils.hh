@@ -81,9 +81,6 @@ namespace Bse {
 Icon icon_from_pixstream (const guint8 *pixstream);
 bool icon_sanitize (Icon *icon);
 
-// == main ==
-Aida::ExecutionContext& execution_context ();   // bsemain.cc
-
 // == memory ==
 struct SharedBlock {
   int32 mem_offset = 0;

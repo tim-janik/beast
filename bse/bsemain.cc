@@ -23,7 +23,6 @@ using namespace Bse;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
-static void     attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context);
 namespace Bse {
 static void     run_registered_driver_loaders();
 } // Bse
@@ -101,7 +100,6 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
 
 static_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN, "");
 
-static Aida::ExecutionContext *bse_execution_context = NULL;
 static std::atomic<bool> main_loop_thread_running { true };
 
 static void
@@ -175,12 +173,6 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
       TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
 
-  // enable handling of remote calls
-  assert_return (bse_execution_context == NULL);
-  bse_execution_context = Aida::ExecutionContext::new_context();
-  attach_execution_context (bse_main_context, bse_execution_context);
-  bse_execution_context->push_thread_current();
-
   // complete initialization
   bse_initialization_stage++;   // = 2
   init_queue->push ('B');       // signal completion to caller
@@ -233,15 +225,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   delete init_queue;
 }
 
-/// Attach execution_context to a GLib main loop context.
-static void
-attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context)
-{
-  GSource *gsource = execution_context->create_gsource ("BSE::ExecutionContext", BSE_PRIORITY_GLUE);
-  g_source_attach (gsource, gmaincontext);
-  g_source_unref (gsource);
-}
-
+/// Wake up the event loop in the BSE thread.
 void
 bse_main_wakeup ()
 {
@@ -491,13 +475,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 }
 
 namespace Bse {
-
-Aida::ExecutionContext&
-execution_context () // bseutils.hh
-{
-  assert_return (bse_execution_context != NULL, *bse_execution_context);
-  return *bse_execution_context;
-}
 
 // == Bse::GlobalConfig ==
 static Configuration global_config_rcsettings;

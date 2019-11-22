@@ -24,7 +24,6 @@ public:
   void              emit_event    (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
                                    const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
   // boilerplate
-  virtual Aida::ExecutionContext& __execution_context_mt__ () const override    { return execution_context(); }
   virtual Aida::IfaceEventConnection __attach__            (const String &eventselector, EventHandlerF handler) override
   { return event_dispatcher_.attach (eventselector, handler); }
   using EnableSharedFromThis<ObjectImpl>::shared_from_this;

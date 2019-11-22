@@ -110,7 +110,6 @@ typedef std::vector<String> StringVector;
 class Any;
 class Event;
 class ImplicitBase;
-class ExecutionContext;
 class CallableIface;
 class SharedFromThisIface;
 struct PropertyAccessor;
@@ -278,27 +277,6 @@ static_assert (sizeof (CastIffy) == sizeof (LongIffy), "CastIffy == LongIffy");
 static_assert (sizeof (UCastIffy) == sizeof (ULongIffy), "UCastIffy == ULongIffy");
 ///@}
 
-// == ExecutionContext ==
-class ExecutionContext {
-  struct Impl;
-  Impl &m;
-  explicit                 ExecutionContext ();
-  /*dtor*/                ~ExecutionContext ();
-public:
-  using                    Closure = std::function<void()>;
-  int                      notify_fd        ();
-  bool                     pending          ();
-  void                     dispatch         ();
-  void                     enqueue_mt       (const Closure &closure);
-  void                     enqueue_mt       (Closure *closure);
-  static ExecutionContext* new_context         ();
-  static ExecutionContext* get_current         ();
-  static void              pop_thread_current  ();
-  void                     push_thread_current ();
-  GSource*                 create_gsource      (const std::string &name, int priority = 0 /*G_PRIORITY_DEFAULT*/);
-  CallableIfaceP           adopt_deleter_mt    (const CallableIfaceP &sharedptr);
-};
-
 // == EventDispatcher ==
 class EventDispatcher {
   struct DispatcherImpl;
@@ -320,8 +298,6 @@ using IfaceEventConnection = EventDispatcher::EventConnection;
 // == CallableIface ==
 class CallableIface : public virtual SharedFromThis<CallableIface> {
 public:
-  /// Retrieve ExecutionContext, save to be called multi-threaded.
-  virtual ExecutionContext&    __execution_context_mt__ () const = 0;
   /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
   virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
   /// Retrieve the IDL type names of an instance, save to be called multi-threaded.
