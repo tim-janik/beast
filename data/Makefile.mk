@@ -3,33 +3,28 @@ include $(wildcard $>/data/*.d)
 CLEANDIRS += $(wildcard $>/data/)
 
 # == data/ files ==
-data/pc.dir			::= $(pkglibdir)/lib/pkgconfig
-data/pc.files			::= $>/data/bse.pc
-ALL_TARGETS			 += $(data/pc.files)
 #data/desktop.inputs		::= data/beast.desktop.in
-data/desktop.dir		::= $(pkglibdir)/share/applications
 data/desktop.files		::= $>/data/beast.desktop
 ALL_TARGETS			 += $(data/desktop.files)
-data/sharemime.dir		::= $(pkglibdir)/share/mime
 #data/mimepkgs.inputs 		::= data/beast.xml.in
-data/mimepkgs.dir		::= $(data/sharemime.dir)/packages
 data/mimepkgs.files		::= $>/data/beast.xml
 ALL_TARGETS			 += $(data/mimepkgs.files)
 #data/mimeinfo.inputs 		::= data/bse.keys.in data/bse.mime
-data/mimeinfo.dir		::= $(pkglibdir)/share/mime-info
 data/mimeinfo.files		::= $>/data/bse.keys $>/data/bse.mime
 ALL_TARGETS			 += $(data/mimeinfo.files)
 #data/applications.inputs	::= data/bse.keys.in data/bse.mime
-data/applications.dir		::= $(pkglibdir)/share/application-registry
 data/applications.files		::= $>/data/beast.applications
 ALL_TARGETS			 += $(data/applications.files)
+#data/pc.inputs			::= data/bse.pc.in
+data/pc.files			::= $>/data/bse.pc
+ALL_TARGETS			 += $(data/pc.files)
 
 # == installation rules ==
-$(call INSTALL_DATA_RULE, data/pc.files,           $(DESTDIR)$(data/pc.dir),           $(data/pc.files))
-$(call INSTALL_DATA_RULE, data/desktop.files,      $(DESTDIR)$(data/desktop.dir),      $(data/desktop.files))
-$(call INSTALL_DATA_RULE, data/mimeinfo.files,     $(DESTDIR)$(data/mimeinfo.dir),     $(data/mimeinfo.files))
-$(call INSTALL_DATA_RULE, data/mimepkgs.files,     $(DESTDIR)$(data/mimepkgs.dir),     $(data/mimepkgs.files))
-$(call INSTALL_DATA_RULE, data/applications.files, $(DESTDIR)$(data/applications.dir), $(data/applications.files))
+$(call INSTALL_DATA_RULE, data/pc.files,           $(DESTDIR)$(pkglibdir)/data/,       $(data/pc.files))
+$(call INSTALL_DATA_RULE, data/desktop.files,      $(DESTDIR)$(pkglibdir)/data/,       $(data/desktop.files))
+$(call INSTALL_DATA_RULE, data/mimeinfo.files,     $(DESTDIR)$(pkglibdir)/data/,       $(data/mimeinfo.files))
+$(call INSTALL_DATA_RULE, data/mimepkgs.files,     $(DESTDIR)$(pkglibdir)/data/,       $(data/mimepkgs.files))
+$(call INSTALL_DATA_RULE, data/applications.files, $(DESTDIR)$(pkglibdir)/data/,       $(data/applications.files))
 
 # == install symlinks ==
 # Create links from $(prefix) paths according to the FHS, into $(pkglibdir), see also:
@@ -40,8 +35,11 @@ data/install-prefix-symlinks: $(images/img.files) FORCE
 	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/beast.png',        '$(DESTDIR)$(datadir)/pixmaps/beast.png')
 	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/bse-mime.png',     '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png')
 	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.desktop',      '$(DESTDIR)$(datadir)/applications/beast.desktop')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.applications', '$(DESTDIR)$(datadir)/application-registry/beast.applications')
 	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.xml',          '$(DESTDIR)$(datadir)/mime/packages/beast.xml')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/bse.keys',           '$(DESTDIR)$(datadir)/mime-info/bse.keys')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/bse.mime',           '$(DESTDIR)$(datadir)/mime-info/bse.mime')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.applications', '$(DESTDIR)$(datadir)/application-registry/beast.applications')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/bse.pc',             '$(DESTDIR)$(pkglibdir)/lib/pkgconfig/bse.pc')
 	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/bin/beast',               '$(DESTDIR)$(bindir)/beast')
 install: data/install-prefix-symlinks
 data/uninstall-prefix-symlinks: FORCE
@@ -49,26 +47,29 @@ data/uninstall-prefix-symlinks: FORCE
 	$Q rm -f '$(DESTDIR)$(datadir)/pixmaps/beast.png'
 	$Q rm -f '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png'
 	$Q rm -f '$(DESTDIR)$(datadir)/applications/beast.desktop'
-	$Q rm -f '$(DESTDIR)$(datadir)/application-registry/beast.applications'
 	$Q rm -f '$(DESTDIR)$(datadir)/mime/packages/beast.xml'
+	$Q rm -f '$(DESTDIR)$(datadir)/mime-info/bse.keys'
+	$Q rm -f '$(DESTDIR)$(datadir)/mime-info/bse.mime'
+	$Q rm -f '$(DESTDIR)$(datadir)/application-registry/beast.applications'
+	$Q rm -f '$(DESTDIR)$(pkglibdir)/lib/pkgconfig/bse.pc'
 	$Q rm -f '$(DESTDIR)$(bindir)/beast'
 uninstall: data/uninstall-prefix-symlinks
 
 # == update Desktop/Mime caches after installation ==
 data/install.dbupdates: install--data/desktop.files install--data/mimeinfo.files install--data/mimepkgs.files
 	$(QECHO) RUN $@
-	$Q test ! -x '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(data/desktop.dir)'
+	$Q test ! -x '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(datadir)/applications/'
 	$Q test ! -x '$(UPDATE_MIME_DATABASE)' || \
-	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(data/sharemime.dir)/.." \
-	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(data/sharemime.dir)'
+	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(datadir)" \
+	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(datadir)/mime'
 install: data/install.dbupdates
 # We need to temporarily set XDG_DATA_DIRS to shut up update-mime-database about custom search paths
 data/uninstall.dbupdates: uninstall--data/desktop.files uninstall--data/mimeinfo.files uninstall--data/mimepkgs.files
 	$(QECHO) RUN $@
-	$Q test ! -x '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(data/desktop.dir)' || :
+	$Q test ! -x '$(UPDATE_DESKTOP_DATABASE)' || $(UPDATE_DESKTOP_DATABASE) '$(DESTDIR)$(datadir)/applications/' || :
 	$Q test ! -x '$(UPDATE_MIME_DATABASE)' || \
-	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(data/sharemime.dir)/.." \
-	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(data/sharemime.dir)' || :
+	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(datadir)" \
+	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(datadir)/mime' || :
 uninstall: data/uninstall.dbupdates
 
 # == i18n merge rules ==
@@ -105,7 +106,6 @@ $>/data/bse.pc: $(config-stamps) data/Makefile.mk						| $>/data/
 	$Q echo 'pkglibdir=$${libdir}/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)'	>>$@.tmp
 	$Q echo 'includedir=$${pkglibdir}/include/'				>>$@.tmp
 	$Q echo 'plugindir=$${pkglibdir}/plugins'				>>$@.tmp
-	$Q echo 'driverdir=$${pkglibdir}/drivers'				>>$@.tmp
 	$Q echo 'demodir=$${pkglibdir}/media/Demos'				>>$@.tmp
 	$Q echo ''								>>$@.tmp
 	$Q echo 'Name: Beast & Bse'						>>$@.tmp
