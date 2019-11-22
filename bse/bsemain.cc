@@ -249,6 +249,36 @@ bse_main_wakeup ()
   g_main_context_wakeup (bse_main_context);
 }
 
+static void
+bse_main_enqueue (const std::function<void()> &func)
+{
+  assert_return (bse_main_context != NULL);
+  using VFunc = std::function<void()>;
+  struct CxxSource : GSource {
+    VFunc func_;
+  };
+  auto prepare  = [] (GSource*, int*) -> gboolean { return true; };
+  auto check    = [] (GSource*)       -> gboolean { return true; };
+  auto dispatch = [] (GSource *source, GSourceFunc, void*) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    cs.func_();
+    return false; // run once
+  };
+  auto finalize = [] (GSource *source) {
+    // this handler can be called from g_source_remove, or dispatch(), with or w/o main loop mutex...
+    CxxSource &cs = *(CxxSource*) source;
+    cs.func_.~VFunc();
+  };
+  static GSourceFuncs cxx_source_funcs = { prepare, check, dispatch, finalize };
+  GSource *source = g_source_new (&cxx_source_funcs, sizeof (CxxSource));
+  CxxSource &cs = *(CxxSource*) source;
+  new (&cs.func_) VFunc (func);
+  // g_source_set_priority (source, BSE_PRIORITY_GLUE); // g_source_new assigns G_PRIORITY_DEFAULT
+  static_assert (BSE_PRIORITY_GLUE == G_PRIORITY_DEFAULT);
+  g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+}
+
 int
 bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args)
 {
@@ -263,7 +293,7 @@ bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester
     retval = bsetester();
     sem.post();
   };
-  bse_execution_context->enqueue_mt (wrapper);
+  bse_main_enqueue (wrapper);
   sem.wait();
   return retval;
 }
@@ -277,7 +307,7 @@ JobQueue::call_remote (const std::function<void()> &job)
     job();
     sem.post();
   };
-  bse_execution_context->enqueue_mt (wrapper);
+  bse_main_enqueue (wrapper);
   sem.wait();
 }
 JobQueue jobs;
