@@ -7,10 +7,8 @@ export PATH="$APPROOT/usr/bin/:$PATH"
 export LD_LIBRARY_PATH="$APPROOT/usr/lib/:$LD_LIBRARY_PATH"
 export XDG_DATA_DIRS="$APPROOT/usr/share/:$XDG_DATA_DIRS"
 
-BEAST=bin/beast
 if test "$1" = "--ebeast" ; then
   shift
-  BEAST=electron/ebeast
 fi
 
-exec "$APPROOT/usr/$BEAST" "$@"
+exec "$APPROOT/usr/bin/beast" "$@"
