@@ -1,7 +1,4 @@
 aidacc/CxxStub-.*\.cc
-beast-gtk/bstparam-.*\.cc
-beast-gtk/gxk/gxkparam-.*\.cc
-beast-gtk/gxk/gxkrackcovers\.cc
 bse/bseapi-inserts.hh
 bse/bsegenclosures.hh
 bse/bseincluder\.hh
@@ -11,7 +8,6 @@ bse/gsloscillator-aux\.cc
 bse/gslwaveosc-aux\.cc
 bse/internal\.hh
 bse/tests/filtercatalog\.cc
-drivers/bse-portaudio/bsepcmdevice-portaudio\.cc
 plugins/bsefirfilter\.hh
 plugins/bsesimpleadsr-aux\.cc
 plugins/evaluator/.*\.cc
