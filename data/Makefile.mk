@@ -3,6 +3,9 @@ include $(wildcard $>/data/*.d)
 CLEANDIRS += $(wildcard $>/data/)
 
 # == data/ files ==
+#data/pixmaps.inputs		::= images/beast.png images/bse-mime.png
+data/pixmaps.files		::= $>/share/pixmaps/beast.png $>/share/pixmaps/beast-audio-x-bse.png
+ALL_TARGETS			 += $(data/pixmaps.files)
 #data/desktop.inputs		::= data/beast.desktop.in
 data/desktop.files		::= $>/data/beast.desktop
 ALL_TARGETS			 += $(data/desktop.files)
@@ -20,6 +23,7 @@ data/pc.files			::= $>/data/bse.pc
 ALL_TARGETS			 += $(data/pc.files)
 
 # == installation rules ==
+$(call INSTALL_DATA_RULE, data/pixmaps.files,      $(DESTDIR)$(pkgsharedir)/pixmaps,              $(data/pixmaps.files))
 $(call INSTALL_DATA_RULE, data/desktop.files,      $(DESTDIR)$(pkgsharedir)/applications,         $(data/desktop.files))
 $(call INSTALL_DATA_RULE, data/mimepkgs.files,     $(DESTDIR)$(pkgsharedir)/mime/packages,        $(data/mimepkgs.files))
 $(call INSTALL_DATA_RULE, data/mimeinfo.files,     $(DESTDIR)$(pkgsharedir)/mime-info,            $(data/mimeinfo.files))
@@ -33,8 +37,8 @@ $(call INSTALL_DATA_RULE, data/pc.files,           $(DESTDIR)$(pkglibdir)/lib/pk
 # Note, AppImage builds depend on the installdir hierarchy to match the symlinks hierarchy
 data/install-prefix-symlinks: $(images/img.files) FORCE
 	$(QECHO) INSTALL $@
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/beast.png',                          '$(DESTDIR)$(datadir)/pixmaps/beast.png')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/bse-mime.png',                       '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/pixmaps/beast.png',                       '$(DESTDIR)$(datadir)/pixmaps/beast.png')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/pixmaps/beast-audio-x-bse.png',           '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png')
 	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/applications/beast.desktop',              '$(DESTDIR)$(datadir)/applications/beast.desktop')
 	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/mime/packages/beast.xml',                 '$(DESTDIR)$(datadir)/mime/packages/beast.xml')
 	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/mime-info/bse.keys',                      '$(DESTDIR)$(datadir)/mime-info/bse.keys')
@@ -70,6 +74,14 @@ data/uninstall.dbupdates: uninstall--data/desktop.files uninstall--data/mimeinfo
 	  XDG_DATA_DIRS="$$XDG_DATA_DIRS:$(DESTDIR)$(datadir)" \
 	  $(UPDATE_MIME_DATABASE) '$(DESTDIR)$(datadir)/mime' || :
 uninstall: data/uninstall.dbupdates
+
+# == pixmaps rules ==
+$>/share/pixmaps/beast.png: images/beast.png			| $>/share/pixmaps/
+	$(QGEN)
+	$Q ln -s ../../images/beast.png $@
+$>/share/pixmaps/beast-audio-x-bse.png: images/bse-mime.png	| $>/share/pixmaps/
+	$(QGEN)
+	$Q ln -s ../../images/bse-mime.png $@
 
 # == i18n merge rules ==
 # .desktop file, see: https://help.gnome.org/admin/system-admin-guide/stable/mime-types-custom.html
