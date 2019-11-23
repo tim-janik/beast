@@ -20,27 +20,27 @@ data/pc.files			::= $>/data/bse.pc
 ALL_TARGETS			 += $(data/pc.files)
 
 # == installation rules ==
-$(call INSTALL_DATA_RULE, data/pc.files,           $(DESTDIR)$(pkglibdir)/data/,       $(data/pc.files))
-$(call INSTALL_DATA_RULE, data/desktop.files,      $(DESTDIR)$(pkglibdir)/data/,       $(data/desktop.files))
-$(call INSTALL_DATA_RULE, data/mimeinfo.files,     $(DESTDIR)$(pkglibdir)/data/,       $(data/mimeinfo.files))
-$(call INSTALL_DATA_RULE, data/mimepkgs.files,     $(DESTDIR)$(pkglibdir)/data/,       $(data/mimepkgs.files))
-$(call INSTALL_DATA_RULE, data/applications.files, $(DESTDIR)$(pkglibdir)/data/,       $(data/applications.files))
+$(call INSTALL_DATA_RULE, data/desktop.files,      $(DESTDIR)$(pkgsharedir)/applications,         $(data/desktop.files))
+$(call INSTALL_DATA_RULE, data/mimepkgs.files,     $(DESTDIR)$(pkgsharedir)/mime/packages,        $(data/mimepkgs.files))
+$(call INSTALL_DATA_RULE, data/mimeinfo.files,     $(DESTDIR)$(pkgsharedir)/mime-info,            $(data/mimeinfo.files))
+$(call INSTALL_DATA_RULE, data/applications.files, $(DESTDIR)$(pkgsharedir)/application-registry, $(data/applications.files))
+$(call INSTALL_DATA_RULE, data/pc.files,           $(DESTDIR)$(pkglibdir)/lib/pkgconfig,          $(data/pc.files))
 
 # == install symlinks ==
 # Create links from $(prefix) paths according to the FHS, into $(pkglibdir), see also:
 # * https://www.freedesktop.org/wiki/Howto_desktop_files/
 # * https://www.freedesktop.org/Standards/shared-mime-info-spec
+# Note, AppImage builds depend on the installdir hierarchy to match the symlinks hierarchy
 data/install-prefix-symlinks: $(images/img.files) FORCE
 	$(QECHO) INSTALL $@
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/beast.png',        '$(DESTDIR)$(datadir)/pixmaps/beast.png')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/bse-mime.png',     '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.desktop',      '$(DESTDIR)$(datadir)/applications/beast.desktop')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.xml',          '$(DESTDIR)$(datadir)/mime/packages/beast.xml')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/bse.keys',           '$(DESTDIR)$(datadir)/mime-info/bse.keys')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/bse.mime',           '$(DESTDIR)$(datadir)/mime-info/bse.mime')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/beast.applications', '$(DESTDIR)$(datadir)/application-registry/beast.applications')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/data/bse.pc',             '$(DESTDIR)$(pkglibdir)/lib/pkgconfig/bse.pc')
-	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/bin/beast',               '$(DESTDIR)$(bindir)/beast')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/beast.png',                          '$(DESTDIR)$(datadir)/pixmaps/beast.png')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/images/bse-mime.png',                       '$(DESTDIR)$(datadir)/pixmaps/beast-audio-x-bse.png')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/applications/beast.desktop',              '$(DESTDIR)$(datadir)/applications/beast.desktop')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/mime/packages/beast.xml',                 '$(DESTDIR)$(datadir)/mime/packages/beast.xml')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/mime-info/bse.keys',                      '$(DESTDIR)$(datadir)/mime-info/bse.keys')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/mime-info/bse.mime',                      '$(DESTDIR)$(datadir)/mime-info/bse.mime')
+	$Q $(call INSTALL_SYMLINK, '$(pkgsharedir)/application-registry/beast.applications', '$(DESTDIR)$(datadir)/application-registry/beast.applications')
+	$Q $(call INSTALL_SYMLINK, '$(pkglibdir)/bin/beast',                                 '$(DESTDIR)$(bindir)/beast')
 install: data/install-prefix-symlinks
 data/uninstall-prefix-symlinks: FORCE
 	$(QECHO) REMOVE $@
@@ -51,7 +51,6 @@ data/uninstall-prefix-symlinks: FORCE
 	$Q rm -f '$(DESTDIR)$(datadir)/mime-info/bse.keys'
 	$Q rm -f '$(DESTDIR)$(datadir)/mime-info/bse.mime'
 	$Q rm -f '$(DESTDIR)$(datadir)/application-registry/beast.applications'
-	$Q rm -f '$(DESTDIR)$(pkglibdir)/lib/pkgconfig/bse.pc'
 	$Q rm -f '$(DESTDIR)$(bindir)/beast'
 uninstall: data/uninstall-prefix-symlinks
 
