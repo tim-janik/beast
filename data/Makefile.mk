@@ -1,6 +1,6 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 include $(wildcard $>/data/*.d)
-CLEANDIRS += $(wildcard $>/data/)
+CLEANDIRS += $(wildcard $>/data/ $>/share/pixmaps/)
 
 # == data/ files ==
 #data/pixmaps.inputs		::= images/beast.png images/bse-mime.png
