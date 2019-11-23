@@ -54,6 +54,7 @@ mandir		 ?= $(datadir)/man
 libdir		 ?= $(prefix)/lib
 pkgrootdir	 ?= $(libdir)
 pkglibdir	 ?= $(pkgrootdir)/beast-$(VERSION_MAJOR)-$(VERSION_MINOR)
+pkgsharedir	 ?= $(pkglibdir)/share
 .config.defaults += prefix bindir datadir mandir libdir pkgrootdir pkglibdir
 
 # == Target Collections ==
