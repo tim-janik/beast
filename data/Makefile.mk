@@ -76,10 +76,10 @@ data/uninstall.dbupdates: uninstall--data/desktop.files uninstall--data/mimeinfo
 uninstall: data/uninstall.dbupdates
 
 # == pixmaps rules ==
-$>/share/pixmaps/beast.png: images/beast.png			| $>/share/pixmaps/
+$>/share/pixmaps/beast.png: $>/images/beast.png			| $>/share/pixmaps/
 	$(QGEN)
 	$Q ln -s ../../images/beast.png $@
-$>/share/pixmaps/beast-audio-x-bse.png: images/bse-mime.png	| $>/share/pixmaps/
+$>/share/pixmaps/beast-audio-x-bse.png: $>/images/bse-mime.png	| $>/share/pixmaps/
 	$(QGEN)
 	$Q ln -s ../../images/bse-mime.png $@
 
