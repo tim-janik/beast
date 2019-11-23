@@ -182,10 +182,7 @@ $>/doc/bse-api.pdf: docs/refman.patch $>/bse/bseapi_interfaces.hh docs/Makefile.
 	(cd $>/doc/doxy/latex/ && echo >namespacestd.tex && sed $(docs/sed-refman) -i refman.tex && patch -b) < docs/refman.patch
 	@: # run Tex for PDF
 	(cd $>/doc/doxy/latex/ && echo >namespacestd.tex && \
-		lualatex refman.tex && bibtex -min-crossrefs=1 refman.aux && \
-		makeindex refman && lualatex refman.tex && \
-		makeindex refman && lualatex refman.tex && \
-		makeindex refman && lualatex refman.tex)
+		latexmk -lualatex -bibtex refman.tex )
 	@: # final document
 	mv -v $>/doc/doxy/latex/refman.pdf $@
 docs/sed-foot1       = \\fancyfoot[LE,LO]{\\fancyplain{}{\\bfseries\\scriptsize Bse $(VERSION_M.M.M)}}

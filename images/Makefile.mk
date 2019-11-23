@@ -10,6 +10,7 @@ images/img.files ::= $(strip		\
 	$>/images/beast.png		\
 	$>/images/bse-mime.png		\
 )
+# Note, data/ re-uses beast.png and bse-mime.png
 images/img.dir     ::= $(pkglibdir)/images
 ALL_TARGETS	    += $(images/img.files)
 

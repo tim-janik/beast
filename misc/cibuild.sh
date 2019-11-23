@@ -90,12 +90,15 @@ test ! -d ~/.cache/electron/. || cp --reflink=auto --preserve=timestamps ~/.cach
 rm -r misc/.cicache/
 BEAST_USER_VOLUME="--user $TUID:$TGID -v `pwd`:/usr/src/beast/"
 
+# == Keep interactive tty ==
+tty >/dev/null && TI=-ti || TI=-t
+
 # == Copy CWD to temporary volume ==
 setup_BEAST_TEMP_VOLUME() {
   test -n "${TMPVOL:-}" || {
     TMPVOL=beast-cibuild-tmpvol
     trap "docker volume rm $TMPVOL >/dev/null" 0 HUP INT QUIT TRAP USR1 PIPE TERM ERR EXIT
-    docker run $DOCKEROPTIONS -v `pwd`:/usr_src_beast/:ro -v $TMPVOL:/usr/src/beast/ -ti --rm beast-cibuild \
+    docker run $DOCKEROPTIONS -v `pwd`:/usr_src_beast/:ro -v $TMPVOL:/usr/src/beast/ $TI --rm beast-cibuild \
 	   cp -a --reflink=auto /usr_src_beast/. /usr/src/beast/
   }
   BEAST_TEMP_VOLUME="-v $TMPVOL:/usr/src/beast/"
@@ -106,7 +109,7 @@ test -z "$EXEC_SHELL" || {
   BEAST_TEMP_VOLUME="$BEAST_USER_VOLUME"
   [[ "$EXEC_SHELL" =~ root ]] && setup_BEAST_TEMP_VOLUME
   ( set -x
-    docker run $DOCKEROPTIONS $BEAST_TEMP_VOLUME -ti --rm beast-cibuild \
+    docker run $DOCKEROPTIONS $BEAST_TEMP_VOLUME $TI --rm beast-cibuild \
 	   /bin/bash
   )
   exit $?
@@ -121,7 +124,7 @@ test -z "$COMPILERCONF" || (
     *)		die "invalid compiler configuration: $COMPILERCONF" ;;
   esac
   set -x
-  docker run $BEAST_USER_VOLUME -ti --rm $LSAN0 beast-cibuild \
+  docker run $BEAST_USER_VOLUME $TI --rm $LSAN0 beast-cibuild \
 	 nice make default prefix=/usr CC="$CC" CXX="$CXX" $CONFIGUREOPTIONS
 )
 
@@ -134,7 +137,7 @@ for R in $RULES ; do
   [[ $R =~ ^root-check$ ]] && { R='check install installcheck uninstall' ; BEAST_TEMP_VOLUME= ; }
   test -n "$BEAST_TEMP_VOLUME" || setup_BEAST_TEMP_VOLUME
   ( set -x
-    docker run $DOCKEROPTIONS $BEAST_TEMP_VOLUME -ti --rm $LSAN0 beast-cibuild \
+    docker run $DOCKEROPTIONS $BEAST_TEMP_VOLUME $TI --rm $LSAN0 beast-cibuild \
 	   make $MAKEOPTIONS $R $PARALLEL
   ) || exit $?
 done
