@@ -97,7 +97,7 @@ function create_beast_sound_engine (datacb, errorcb) {
       args.push ('--bse-midi-driver');
       args.push (CONFIG.m);
     }
-  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version_m.m.m'];
+  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version_m.m.m'] + '-rt';
   const bse_proc = spawn (beastsoundengine, args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
