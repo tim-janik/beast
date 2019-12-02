@@ -62,32 +62,30 @@ osc_update_pwm_offset (GslOscData *osc,
 #define	OSC_FLAG_PWM_MOD	(64)
 #define	OSC_FLAG_PULSE_OSC	(128)
 
-/* normal oscillator variants */
-#define	OSC_INCLUDER_FLAGS	0
-#define	GSL_INCLUDER_FIRST_CASE	0
-#define	GSL_INCLUDER_LAST_CASE	63
-#define	GSL_INCLUDER_NAME	oscillator_process_normal
-#define	GSL_INCLUDER_TABLE	static void (*osc_process_table[]) (GslOscData*,guint, \
-                                const gfloat*,const gfloat*,const gfloat*, \
-		                const gfloat*,gfloat*,gfloat*)
-#define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
-#include "gslincluder.hh"
-#undef	OSC_INCLUDER_FLAGS
-
-/* pulse width modulation oscillator variants */
-#define	OSC_INCLUDER_FLAGS	OSC_FLAG_PULSE_OSC
-#define	GSL_INCLUDER_FIRST_CASE	0
-#define	GSL_INCLUDER_LAST_CASE	127
-#define	GSL_INCLUDER_NAME	oscillator_process_pulse
-#define	GSL_INCLUDER_TABLE	static void (*osc_process_pulse_table[]) (GslOscData*,guint, \
-                                const gfloat*,const gfloat*,const gfloat*, \
-		                const gfloat*,gfloat*,gfloat*)
-#define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
-#include "gslincluder.hh"
-#undef	OSC_INCLUDER_FLAGS
-
+#include "gsloscillator-aux.cc" // oscillator_process_variants<>()
 
 /* --- functions --- */
+using OscillatorProcessFunc = void (*) (GslOscData*, uint, const float*, const float*, const float*, const float*, float*, float*);
+static std::array<OscillatorProcessFunc, 64> osc_process_table;
+static std::array<OscillatorProcessFunc, 128> osc_process_pulse_table;
+
+static bool
+init_osc_process_tables()
+{
+  /* normal oscillator variants */
+  auto osctable = Bse::make_jump_table<64> ([] (auto CINDEX) {
+      return oscillator_process_variants<CINDEX>;
+    });
+  osc_process_table = osctable;
+
+  /* pulse width modulation oscillator variants */
+  auto pulsetable = Bse::make_jump_table<128> ([] (auto CINDEX) {
+      return oscillator_process_variants<CINDEX | OSC_FLAG_PULSE_OSC>;
+    });
+  osc_process_pulse_table = pulsetable;
+  return true;
+}
+
 static inline void
 osc_process (GslOscData   *osc,
 	     guint         n_values,
@@ -196,6 +194,8 @@ gsl_osc_config (GslOscData   *osc,
   assert_return (osc != NULL);
   assert_return (config != NULL);
   assert_return (config->table != NULL);
+
+  static BSE_USED bool init_tables_once = init_osc_process_tables();
 
   osc->config = *config;
   osc->last_mode = OSC_FLAG_INVAL;

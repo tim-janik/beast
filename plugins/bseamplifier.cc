@@ -136,15 +136,28 @@ class Amplifier : public AmplifierBase {
           case ACASE_A1b_A2b: process_loop <ACASE_A1b_A2b, true> (n_values); break;
           }
       else /* !simple_control */
-        switch (mode)
-          {
-#define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 31 && (n & ACASE_MASK) != ACASE_A1n_A2n)
-#define BSE_INCLUDER_FUNC(n)    process_loop <n, false>
-#define BSE_INCLUDER_ARGS(n)    (n_values)
-#include <bse/bseincluder.hh>
-          }
+        processlooptable_[mode] (this, n_values);
     }
+    using ProcessFunc = void (*) (Module*, unsigned int);
+    static std::array<ProcessFunc, 32> processlooptable_;
   };
+  template<int FLAGS, bool SIMPLE_CONTROL> static inline void
+  static_process_loop (Module *amp, unsigned int n_values)
+  {
+    amp->process_loop<FLAGS, SIMPLE_CONTROL> (n_values);
+  }
+  static std::array<Amplifier::Module::ProcessFunc, 32>
+  mk_process_loop_table ()
+  {
+    return Bse::make_jump_table<32> ([] (auto CINDEX) {
+        if constexpr (Amplifier::Module::ACASE_A1n_A2n != (CINDEX & ACASE_MASK))
+          {
+            return static_process_loop<CINDEX, false>;
+          }
+        // unused cases, i.e. simple_control
+        return Amplifier::Module::ProcessFunc (nullptr);
+      });
+  }
 protected:
   bool
   property_changed (AmplifierPropertyID prop_id)
@@ -234,6 +247,8 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Amplifier, Module, AmplifierProperties);
 };
+
+std::array<Amplifier::Module::ProcessFunc, 32> Amplifier::Module::processlooptable_ = Amplifier::mk_process_loop_table();
 
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Amplifier);

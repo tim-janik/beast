@@ -197,6 +197,25 @@ shared_ptr_cast (const std::shared_ptr<Source> &sptr)
   return shared_ptr_cast<Target> (const_cast<std::shared_ptr<Source>&> (sptr));
 }
 
+/// Create a `std::array<F,N>`, where `F` is returned from `mkjump (INDICES...)`.
+template<typename J, size_t ...INDICES> static auto
+make_jump_table_indexed (const J &mkjump, std::index_sequence<INDICES...>)
+{
+  constexpr size_t N = sizeof... (INDICES);
+  using F = decltype (mkjump (std::integral_constant<std::size_t, N-1>()));
+  std::array<F, N> jumptable = {
+    mkjump (std::integral_constant<std::size_t, INDICES>{})...
+  };
+  return jumptable;
+}
+
+/// Create a `std::array<F,N>`, where `F` is returned from `mkjump (0 .. N-1)`.
+template<std::size_t N, typename J> static auto
+make_jump_table (const J &mkjump)
+{
+  return make_jump_table_indexed (mkjump, std::make_index_sequence<N>());
+}
+
 } // Bse
 
 #endif // __BSE_CXXAUX_HH__
