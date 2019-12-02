@@ -41,7 +41,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsefilter.hh		\
 	bse/bseglobals.hh		\
 	bse/bseieee754.hh		\
-	bse/bseincluder.hh		\
 	bse/bseinstrumentinput.hh	\
 	bse/bseinstrumentoutput.hh	\
 	bse/bseitem.hh			\
