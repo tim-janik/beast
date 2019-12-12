@@ -135,7 +135,6 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	@: # Create AppImage executable
 	@echo '  RUN     ' appimagetool ...
 	$Q ARCH=x86_64 $>/misc/appaux/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
-	$Q rm -fr $(APPDIR) $(APPDIR2)
 	$Q mv BEAST-x86_64.AppImage $>/beast-$(distversion)-x64.AppImage
 	$Q ls -l -h --color=auto $>/beast-*-x64.AppImage
 .PHONY: appimage
