@@ -127,8 +127,11 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 		-l /usr/lib/x86_64-linux-gnu/libgconf-2.so.4 \
 		-l /usr/lib/x86_64-linux-gnu/libXtst.so.6 \
 		-i $(APPDIR2)/usr/images/beast.png \
-		-e $(APPDIR2)/usr/bin/beast \
+		-e $(APPDIR2)/usr/electron/ebeast \
 		--custom-apprun=misc/AppRun
+	@: # 'linuxdeploy -e usr/electron/ebeast' copies it to usr/bin/ebeast
+	$Q rm -f $(APPDIR2)/usr/lib/libffmpeg.so \
+	         $(APPDIR2)/usr/bin/ebeast	# remove bogus leftovers from linuxdeploy -e
 	@: # Create AppImage executable
 	@echo '  RUN     ' appimagetool ...
 	$Q ARCH=x86_64 $>/misc/appaux/appimagetool/AppRun --comp=xz -n $(if $(findstring 1, $(V)), -v) $(APPDIR2)
