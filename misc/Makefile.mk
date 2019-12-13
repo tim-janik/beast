@@ -120,12 +120,14 @@ appimage: all $>/misc/appaux/appimagetool/AppRun				| $>/misc/bin/
 	$Q cp -a $(APPDIR)/usr/lib/beast-* $(APPDIR2)/usr
 	$Q rm -f BEAST-x86_64.AppImage
 	@echo '  RUN     ' linuxdeploy ...
-	$Q LD_LIBRARY_PATH=$(APPDIR2)/usr/lib/:$(APPDIR2)/usr/bundle/ $>/misc/appaux/linuxdeploy/AppRun \
+	$Q if test -e /usr/lib64/libc_nonshared.a ; \
+	   then LIB64=/usr/lib64/ ; \
+	   else LIB64=/usr/lib/x86_64-linux-gnu/ ; fi \
+	   && LD_LIBRARY_PATH=$(APPDIR2)/usr/lib/:$(APPDIR2)/usr/bundle/ $>/misc/appaux/linuxdeploy/AppRun \
 		$(if $(findstring 1, $(V)), -v1, -v2) \
 		--appdir=$(APPDIR2) \
-		-l /usr/lib/x86_64-linux-gnu/libXss.so.1 \
-		-l /usr/lib/x86_64-linux-gnu/libgconf-2.so.4 \
-		-l /usr/lib/x86_64-linux-gnu/libXtst.so.6 \
+		-l $$LIB64/libXss.so.1 \
+		-l $$LIB64/libXtst.so.6 \
 		-i $(APPDIR2)/usr/images/beast.png \
 		-e $(APPDIR2)/usr/electron/ebeast \
 		--custom-apprun=misc/AppRun
