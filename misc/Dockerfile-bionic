@@ -26,9 +26,9 @@ RUN \
   echo '## Build stripped down fluidsynth version without drivers' && \
   retry eatmydata apt-get install -y build-essential curl cmake libglib2.0-dev && \
   mkdir -p /tmp/fluid/build && cd /tmp/fluid/ && \
-  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.5.tar.gz && \
-  tar xf v2.0.5.tar.gz && rm v2.0.5.tar.gz && cd build && \
-  cmake ../fluidsynth-2.0.5 \
+  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.9.tar.gz && \
+  tar xf v2.0.9.tar.gz && rm v2.0.9.tar.gz && cd build && \
+  cmake ../fluidsynth-2.0.9 \
 	-DCMAKE_INSTALL_PREFIX=/usr/ \
 	-DLIB_SUFFIX="/`dpkg-architecture -qDEB_HOST_MULTIARCH`" \
 	-Denable-libsndfile=1 \
@@ -49,16 +49,16 @@ RUN \
   retry eatmydata apt-get install -y \
 	build-essential automake autoconf autoconf-archive libtool \
 	curl doxygen graphviz texlive-binaries git libxml2-utils \
+	libxml2-dev gawk python2.7-dev python3 libboost-system-dev \
 	cppcheck clang clang-tidy clang-tools python3-pandocfilters \
-	gawk python2.7-dev python3 libboost-system-dev \
-	libxml2-dev libpango1.0-dev libgnomecanvas2-dev \
-	libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev \
-	imagemagick libgconf-2-4 nodejs npm libxss1 && \
+	libasound2-dev libflac-dev libvorbis-dev libmad0-dev gettext \
+	imagemagick libgconf-2-4 nodejs npm libxss1 \
+	libgtk-3-bin libgdk-pixbuf2.0-dev && \
   \
   echo '## Provide recent Pandoc' && \
-  retry curl -ROL 'https://github.com/jgm/pandoc/releases/download/2.7.3/pandoc-2.7.3-1-amd64.deb' && \
-  dpkg -i pandoc-2.7.3-1-amd64.deb && \
-  rm pandoc-2.7.3-1-amd64.deb && \
+  retry curl -ROL 'https://github.com/jgm/pandoc/releases/download/2.9/pandoc-2.9-1-amd64.deb' && \
+  dpkg -i pandoc-2.9-1-amd64.deb && \
+  rm pandoc-2.9-1-amd64.deb && \
   \
   echo '## Cleanup' && \
   eatmydata apt-get --purge remove -y cmake python2.7-dev && \

@@ -16,16 +16,16 @@ RUN retry yum -y upgrade
 RUN retry yum -y install \
     findutils file bzip2 unzip patch \
     gcc-c++ git libtool gettext-devel perl-XML-Parser boost-devel \
-    alsa-lib-devel flac-devel libgnomecanvas-devel libvorbis-devel libmad-devel \
+    alsa-lib-devel flac-devel libvorbis-devel libmad-devel \
     pandoc python3-pandocfilters doxygen graphviz \
-    npm ImageMagick libXScrnSaver GConf2 \
+    npm ImageMagick libXScrnSaver gtk3-devel \
     libsndfile-devel cmake
 
 # Build stripped down fluidsynth version without drivers
 RUN mkdir -p /tmp/fluid/build && cd /tmp/fluid/ && \
-  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.5.tar.gz && \
-  tar xf v2.0.5.tar.gz && rm v2.0.5.tar.gz && cd build && \
-  cmake ../fluidsynth-2.0.5 \
+  curl -sfSOL https://github.com/FluidSynth/fluidsynth/archive/v2.0.9.tar.gz && \
+  tar xf v2.0.9.tar.gz && rm v2.0.9.tar.gz && cd build && \
+  cmake ../fluidsynth-2.0.9 \
 	-DCMAKE_INSTALL_PREFIX=/usr/ \
 	-Denable-libsndfile=1 \
 	-Denable-dbus=0 \
@@ -60,5 +60,8 @@ RUN make install
 RUN make installcheck
 RUN make dist
 RUN make uninstall
+RUN make default prefix=/usr && \
+    make all -j`nproc` && \
+    make appimage
 
 # docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
