@@ -165,12 +165,13 @@ namespace Jsonipc {
     ConvertSeq<ItemSeq,                         \
                std::shared_ptr< std::remove_reference< decltype (*std::declval<ItemSeq::value_type>().__iface__()) >::type > \
                > {};
-bse_bseapi_idl_FOREACH_IFACE_SEQ(); // uses bse_bseapi_idl_FOREACH_STEP
+// FIXME: bse_bseapi_idl_FOREACH_IFACE_SEQ(); // uses bse_bseapi_idl_FOREACH_STEP
 #undef bse_bseapi_idl_FOREACH_STEP
 
 // Aida::Any
 template<>      struct Convert<Aida::Any> : ConvertAny {};
 
+#if 0 // FIXME
 // Bse::PartHandle as Bse::PartIfaceP (in records)
 template<>
 struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
@@ -187,6 +188,7 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
     return Jsonipc::to_json (ptr, allocator);
   }
 };
+#endif
 
 } // Jsonipc
 
@@ -195,7 +197,6 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 #include "bsecontextmerger.hh"
 #include "bsecsynth.hh"
 #include "bseeditablesample.hh"
-#include "bsemidinotifier.hh"
 #include "bsemidisynth.hh"
 #include "bsepart.hh"
 #include "module.hh"

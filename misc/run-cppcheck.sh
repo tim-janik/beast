@@ -36,7 +36,7 @@ done
 $ANY || ALLFILES=true	# assume --all if no files are given
 $ALLFILES && {
   git ls-tree -r --name-only HEAD |
-    egrep '^(aidacc|sfi|bse|plugins|drivers|beast-gtk)/.*\.(cc|hh)$' >$FILELIST
+    egrep '^(aidacc|sfi|bse|plugins|tools)/.*\.(cc|hh)$' >$FILELIST
 }
 
 # check that cppcheck is present since the stderr redirection below may swallow error messages

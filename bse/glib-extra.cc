@@ -6,24 +6,6 @@
 #define assert_return(cond, ...)        do { if (cond) break; g_warning ("assertion failed: %s", #cond); return __VA_ARGS__; } while (0)
 #endif
 
-void
-g_object_disconnect_any (gpointer object,
-                         gpointer function,
-                         gpointer data)
-{
-  assert_return (G_IS_OBJECT (object));
-  assert_return (function != NULL);
-  /* FIXME: the only reason we have this function is that
-   * g_object_disconnect() throws a warning for an any-signal::
-   * disconnection that does not exist (it may do so for all-signals
-   * instead).
-   */
-  g_signal_handlers_disconnect_matched (object, GSignalMatchType (G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA),
-                                        0, 0, 0,
-                                        function, data);
-}
-
-
 /* --- string functions --- */
 gchar**
 g_straddv (gchar      **str_array,

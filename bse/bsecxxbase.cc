@@ -94,56 +94,6 @@ CxxBase::restore_finished (guint          vmajor,
                            guint          vmicro)
 {}
 
-gulong
-CxxBase::connect (const gchar   *signal,
-                  CxxClosure    *closure,
-                  bool           after)
-{
-  GClosure *gclosure = closure->gclosure();
-  g_closure_ref (gclosure);
-  g_closure_sink (gclosure);
-  String sid = tokenize_signal (signal), cid = closure->signature();
-  gulong id = 0;
-  if (sid == cid)
-    id = g_signal_connect_closure (gobject(), signal, gclosure, after != 0);
-  else
-    Bse::warning ("%s: ignoring invalid signal connection (\"%s\" != \"%s\")", G_STRLOC, sid.c_str(), cid.c_str());
-  g_closure_unref (gclosure);
-  return id;
-}
-
-#if 0
-gulong
-CxxBase::connect (const gchar   *signal,
-                  GClosure      *closure,
-                  bool           after)
-{
-  g_closure_ref (closure);
-  g_closure_sink (closure);
-  gulong id = g_signal_connect_closure (gobject(), signal, closure, after != 0);
-  g_closure_unref (closure);
-  return id;
-}
-#endif
-
-const String
-CxxBase::tokenize_signal (const gchar *signal)
-{
-  GSignalQuery query;
-  GType t;
-  String s;
-  g_signal_query (g_signal_lookup (signal, type()), &query);
-  if (!query.signal_id)
-    return "";
-  t = query.return_type & ~G_SIGNAL_TYPE_STATIC_SCOPE;
-  if (t && t != G_TYPE_NONE) /* void check */
-    s += tokenize_gtype (t);
-  s += '|';
-  for (guint i = 0; i < query.n_params; i++)
-    s += tokenize_gtype (query.param_types[i] & ~G_SIGNAL_TYPE_STATIC_SCOPE);
-  return s;
-}
-
 GType
 CxxBase::type ()
 {
@@ -273,31 +223,6 @@ CxxBaseClass::set_accessors (void       (*get_property)      (GObject*,   guint,
   item_class->get_candidates = get_candidates;
   BseSourceClass *source_class = BSE_SOURCE_CLASS (this);
   source_class->property_updated = property_updated;
-}
-
-guint
-CxxBaseClass::add_signal (const gchar *signal_name,
-                          GSignalFlags flags,
-                          guint        n_params,
-                          ...)
-{
-  va_list args;
-  guint signal_id;
-
-  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  assert_return (signal_name != NULL, 0);
-
-  va_start (args, n_params);
-  signal_id = g_signal_new_valist (signal_name,
-                                   G_TYPE_FROM_CLASS (this),
-                                   (GSignalFlags) (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | (int) flags),
-                                   NULL, NULL, NULL,
-                                   bse_object_marshal_signal,
-                                   G_TYPE_NONE,
-                                   n_params, args);
-  va_end (args);
-
-  return signal_id;
 }
 
 void

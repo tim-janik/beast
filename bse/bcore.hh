@@ -108,7 +108,7 @@ template<class V, class O> bool
 vector_erase_iface (V &v, O *value)
 {
   for (auto it = v.begin(); it != v.end(); ++it)
-    if ((*it).__iface__() == value)
+    if ((*it).get() == value)
       {
         v.erase (it);
         return true;

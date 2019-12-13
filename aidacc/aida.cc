@@ -1028,7 +1028,7 @@ Any::operator= (const Any &clone)
     case ANY:           u_.vany = clone.u_.vany ? new Any (*clone.u_.vany) : NULL;                   break;
     case SEQUENCE:      new (&u_.vanys()) AnySeq (clone.u_.vanys());                                 break;
     case RECORD:        new (&u_.vfields()) AnyRec (clone.u_.vfields());                             break;
-    case INSTANCE:      new (&u_.rhandle()) ARemoteHandle (clone.u_.rhandle());                      break;
+    case INSTANCE:      new (&u_.ibasep()) ImplicitBaseP (clone.u_.ibasep());                      break;
     default:            u_ = clone.u_;                                                               break;
     }
   return *this;
@@ -1044,7 +1044,7 @@ swap_any_unions (TypeKind kind, U &u, U &v)
     case STRING:        std::swap (u.vstring(), v.vstring()); break;
     case SEQUENCE:      std::swap (u.vanys(), v.vanys());     break;
     case RECORD:        std::swap (u.vfields(), v.vfields()); break;
-    case INSTANCE:      std::swap (u.rhandle(), v.rhandle()); break;
+    case INSTANCE:      std::swap (u.ibasep(), v.ibasep());   break;
     case ANY:           std::swap (u.vany, v.vany);           break;
     default:            AIDA_ASSERT_RETURN_UNREACHED();       break;
     }
@@ -1081,7 +1081,7 @@ Any::clear()
     case ANY:           delete u_.vany;                         break;
     case SEQUENCE:      u_.vanys().~AnySeq();                   break;
     case RECORD:        u_.vfields().~AnyRec();                 break;
-    case INSTANCE:      u_.rhandle().~ARemoteHandle();          break;
+    case INSTANCE:      u_.ibasep().~ImplicitBaseP();           break;
     default: ;
     }
   type_kind_ = UNTYPED;
@@ -1106,7 +1106,7 @@ Any::rekind (TypeKind _kind)
     case ANY:      u_.vany = NULL;                      break;
     case SEQUENCE: new (&u_.vanys()) AnySeq();          break;
     case RECORD:   new (&u_.vfields()) AnyRec();        break;
-    case INSTANCE: new (&u_.rhandle()) ARemoteHandle(); break;
+    case INSTANCE: new (&u_.ibasep()) ImplicitBaseP();  break;
     default:                                            break;
     }
 }
@@ -1209,7 +1209,7 @@ Any::to_string() const
     case STRING:     s += u_.vstring();                                                                          break;
     case SEQUENCE:   s += any_vector_to_string (&u_.vanys());                                                    break;
     case RECORD:     s += any_vector_to_string (&u_.vfields());                                                  break;
-    case INSTANCE:   s += posix_sprintf ("(RemoteHandle (ptr=%p))", &*u_.rhandle().__iface_ptr__());             break;
+    case INSTANCE:   s += posix_sprintf ("(ImplicitBaseP (ptr=%p))", u_.ibasep().get());             break;
     case ANY:
       s += "(Any (";
       if (u_.vany && u_.vany->kind() == STRING)
@@ -1247,7 +1247,7 @@ Any::operator== (const Any &clone) const
       else
         return *u_.vany == *clone.u_.vany;
     case INSTANCE:
-      return u_.rhandle().__iface_ptr__() == clone.u_.rhandle().__iface_ptr__();
+      return u_.ibasep().get() == clone.u_.ibasep().get();
     default:
       AIDA_ASSERT_RETURN_UNREACHED (false);
       return false;
@@ -1272,7 +1272,7 @@ Any::get_bool () const
     case STRING:        return !u_.vstring().empty();
     case SEQUENCE:      return !u_.vanys().empty();
     case RECORD:        return !u_.vfields().empty();
-    case INSTANCE:      return u_.rhandle().__iface_ptr__() != NULL;
+    case INSTANCE:      return u_.ibasep().get() != NULL;
     default: ;
     }
   return 0;
@@ -1401,13 +1401,11 @@ ImplicitBaseP
 Any::get_ibasep () const
 {
   if (kind() == INSTANCE)
-    {
-      RemoteHandle rh = u_.rhandle();
-      return rh.__iface_ptr__();
-    }
+    return u_.ibasep();
   return ImplicitBaseP();
 }
 
+#if 0
 /// Use Any.get<DerivedType>() instead.
 RemoteHandle
 Any::get_untyped_remote_handle () const
@@ -1417,13 +1415,23 @@ Any::get_untyped_remote_handle () const
     rh = u_.rhandle();
   return rh;
 }
+#endif
 
+void
+Any::set_ibasep (ImplicitBaseP ibaseptr)
+{
+  ensure (INSTANCE);
+  u_.ibasep() = ibaseptr;
+}
+
+#if 0
 void
 Any::set_handle (const RemoteHandle &handle)
 {
   ensure (INSTANCE);
   u_.rhandle() = handle;
 }
+#endif
 
 const Any*
 Any::get_any () const
@@ -1475,135 +1483,6 @@ Event::Event (const AnyRec &arec) :
   fields_ (arec)
 {
   (void) fields_["type"]; // ensure field is present
-}
-
-// == RemoteHandle ==
-RemoteHandle::~RemoteHandle()
-{}
-
-struct RemoteHandle::EventHandlerRelay {
-  ExecutionContext    &iface_context_;
-  ExecutionContext    &handler_context_;
-  EventHandlerF        handler_;
-  IfaceEventConnection iface_connection_;
-  explicit EventHandlerRelay (ExecutionContext &handler_execution_context, EventHandlerF handler,
-                              ExecutionContext &iface_execution_context) :
-    iface_context_ (iface_execution_context), handler_context_ (handler_execution_context), handler_ (handler)
-  {}
-  bool
-  connected ()
-  {
-    return handler_ != NULL;
-  }
-  void
-  disconnect ()
-  {
-    if (handler_)
-      {
-        handler_ = NULL;
-        IfaceEventConnection ifaceconnection = iface_connection_;
-        auto remote_disconnect = [ifaceconnection] () { ifaceconnection.disconnect(); };
-        iface_context_.enqueue_mt (new std::function<void()> (remote_disconnect));
-        iface_connection_ = IfaceEventConnection(); // reset
-      }
-  }
-  void
-  local_handler (const Event &event)
-  {
-    if (handler_)
-      handler_ (event);
-  }
-  struct RemoteHandler : std::shared_ptr<EventHandlerRelay> {
-    void
-    operator() (const Event &event)
-    {
-      std::shared_ptr<EventHandlerRelay> &relayp = *this;
-      // relayp and event must be copied for use in a different thread
-      auto localhandler = [relayp, event] () { relayp->local_handler (event); };
-      relayp->handler_context_.enqueue_mt (new std::function<void()> (localhandler));
-    }
-  };
-};
-
-RemoteHandle::EventConnection
-RemoteHandle::__attach__ (const String &eventselector, EventHandlerF handler)
-{
-  RemoteHandle::EventConnection empty;
-  assert_return (*this != NULL, empty);
-  assert_return (handler != NULL, empty);
-  ExecutionContext *current_thread_execution_context = ExecutionContext::get_current ();
-  assert_return (current_thread_execution_context != NULL, empty);
-  ImplicitBase *iface = __iface_ptr__().get();
-  ExecutionContext &iface_execution_context = iface->__execution_context_mt__();
-  auto relay = std::make_shared<EventHandlerRelay> (*current_thread_execution_context, handler, iface_execution_context);
-  EventHandlerRelay::RemoteHandler remotehandler = static_cast<EventHandlerRelay::RemoteHandler&> (relay);
-  relay->iface_connection_ = remote_callr (*this, &ImplicitBase::__attach__, eventselector, remotehandler);
-  std::weak_ptr<EventHandlerRelay> wptr = relay;
-  return *static_cast<EventConnection*> (&wptr);
-}
-
-std::string
-RemoteHandle::__typename__ () const
-{
-  const StringVector &types = __typelist__();
-  return types.empty() ? "" : types[0];
-}
-
-StringVector
-RemoteHandle::__typelist__() const
-{
-  StringVector types;
-  if (*this)
-    types = const_cast<RemoteHandle*> (this)->__iface_ptr__()->__typelist_mt__();
-  return types;
-}
-
-bool
-RemoteHandle::EventConnection::connected  () const
-{
-  std::shared_ptr<EventHandlerRelay> relay = this->lock();
-  return relay && relay->connected();
-}
-
-void
-RemoteHandle::EventConnection::disconnect () const
-{
-  std::shared_ptr<EventHandlerRelay> relay = this->lock();
-  if (relay)
-    relay->disconnect();
-}
-
-// == DetacherHooks ==
-void
-DetacherHooks::__clear_hooks__ (RemoteHandle *scopedhandle)
-{
-  while (!connections_.empty())
-    {
-      HandleEventConnection hcon = connections_.back();
-      connections_.pop_back();
-      hcon.disconnect();
-    }
-}
-
-void
-DetacherHooks::__swap_hooks__ (DetacherHooks &other)
-{
-  std::swap (other.connections_, connections_);
-}
-
-void
-DetacherHooks::__manage_event__ (RemoteHandle *scopedhandle, const String &type, EventHandlerF handler)
-{
-  assert_return (scopedhandle != NULL);
-  assert_return (*scopedhandle != NULL);
-  HandleEventConnection hcon = scopedhandle->__attach__ (type, handler);
-  connections_.push_back (hcon);
-}
-
-void
-DetacherHooks::__manage_event__ (RemoteHandle *scopedhandle, const String &type, std::function<void()> vfunc)
-{
-  __manage_event__ (scopedhandle, type, [vfunc] (const Aida::Event&) { vfunc(); });
 }
 
 // == EventFd ==
@@ -1810,221 +1689,6 @@ private:
   Node  *head_ = NULL;
   Node  *local_ = NULL; // FIXME: ideally use a different cache line to avoid false sharing between pushing and popping threads
 };
-
-// == ExecutionContextImpl ==
-struct ExecutionContext::Impl {
-  EventFd              event_fd_;
-private:
-  MpScQueueF<Closure*> closure_queue_;
-  Closure             *last_closure_ = NULL;
-  enum Op { PEEK, POP, BLOCKING };
-  Closure*
-  get_closure (const Op op)
-  {
-    if (!last_closure_)
-      do
-        {
-          // fetch new messages
-          last_closure_ = closure_queue_.pop();
-          if (!last_closure_)
-            {
-              event_fd_.flush();        // flush stale wakeups, to allow blocking until an empty => full transition
-              last_closure_ = closure_queue_.pop();     // retry, to ensure we've not just discarded a real wakeup
-            }
-          if (last_closure_)
-            break;
-          // no messages available
-          if (op == BLOCKING)
-            event_fd_.pollin();
-        }
-      while (op == BLOCKING);
-    Closure *closure = last_closure_;
-    if (op != PEEK) // advance
-      last_closure_ = NULL;
-    return closure; // may be NULL
-  }
-public:
-  void
-  enqueue_closure_mt (Closure *closure, bool may_wakeup)
-  {
-    const bool was_empty = closure_queue_.push (closure);
-    if (may_wakeup && was_empty)
-      event_fd_.wakeup();                               // wakeups are needed to catch empty => full transition
-  }
-  Closure*              fetch_closure()         { return get_closure (POP); }
-  bool                  has_closure()           { return get_closure (PEEK); }
-  Closure*              pop_closure()           { return get_closure (BLOCKING); }
-  Impl ()
-  {
-    const int create_wakeup_pipe_error = event_fd_.open();
-    AIDA_ASSERT_RETURN (create_wakeup_pipe_error == 0);
-  }
-};
-
-// == ExecutionContext ==
-ExecutionContext::ExecutionContext() :
-  m (*new Impl)
-{}
-
-ExecutionContext::~ExecutionContext()
-{
-  AIDA_ASSERT_RETURN_UNREACHED();
-  delete &m;
-}
-
-/// Returns fd for POLLIN, to wake up on incomming events.
-int
-ExecutionContext::notify_fd ()
-{
-  return m.event_fd_.inputfd();
-}
-
-/// Indicate whether any incoming events are pending that need to be dispatched.
-bool
-ExecutionContext::pending ()
-{
-  return m.has_closure();
-}
-
-/// Dispatch a single event if any is pending.
-void
-ExecutionContext::dispatch ()
-{
-  Closure *closure = m.fetch_closure();
-  if (AIDA_ISLIKELY (closure))
-    {
-      (*closure) ();
-      delete closure;
-    }
-}
-
-/// Add Closure to ExecutionContext and delete the closure after dispatching.
-void
-ExecutionContext::enqueue_mt (Closure *closure)
-{
-  if (closure)
-    m.enqueue_closure_mt (closure, true);
-}
-
-/// Add Closure to be called by ExecutionContext (possibly remote).
-void
-ExecutionContext::enqueue_mt (const Closure &closure)
-{
-  enqueue_mt (new Closure (closure));
-}
-
-/// Create an ExecutionContext.
-/// The current implementation of this instance must outlive the runtime and not be destroyed.
-ExecutionContext*
-ExecutionContext::new_context ()
-{
-  return new ExecutionContext();
-}
-
-static inline std::vector<ExecutionContext*>&
-get_execution_context_stack()
-{
-  static thread_local std::vector<ExecutionContext*> ecstack;
-  return ecstack;
-}
-
-/// Start using `ec` as active ExecutionContext in the current thread.
-void
-ExecutionContext::push_thread_current()
-{
-  auto &ecstack = get_execution_context_stack();
-  ecstack.push_back (this);
-}
-
-/// Remove the active ExecutionContext from the current thread, after that a previously pushed context becomes active.
-void
-ExecutionContext::pop_thread_current()
-{
-  auto &ecstack = get_execution_context_stack();
-  assert_return (ecstack.size() > 0);
-  ecstack.pop_back();
-}
-
-/// Retrieve the active ExecutionContext from the current thread.
-ExecutionContext*
-ExecutionContext::get_current ()
-{
-  auto &ecstack = get_execution_context_stack();
-  return ecstack.size() ? ecstack.back() : NULL;
-}
-
-struct ExecutionContextAdoptedDeleter {
-  ExecutionContext &ec_;
-  CallableIfaceP    sptr_;
-  ExecutionContextAdoptedDeleter (ExecutionContext &ec, const CallableIfaceP &sptr) :
-    ec_ (ec), sptr_ (sptr)
-  {}
-  static void
-  deleter (ExecutionContextAdoptedDeleter *self)
-  {
-    AIDA_DEBUG ("Deleter: %s: queueing deleter for %p\n", __func__, self->sptr_.get());
-    self->ec_.enqueue_mt (new std::function<void()> ([self] () {
-          AIDA_DEBUG ("Deleter: %s: delete %p\n", __func__, self->sptr_.get());
-          delete self;
-        }));
-  }
-};
-
-CallableIfaceP
-ExecutionContext::adopt_deleter_mt (const CallableIfaceP &sharedptr)
-{
-  if (!sharedptr.get())
-    return sharedptr;
-  auto delp = std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (sharedptr);
-  if (delp && ExecutionContextAdoptedDeleter::deleter == *delp)
-    return sharedptr;
-  // create new shared_ptr that's deleted in this ExecutionContext
-  ExecutionContextAdoptedDeleter *ad = new ExecutionContextAdoptedDeleter (*this, sharedptr);
-  auto adp = std::shared_ptr<ExecutionContextAdoptedDeleter> (ad, ExecutionContextAdoptedDeleter::deleter);
-  assert_return (ExecutionContextAdoptedDeleter::deleter == *std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (adp), CallableIfaceP());
-  // use aliasing shared_ptr to yield CallableIface* wihle deleting via adp
-  auto remp = CallableIfaceP (adp, sharedptr.get());
-  assert_return (ExecutionContextAdoptedDeleter::deleter == *std::get_deleter<void(*)(ExecutionContextAdoptedDeleter*)> (remp), CallableIfaceP());
-  AIDA_DEBUG ("Deleter: %s: adopted deleter for %p\n", __func__, sharedptr.get());
-  return remp;
-}
-
-/// Create a GLib event loop source for this ExecutionContext.
-GSource*
-ExecutionContext::create_gsource (const std::string &name, int priority)
-{
-  const int fds[] = { this->notify_fd() };
-  struct CxxSource : GSource {
-    Aida::ExecutionContext *ec;
-  };
-  auto prepare = [] (GSource *source, gint *timeout_p) -> gboolean {
-    CxxSource &cs = *(CxxSource*) source;
-    return cs.ec->pending();
-  };
-  auto check = [] (GSource *source) -> gboolean {
-    CxxSource &cs = *(CxxSource*) source;
-    return cs.ec->pending();
-  };
-  auto dispatch = [] (GSource *source, GSourceFunc callback, gpointer user_data) -> gboolean {
-    CxxSource &cs = *(CxxSource*) source;
-    cs.ec->dispatch();
-    return true; // keep alive
-  };
-  auto finalize = [] (GSource *source) {
-    // CxxSource &cs = *(CxxSource*) source;
-    // this handler can be called from g_source_remove, or dispatch(), with or w/o main loop mutex... ;-(
-    // delete cs.ec;
-  };
-  static GSourceFuncs cxx_source_funcs = { prepare, check, dispatch, finalize };
-  GSource *source = g_source_new (&cxx_source_funcs, sizeof (CxxSource));
-  CxxSource &cs = *(CxxSource*) source;
-  cs.ec = this;
-  g_source_set_name (source, name.c_str());
-  g_source_set_priority (source, priority);
-  for (size_t i = 0; i < sizeof (fds) / sizeof (fds[0]); i++)
-    g_source_add_unix_fd (source, fds[i], G_IO_IN);
-  return source;
-}
 
 // == EventDispatcher ==
 struct EventDispatcher::ConnectionImpl final {

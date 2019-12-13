@@ -9,16 +9,6 @@ namespace Bse {
 
 // == BSE Initialization ==
 
-/** Create SFI glue layer context.
- * Create and push an SFI glue layer context for the calling thread, to enable communications with the
- * main BSE thread library.
- */
-SfiGlueContext*
-init_glue_context (const gchar *client, const std::function<void()> &caller_wakeup)
-{
-  return _bse_glue_context_create (client, caller_wakeup);
-}
-
 /** Initialize and start BSE.
  * Initialize the BSE library and start the main BSE thread. Arguments specific to BSE are removed
  * from @a argc / @a argv.
@@ -79,6 +69,7 @@ TaskRegistry::list ()
 }
 
 /// Retrieve a handle for the Bse::Server instance managing the Bse thread.
+#if 0 // FIXME
 ServerHandle
 init_server_instance () // bse.hh
 {
@@ -86,7 +77,8 @@ init_server_instance () // bse.hh
   server = BSE_SERVER.__handle__();
   return server;
 }
+#endif
 
 } // Bse
 
-#include "bse/bseapi_handles.cc"        // build IDL client interface
+// #include "bse/bseapi_handles.cc"        // build IDL client interface

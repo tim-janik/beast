@@ -213,10 +213,12 @@ ebeast/install: $>/ebeast/app.rules FORCE
 	@$(QECHO) INSTALL '$(DESTDIR)$(pkglibdir)/{app|electron}'
 	$Q rm -f -r $(DESTDIR)$(pkglibdir)/electron $(DESTDIR)$(pkglibdir)/app
 	$Q $(CP) -a $>/electron $>/app $(DESTDIR)$(pkglibdir)/
+	$Q $(call INSTALL_SYMLINK, '../electron/ebeast', '$(DESTDIR)$(pkglibdir)/bin/beast')
 install: ebeast/install
 ebeast/uninstall: FORCE
 	@$(QECHO) REMOVE '$(DESTDIR)$(pkglibdir)/{app|electron}'
 	$Q rm -f -r $(DESTDIR)$(pkglibdir)/electron $(DESTDIR)$(pkglibdir)/app
+	$Q rm -f '$(DESTDIR)$(pkglibdir)/bin/beast'
 uninstall: ebeast/uninstall
 
 # == ebeast/run ==

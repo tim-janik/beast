@@ -52,9 +52,6 @@ typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*
 #define	g_object_set_data_full(o,k,d,f)	  g_object_set_data_full ((gpointer) o, k, d, (gpointer) f)
 #define	g_object_steal_data(o,k)	  g_object_steal_data ((gpointer) o, k)
 #endif  /* !__cplusplus */
-void g_object_disconnect_any (gpointer object,
-                              gpointer function,
-                              gpointer data); /* workaorund for g_object_disconnect() */
 
 // == printf variants ==
 #define g_intern_format(...)            g_intern_string (::Bse::string_format (__VA_ARGS__).c_str())
@@ -221,22 +218,6 @@ guint g_predicate_idle_add_full (gint            priority,
                                  GDestroyNotify  notify);
 
 
-/* --- unix signal queue --- */
-#if 0
-typedef gboolean (*GUSignalFunc) (gint8          usignal,
-			 	  gpointer       data);
-guint   g_usignal_add            (gint8          usignal,
-				  GUSignalFunc   function,
-				  gpointer       data);
-guint   g_usignal_add_full       (gint           priority,
-				  gint8          usignal,
-				  GUSignalFunc   function,
-				  gpointer       data,
-				  GDestroyNotify destroy);
-void    g_usignal_notify         (gint8          usignal);
-#endif
-
-
 /* --- GType boilerplate --- */
 #ifndef G_DEFINE_DATA_TYPE      	// GTKFIX: add this to glib?
 #define G_DEFINE_DATA_TYPE(TN, t_n, T_P)                         G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, GTypeFlags (0), {})
@@ -307,16 +288,6 @@ inline    GParamFlags& operator&= (GParamFlags &s1, GParamFlags s2) { s1 = s1 & 
 constexpr GParamFlags  operator|  (GParamFlags  s1, GParamFlags s2) { return GParamFlags (s1 | (long long unsigned) s2); }
 inline    GParamFlags& operator|= (GParamFlags &s1, GParamFlags s2) { s1 = s1 | s2; return s1; }
 constexpr GParamFlags  operator~  (GParamFlags  s1)                 { return GParamFlags (~(long long unsigned) s1); }
-constexpr GSignalMatchType  operator&  (GSignalMatchType  s1, GSignalMatchType s2) { return GSignalMatchType (s1 & (long long unsigned) s2); }
-inline    GSignalMatchType& operator&= (GSignalMatchType &s1, GSignalMatchType s2) { s1 = s1 & s2; return s1; }
-constexpr GSignalMatchType  operator|  (GSignalMatchType  s1, GSignalMatchType s2) { return GSignalMatchType (s1 | (long long unsigned) s2); }
-inline    GSignalMatchType& operator|= (GSignalMatchType &s1, GSignalMatchType s2) { s1 = s1 | s2; return s1; }
-constexpr GSignalMatchType  operator~  (GSignalMatchType  s1)                 { return GSignalMatchType (~(long long unsigned) s1); }
-constexpr GSignalFlags  operator&  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 & (long long unsigned) s2); }
-inline    GSignalFlags& operator&= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 & s2; return s1; }
-constexpr GSignalFlags  operator|  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 | (long long unsigned) s2); }
-inline    GSignalFlags& operator|= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 | s2; return s1; }
-constexpr GSignalFlags  operator~  (GSignalFlags  s1)                 { return GSignalFlags (~(long long unsigned) s1); }
 constexpr GConnectFlags  operator&  (GConnectFlags  s1, GConnectFlags s2) { return GConnectFlags (s1 & (long long unsigned) s2); }
 inline    GConnectFlags& operator&= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 & s2; return s1; }
 constexpr GConnectFlags  operator|  (GConnectFlags  s1, GConnectFlags s2) { return GConnectFlags (s1 | (long long unsigned) s2); }

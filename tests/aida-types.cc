@@ -47,19 +47,10 @@ test_aida_cxxaux()
   static_assert (IsComparable<std::shared_ptr<SimpleType> >::value == true, "testing IsComparable");
   static_assert (IsComparable<ComplexType>::value == false, "testing IsComparable");
   static_assert (IsComparable<std::shared_ptr<ComplexType> >::value == true, "testing IsComparable");
-  // check Has__aida_from_any__
-  struct AnyConvertible {
-    void __aida_from_any__ (const Aida::Any &any);
-  };
-  static_assert (Has__aida_from_any__<SimpleType>::value == false, "testing Has__aida_from_any__ == 0");
-  static_assert (Has__aida_from_any__<AnyConvertible>::value == true, "testing Has__aida_from_any__ == 1");
 }
 TEST_ADD (test_aida_cxxaux);
 
 // Dummy handles for test purposes
-struct OneHandle : RemoteHandle {
-  static OneHandle __cast__ (RemoteHandle smh) { OneHandle oh; return oh; }
-};
 class OneIface :
     public virtual ImplicitBase,
     public virtual EnableSharedFromThis<OneIface>
@@ -70,9 +61,7 @@ public:
   explicit         OneIface (int64 id) : testid_ (id) {}
   typedef std::shared_ptr<OneIface> OneIfaceP;
   // static Aida::BaseConnection* __aida_connection__();
-  OneHandle                          __handle__               () { return OneHandle(); }
   virtual Aida::StringVector         __typelist_mt__          () const override { return { "OneIface" }; }
-  virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
   virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
   { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
@@ -131,16 +120,6 @@ test_aida_enum_info()
   TASSERT (i != Aida::TypeKind::INT64);
 }
 TEST_ADD (test_aida_enum_info);
-
-static void
-test_aida_handles()
-{
-  // RemoteHandle
-  TASSERT (RemoteHandle() == NULL);
-  TASSERT (!RemoteHandle());
-  TASSERT (RemoteHandle().__iface_ptr__().get() == 0);
-}
-TEST_ADD (test_aida_handles);
 
 static void
 test_aida_any_basics()

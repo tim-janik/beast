@@ -12,7 +12,6 @@ bse/icons/png.files ::= $(strip		\
 	bse/icons/midi-ctrl-input.png	\
 	bse/icons/mono-synth.png	\
 	bse/icons/osc.png		\
-	bse/icons/snooper.png		\
 	bse/icons/speaker.png		\
 	bse/icons/virtual-input.png	\
 	bse/icons/virtual-output.png	\

@@ -131,21 +131,6 @@ void	bse_object_class_add_grouped_property	(BseObjectClass *oclass,
 						 guint		 property_id,
 						 GParamSpec	*pspec);
 #define	bse_object_class_add_param	         bse_object_class_add_property
-guint	bse_object_class_add_signal	        (BseObjectClass	*oclass,
-						 const gchar	*signal_name,
-						 GType           return_type,
-						 guint           n_params,
-						 ...);
-guint	bse_object_class_add_asignal    	(BseObjectClass	*oclass,
-						 const gchar	*signal_name,
-						 GType           return_type,
-						 guint           n_params,
-						 ...);
-guint	bse_object_class_add_dsignal    	(BseObjectClass	*oclass,
-						 const gchar	*signal_name,
-						 GType           return_type,
-						 guint           n_params,
-						 ...);
 
 
 /* --- object API --- */
@@ -169,39 +154,8 @@ void            bse_object_restore_finish       (BseObject      *object,
                                                  guint            vmajor,
                                                  guint            vminor,
                                                  guint            vmicro);
-void		bse_object_reemit_signal	(gpointer	 src_object,
-						 const gchar	*src_signal,
-						 gpointer	 dest_obejct,
-						 const gchar	*dest_signal);
-void		bse_object_remove_reemit	(gpointer	 src_object,
-						 const gchar	*src_signal,
-						 gpointer	 dest_object,
-						 const gchar	*dest_signal);
-static inline void
-bse_object_proxy_notifies	(gpointer	 src_object,
-				 gpointer	 dest_object,
-				 const gchar	*dest_signal)
-{
-  bse_object_reemit_signal (src_object, "notify::uname", dest_object, dest_signal);
-  bse_object_reemit_signal (src_object, "icon-changed", dest_object, dest_signal);
-}
-static inline void
-bse_object_unproxy_notifies	(gpointer	 src_object,
-				 gpointer	 dest_object,
-				 const gchar	*dest_signal)
-{
-  bse_object_remove_reemit (src_object, "notify::uname", dest_object, dest_signal);
-  bse_object_remove_reemit (src_object, "icon-changed", dest_object, dest_signal);
-}
-
 
 /* --- implementation details --- */
 extern GQuark bse_quark_uname;
-void          bse_object_marshal_signal (GClosure       *closure,
-                                         GValue /*out*/ *return_value,
-                                         guint           n_param_values,
-                                         const GValue   *param_values,
-                                         gpointer        invocation_hint,
-                                         gpointer        marshal_data);
 
 #endif /* __BSE_OBJECT_H__ */

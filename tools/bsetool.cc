@@ -512,7 +512,7 @@ bsetool_main (int argc_int, char *argv[])
   // load BSE plugins, scripts, ladspa plugins, etc
   if (!string_to_bool (toolap["bse-no-load"]))
     {
-      BSE_SERVER.register_core_plugins();
+      BSE_SERVER.load_assets();
       while (g_main_context_pending (bse_main_context))
         g_main_context_iteration (bse_main_context, false);
     }
@@ -544,14 +544,8 @@ int
 main (int argc, char *argv[])
 {
   Bse::init_async (&argc, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
-  auto bse_server = Bse::init_server_instance();
-  int ret = -2147483648;
-  Aida::ScopedSemaphore sem;
-  auto remote_main = [argc, argv, &sem, &ret] () {
-    ret = bsetool_main (argc, argv);
-    sem.post();
+  const auto ret = Bse::jobs += [argc, argv] () {
+    return bsetool_main (argc, argv);
   };
-  bse_server.__iface_ptr__()->__execution_context_mt__().enqueue_mt (remote_main);
-  sem.wait();
   return ret;
 }

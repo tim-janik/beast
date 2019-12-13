@@ -23,7 +23,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsecsynth.hh		\
 	bse/bsecxxarg.hh		\
 	bse/bsecxxbase.hh		\
-	bse/bsecxxclosure.hh		\
 	bse/bsecxxmodule.hh		\
 	bse/bsecxxplugin.hh		\
 	bse/bsecxxutils.hh		\
@@ -40,11 +39,8 @@ bse/libbse.headers ::= $(strip		\
 	bse/bseenums.hh			\
 	bse/bseexports.hh		\
 	bse/bsefilter.hh		\
-	bse/bsegenclosures.hh		\
 	bse/bseglobals.hh		\
-	bse/bseglue.hh			\
 	bse/bseieee754.hh		\
-	bse/bseincluder.hh		\
 	bse/bseinstrumentinput.hh	\
 	bse/bseinstrumentoutput.hh	\
 	bse/bseitem.hh			\
@@ -59,7 +55,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsemidievent.hh		\
 	bse/bsemidifile.hh		\
 	bse/bsemidiinput.hh		\
-	bse/bsemidinotifier.hh		\
 	bse/bsemidireceiver.hh		\
 	bse/bsemidisynth.hh		\
 	bse/bsemidivoice.hh		\
@@ -76,7 +71,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/bsesequencer.hh		\
 	bse/bseserver.hh		\
 	bse/bsesnet.hh			\
-	bse/bsesnooper.hh		\
 	bse/bsesong.hh			\
 	bse/bsesoundfont.hh		\
 	bse/bsesoundfontosc.hh		\
@@ -139,13 +133,8 @@ bse/libbse.headers ::= $(strip		\
 	bse/serializable.hh		\
 	bse/storage.hh			\
 	bse/sfi.hh			\
-	bse/sficomport.hh		\
-	bse/sficomwire.hh		\
 	bse/sficxx.hh			\
 	bse/sfifilecrawler.hh		\
-	bse/sfiglue.hh			\
-	bse/sfigluecodec.hh		\
-	bse/sfiglueproxy.hh		\
 	bse/sfimemory.hh		\
 	bse/sfinote.hh			\
 	bse/sfiparams.hh		\
@@ -157,8 +146,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/sfitypes.hh			\
 	bse/sfiustore.hh		\
 	bse/sfivalues.hh		\
-	bse/sfivisitors.hh		\
-	bse/sfivmarshal.hh		\
 	bse/sfiwrapper.hh		\
 	bse/strings.hh			\
 	bse/testing.hh			\
@@ -182,7 +169,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsecsynth.cc		\
 	bse/bsecxxarg.cc		\
 	bse/bsecxxbase.cc		\
-	bse/bsecxxclosure.cc		\
 	bse/bsecxxmodule.cc		\
 	bse/bsecxxplugin.cc		\
 	bse/bsecxxutils.cc		\
@@ -199,7 +185,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsefilter-ellf.cc		\
 	bse/bsefilter.cc		\
 	bse/bseglobals.cc		\
-	bse/bseglue.cc			\
 	bse/bseinstrumentinput.cc	\
 	bse/bseinstrumentoutput.cc	\
 	bse/bseitem.cc			\
@@ -221,7 +206,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsemidievent.cc		\
 	bse/bsemidifile.cc		\
 	bse/bsemidiinput.cc		\
-	bse/bsemidinotifier.cc		\
 	bse/bsemidireceiver.cc		\
 	bse/bsemidisynth.cc		\
 	bse/bsemidivoice.cc		\
@@ -238,7 +222,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsesequencer.cc		\
 	bse/bseserver.cc		\
 	bse/bsesnet.cc			\
-	bse/bsesnooper.cc		\
 	bse/bsesong.cc			\
 	bse/bsesoundfont.cc		\
 	bse/bsesoundfontosc.cc		\
@@ -294,12 +277,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/regex.cc			\
 	bse/serializable.cc		\
 	bse/storage.cc			\
-	bse/sficomport.cc		\
-	bse/sficomwire.cc		\
 	bse/sfifilecrawler.cc		\
-	bse/sfiglue.cc			\
-	bse/sfigluecodec.cc		\
-	bse/sfiglueproxy.cc		\
 	bse/sfimemory.cc		\
 	bse/sfinote.cc			\
 	bse/sfiparams.cc		\
@@ -311,8 +289,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/sfitypes.cc			\
 	bse/sfiustore.cc		\
 	bse/sfivalues.cc		\
-	bse/sfivisitors.cc		\
-	bse/sfivmarshal.cc		\
 	bse/sfiwrapper.cc		\
 	bse/strings.cc			\
 	bse/testing.cc			\
@@ -323,15 +299,12 @@ bse/libbsejack.sources ::= $(strip	\
 	bse/driver-jack.cc		\
 )
 bse/include.idls ::= $(strip		\
-	bse/bse.idl			\
 	bse/bsebasics.idl		\
 	bse/bsebusmodule.idl		\
 	bse/bsecxxbase.idl		\
 	bse/bsecxxmodule.idl		\
-	$>/bse/bsehack.idl		\
 )
 bse/libbse.deps     ::= $(strip		\
-	$>/bse/bseapi_handles.hh	\
 	$>/bse/bseapi_interfaces.hh	\
 	$>/bse/bsebasics.genidl.hh	\
 	$>/bse/bsebusmodule.genidl.hh	\
@@ -347,7 +320,7 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/gslfft.cc		\
 	$>/bse/zres.cc			\
 )
-bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc $>/bse/bseapi_handles.hh $>/bse/bseapi_handles.cc
+bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc
 
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
@@ -363,6 +336,13 @@ ifneq ('','$(BSE_JACK_LIBS)')
   bse/all: $(lib/libbsejack.so)
 endif
 
+# == integrity defs ==
+bse/integrity		   ::= $>/bse/integrity
+bse/integrity.sources	   ::= bse/integrity.cc
+bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
+bse/integrity.objects.FLAGS  = -O0	# compile fast
+bse/all: $(bse/integrity)
+
 # == BeastSoundEngine defs ==
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
@@ -370,20 +350,6 @@ bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
 bse/BeastSoundEngine.gensources ::= $>/bse/bse_jsonipc_stub1.cc $>/bse/bse_jsonipc_stub2.cc $>/bse/bse_jsonipc_stub3.cc $>/bse/bse_jsonipc_stub4.cc
 bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources)) $(bse/BeastSoundEngine.gensources:.cc=.o)
 bse/all: $(lib/BeastSoundEngine)
-
-# == bseprocidl defs ==
-bse/bseprocidl			::= $>/bse/bseprocidl
-bse/bseprocidl.sources		::= bse/bseprocidl.cc
-bse/bseprocidl.objects		::= $(call BUILDDIR_O, $(bse/bseprocidl.sources))
-bse/bseprocidl.objects.FLAGS	  = -O0	# compile fast
-bse/all: $(bse/bseprocidl)
-
-# == integrity defs ==
-bse/integrity		   ::= $>/bse/integrity
-bse/integrity.sources	   ::= bse/integrity.cc
-bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
-bse/integrity.objects.FLAGS  = -O0	# compile fast
-bse/all: $(bse/integrity)
 
 # == external/minizip ==
 $>/external/minizip/mz_zip.h:			| $>/external/
@@ -437,7 +403,7 @@ endif
 
 # == bseapi.idl rules ==
 $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc)	| $>/bse/
-	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} %_handles.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
+	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
 	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.hh -o $>/bse $<
 	$Q sed '1i#define _(x) x' -i $>/bse/bseapi_interfaces.cc && sed '1i#undef _' -i $>/bse/bseapi_interfaces.cc
 
@@ -585,25 +551,6 @@ $(call BUILD_PROGRAM, \
 	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
 	../lib)
 $(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
-
-# == bseprocidl rules ==
-$(bse/bseprocidl.objects):	$(bse/libbse.deps)
-$(bse/bseprocidl.objects):	EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(call BUILD_PROGRAM, \
-	$(bse/bseprocidl), \
-	$(bse/bseprocidl.objects), \
-	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
-
-# == bsehack.idl ==
-# currently generated from BSE introspection data, needed to build the old IDL bindings for beast-gtk
-$>/bse/bsehack.idl: bse/bse.idl bse/bsebasics.idl bse/bsecxxbase.idl bse/bsecxxmodule.idl | $>/bse/bseprocidl
-	$(QGEN)
-	$Q echo '// make $@'							> $@.tmp1
-	$Q grep -v 'include.*bsehack.idl' bse/bse.idl | \
-		$(sfi/sfidl) $(sfi/sfidl.includes) -Ibse --list-types -		> $@.tmp2
-	$Q $>/bse/bseprocidl $@.tmp2 --g-fatal-warnings				>>$@.tmp1
-	$Q mv $@.tmp1 $@ && rm -f $@.tmp2
 
 # == integrity rules ==
 $(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/

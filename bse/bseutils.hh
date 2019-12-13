@@ -15,10 +15,6 @@ Bse::PartControl bse_part_control (uint id, uint tick, Bse::MidiSignal control_t
 void                bse_note_sequence_resize         (BseNoteSequence       *rec,
                                                       guint                  length);
 guint               bse_note_sequence_length         (BseNoteSequence       *rec);
-SfiRing*            bse_it3m_seq_to_ring             (BseIt3mSeq            *iseq);
-BseIt3mSeq*         bse_it3m_seq_from_ring           (SfiRing               *ring);
-BseIt3mSeq*         bse_it3m_seq_from_item_seq       (Bse::ItemSeq &items);
-Bse::ItemSeq        bse_item_seq_from_it3m_seq       (BseIt3mSeq *i3s);
 
 
 
@@ -84,9 +80,6 @@ namespace Bse {
 // == icons ==
 Icon icon_from_pixstream (const guint8 *pixstream);
 bool icon_sanitize (Icon *icon);
-
-// == main ==
-Aida::ExecutionContext& execution_context ();   // bsemain.cc
 
 // == memory ==
 struct SharedBlock {

@@ -25,7 +25,6 @@ typedef struct _SfiBBlock	SfiBBlock;
 typedef struct _SfiFBlock	SfiFBlock;
 typedef struct _SfiSeq		SfiSeq;
 typedef struct _SfiRec		SfiRec;
-typedef ssize_t                 SfiProxy; /// Pointer sized integer object handle
 struct SfiRecFields {
   guint        n_fields;
   GParamSpec **fields;

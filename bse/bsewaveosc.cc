@@ -44,7 +44,6 @@ static void     bse_wave_osc_update_modules     (BseWaveOsc             *self);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
-static guint    signal_notify_pcm_position = 0;
 
 
 /* --- functions --- */
@@ -135,7 +134,6 @@ clear_wave_and_esample (BseWaveOsc *self)
     {
       BseWave *wave = self->wave;
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wave), wave_osc_uncross_wave);
-      bse_object_unproxy_notifies (self->wave, self, "notify::wave");
       self->wave = NULL;
       bse_wave_osc_update_config_wchunk (self);
       bse_wave_osc_update_modules (self);
@@ -210,7 +208,6 @@ bse_wave_osc_set_property (GObject      *object,
           if (self->wave)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), wave_osc_uncross_wave);
-              bse_object_proxy_notifies (self->wave, self, "notify::wave");
               bse_wave_request_index (self->wave);
               bse_wave_osc_update_config_wchunk (self);
               bse_wave_osc_update_modules (self);
@@ -466,7 +463,7 @@ pcm_pos_access_free (gpointer data)     /* UserThread */
   BseWaveOsc *self = pos->wosc;
 
   if (pos->perc < 0)
-    g_signal_emit (self, signal_notify_pcm_position, 0, pos->stamp, pos->module_pcm_position);
+    ; // emit ("pcmposition");
 
   g_object_unref (self);
   g_free (pos);
@@ -564,11 +561,6 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
                                               1.0, 0, 3.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
 
-  signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
-                                                            G_TYPE_NONE, 2,
-                                                            SFI_TYPE_NUM,
-                                                            G_TYPE_INT);
-
   ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
   assert_return (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
   ichannel = bse_source_class_add_ichannel (source_class, "sync-in", _("Sync In"), _("Syncronization Input"));
@@ -619,7 +611,7 @@ WaveOscImpl::sync_seek_perc (double percentage, const WaveOscSeq &other_oscs)
   for (size_t i = 0; i < n; i++)
     if (other_oscs[i])
       {
-        BseWaveOsc *other = other_oscs[i].__iface__()->as<BseWaveOsc*>();
+        BseWaveOsc *other = other_oscs[i]->as<BseWaveOsc*>();
         if (other != self && BSE_IS_WAVE_OSC (other))
           woscs[j++] = other;
       }

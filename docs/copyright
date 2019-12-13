@@ -49,16 +49,6 @@ Files: plugins/artscompressor.cc
 Copyright: Copyright (C) 2001 Matthias Kretz <kretz@kde.org>
 License: LGPL-2.1+
 
-Files: beast-gtk/gxk/gxksimplelabel.c
-Copyright: Copyright (C) 1997-2000 the GTK+ Team and others
-License: LGPL-2.1+
-
-Files: beast-gtk/gxk/gxkutils.cc
-Copyright: Copyright (C) 2000 Michael Natterer <mitch@gimp.org>
-License: LGPL-2.1+
-Comment: Only the code in gxk_label_set_attributes() is
- Copyright (C) 2000 Michael Natterer.
-
 Files: launchers/beaststart.c launchers/bseshstart.c
  launchers/suidmain.c launchers/suidmain.h
 Copyright: Public Domain - no copyright holder

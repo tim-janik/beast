@@ -37,7 +37,6 @@ fill_simple_data_pack (A1::SimpleDataPack &simple)
 
 struct A1DerivedImpl : public virtual A1::DerivedIface, public virtual EnableSharedFromThis<A1DerivedImpl> {
   virtual void                       self_args                (DerivedIface &self) override {}
-  virtual Aida::ExecutionContext&    __execution_context_mt__ () const override    { return Bse::execution_context(); }
   virtual bool                       __access__               (const std::string &propertyname, const PropertyAccessorPred&) override { return false; }
   virtual Aida::IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) override
   { Aida::IfaceEventConnection *c = NULL; AIDA_ASSERT_RETURN_UNREACHED (*c); }
@@ -67,10 +66,10 @@ fill_big_data_pack (A1::BigDataPack &big)
   big.any1.set ("Foohoo");
   big.anys.push_back (Any (7));
   big.anys.push_back (Any ("seven"));
-  big.anys.push_back (Any (std::make_shared<A1DerivedImpl>()->__handle__()));
-  big.derived = std::make_shared<A1DerivedImpl>()->__handle__();
-  big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
-  big.bases.push_back (std::make_shared<A1DerivedImpl>()->__handle__());
+  big.anys.push_back (Any (std::make_shared<A1DerivedImpl>()));
+  big.derived = std::make_shared<A1DerivedImpl>();
+  big.bases.push_back (std::make_shared<A1DerivedImpl>());
+  big.bases.push_back (std::make_shared<A1DerivedImpl>());
 }
 
 static void
@@ -144,4 +143,3 @@ test_explore_enums()
 TEST_ADD (test_explore_enums);
 
 #include "explore_interfaces.cc"
-#include "explore_handles.cc"

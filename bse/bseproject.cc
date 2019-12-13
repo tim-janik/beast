@@ -14,7 +14,6 @@
 #include "bsemain.hh"
 #include "bsestandardsynths.hh"
 #include "bsemidireceiver.hh"
-#include "bsemidinotifier.hh"
 #include "gslcommon.hh"
 #include "bseengine.hh"
 #include "bsepcmwriter.hh"
@@ -651,21 +650,6 @@ bse_project_create_intern_csynth (BseProject *self,
   return csynth;
 }
 
-BseMidiNotifier*
-bse_project_get_midi_notifier (BseProject *self)
-{
-  GSList *slist;
-  for (slist = self->items; slist; slist = slist->next)
-    if (BSE_IS_MIDI_NOTIFIER (slist->data))
-      return (BseMidiNotifier*) slist->data;
-
-  BseMidiNotifier *mnot = (BseMidiNotifier*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_MIDI_NOTIFIER,
-                                                                            "%bse-intern-midi-notifier", NULL);
-  bse_midi_notifier_set_receiver (mnot, self->midi_receiver);
-  bse_item_set_internal (BSE_ITEM (mnot), TRUE);
-  return mnot;
-}
-
 static void
 bse_project_prepare (BseSource *source)
 {
@@ -913,9 +897,31 @@ bse_project_deactivate (BseProject *self)
 
 namespace Bse {
 
+static std::vector<ProjectImpl*>&
+projectlist()
+{
+  // use new() to keep the list alive during atexit handlers
+  static auto &projectlist_ = *new std::vector<ProjectImpl*>();
+  return projectlist_;
+}
+
 ProjectImpl::ProjectImpl (BseObject *bobj) :
   ContainerImpl (bobj)
-{}
+{
+  projectlist().push_back (this);
+}
+
+ProjectImpl::~ProjectImpl ()
+{
+  auto &projectlist_ = projectlist();
+  projectlist_.erase (std::remove (projectlist_.begin(), projectlist_.end(), this), projectlist_.end());
+}
+
+std::vector<ProjectImpl*>
+ProjectImpl::project_list ()
+{
+  return projectlist();
+}
 
 void
 ProjectImpl::post_init()
@@ -949,9 +955,9 @@ ProjectImpl::xml_serialize (SerializationNode &xs)
         xc.load (*dynamic_cast<TrackImpl*> (song->create_track().get()));
     }
   if (xs.in_save() && song)
-    for (auto trackh : song->list_tracks())
-      if (!trackh.__iface__()->list_devices().empty())
-        xs.save_under ("Track", *trackh.__iface__()->as<TrackImplP>());
+    for (auto trackp : song->list_tracks())
+      if (!trackp->list_devices().empty())
+        xs.save_under ("Track", *trackp->as<TrackImplP>());
 }
 
 void
@@ -959,9 +965,6 @@ ProjectImpl::xml_reflink (SerializationNode &xs)
 {
   ContainerImpl::xml_reflink (xs);
 }
-
-ProjectImpl::~ProjectImpl ()
-{}
 
 bool
 ProjectImpl::dirty() const
@@ -1272,7 +1275,7 @@ ProjectImpl::get_supers ()
   for (GSList *slist = self->supers; slist; slist = slist->next)
     {
       BseItem *bseitem = (BseItem*) slist->data;
-      sseq.push_back (bseitem->as<SuperIface*>()->__handle__());
+      sseq.push_back (bseitem->as<SuperIfaceP>());
     }
   return sseq;
 }
@@ -1406,14 +1409,6 @@ ProjectImpl::get_sound_font_repo ()
   BseProject *self = as<BseProject*>();
   BseSoundFontRepo *sfrepo = bse_project_get_sound_font_repo (self);
   return sfrepo ? sfrepo->as<SoundFontRepoIfaceP>() : NULL;
-}
-
-MidiNotifierIfaceP
-ProjectImpl::get_midi_notifier ()
-{
-  BseProject *self = as<BseProject*>();
-  BseMidiNotifier *notifier = bse_project_get_midi_notifier (self);
-  return notifier ? notifier->as<MidiNotifierIfaceP>() : NULL;
 }
 
 } // Bse

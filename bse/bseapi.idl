@@ -1196,10 +1196,6 @@ interface SoundFontRepo : Super {
   Error remove_sound_font (SoundFont sound_font);     ///< Remove a sound font from repository.
 };
 
-/// Interface for MIDI event notification.
-interface MidiNotifier : Item {
-};
-
 /// Interface for MIDI synthesis networks.
 interface MidiSynth : SNet {
   group _("MIDI Instrument") {
@@ -1255,7 +1251,6 @@ interface Project : Container {
   SoundFontRepo get_sound_font_repo ();            ///< Retrieve the project's unique sound font repository.
   CSynth       create_csynth       (String name); ///< Create a synthsizer network for this project.
   MidiSynth    create_midi_synth   (String name); ///< Create a MIDI synthesizer network for this project.
-  MidiNotifier get_midi_notifier   ();            ///< Retrieve the project's midi notifier object.
   void         remove_snet         (SNet snet);   ///< Remove an existing synthesizer network from this project.
   Error        restore_from_file   (String file_name); ///< Load a project from file.
   /// Inject a MIDI control event into the project's MIDI receiver.
@@ -1423,14 +1418,12 @@ interface Server : Container {
   String        get_custom_effect_dir ();    ///< Retrieve user specific effects directory.
   String        get_version ();              ///< Retrieve BSE version.
   void          purge_stale_cachedirs   ();  ///< Purge stale directories from past runtimes.
-  void          register_ladspa_plugins ();  ///< Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins asynchronously, DEPRECATED.
-  void          register_core_plugins   ();  ///< Register core plugins asynchronously, DEPRECATED.
-  void          load_assets();               ///< Register plugins and scripts immediately.
+  void          load_assets();               ///< Load factory plugins and scripts.
+  void          load_ladspa();               ///< Load external LADSPA plugins.
   bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
   Project       create_project  (String project_name); ///< Create a new project (name is modified to be unique if necessary.
   Project       last_project    ();                    ///< Retrieve the last created project.
-  void          destroy_project (Project project);     ///< Destroy a previously created new project.
   AuxDataSeq     list_module_types ();                   ///< A list of Source type names for create_source().
   AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
   Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.

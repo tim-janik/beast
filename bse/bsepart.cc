@@ -40,10 +40,8 @@ static GTokenType   bse_part_restore_private	(BseObject	*object,
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
-static guint    signal_range_changed = 0;
 static guint	handler_id_range_changed = 0;
 static SfiRing *plist_range_changed = NULL;
-static guint    signal_links_changed = 0;
 static guint	handler_id_links_changed = 0;
 static SfiRing *plist_links_changed = NULL;
 static GQuark   quark_insert_note = 0;
@@ -97,12 +95,6 @@ bse_part_class_init (BsePartClass *klass)
   quark_insert_notes = g_quark_from_static_string ("insert-notes");
   quark_insert_control = g_quark_from_static_string ("insert-control");
   quark_insert_controls = g_quark_from_static_string ("insert-controls");
-
-  signal_range_changed = bse_object_class_add_signal (object_class, "range-changed",
-						      G_TYPE_NONE, 4,
-						      G_TYPE_INT, G_TYPE_INT,
-						      G_TYPE_INT, G_TYPE_INT);
-  signal_links_changed = bse_object_class_add_signal (object_class, "links-changed", G_TYPE_NONE, 0);
 }
 
 static void
@@ -314,7 +306,7 @@ range_changed_notify_handler (gpointer data)
     {
       BsePart *self = (BsePart*) sfi_ring_pop_head (&plist_range_changed);
       self->range_queued = FALSE;
-      guint tick = self->range_tick, duration = self->range_bound - tick;
+      // tick = self->range_tick; duration = self->range_bound - tick;
       gint min_note = self->range_min_note, max_note = self->range_max_note;
 
       self->range_tick = BSE_PART_MAX_TICK;
@@ -322,10 +314,7 @@ range_changed_notify_handler (gpointer data)
       self->range_min_note = BSE_MAX_NOTE;
       self->range_max_note = 0;
       if (min_note <= max_note)
-        {
-          g_signal_emit (self, signal_range_changed, 0, tick, duration, min_note, max_note);
-          self->as<Bse::PartImpl*>()->emit_event ("noteschanged");
-        }
+        self->as<Bse::PartImpl*>()->emit_event ("noteschanged");
     }
   handler_id_range_changed = 0;
 
@@ -394,7 +383,6 @@ links_changed_notify_handler (gpointer data)
     {
       BsePart *self = (BsePart*) sfi_ring_pop_head (&plist_links_changed);
       self->links_queued = FALSE;
-      g_signal_emit (self, signal_links_changed, 0);
       self->as<Bse::PartImpl*>()->emit_event ("linkschanged");
     }
   handler_id_links_changed = 0;
@@ -424,15 +412,15 @@ part_link_lesser (const Bse::PartLink &a, const Bse::PartLink &b)
     return a.duration < b.duration;
   //if (a.count != b.count)
   //  return a.count < b.count;
-  Bse::TrackIface *atrack = a.track.__iface__();
-  Bse::TrackIface *btrack = b.track.__iface__();
+  Bse::TrackIface *atrack = a.track.get();
+  Bse::TrackIface *btrack = b.track.get();
   int64_t aid, bid;
   aid = atrack ? atrack->proxy_id() : 0;
   bid = btrack ? btrack->proxy_id() : 0;
   if (aid != bid)
     return aid < bid;
-  Bse::PartIface *apart = a.part.__iface__();
-  Bse::PartIface *bpart = b.part.__iface__();
+  Bse::PartIface *apart = a.part.get();
+  Bse::PartIface *bpart = b.part.get();
   aid = apart ? apart->proxy_id() : 0;
   bid = bpart ? bpart->proxy_id() : 0;
   if (aid != bid)

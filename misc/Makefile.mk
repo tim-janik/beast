@@ -72,8 +72,6 @@ clang-tidy:								| $>/misc/clang-tidy/
 	  -I . \
 	  -I $> \
 	  -I sfi \
-	  -I beast-gtk \
-	  -I $>/beast-gtk \
 	  -I $>/plugins \
 	  -I external/v8pp/ \
 	  -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/src/ \
@@ -85,7 +83,7 @@ clang-tidy:								| $>/misc/clang-tidy/
 	$Q sed "s,^`pwd`/,," $>/misc/clang-tidy/clang-tidy.raw		> $>/misc/clang-tidy/clang-tidy.log
 	$Q rm -f $>/misc/clang-tidy/clang-tidy.raw  $>/misc/tmpls.all  $>/misc/tmpls.cchh  $>/misc/tmpls.clangtidy
 	misc/blame-lines -b $>/misc/clang-tidy/clang-tidy.log
-CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|beast-gtk|ebeast|tools|launchers)/.*\.(cc|hh)$$"
+CLANG_TIDY_GLOB := "^(aidacc|bse|plugins|drivers|ebeast|tools|launchers)/.*\.(cc|hh)$$"
 .PHONY: clang-tidy
 # Note, 'make clang-tidy' requires a successfuly built source tree.
 

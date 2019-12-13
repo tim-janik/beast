@@ -13,7 +13,9 @@
 #define BSE_INSTRUMENT_OUTPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_INSTRUMENT_OUTPUT, BseInstrumentOutputClass))
 
 struct BseInstrumentOutput : BseSubOPort
-{};
+{
+  Aida::IfaceEventConnection *pcon = nullptr;
+};
 struct BseInstrumentOutputClass : BseSubOPortClass
 {};
 

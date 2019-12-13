@@ -60,8 +60,6 @@ static void         bse_track_update_midi_channel (BseTrack      *self);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint	   signal_changed = 0;
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseTrack)
@@ -462,14 +460,12 @@ clear_snet_and_wave_and_sfpreset (BseTrack *self)
 		  NULL);
   if (self->snet)
     {
-      bse_object_unproxy_notifies (self->snet, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
       self->snet = NULL;
       g_object_notify ((GObject*) self, "snet");
     }
   if (self->wave)
     {
-      bse_object_unproxy_notifies (self->wave, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
       self->wave = NULL;
       g_object_notify ((GObject*) self, "wave");
@@ -483,7 +479,6 @@ clear_snet_and_wave_and_sfpreset (BseTrack *self)
     }
   if (self->sound_font_preset)
     {
-      bse_object_unproxy_notifies (self->sound_font_preset, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
       self->sound_font_preset = NULL;
       g_object_notify ((GObject *) self, "sound_font_preset");
@@ -518,7 +513,6 @@ bse_track_set_property (GObject      *object,
 	      if (self->snet)
 		{
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
-		  bse_object_proxy_notifies (self->snet, self, "changed");
 		}
 	      if (self->sub_synth)
 		g_object_set (self->sub_synth, /* no undo */
@@ -540,7 +534,6 @@ bse_track_set_property (GObject      *object,
 		{
 		  create_wnet (self, wave);
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
-		  bse_object_proxy_notifies (self->wave, self, "changed");
 		}
 	    }
 	}
@@ -558,7 +551,6 @@ bse_track_set_property (GObject      *object,
 		{
 		  create_sound_font_net (self, sound_font_preset);
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
-		  bse_object_proxy_notifies (self->sound_font_preset, self, "changed");
 		}
 	    }
 	}
@@ -568,7 +560,6 @@ bse_track_set_property (GObject      *object,
 	{
           if (self->pnet)
             {
-              bse_object_unproxy_notifies (self->pnet, self, "notify::pnet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), track_uncross_pnet);
               self->pnet = NULL;
             }
@@ -576,7 +567,6 @@ bse_track_set_property (GObject      *object,
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), track_uncross_pnet);
-              bse_object_proxy_notifies (self->pnet, self, "notify::pnet");
             }
           if (self->postprocess)
             g_object_set (self->postprocess, /* no undo */
@@ -586,9 +576,11 @@ bse_track_set_property (GObject      *object,
       break;
     case PROP_OUTPUTS:
       {
+#if 0
         BseIt3mSeq *i3s = (BseIt3mSeq*) g_value_get_boxed (value);
         Bse::ItemSeq items = bse_item_seq_from_it3m_seq (i3s);
         bse_bus_or_track_set_outputs (BSE_ITEM (self), items);
+#endif
       }
       break;
     default:
@@ -607,8 +599,8 @@ bse_track_get_property (GObject    *object,
 
   switch (param_id)
     {
-      BseIt3mSeq *iseq;
-      SfiRing *ring;
+      // BseIt3mSeq *iseq;
+      // SfiRing *ring;
     case PROP_SNET:
       bse_value_set_object (value, self->snet);
       break;
@@ -616,10 +608,12 @@ bse_track_get_property (GObject    *object,
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_OUTPUTS:
+#if 0
       iseq = bse_it3m_seq_new();
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
         bse_it3m_seq_append (iseq, (BseItem*) ring->data);
       g_value_take_boxed (value, iseq);
+#endif
       break;
     case PROP_WAVE:
       bse_value_set_object (value, self->wave);
@@ -652,7 +646,8 @@ bse_track_insert_part (BseTrack *self,
       entry = track_add_entry (self, entry ? i + 1 : 0, tick, part);
     }
   bse_part_links_changed (part);
-  g_signal_emit (self, signal_changed, 0);
+  auto impl = self->as<Bse::TrackImpl*>();
+  impl->notify ("changed");
   return entry ? entry->id : 0;
 }
 
@@ -670,7 +665,8 @@ bse_track_remove_tick (BseTrack *self,
       BsePart *part = entry->part;
       track_delete_entry (self, entry - self->entries_SL);
       bse_part_links_changed (part);
-      g_signal_emit (self, signal_changed, 0);
+      auto impl = self->as<Bse::TrackImpl*>();
+      impl->notify ("changed");
     }
 }
 
@@ -1103,12 +1099,13 @@ bse_track_class_init (BseTrackClass *klass)
 			      PROP_PNET,
 			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
 						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
+#if 0
   bse_object_class_add_param (object_class, _("Signal Outputs"),
                               PROP_OUTPUTS,
                               bse_param_spec_boxed ("outputs", _("Output Signals"),
                                                     _("Mixer busses used as output for this track"),
                                                     BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
-  signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
+#endif
 }
 
 namespace Bse {
@@ -1325,7 +1322,7 @@ TrackImpl::outputs () const
   for (SfiRing *ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
     {
       BseItem *item = (BseItem*) ring->data;
-      items.push_back (item->as<ItemIface*>()->__handle__());
+      items.push_back (item->as<ItemIfaceP>());
     }
   return items;
 }
@@ -1352,7 +1349,7 @@ TrackImpl::list_devices ()
 {
   DeviceSeq devices;
   for (auto &d : devices_)
-    devices.push_back (d->__handle__());
+    devices.push_back (d);
   return devices;
 }
 

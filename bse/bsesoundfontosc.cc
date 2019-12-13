@@ -223,7 +223,6 @@ bse_sound_font_osc_set_property (GObject      *object,
           if (self->preset)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->preset), bse_sound_font_osc_uncross_preset);
-              bse_object_proxy_notifies (self->preset, self, "notify::preset");
 	      self->config.bank = self->preset->bank;
 	      self->config.program = self->preset->program;
 	      self->config.update_preset++;

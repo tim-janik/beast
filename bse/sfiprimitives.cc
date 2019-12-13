@@ -518,14 +518,6 @@ sfi_seq_append_rec (SfiSeq      *seq,
   sfi_value_set_rec (value, rec);
 }
 
-void
-sfi_seq_append_proxy (SfiSeq      *seq,
-		      SfiProxy     proxy)
-{
-  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_PROXY);
-  sfi_value_set_proxy (value, proxy);
-}
-
 static inline SfiNum
 value_as_num (GValue *v)
 {
@@ -663,16 +655,6 @@ sfi_seq_get_rec (SfiSeq *seq,
   if (v && SFI_VALUE_HOLDS_REC (v))
     return sfi_value_get_rec (v);
   return NULL;
-}
-
-SfiProxy
-sfi_seq_get_proxy (SfiSeq *seq,
-		   guint   index)
-{
-  GValue *v = sfi_seq_get (seq, index);
-  if (v && SFI_VALUE_HOLDS_PROXY (v))
-    return sfi_value_get_proxy (v);
-  return 0;
 }
 
 gchar**
@@ -1211,18 +1193,6 @@ sfi_rec_set_rec (SfiRec      *rec,
   g_value_unset (&value);
 }
 
-void
-sfi_rec_set_proxy (SfiRec      *rec,
-		   const gchar *field_name,
-		   SfiProxy     proxy)
-{
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_PROXY);
-  sfi_value_set_proxy (&value, proxy);
-  sfi_rec_set (rec, field_name, &value);
-  g_value_unset (&value);
-}
-
 SfiBool
 sfi_rec_get_bool (SfiRec      *rec,
 		  const gchar *field_name)
@@ -1313,14 +1283,4 @@ sfi_rec_get_rec (SfiRec      *rec,
   if (v && SFI_VALUE_HOLDS_REC (v))
     return sfi_value_get_rec (v);
   return NULL;
-}
-
-SfiProxy
-sfi_rec_get_proxy (SfiRec      *rec,
-		   const gchar *field_name)
-{
-  GValue *v = sfi_rec_get (rec, field_name);
-  if (v && SFI_VALUE_HOLDS_PROXY (v))
-    return sfi_value_get_proxy (v);
-  return 0;
 }

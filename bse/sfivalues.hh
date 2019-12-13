@@ -20,7 +20,6 @@
 #define SFI_TYPE_FBLOCK		(sfi__value_types[2])
 #define SFI_TYPE_SEQ		(sfi__value_types[3])
 #define SFI_TYPE_REC		(sfi__value_types[4])
-#define SFI_TYPE_PROXY		(sfi__value_types[5])
 
 
 /* --- Sfi value macros --- */
@@ -36,7 +35,6 @@
 #define SFI_VALUE_HOLDS_PSPEC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_PSPEC))
 #define SFI_VALUE_HOLDS_SEQ(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_SEQ))
 #define SFI_VALUE_HOLDS_REC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_REC))
-#define SFI_VALUE_HOLDS_PROXY(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_PROXY))
 
 
 /* --- Sfi value accessor aliases --- */
@@ -88,9 +86,6 @@ void	    sfi_value_set_rec		(GValue		*value,
 					 SfiRec         *rec);
 void	    sfi_value_take_rec		(GValue         *value,
 					 SfiRec         *rec);
-SfiProxy    sfi_value_get_proxy		(const GValue	*value);
-void	    sfi_value_set_proxy		(GValue		*value,
-					 SfiProxy	 proxy);
 void	    sfi_value_copy_deep		(const GValue	*src_value,
 					 GValue		*dest_value);
 #define	    sfi_value_copy_shallow	g_value_copy
@@ -120,7 +115,6 @@ GValue*	sfi_value_seq		(SfiSeq		*vseq);
 GValue*	sfi_value_new_take_seq	(SfiSeq		*vseq);
 GValue*	sfi_value_rec		(SfiRec		*vrec);
 GValue*	sfi_value_new_take_rec	(SfiRec		*vrec);
-GValue*	sfi_value_proxy		(SfiProxy	 vproxy);
 void	sfi_value_free		(GValue		*value);
 
 

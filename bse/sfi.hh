@@ -6,11 +6,7 @@
 #include <bse/sfiwrapper.hh>    // Introduces bcore.hh
 
 /* no bin-compat: #include <bse/sficomwire.hh> */
-#include <bse/sficomport.hh>
 #include <bse/sfifilecrawler.hh>
-#include <bse/sfiglue.hh>
-#include <bse/sfigluecodec.hh>
-#include <bse/sfiglueproxy.hh>
 #include <bse/sfimemory.hh>
 #include <bse/sfinote.hh>
 #include <bse/sfiparams.hh>
@@ -23,8 +19,6 @@
 #include <bse/sfitypes.hh>
 #include <bse/sfiustore.hh>
 #include <bse/sfivalues.hh>
-#include <bse/sfivisitors.hh>
-#include <bse/sfivmarshal.hh>
 
 #endif /* __SFI_H__ */
 

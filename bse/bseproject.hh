@@ -61,7 +61,6 @@ BseSNet*	bse_project_create_intern_synth	(BseProject	*project,
 						 GType           check_type);
 BseCSynth*      bse_project_create_intern_csynth(BseProject     *project,
                                                  const char     *base_name);
-BseMidiNotifier*bse_project_get_midi_notifier   (BseProject     *project);
 void            bse_project_clear_undo          (BseProject     *project);
 void            bse_project_clean_dirty         (BseProject     *project);
 void    bse_project_push_undo_silent_deactivate (BseProject     *self);
@@ -77,6 +76,7 @@ protected:
   virtual                   ~ProjectImpl         ();
 public:
   explicit                   ProjectImpl         (BseObject*);
+  static std::vector<ProjectImpl*> project_list  ();
   virtual bool               dirty               () const override;
   virtual void               dirty               (bool val) override;
   virtual void               change_name         (const String &name) override;
@@ -109,7 +109,6 @@ public:
   virtual SoundFontRepoIfaceP get_sound_font_repo () override;
   virtual CSynthIfaceP       create_csynth       (const String &name) override;
   virtual MidiSynthIfaceP    create_midi_synth   (const String &name) override;
-  virtual MidiNotifierIfaceP get_midi_notifier   () override;
   virtual void               remove_snet         (SNetIface &snet) override;
   struct Internal; friend struct Internal;
 };

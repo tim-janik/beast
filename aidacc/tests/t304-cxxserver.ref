@@ -38,7 +38,181 @@ class SoundModuleIface;
 } // BseTest
 #define __aidacc_tests_t304_testpass_idl_ifx__(interfacecodeextension)	interfacecodeextension
 
-#include "t304-testpass_handles.hh"
+#include <aidacc/aida.hh>
+
+namespace MandatoryNamespace {
+
+enum class Enum1 : int64_t {
+  E1_A = 1,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum1);
+inline std::string to_string   (Enum1 ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum1 &ev) { ev = Aida::enum_value_from_string<Enum1> (en); return true; }
+
+enum class Enum1c : int64_t {
+  E1C_A = 1,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum1c);
+inline std::string to_string   (Enum1c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum1c &ev) { ev = Aida::enum_value_from_string<Enum1c> (en); return true; }
+
+enum class Enum2 : int64_t {
+  E2_A = 1,
+  E2_B = 2,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum2);
+inline std::string to_string   (Enum2 ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum2 &ev) { ev = Aida::enum_value_from_string<Enum2> (en); return true; }
+
+enum class Enum2c : int64_t {
+  E2C_A = 1,
+  E2C_B = 2,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum2c);
+inline std::string to_string   (Enum2c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum2c &ev) { ev = Aida::enum_value_from_string<Enum2c> (en); return true; }
+
+enum class Enum3 : int64_t {
+  E3_A = 1,
+  E3_B = 2,
+  E3_C = 3,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum3);
+inline std::string to_string   (Enum3 ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum3 &ev) { ev = Aida::enum_value_from_string<Enum3> (en); return true; }
+
+enum class Enum3c : int64_t {
+  E3C_A = 1,
+  E3C_B = 2,
+  E3C_C = 3,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum3c);
+inline std::string to_string   (Enum3c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum3c &ev) { ev = Aida::enum_value_from_string<Enum3c> (en); return true; }
+
+enum class Enum4a : int64_t {
+  E4A_A = 1,
+  E4A_B = 2,
+  E4A_C = 3,
+  E4A_D = 4,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum4a);
+inline std::string to_string   (Enum4a ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4a &ev) { ev = Aida::enum_value_from_string<Enum4a> (en); return true; }
+
+enum class Enum4b : int64_t {
+  E4B_A = 1,
+  E4B_B = 2,
+  E4B_C = 3,
+  E4B_D = 4,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum4b);
+inline std::string to_string   (Enum4b ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4b &ev) { ev = Aida::enum_value_from_string<Enum4b> (en); return true; }
+
+enum class Enum4c : int64_t {
+  E4C_A = 1,
+  E4C_B = 2,
+  E4C_C = 3,
+  E4C_D = 4,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum4c);
+inline std::string to_string   (Enum4c ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4c &ev) { ev = Aida::enum_value_from_string<Enum4c> (en); return true; }
+
+enum class Enum4d : int64_t {
+  E4D_A = 1,
+  E4D_B = 2,
+  E4D_C = 3,
+  E4D_D = 4,
+};
+AIDA_DEFINE_ENUM_EQUALITY (Enum4d);
+inline std::string to_string   (Enum4d ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, Enum4d &ev) { ev = Aida::enum_value_from_string<Enum4d> (en); return true; }
+
+enum class ExtensiveEnum : int64_t {
+  V1a = 1,
+  V1b = 1,
+  V2 = 2,
+  V3 = 3,
+  V4 = 4,
+  V5 = 5, // "V5"
+  V6 = 6, // "V6"
+  V7 = 7, // _("V7")
+  V8 = 8, // _("V8")
+  V9 = 9,
+  V10 = 10,
+  V11 = 11,
+  V12 = 12,
+  V13 = 13,
+  V14 = 14,
+  V15 = 15, // "V15"
+  V16 = 16, // "V16"
+  V17 = 17, // _("V17")
+  V18 = 18, // _("V18")
+  V20 = 20,
+  V21 = 21,
+  V22 = 22,
+  V23 = 23,
+  V24 = 24,
+  V25 = (-9223372036854775807 - 1),
+  V26 = 9223372036854775807,
+  V27 = 9223372036854775807,
+  V28 = -28,
+  V30 = 42,
+  V31 = 43,
+  V32 = 42,
+  V33 = 43,
+  V34 = 44, // "foo"
+  V35 = 35,
+  V36 = 42, // "foo4"
+};
+AIDA_DEFINE_ENUM_EQUALITY (ExtensiveEnum);
+inline std::string to_string   (ExtensiveEnum ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, ExtensiveEnum &ev) { ev = Aida::enum_value_from_string<ExtensiveEnum> (en); return true; }
+} // MandatoryNamespace
+
+namespace InterfaceTests {
+
+enum class QuickEnum : int64_t {
+  ZERO = 0,
+};
+AIDA_DEFINE_ENUM_EQUALITY (QuickEnum);
+inline std::string to_string   (QuickEnum ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, QuickEnum &ev) { ev = Aida::enum_value_from_string<QuickEnum> (en); return true; }
+} // InterfaceTests
+
+namespace RapicornAidaTest {
+
+enum class ClickType : int64_t {
+  CLICK_ON_PRESS = 1,
+  CLICK_ON_RELEASE = 2,
+  CLICK_SLOW_REPEAT = 3,
+  CLICK_FAST_REPEAT = 4,
+  CLICK_KEY_REPEAT = 5,
+};
+AIDA_DEFINE_ENUM_EQUALITY (ClickType);
+inline std::string to_string   (ClickType ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, ClickType &ev) { ev = Aida::enum_value_from_string<ClickType> (en); return true; }
+
+enum class MathExpressions : int64_t {
+  RESULT_2 = 2,
+  RESULT_5 = 5,
+  RESULT_8 = 8,
+  RESULT_6 = 6,
+  RESULT_7 = 7,
+  RESULT_16 = 16,
+  RESULT_3 = 3,
+  RESULT_24 = 24,
+  RESULT_13 = 13,
+  RESULT_m2 = -2,
+  RESULT_77 = 77,
+  RESULT_511 = 511,
+};
+AIDA_DEFINE_ENUM_EQUALITY (MathExpressions);
+inline std::string to_string   (MathExpressions ev)                         { return Aida::enum_value_to_string (ev); }
+inline bool        from_string (const std::string &en, MathExpressions &ev) { ev = Aida::enum_value_from_string<MathExpressions> (en); return true; }
+} // RapicornAidaTest
 
 namespace MandatoryNamespace {
 
@@ -52,18 +226,271 @@ protected:
   explicit                              FirstInterfaceIface ();
   virtual  /*dtor*/                    ~FirstInterfaceIface () override = 0;
 public:
-  FirstInterfaceHandle                  __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          void_func           () = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
+};
+
+class XFooRecord
+{
+public:
+  bool                          single_bool = 0;
+  int                           single_num = 0;
+  int64_t                       num64 = 0;
+  double                        single_float = 0;
+  std::string                   single_string;
+  int                           sibling1 = 0;
+  int                           sibling2 = 0;
+  int                           multi1 = 0;
+  int                           multi2 = 0;
+  int                           multi3 = 0;
+  int                           multi4 = 0;
+  ExtensiveEnum                 enum_field = ExtensiveEnum (0);
+  FirstInterfaceIfaceP          iface1;
+  FirstInterfaceIfaceP          iface2;
+  FirstInterfaceIfaceP          iface3;
+  Aida::Any                     any1;
+  Aida::Any                     any2;
+  Aida::Any                     any3;
+  inline                        XFooRecord () = default;
+  inline                        XFooRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const XFooRecord &other) const;
+  bool                          operator!=   (const XFooRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<XFooRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+
+class XFooSequence : public std::vector<bool>
+{
+public:
+  typedef std::vector<bool> Sequence;
+  inline                        XFooSequence () = default;
+  inline                        XFooSequence (const Aida::AnySeq &s);
+  explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class IntSequence : public std::vector<int>
+{
+public:
+  typedef std::vector<int> Sequence;
+  inline                        IntSequence () = default;
+  inline                        IntSequence (const Aida::AnySeq &s);
+  explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.IntSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class FloatSequence : public std::vector<double>
+{
+public:
+  typedef std::vector<double> Sequence;
+  inline                        FloatSequence () = default;
+  inline                        FloatSequence (const Aida::AnySeq &s);
+  explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.FloatSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class StringSequence : public std::vector<std::string>
+{
+public:
+  typedef std::vector<std::string> Sequence;
+  inline                        StringSequence () = default;
+  inline                        StringSequence (const Aida::AnySeq &s);
+  explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.StringSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class ExtensiveEnumSequence : public std::vector<ExtensiveEnum>
+{
+public:
+  typedef std::vector<ExtensiveEnum> Sequence;
+  inline                        ExtensiveEnumSequence () = default;
+  inline                        ExtensiveEnumSequence (const Aida::AnySeq &s);
+  explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.ExtensiveEnumSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class RecordSequence : public std::vector<XFooRecord>
+{
+public:
+  typedef std::vector<XFooRecord> Sequence;
+  inline                        RecordSequence () = default;
+  inline                        RecordSequence (const Aida::AnySeq &s);
+  explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.RecordSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class SequenceSequence : public std::vector<IntSequence>
+{
+public:
+  typedef std::vector<IntSequence> Sequence;
+  inline                        SequenceSequence () = default;
+  inline                        SequenceSequence (const Aida::AnySeq &s);
+  explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.SequenceSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class InterfaceSequence : public std::vector<FirstInterfaceIfaceP>
+{
+public:
+  typedef std::vector<FirstInterfaceIfaceP> Sequence;
+  inline                        InterfaceSequence () = default;
+  inline                        InterfaceSequence (const Aida::AnySeq &s);
+  explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.InterfaceSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class AnySequence : public std::vector<Aida::Any>
+{
+public:
+  typedef std::vector<Aida::Any> Sequence;
+  inline                        AnySequence () = default;
+  inline                        AnySequence (const Aida::AnySeq &s);
+  explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
+  static const Aida::StringVector& __typedata__ ();
 };
 
 class NestedTypesRec;
 
 class NestedTypesSeq;
+
+class NestedTypesRec
+{
+public:
+  XFooRecord                    rec;
+  XFooSequence                  seq;
+  inline                        NestedTypesRec () = default;
+  inline                        NestedTypesRec (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const NestedTypesRec &other) const;
+  bool                          operator!=   (const NestedTypesRec &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NestedTypesRec*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+
+class NestedTypesSeq : public std::vector<NestedTypesRec>
+{
+public:
+  typedef std::vector<NestedTypesRec> Sequence;
+  inline                        NestedTypesSeq () = default;
+  inline                        NestedTypesSeq (const Aida::AnySeq &s);
+  explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesSeq"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
+};
+
+class NewRecord
+{
+public:
+  int                           i = 0;
+  Enum1                         enum1 = Enum1 (0);
+  XFooSequence                  xfs;
+  NestedTypesRec                ntr;
+  inline                        NewRecord () = default;
+  inline                        NewRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const NewRecord &other) const;
+  bool                          operator!=   (const NewRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<NewRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+
+namespace Inner {
+
+class InnerRecord
+{
+public:
+  int                           x = 0;
+  int                           y = 0;
+  NewRecord                     rec;
+  inline                        InnerRecord () = default;
+  inline                        InnerRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const InnerRecord &other) const;
+  bool                          operator!=   (const InnerRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<InnerRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+} // Inner
+
+class Refer2Inner
+{
+public:
+  Inner::InnerRecord            r;
+  inline                        Refer2Inner () = default;
+  inline                        Refer2Inner (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const Refer2Inner &other) const;
+  bool                          operator!=   (const Refer2Inner &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<Refer2Inner*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
 } // MandatoryNamespace
+
+namespace OtherNamespace {
+
+class SomeRecord
+{
+public:
+  MandatoryNamespace::NewRecord r1;
+  MandatoryNamespace::NewRecord r2;
+  MandatoryNamespace::Inner::InnerRecord r3;
+  MandatoryNamespace::Inner::InnerRecord r4;
+  inline                        SomeRecord () = default;
+  inline                        SomeRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const SomeRecord &other) const;
+  bool                          operator!=   (const SomeRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<SomeRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+} // OtherNamespace
+
+namespace Auxdata {
+
+class RecordWithAuxdata
+{
+public:
+  bool                          aux_bool = 0;
+  int                           aux32 = 0;
+  int64_t                       aux64 = 0;
+  double                        auxf64 = 0;
+  std::string                   aux_str;
+  inline                        RecordWithAuxdata () = default;
+  inline                        RecordWithAuxdata (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const RecordWithAuxdata &other) const;
+  bool                          operator!=   (const RecordWithAuxdata &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordWithAuxdata*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+} // Auxdata
 
 namespace InterfaceTests {
 
@@ -77,7 +504,6 @@ protected:
   explicit                              UIWidgetAreaIface ();
   virtual  /*dtor*/                    ~UIWidgetAreaIface () override = 0;
 public:
-  UIWidgetAreaHandle                    __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual bool                          dummy    () const = 0;
@@ -102,11 +528,6 @@ public:
   virtual void                          void_method       () = 0;
   virtual std::string                   on_click2out      () = 0;
   virtual void                          on_click2in       (const std::string &command) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "dummy", &UIWidgetAreaIface::dummy, &UIWidgetAreaIface::dummy);
-    __visitor_ (*this, "on_click", &UIWidgetAreaIface::on_click, &UIWidgetAreaIface::on_click);
-  }
 };
 
 class ParentIface;
@@ -119,11 +540,8 @@ protected:
   explicit                              ParentIface ();
   virtual  /*dtor*/                    ~ParentIface () override = 0;
 public:
-  ParentHandle                          __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class ChildIface;
@@ -136,13 +554,8 @@ protected:
   explicit                              ChildIface ();
   virtual  /*dtor*/                    ~ChildIface () override = 0;
 public:
-  ChildHandle                           __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->ParentIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class DescendantIface;
@@ -155,13 +568,8 @@ protected:
   explicit                              DescendantIface ();
   virtual  /*dtor*/                    ~DescendantIface () override = 0;
 public:
-  DescendantHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->ChildIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class GrandChildIface;
@@ -174,13 +582,35 @@ protected:
   explicit                              GrandChildIface ();
   virtual  /*dtor*/                    ~GrandChildIface () override = 0;
 public:
-  GrandChildHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->DescendantIface::__accept_accessor__ (__visitor_);
-  }
+};
+
+class QuickRecord
+{
+public:
+  int                           int1 = 0;
+  int                           int2 = 0;
+  inline                        QuickRecord () = default;
+  inline                        QuickRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const QuickRecord &other) const;
+  bool                          operator!=   (const QuickRecord &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<QuickRecord*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
+};
+
+class QuickSequence : public std::vector<double>
+{
+public:
+  typedef std::vector<double> Sequence;
+  inline                        QuickSequence () = default;
+  inline                        QuickSequence (const Aida::AnySeq &s);
+  explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
+  std::string                   __typename__      () const	{ return "InterfaceTests.QuickSequence"; }
+  static const Aida::StringVector& __typedata__ ();
+  inline operator               Aida::AnySeq      () const;
 };
 
 class QuickIfaceIface;
@@ -193,12 +623,9 @@ protected:
   explicit                              QuickIfaceIface ();
   virtual  /*dtor*/                    ~QuickIfaceIface () override = 0;
 public:
-  QuickIfaceHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          simple_function (int i = 9) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class MethodTestInterfaceIface;
@@ -211,7 +638,6 @@ protected:
   explicit                              MethodTestInterfaceIface ();
   virtual  /*dtor*/                    ~MethodTestInterfaceIface () override = 0;
 public:
-  MethodTestInterfaceHandle             __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          method_with_void         () = 0;
@@ -237,8 +663,6 @@ public:
                                                                   const Aida::Any &optval) = 0;
   virtual QuickIfaceIfaceP              method_with_quickiface   (QuickIfaceIface &input,
                                                                   QuickIfaceIface &iface0) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class SignalTestInterfaceIface;
@@ -251,11 +675,8 @@ protected:
   explicit                              SignalTestInterfaceIface ();
   virtual  /*dtor*/                    ~SignalTestInterfaceIface () override = 0;
 public:
-  SignalTestInterfaceHandle             __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 
 class ChildInheritingSignalsIface;
@@ -268,13 +689,8 @@ protected:
   explicit                              ChildInheritingSignalsIface ();
   virtual  /*dtor*/                    ~ChildInheritingSignalsIface () override = 0;
 public:
-  ChildInheritingSignalsHandle          __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class AnotherChildIface;
@@ -287,13 +703,8 @@ protected:
   explicit                              AnotherChildIface ();
   virtual  /*dtor*/                    ~AnotherChildIface () override = 0;
 public:
-  AnotherChildHandle                    __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->SignalTestInterfaceIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class PropertyTesterIface;
@@ -306,7 +717,6 @@ protected:
   explicit                              PropertyTesterIface ();
   virtual  /*dtor*/                    ~PropertyTesterIface () override = 0;
 public:
-  PropertyTesterHandle                  __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual bool                          bool_prop      () const = 0;
@@ -331,20 +741,6 @@ public:
   virtual void                          self_prop      (PropertyTesterIface*) = 0;
   virtual Aida::Any                     any_prop       () const = 0;
   virtual void                          any_prop       (const Aida::Any&) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "bool_prop", &PropertyTesterIface::bool_prop, &PropertyTesterIface::bool_prop);
-    __visitor_ (*this, "int32_prop", &PropertyTesterIface::int32_prop, &PropertyTesterIface::int32_prop);
-    __visitor_ (*this, "int64_prop", &PropertyTesterIface::int64_prop, &PropertyTesterIface::int64_prop);
-    __visitor_ (*this, "float64_prop", &PropertyTesterIface::float64_prop, &PropertyTesterIface::float64_prop);
-    __visitor_ (*this, "string_prop", &PropertyTesterIface::string_prop, &PropertyTesterIface::string_prop);
-    __visitor_ (*this, "enum_prop", &PropertyTesterIface::enum_prop, &PropertyTesterIface::enum_prop);
-    __visitor_ (*this, "record_prop", &PropertyTesterIface::record_prop, &PropertyTesterIface::record_prop);
-    __visitor_ (*this, "sequence_prop", &PropertyTesterIface::sequence_prop, &PropertyTesterIface::sequence_prop);
-    __visitor_ (*this, "interface_prop", &PropertyTesterIface::interface_prop, &PropertyTesterIface::interface_prop);
-    __visitor_ (*this, "self_prop", &PropertyTesterIface::self_prop, &PropertyTesterIface::self_prop);
-    __visitor_ (*this, "any_prop", &PropertyTesterIface::any_prop, &PropertyTesterIface::any_prop);
-  }
 };
 } // InterfaceTests
 
@@ -360,13 +756,8 @@ protected:
   explicit                              UseIncludesIface ();
   virtual  /*dtor*/                    ~UseIncludesIface () override = 0;
 public:
-  UseIncludesHandle                     __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    this->IncludeCheck::SomeInterfaceIface::__accept_accessor__ (__visitor_);
-  }
 };
 
 class ButtonAreaIface;
@@ -379,7 +770,6 @@ protected:
   explicit                              ButtonAreaIface ();
   virtual  /*dtor*/                    ~ButtonAreaIface () override = 0;
 public:
-  ButtonAreaHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::string                   on_click   () const = 0;
@@ -390,13 +780,6 @@ public:
   virtual void                          on_click3  (const std::string&) = 0;
   virtual ClickType                     click_type () const = 0;
   virtual void                          click_type (ClickType) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "on_click", &ButtonAreaIface::on_click, &ButtonAreaIface::on_click);
-    __visitor_ (*this, "on_click2", &ButtonAreaIface::on_click2, &ButtonAreaIface::on_click2);
-    __visitor_ (*this, "on_click3", &ButtonAreaIface::on_click3, &ButtonAreaIface::on_click3);
-    __visitor_ (*this, "click_type", &ButtonAreaIface::click_type, &ButtonAreaIface::click_type);
-  }
 };
 
 class PureMethodsIface;
@@ -410,12 +793,9 @@ protected:
   explicit                              PureMethodsIface ();
   virtual  /*dtor*/                    ~PureMethodsIface () override = 0;
 public:
-  PureMethodsHandle                     __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual int                           pure_method      (double f) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 } // RapicornAidaTest
 
@@ -431,14 +811,11 @@ protected:
   explicit                              NameTestsIface ();
   virtual  /*dtor*/                    ~NameTestsIface () override = 0;
 public:
-  NameTestsHandle                       __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
                                                                    const OtherNamespace::SomeRecord &sr) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
 } // Other
 
@@ -454,18 +831,30 @@ protected:
   explicit                              CompressorIface ();
   virtual  /*dtor*/                    ~CompressorIface () override = 0;
 public:
-  CompressorHandle                      __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual double                        threshold () const = 0;
   virtual void                          threshold (double) = 0;
   virtual double                        ratio     () const = 0;
   virtual void                          ratio     (double) = 0;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {
-    __visitor_ (*this, "threshold", &CompressorIface::threshold, &CompressorIface::threshold);
-    __visitor_ (*this, "ratio", &CompressorIface::ratio, &CompressorIface::ratio);
-  }
+};
+
+class RecordForGroups
+{
+public:
+  int                           i = 0;
+  double                        ratio = 0;
+  bool                          ordinary_bool = 0;
+  double                        threshold1 = 0;
+  double                        threshold2 = 0;
+  inline                        RecordForGroups () = default;
+  inline                        RecordForGroups (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
+  std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
+  static const Aida::StringVector& __typedata__ ();
+  bool                          operator==   (const RecordForGroups &other) const;
+  bool                          operator!=   (const RecordForGroups &other) const { return !operator== (other); }
+  operator                      Aida::AnyRec () const { Aida::AnyRec r; const_cast<RecordForGroups*> (this)->__visit__ ([&r] (const auto &v, const char *n) { r[n] = v; }); return r; }
+  template<class Visitor> void  __visit__    (Visitor &&_visitor_);
 };
 
 class SoundModuleIface;
@@ -478,12 +867,253 @@ protected:
   explicit                              SoundModuleIface ();
   virtual  /*dtor*/                    ~SoundModuleIface () override = 0;
 public:
-  SoundModuleHandle                     __handle__         ();
   virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
-  template<class Visitor> void  __accept_accessor__ (Visitor &__visitor_)
-  {}
 };
+} // BseTest
+
+namespace MandatoryNamespace {
+template<class Visitor> void
+XFooRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (single_bool, "single_bool");
+  std::forward<Visitor> (_visitor_) (single_num, "single_num");
+  std::forward<Visitor> (_visitor_) (num64, "num64");
+  std::forward<Visitor> (_visitor_) (single_float, "single_float");
+  std::forward<Visitor> (_visitor_) (single_string, "single_string");
+  std::forward<Visitor> (_visitor_) (sibling1, "sibling1");
+  std::forward<Visitor> (_visitor_) (sibling2, "sibling2");
+  std::forward<Visitor> (_visitor_) (multi1, "multi1");
+  std::forward<Visitor> (_visitor_) (multi2, "multi2");
+  std::forward<Visitor> (_visitor_) (multi3, "multi3");
+  std::forward<Visitor> (_visitor_) (multi4, "multi4");
+  std::forward<Visitor> (_visitor_) (enum_field, "enum_field");
+  std::forward<Visitor> (_visitor_) (iface1, "iface1");
+  std::forward<Visitor> (_visitor_) (iface2, "iface2");
+  std::forward<Visitor> (_visitor_) (iface3, "iface3");
+  std::forward<Visitor> (_visitor_) (any1, "any1");
+  std::forward<Visitor> (_visitor_) (any2, "any2");
+  std::forward<Visitor> (_visitor_) (any3, "any3");
+}
+inline
+XFooSequence::XFooSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<XFooSequence::value_type>::type >());
+}
+inline
+XFooSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+IntSequence::IntSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<IntSequence::value_type>::type >());
+}
+inline
+IntSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+FloatSequence::FloatSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<FloatSequence::value_type>::type >());
+}
+inline
+FloatSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+StringSequence::StringSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<StringSequence::value_type>::type >());
+}
+inline
+StringSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+ExtensiveEnumSequence::ExtensiveEnumSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<ExtensiveEnumSequence::value_type>::type >());
+}
+inline
+ExtensiveEnumSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+RecordSequence::RecordSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<RecordSequence::value_type>::type >());
+}
+inline
+RecordSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+SequenceSequence::SequenceSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<SequenceSequence::value_type>::type >());
+}
+inline
+SequenceSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+InterfaceSequence::InterfaceSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<InterfaceSequence::value_type>::type >());
+}
+inline
+InterfaceSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+inline
+AnySequence::AnySequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<AnySequence::value_type>::type >());
+}
+template<class Visitor> void
+NestedTypesRec::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (rec, "rec");
+  std::forward<Visitor> (_visitor_) (seq, "seq");
+}
+inline
+NestedTypesSeq::NestedTypesSeq (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<NestedTypesSeq::value_type>::type >());
+}
+inline
+NestedTypesSeq::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+template<class Visitor> void
+NewRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (i, "i");
+  std::forward<Visitor> (_visitor_) (enum1, "enum1");
+  std::forward<Visitor> (_visitor_) (xfs, "xfs");
+  std::forward<Visitor> (_visitor_) (ntr, "ntr");
+}
+
+namespace Inner {
+template<class Visitor> void
+InnerRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (x, "x");
+  std::forward<Visitor> (_visitor_) (y, "y");
+  std::forward<Visitor> (_visitor_) (rec, "rec");
+}
+} // Inner
+template<class Visitor> void
+Refer2Inner::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (r, "r");
+}
+} // MandatoryNamespace
+
+namespace OtherNamespace {
+template<class Visitor> void
+SomeRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (r1, "r1");
+  std::forward<Visitor> (_visitor_) (r2, "r2");
+  std::forward<Visitor> (_visitor_) (r3, "r3");
+  std::forward<Visitor> (_visitor_) (r4, "r4");
+}
+} // OtherNamespace
+
+namespace Auxdata {
+template<class Visitor> void
+RecordWithAuxdata::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (aux_bool, "aux_bool");
+  std::forward<Visitor> (_visitor_) (aux32, "aux32");
+  std::forward<Visitor> (_visitor_) (aux64, "aux64");
+  std::forward<Visitor> (_visitor_) (auxf64, "auxf64");
+  std::forward<Visitor> (_visitor_) (aux_str, "aux_str");
+}
+} // Auxdata
+
+namespace InterfaceTests {
+template<class Visitor> void
+QuickRecord::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (int1, "int1");
+  std::forward<Visitor> (_visitor_) (int2, "int2");
+}
+inline
+QuickSequence::QuickSequence (const Aida::AnySeq &s)
+{
+  for (const auto &any : s)
+    push_back (any.get< typename std::decay<QuickSequence::value_type>::type >());
+}
+inline
+QuickSequence::operator Aida::AnySeq () const
+{
+  Aida::AnySeq s;
+  for (const auto &v : *this)
+    s.push_back (Aida::Any (v));
+  return s;
+}
+} // InterfaceTests
+
+namespace BseTest {
+template<class Visitor> void
+RecordForGroups::__visit__ (Visitor &&_visitor_)
+{
+  std::forward<Visitor> (_visitor_) (i, "i");
+  std::forward<Visitor> (_visitor_) (ratio, "ratio");
+  std::forward<Visitor> (_visitor_) (ordinary_bool, "ordinary_bool");
+  std::forward<Visitor> (_visitor_) (threshold1, "threshold1");
+  std::forward<Visitor> (_visitor_) (threshold2, "threshold2");
+}
 } // BseTest
 
 #define aidacc_tests_t304_testpass_idl_INTERFACE_LIST \
@@ -505,6 +1135,9 @@ public:
 	  aidacc_tests_t304_testpass_idl_INTERFACE_NAME (Other::NameTests) \
 	  aidacc_tests_t304_testpass_idl_INTERFACE_NAME (BseTest::Compressor) \
 	  aidacc_tests_t304_testpass_idl_INTERFACE_NAME (BseTest::SoundModule)
+#define aidacc_tests_t304_testpass_idl_FOREACH_IFACE_SEQ() \
+  aidacc_tests_t304_testpass_idl_FOREACH_STEP (MandatoryNamespace::InterfaceSequence) \
+
 
 #else // DOXYGEN
 
@@ -686,26 +1319,6 @@ FirstInterfaceIface::FirstInterfaceIface ()
 {}
 FirstInterfaceIface::~FirstInterfaceIface ()
 {} // define empty dtor to emit vtable
-FirstInterfaceHandle
-FirstInterfaceIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  FirstInterfaceHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<FirstInterfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-FirstInterfaceHandle::FirstInterfaceHandle (const std::shared_ptr<FirstInterfaceIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<FirstInterfaceIface> (ec.adopt_deleter_mt (ifacep));
-}
-FirstInterfaceIface*
-FirstInterfaceHandle::__iface__() const
-{
-  return dynamic_cast<FirstInterfaceIface*> (const_cast<FirstInterfaceHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 FirstInterfaceIface::__typelist_mt__ () const
 {
@@ -716,7 +1329,342 @@ FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorP
 {
   return false;
 }
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooRecord_ = {
+  "typename=MandatoryNamespace.XFooRecord\0"
+  "type=RECORD\0"
+  "fields=single_bool;single_num;num64;single_float;single_string;sibling1;sibling2;multi1;multi2;multi3;multi4;enum_field;iface1;iface2;iface3;any1;any2;any3\0"
+  "single_bool.type=BOOL\0"
+  "single_num.type=INT32\0"
+  "num64.type=INT64\0"
+  "single_float.type=FLOAT64\0"
+  "single_string.type=STRING\0"
+  "sibling1.type=INT32\0"
+  "sibling2.type=INT32\0"
+  "multi1.type=INT32\0"
+  "multi2.type=INT32\0"
+  "multi3.type=INT32\0"
+  "multi4.type=INT32\0"
+  "enum_field.type=MandatoryNamespace.ExtensiveEnum\0"
+  "iface1.type=MandatoryNamespace.FirstInterface\0"
+  "iface2.type=MandatoryNamespace.FirstInterface\0"
+  "iface3.type=MandatoryNamespace.FirstInterface\0"
+  "any1.type=ANY\0"
+  "any2.type=ANY\0"
+  "any3.type=ANY\0"
+};
+const Aida::StringVector&
+XFooRecord::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooRecord");
+  return sv;
+}
+bool
+XFooRecord::operator== (const XFooRecord &other) const
+{
+  if (this->single_bool != other.single_bool) return false;
+  if (this->single_num != other.single_num) return false;
+  if (this->num64 != other.num64) return false;
+  if (this->single_float != other.single_float) return false;
+  if (this->single_string != other.single_string) return false;
+  if (this->sibling1 != other.sibling1) return false;
+  if (this->sibling2 != other.sibling2) return false;
+  if (this->multi1 != other.multi1) return false;
+  if (this->multi2 != other.multi2) return false;
+  if (this->multi3 != other.multi3) return false;
+  if (this->multi4 != other.multi4) return false;
+  if (this->enum_field != other.enum_field) return false;
+  if (this->iface1 != other.iface1) return false;
+  if (this->iface2 != other.iface2) return false;
+  if (this->iface3 != other.iface3) return false;
+  if (this->any1 != other.any1) return false;
+  if (this->any2 != other.any2) return false;
+  if (this->any3 != other.any3) return false;
+  return true;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooSequence_ = {
+  "typename=MandatoryNamespace.XFooSequence\0"
+  "type=SEQUENCE\0"
+  "fields=single_bool\0"
+  "single_bool.type=BOOL\0"
+};
+const Aida::StringVector&
+XFooSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.XFooSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_IntSequence_ = {
+  "typename=MandatoryNamespace.IntSequence\0"
+  "type=SEQUENCE\0"
+  "fields=numx\0"
+  "numx.type=INT32\0"
+};
+const Aida::StringVector&
+IntSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.IntSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_FloatSequence_ = {
+  "typename=MandatoryNamespace.FloatSequence\0"
+  "type=SEQUENCE\0"
+  "fields=fractalvalue\0"
+  "fractalvalue.type=FLOAT64\0"
+};
+const Aida::StringVector&
+FloatSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.FloatSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_StringSequence_ = {
+  "typename=MandatoryNamespace.StringSequence\0"
+  "type=SEQUENCE\0"
+  "fields=blurb\0"
+  "blurb.type=STRING\0"
+};
+const Aida::StringVector&
+StringSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.StringSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnumSequence_ = {
+  "typename=MandatoryNamespace.ExtensiveEnumSequence\0"
+  "type=SEQUENCE\0"
+  "fields=enum_elements\0"
+  "enum_elements.type=MandatoryNamespace.ExtensiveEnum\0"
+};
+const Aida::StringVector&
+ExtensiveEnumSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.ExtensiveEnumSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_RecordSequence_ = {
+  "typename=MandatoryNamespace.RecordSequence\0"
+  "type=SEQUENCE\0"
+  "fields=repeatedfield\0"
+  "repeatedfield.type=MandatoryNamespace.XFooRecord\0"
+};
+const Aida::StringVector&
+RecordSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.RecordSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_SequenceSequence_ = {
+  "typename=MandatoryNamespace.SequenceSequence\0"
+  "type=SEQUENCE\0"
+  "fields=moreints\0"
+  "moreints.type=MandatoryNamespace.IntSequence\0"
+};
+const Aida::StringVector&
+SequenceSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.SequenceSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_InterfaceSequence_ = {
+  "typename=MandatoryNamespace.InterfaceSequence\0"
+  "type=SEQUENCE\0"
+  "fields=iface1\0"
+  "iface1.type=MandatoryNamespace.FirstInterface\0"
+};
+const Aida::StringVector&
+InterfaceSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.InterfaceSequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_AnySequence_ = {
+  "typename=MandatoryNamespace.AnySequence\0"
+  "type=SEQUENCE\0"
+  "fields=any_value\0"
+  "any_value.type=ANY\0"
+};
+const Aida::StringVector&
+AnySequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.AnySequence");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesRec_ = {
+  "typename=MandatoryNamespace.NestedTypesRec\0"
+  "type=RECORD\0"
+  "fields=rec;seq\0"
+  "rec.type=MandatoryNamespace.XFooRecord\0"
+  "seq.type=MandatoryNamespace.XFooSequence\0"
+};
+const Aida::StringVector&
+NestedTypesRec::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesRec");
+  return sv;
+}
+bool
+NestedTypesRec::operator== (const NestedTypesRec &other) const
+{
+  if (this->rec != other.rec) return false;
+  if (this->seq != other.seq) return false;
+  return true;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesSeq_ = {
+  "typename=MandatoryNamespace.NestedTypesSeq\0"
+  "type=SEQUENCE\0"
+  "fields=ntr\0"
+  "ntr.type=MandatoryNamespace.NestedTypesRec\0"
+};
+const Aida::StringVector&
+NestedTypesSeq::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.NestedTypesSeq");
+  return sv;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NewRecord_ = {
+  "typename=MandatoryNamespace.NewRecord\0"
+  "type=RECORD\0"
+  "fields=i;enum1;xfs;ntr\0"
+  "i.type=INT32\0"
+  "enum1.type=MandatoryNamespace.Enum1\0"
+  "xfs.type=MandatoryNamespace.XFooSequence\0"
+  "ntr.type=MandatoryNamespace.NestedTypesRec\0"
+};
+const Aida::StringVector&
+NewRecord::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.NewRecord");
+  return sv;
+}
+bool
+NewRecord::operator== (const NewRecord &other) const
+{
+  if (this->i != other.i) return false;
+  if (this->enum1 != other.enum1) return false;
+  if (this->xfs != other.xfs) return false;
+  if (this->ntr != other.ntr) return false;
+  return true;
+}
+
+namespace Inner {
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Inner_InnerRecord_ = {
+  "typename=MandatoryNamespace.Inner.InnerRecord\0"
+  "type=RECORD\0"
+  "fields=x;y;rec\0"
+  "x.type=INT32\0"
+  "y.type=INT32\0"
+  "rec.type=MandatoryNamespace.NewRecord\0"
+};
+const Aida::StringVector&
+InnerRecord::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.Inner.InnerRecord");
+  return sv;
+}
+bool
+InnerRecord::operator== (const InnerRecord &other) const
+{
+  if (this->x != other.x) return false;
+  if (this->y != other.y) return false;
+  if (this->rec != other.rec) return false;
+  return true;
+}
+} // Inner
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Refer2Inner_ = {
+  "typename=MandatoryNamespace.Refer2Inner\0"
+  "type=RECORD\0"
+  "fields=r\0"
+  "r.type=MandatoryNamespace.Inner.InnerRecord\0"
+};
+const Aida::StringVector&
+Refer2Inner::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("MandatoryNamespace.Refer2Inner");
+  return sv;
+}
+bool
+Refer2Inner::operator== (const Refer2Inner &other) const
+{
+  if (this->r != other.r) return false;
+  return true;
+}
 } // MandatoryNamespace
+
+namespace OtherNamespace {
+static const Aida::IntrospectionRegistry __aida__aux__data__OtherNamespace_SomeRecord_ = {
+  "typename=OtherNamespace.SomeRecord\0"
+  "type=RECORD\0"
+  "fields=r1;r2;r3;r4\0"
+  "r1.type=MandatoryNamespace.NewRecord\0"
+  "r2.type=MandatoryNamespace.NewRecord\0"
+  "r3.type=MandatoryNamespace.Inner.InnerRecord\0"
+  "r4.type=MandatoryNamespace.Inner.InnerRecord\0"
+};
+const Aida::StringVector&
+SomeRecord::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("OtherNamespace.SomeRecord");
+  return sv;
+}
+bool
+SomeRecord::operator== (const SomeRecord &other) const
+{
+  if (this->r1 != other.r1) return false;
+  if (this->r2 != other.r2) return false;
+  if (this->r3 != other.r3) return false;
+  if (this->r4 != other.r4) return false;
+  return true;
+}
+} // OtherNamespace
+
+namespace Auxdata {
+static const Aida::IntrospectionRegistry __aida__aux__data__Auxdata_RecordWithAuxdata_ = {
+  "typename=Auxdata.RecordWithAuxdata\0"
+  "type=RECORD\0"
+  "fields=aux_bool;aux32;aux64;auxf64;aux_str\0"
+  "aux_bool.type=BOOL\0"
+  "aux_bool.label=AuxBool\0"
+  "aux_bool.blurb=A Boolean\0"
+  "aux_bool.hints=rw\0"
+  "aux_bool.default=0\0"
+  "aux32.type=INT32\0"
+  "aux32.label=Aux32\0"
+  "aux32.blurb=The Bar number\0"
+  "aux32.hints=rw\0"
+  "aux32.default=10007.0\0"
+  "aux64.type=INT64\0"
+  "aux64.label=Aux64\0"
+  "aux64.blurb=64bit auxillary number\0"
+  "aux64.hints=rw\0"
+  "aux64.default=1152921504606846976\0"
+  "auxf64.type=FLOAT64\0"
+  "auxf64.label=AuxF64\0"
+  "auxf64.blurb=X coordinate\0"
+  "auxf64.hints=ro\0"
+  "auxf64.default=0.019\0"
+  "aux_str.type=STRING\0"
+  "aux_str.label=AuxStr\0"
+  "aux_str.blurb=Specify text here\0"
+  "aux_str.hints=rw\0"
+  "aux_str.default=auxtest3\0"
+};
+const Aida::StringVector&
+RecordWithAuxdata::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("Auxdata.RecordWithAuxdata");
+  return sv;
+}
+bool
+RecordWithAuxdata::operator== (const RecordWithAuxdata &other) const
+{
+  if (this->aux_bool != other.aux_bool) return false;
+  if (this->aux32 != other.aux32) return false;
+  if (this->aux64 != other.aux64) return false;
+  if (this->auxf64 != other.auxf64) return false;
+  if (this->aux_str != other.aux_str) return false;
+  return true;
+}
+} // Auxdata
 
 namespace InterfaceTests {
 
@@ -724,26 +1672,6 @@ UIWidgetAreaIface::UIWidgetAreaIface ()
 {}
 UIWidgetAreaIface::~UIWidgetAreaIface ()
 {} // define empty dtor to emit vtable
-UIWidgetAreaHandle
-UIWidgetAreaIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  UIWidgetAreaHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<UIWidgetAreaIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-UIWidgetAreaHandle::UIWidgetAreaHandle (const std::shared_ptr<UIWidgetAreaIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<UIWidgetAreaIface> (ec.adopt_deleter_mt (ifacep));
-}
-UIWidgetAreaIface*
-UIWidgetAreaHandle::__iface__() const
-{
-  return dynamic_cast<UIWidgetAreaIface*> (const_cast<UIWidgetAreaHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 UIWidgetAreaIface::__typelist_mt__ () const
 {
@@ -773,26 +1701,6 @@ ParentIface::ParentIface ()
 {}
 ParentIface::~ParentIface ()
 {} // define empty dtor to emit vtable
-ParentHandle
-ParentIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  ParentHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<ParentIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-ParentHandle::ParentHandle (const std::shared_ptr<ParentIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<ParentIface> (ec.adopt_deleter_mt (ifacep));
-}
-ParentIface*
-ParentHandle::__iface__() const
-{
-  return dynamic_cast<ParentIface*> (const_cast<ParentHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 ParentIface::__typelist_mt__ () const
 {
@@ -808,26 +1716,6 @@ ChildIface::ChildIface ()
 {}
 ChildIface::~ChildIface ()
 {} // define empty dtor to emit vtable
-ChildHandle
-ChildIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  ChildHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<ChildIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-ChildHandle::ChildHandle (const std::shared_ptr<ChildIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<ChildIface> (ec.adopt_deleter_mt (ifacep));
-}
-ChildIface*
-ChildHandle::__iface__() const
-{
-  return dynamic_cast<ChildIface*> (const_cast<ChildHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 ChildIface::__typelist_mt__ () const
 {
@@ -844,26 +1732,6 @@ DescendantIface::DescendantIface ()
 {}
 DescendantIface::~DescendantIface ()
 {} // define empty dtor to emit vtable
-DescendantHandle
-DescendantIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  DescendantHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<DescendantIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-DescendantHandle::DescendantHandle (const std::shared_ptr<DescendantIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<DescendantIface> (ec.adopt_deleter_mt (ifacep));
-}
-DescendantIface*
-DescendantHandle::__iface__() const
-{
-  return dynamic_cast<DescendantIface*> (const_cast<DescendantHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 DescendantIface::__typelist_mt__ () const
 {
@@ -880,26 +1748,6 @@ GrandChildIface::GrandChildIface ()
 {}
 GrandChildIface::~GrandChildIface ()
 {} // define empty dtor to emit vtable
-GrandChildHandle
-GrandChildIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  GrandChildHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<GrandChildIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-GrandChildHandle::GrandChildHandle (const std::shared_ptr<GrandChildIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<GrandChildIface> (ec.adopt_deleter_mt (ifacep));
-}
-GrandChildIface*
-GrandChildHandle::__iface__() const
-{
-  return dynamic_cast<GrandChildIface*> (const_cast<GrandChildHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 GrandChildIface::__typelist_mt__ () const
 {
@@ -911,31 +1759,43 @@ GrandChildIface::__access__ (const std::string &__n, const PropertyAccessorPred 
   if (this->DescendantIface::__access__ (__n, __p)) return true;
   return false;
 }
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickRecord_ = {
+  "typename=InterfaceTests.QuickRecord\0"
+  "type=RECORD\0"
+  "fields=int1;int2\0"
+  "int1.type=INT32\0"
+  "int2.type=INT32\0"
+};
+const Aida::StringVector&
+QuickRecord::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("InterfaceTests.QuickRecord");
+  return sv;
+}
+bool
+QuickRecord::operator== (const QuickRecord &other) const
+{
+  if (this->int1 != other.int1) return false;
+  if (this->int2 != other.int2) return false;
+  return true;
+}
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickSequence_ = {
+  "typename=InterfaceTests.QuickSequence\0"
+  "type=SEQUENCE\0"
+  "fields=somefloat\0"
+  "somefloat.type=FLOAT64\0"
+};
+const Aida::StringVector&
+QuickSequence::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("InterfaceTests.QuickSequence");
+  return sv;
+}
 
 QuickIfaceIface::QuickIfaceIface ()
 {}
 QuickIfaceIface::~QuickIfaceIface ()
 {} // define empty dtor to emit vtable
-QuickIfaceHandle
-QuickIfaceIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  QuickIfaceHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<QuickIfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-QuickIfaceHandle::QuickIfaceHandle (const std::shared_ptr<QuickIfaceIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<QuickIfaceIface> (ec.adopt_deleter_mt (ifacep));
-}
-QuickIfaceIface*
-QuickIfaceHandle::__iface__() const
-{
-  return dynamic_cast<QuickIfaceIface*> (const_cast<QuickIfaceHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 QuickIfaceIface::__typelist_mt__ () const
 {
@@ -951,26 +1811,6 @@ MethodTestInterfaceIface::MethodTestInterfaceIface ()
 {}
 MethodTestInterfaceIface::~MethodTestInterfaceIface ()
 {} // define empty dtor to emit vtable
-MethodTestInterfaceHandle
-MethodTestInterfaceIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  MethodTestInterfaceHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<MethodTestInterfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-MethodTestInterfaceHandle::MethodTestInterfaceHandle (const std::shared_ptr<MethodTestInterfaceIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<MethodTestInterfaceIface> (ec.adopt_deleter_mt (ifacep));
-}
-MethodTestInterfaceIface*
-MethodTestInterfaceHandle::__iface__() const
-{
-  return dynamic_cast<MethodTestInterfaceIface*> (const_cast<MethodTestInterfaceHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 MethodTestInterfaceIface::__typelist_mt__ () const
 {
@@ -986,26 +1826,6 @@ SignalTestInterfaceIface::SignalTestInterfaceIface ()
 {}
 SignalTestInterfaceIface::~SignalTestInterfaceIface ()
 {} // define empty dtor to emit vtable
-SignalTestInterfaceHandle
-SignalTestInterfaceIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  SignalTestInterfaceHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<SignalTestInterfaceIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-SignalTestInterfaceHandle::SignalTestInterfaceHandle (const std::shared_ptr<SignalTestInterfaceIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<SignalTestInterfaceIface> (ec.adopt_deleter_mt (ifacep));
-}
-SignalTestInterfaceIface*
-SignalTestInterfaceHandle::__iface__() const
-{
-  return dynamic_cast<SignalTestInterfaceIface*> (const_cast<SignalTestInterfaceHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 SignalTestInterfaceIface::__typelist_mt__ () const
 {
@@ -1021,26 +1841,6 @@ ChildInheritingSignalsIface::ChildInheritingSignalsIface ()
 {}
 ChildInheritingSignalsIface::~ChildInheritingSignalsIface ()
 {} // define empty dtor to emit vtable
-ChildInheritingSignalsHandle
-ChildInheritingSignalsIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  ChildInheritingSignalsHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<ChildInheritingSignalsIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-ChildInheritingSignalsHandle::ChildInheritingSignalsHandle (const std::shared_ptr<ChildInheritingSignalsIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<ChildInheritingSignalsIface> (ec.adopt_deleter_mt (ifacep));
-}
-ChildInheritingSignalsIface*
-ChildInheritingSignalsHandle::__iface__() const
-{
-  return dynamic_cast<ChildInheritingSignalsIface*> (const_cast<ChildInheritingSignalsHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 ChildInheritingSignalsIface::__typelist_mt__ () const
 {
@@ -1057,26 +1857,6 @@ AnotherChildIface::AnotherChildIface ()
 {}
 AnotherChildIface::~AnotherChildIface ()
 {} // define empty dtor to emit vtable
-AnotherChildHandle
-AnotherChildIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  AnotherChildHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<AnotherChildIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-AnotherChildHandle::AnotherChildHandle (const std::shared_ptr<AnotherChildIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<AnotherChildIface> (ec.adopt_deleter_mt (ifacep));
-}
-AnotherChildIface*
-AnotherChildHandle::__iface__() const
-{
-  return dynamic_cast<AnotherChildIface*> (const_cast<AnotherChildHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 AnotherChildIface::__typelist_mt__ () const
 {
@@ -1093,26 +1873,6 @@ PropertyTesterIface::PropertyTesterIface ()
 {}
 PropertyTesterIface::~PropertyTesterIface ()
 {} // define empty dtor to emit vtable
-PropertyTesterHandle
-PropertyTesterIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  PropertyTesterHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<PropertyTesterIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-PropertyTesterHandle::PropertyTesterHandle (const std::shared_ptr<PropertyTesterIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<PropertyTesterIface> (ec.adopt_deleter_mt (ifacep));
-}
-PropertyTesterIface*
-PropertyTesterHandle::__iface__() const
-{
-  return dynamic_cast<PropertyTesterIface*> (const_cast<PropertyTesterHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 PropertyTesterIface::__typelist_mt__ () const
 {
@@ -1187,26 +1947,6 @@ UseIncludesIface::UseIncludesIface ()
 {}
 UseIncludesIface::~UseIncludesIface ()
 {} // define empty dtor to emit vtable
-UseIncludesHandle
-UseIncludesIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  UseIncludesHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<UseIncludesIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-UseIncludesHandle::UseIncludesHandle (const std::shared_ptr<UseIncludesIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<UseIncludesIface> (ec.adopt_deleter_mt (ifacep));
-}
-UseIncludesIface*
-UseIncludesHandle::__iface__() const
-{
-  return dynamic_cast<UseIncludesIface*> (const_cast<UseIncludesHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 UseIncludesIface::__typelist_mt__ () const
 {
@@ -1223,26 +1963,6 @@ ButtonAreaIface::ButtonAreaIface ()
 {}
 ButtonAreaIface::~ButtonAreaIface ()
 {} // define empty dtor to emit vtable
-ButtonAreaHandle
-ButtonAreaIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  ButtonAreaHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<ButtonAreaIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-ButtonAreaHandle::ButtonAreaHandle (const std::shared_ptr<ButtonAreaIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<ButtonAreaIface> (ec.adopt_deleter_mt (ifacep));
-}
-ButtonAreaIface*
-ButtonAreaHandle::__iface__() const
-{
-  return dynamic_cast<ButtonAreaIface*> (const_cast<ButtonAreaHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 ButtonAreaIface::__typelist_mt__ () const
 {
@@ -1279,26 +1999,6 @@ PureMethodsIface::PureMethodsIface ()
 {}
 PureMethodsIface::~PureMethodsIface ()
 {} // define empty dtor to emit vtable
-PureMethodsHandle
-PureMethodsIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  PureMethodsHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<PureMethodsIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-PureMethodsHandle::PureMethodsHandle (const std::shared_ptr<PureMethodsIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<PureMethodsIface> (ec.adopt_deleter_mt (ifacep));
-}
-PureMethodsIface*
-PureMethodsHandle::__iface__() const
-{
-  return dynamic_cast<PureMethodsIface*> (const_cast<PureMethodsHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 PureMethodsIface::__typelist_mt__ () const
 {
@@ -1317,26 +2017,6 @@ NameTestsIface::NameTestsIface ()
 {}
 NameTestsIface::~NameTestsIface ()
 {} // define empty dtor to emit vtable
-NameTestsHandle
-NameTestsIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  NameTestsHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<NameTestsIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-NameTestsHandle::NameTestsHandle (const std::shared_ptr<NameTestsIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<NameTestsIface> (ec.adopt_deleter_mt (ifacep));
-}
-NameTestsIface*
-NameTestsHandle::__iface__() const
-{
-  return dynamic_cast<NameTestsIface*> (const_cast<NameTestsHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 NameTestsIface::__typelist_mt__ () const
 {
@@ -1355,26 +2035,6 @@ CompressorIface::CompressorIface ()
 {}
 CompressorIface::~CompressorIface ()
 {} // define empty dtor to emit vtable
-CompressorHandle
-CompressorIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  CompressorHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<CompressorIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-CompressorHandle::CompressorHandle (const std::shared_ptr<CompressorIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<CompressorIface> (ec.adopt_deleter_mt (ifacep));
-}
-CompressorIface*
-CompressorHandle::__iface__() const
-{
-  return dynamic_cast<CompressorIface*> (const_cast<CompressorHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 CompressorIface::__typelist_mt__ () const
 {
@@ -1402,31 +2062,40 @@ CompressorIface::__access__ (const std::string &__n, const PropertyAccessorPred 
     return true;
   return false;
 }
+static const Aida::IntrospectionRegistry __aida__aux__data__BseTest_RecordForGroups_ = {
+  "typename=BseTest.RecordForGroups\0"
+  "type=RECORD\0"
+  "fields=i;ratio;ordinary_bool;threshold1;threshold2\0"
+  "i.type=INT32\0"
+  "ratio.type=FLOAT64\0"
+  "ratio.hints=w\0"
+  "ratio.default=0\0"
+  "ratio.group=Normal\0"
+  "ordinary_bool.type=BOOL\0"
+  "threshold1.type=FLOAT64\0"
+  "threshold2.type=FLOAT64\0"
+};
+const Aida::StringVector&
+RecordForGroups::__typedata__()
+{
+  static const Aida::StringVector &sv = Aida::Introspection::find_type ("BseTest.RecordForGroups");
+  return sv;
+}
+bool
+RecordForGroups::operator== (const RecordForGroups &other) const
+{
+  if (this->i != other.i) return false;
+  if (this->ratio != other.ratio) return false;
+  if (this->ordinary_bool != other.ordinary_bool) return false;
+  if (this->threshold1 != other.threshold1) return false;
+  if (this->threshold2 != other.threshold2) return false;
+  return true;
+}
 
 SoundModuleIface::SoundModuleIface ()
 {}
 SoundModuleIface::~SoundModuleIface ()
 {} // define empty dtor to emit vtable
-SoundModuleHandle
-SoundModuleIface::__handle__()
-{
-  Aida::ExecutionContext &ec = this->__execution_context_mt__();
-  SoundModuleHandle handle;
-  handle.__iface_ptr__() = std::dynamic_pointer_cast<SoundModuleIface> (ec.adopt_deleter_mt (this->shared_from_this()));
-  return handle;
-}
-SoundModuleHandle::SoundModuleHandle (const std::shared_ptr<SoundModuleIface> &ifacep)
-{
-  if (!ifacep)
-    return;
-  Aida::ExecutionContext &ec = ifacep->__execution_context_mt__();
-  __iface_ptr__() = std::dynamic_pointer_cast<SoundModuleIface> (ec.adopt_deleter_mt (ifacep));
-}
-SoundModuleIface*
-SoundModuleHandle::__iface__() const
-{
-  return dynamic_cast<SoundModuleIface*> (const_cast<SoundModuleHandle*> (this)->__iface_ptr__().get());
-}
 Aida::StringVector
 SoundModuleIface::__typelist_mt__ () const
 {
@@ -1438,3 +2107,201 @@ SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessorPred
   return false;
 }
 } // BseTest
+
+
+namespace Aida {
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum1_ = {
+  "typename=MandatoryNamespace.Enum1\0"
+  "type=ENUM\0"
+  "enumerators=E1_A\0"
+  "E1_A.value=1\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum1c_ = {
+  "typename=MandatoryNamespace.Enum1c\0"
+  "type=ENUM\0"
+  "enumerators=E1C_A\0"
+  "E1C_A.value=1\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum2_ = {
+  "typename=MandatoryNamespace.Enum2\0"
+  "type=ENUM\0"
+  "enumerators=E2_A;E2_B\0"
+  "E2_A.value=1\0"
+  "E2_B.value=2\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum2c_ = {
+  "typename=MandatoryNamespace.Enum2c\0"
+  "type=ENUM\0"
+  "enumerators=E2C_A;E2C_B\0"
+  "E2C_A.value=1\0"
+  "E2C_B.value=2\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum3_ = {
+  "typename=MandatoryNamespace.Enum3\0"
+  "type=ENUM\0"
+  "enumerators=E3_A;E3_B;E3_C\0"
+  "E3_A.value=1\0"
+  "E3_B.value=2\0"
+  "E3_C.value=3\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum3c_ = {
+  "typename=MandatoryNamespace.Enum3c\0"
+  "type=ENUM\0"
+  "enumerators=E3C_A;E3C_B;E3C_C\0"
+  "E3C_A.value=1\0"
+  "E3C_B.value=2\0"
+  "E3C_C.value=3\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4a_ = {
+  "typename=MandatoryNamespace.Enum4a\0"
+  "type=ENUM\0"
+  "enumerators=E4A_A;E4A_B;E4A_C;E4A_D\0"
+  "E4A_A.value=1\0"
+  "E4A_B.value=2\0"
+  "E4A_C.value=3\0"
+  "E4A_D.value=4\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4b_ = {
+  "typename=MandatoryNamespace.Enum4b\0"
+  "type=ENUM\0"
+  "enumerators=E4B_A;E4B_B;E4B_C;E4B_D\0"
+  "E4B_A.value=1\0"
+  "E4B_B.value=2\0"
+  "E4B_C.value=3\0"
+  "E4B_D.value=4\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4c_ = {
+  "typename=MandatoryNamespace.Enum4c\0"
+  "type=ENUM\0"
+  "enumerators=E4C_A;E4C_B;E4C_C;E4C_D\0"
+  "E4C_A.value=1\0"
+  "E4C_B.value=2\0"
+  "E4C_C.value=3\0"
+  "E4C_D.value=4\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_Enum4d_ = {
+  "typename=MandatoryNamespace.Enum4d\0"
+  "type=ENUM\0"
+  "enumerators=E4D_A;E4D_B;E4D_C;E4D_D\0"
+  "E4D_A.value=1\0"
+  "E4D_B.value=2\0"
+  "E4D_C.value=3\0"
+  "E4D_D.value=4\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnum_ = {
+  "typename=MandatoryNamespace.ExtensiveEnum\0"
+  "type=ENUM\0"
+  "enumerators=V1a;V1b;V2;V3;V4;V5;V6;V7;V8;V9;V10;V11;V12;V13;V14;V15;V16;V17;V18;V20;V21;V22;V23;V24;V25;V26;V27;V28;V30;V31;V32;V33;V34;V35;V36\0"
+  "V1a.value=1\0"
+  "V1b.value=1\0"
+  "V2.value=2\0"
+  "V3.value=3\0"
+  "V3.label=" "v3" "\0"
+  "V4.value=4\0"
+  "V4.label=" _("v4") "\0"
+  "V5.value=5\0"
+  "V5.label=" "v5" "\0"
+  "V5.blurb=" "V5" "\0"
+  "V6.value=6\0"
+  "V6.label=" _("v6") "\0"
+  "V6.blurb=" "V6" "\0"
+  "V7.value=7\0"
+  "V7.label=" "v7" "\0"
+  "V7.blurb=" _("V7") "\0"
+  "V8.value=8\0"
+  "V8.label=" _("v8") "\0"
+  "V8.blurb=" _("V8") "\0"
+  "V9.value=9\0"
+  "V10.value=10\0"
+  "V10.label=" "v10" "\0"
+  "V11.value=11\0"
+  "V11.label=" _("v11") "\0"
+  "V12.value=12\0"
+  "V12.label=" "v12" "\0"
+  "V13.value=13\0"
+  "V14.value=14\0"
+  "V14.label=" _("v14") "\0"
+  "V15.value=15\0"
+  "V15.label=" "v15" "\0"
+  "V15.blurb=" "V15" "\0"
+  "V16.value=16\0"
+  "V16.label=" _("v16") "\0"
+  "V16.blurb=" "V16" "\0"
+  "V17.value=17\0"
+  "V17.label=" "v17" "\0"
+  "V17.blurb=" _("V17") "\0"
+  "V18.value=18\0"
+  "V18.label=" _("v18") "\0"
+  "V18.blurb=" _("V18") "\0"
+  "V20.value=20\0"
+  "V21.value=21\0"
+  "V22.value=22\0"
+  "V23.value=23\0"
+  "V24.value=24\0"
+  "V25.value=-9223372036854775808\0"
+  "V26.value=9223372036854775807\0"
+  "V27.value=9223372036854775807\0"
+  "V28.value=-28\0"
+  "V30.value=42\0"
+  "V31.value=43\0"
+  "V31.label=" "foo" "\0"
+  "V32.value=42\0"
+  "V33.value=43\0"
+  "V33.label=" "foo" "\0"
+  "V34.value=44\0"
+  "V34.label=" "foo" "\0"
+  "V34.blurb=" "foo" "\0"
+  "V35.value=35\0"
+  "V35.label=" "foo" "\0"
+  "V36.value=42\0"
+  "V36.label=" "foo" "\0"
+  "V36.blurb=" "foo4" "\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickEnum_ = {
+  "typename=InterfaceTests.QuickEnum\0"
+  "type=ENUM\0"
+  "enumerators=ZERO\0"
+  "ZERO.value=0\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_ClickType_ = {
+  "typename=RapicornAidaTest.ClickType\0"
+  "type=ENUM\0"
+  "enumerators=CLICK_ON_PRESS;CLICK_ON_RELEASE;CLICK_SLOW_REPEAT;CLICK_FAST_REPEAT;CLICK_KEY_REPEAT\0"
+  "CLICK_ON_PRESS.value=1\0"
+  "CLICK_ON_RELEASE.value=2\0"
+  "CLICK_SLOW_REPEAT.value=3\0"
+  "CLICK_FAST_REPEAT.value=4\0"
+  "CLICK_KEY_REPEAT.value=5\0"
+};
+
+static const Aida::IntrospectionRegistry __aida__aux__data__RapicornAidaTest_MathExpressions_ = {
+  "typename=RapicornAidaTest.MathExpressions\0"
+  "type=ENUM\0"
+  "enumerators=RESULT_2;RESULT_5;RESULT_8;RESULT_6;RESULT_7;RESULT_16;RESULT_3;RESULT_24;RESULT_13;RESULT_m2;RESULT_77;RESULT_511\0"
+  "RESULT_2.value=2\0"
+  "RESULT_5.value=5\0"
+  "RESULT_8.value=8\0"
+  "RESULT_6.value=6\0"
+  "RESULT_7.value=7\0"
+  "RESULT_16.value=16\0"
+  "RESULT_3.value=3\0"
+  "RESULT_24.value=24\0"
+  "RESULT_13.value=13\0"
+  "RESULT_m2.value=-2\0"
+  "RESULT_77.value=77\0"
+  "RESULT_511.value=511\0"
+};
+} // Aida

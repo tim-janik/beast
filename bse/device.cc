@@ -55,7 +55,7 @@ DeviceImpl::list_modules ()
 {
   ModuleSeq modules;
   for (auto &m : modules_)
-    modules.push_back (m->__handle__());
+    modules.push_back (m);
   return modules;
 }
 

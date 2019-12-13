@@ -45,8 +45,6 @@ runpath (RPath rpath)
     case RPath::PLUGINDIR:      return libbse_installdir + "/plugins" + objdir;
     case RPath::IMAGEDIR:       return libbse_installdir + "/images";
     case RPath::DOCDIR:         return libbse_installdir + "/doc";
-    case RPath::KEYBDIR:        return libbse_installdir + "/keys";
-    case RPath::SKINDIR:        return libbse_installdir + "/skins";
     case RPath::DEMODIR:        return libbse_installdir + "/media/Demos";
     case RPath::EFFECTDIR:      return libbse_installdir + "/media/Effects";
     case RPath::INSTRUMENTDIR:  return libbse_installdir + "/media/Instruments";

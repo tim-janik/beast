@@ -15,12 +15,6 @@
 #define peek_or_return          bse_storage_scanner_peek_or_return
 
 
-enum
-{
-  SIGNAL_ITEM_ADDED,
-  SIGNAL_ITEM_REMOVE,
-  SIGNAL_LAST
-};
 typedef struct _UncrossNode UncrossNode;
 
 
@@ -61,7 +55,6 @@ static GTypeClass  *parent_class = NULL;
 static GQuark       quark_cross_links = 0;
 static GSList      *containers_cross_changes = NULL;
 static guint        containers_cross_changes_handler = 0;
-static guint        container_signals[SIGNAL_LAST] = { 0, };
 static UncrossNode *uncross_stack = NULL;
 
 
@@ -94,7 +87,6 @@ bse_container_class_init (BseContainerClass *klass)
 {
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   // BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
 
@@ -116,12 +108,6 @@ bse_container_class_init (BseContainerClass *klass)
   klass->retrieve_child = bse_container_real_retrieve_child;
   klass->context_children = container_context_children;
   klass->release_children = container_release_children;
-
-  container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
-                                                                      G_TYPE_NONE, 1, BSE_TYPE_ITEM);
-  container_signals[SIGNAL_ITEM_REMOVE] = bse_object_class_add_signal (object_class, "item_remove",
-                                                                       G_TYPE_NONE, 2, BSE_TYPE_ITEM,
-                                                                       SFI_TYPE_INT);
 }
 
 static void
@@ -254,7 +240,6 @@ bse_container_add_item (BseContainer *container,
   BSE_CONTAINER_GET_CLASS (container)->add_item (container, item);
   if (item->parent != NULL)
     {
-      g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
       using namespace Aida::KeyValueArgs;
       container->as<Bse::ContainerImplP>()->emit_event ("treechange:additem", "item"_v = item->as<Bse::ItemIfaceP>());
     }
@@ -357,7 +342,6 @@ bse_container_remove_item (BseContainer *container,
     {
       using namespace Aida::KeyValueArgs;
       container->as<Bse::ContainerImpl*>()->emit_event ("treechange:removeitem", "item"_v = item->as<Bse::ItemIfaceP>());
-      g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVE], 0, item, seqid);
     }
   BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);
   g_object_thaw_notify (G_OBJECT (item));
@@ -1350,7 +1334,7 @@ static gboolean
 item_seq_add (BseItem *item, void *data)
 {
   ItemSeq *iseq = (ItemSeq*) data;
-  iseq->push_back (item->as<ItemIface*>()->__handle__());
+  iseq->push_back (item->as<ItemIfaceP>());
   return TRUE;
 }
 

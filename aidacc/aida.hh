@@ -109,9 +109,7 @@ typedef std::vector<String> StringVector;
 // == Forward Declarations ==
 class Any;
 class Event;
-class RemoteHandle;
 class ImplicitBase;
-class ExecutionContext;
 class CallableIface;
 class SharedFromThisIface;
 struct PropertyAccessor;
@@ -152,9 +150,6 @@ template<class T, typename = void> struct DerivesVector : std::false_type {};
 template<class T> struct DerivesVector<T, void_t< typename T::value_type, typename T::allocator_type > > :
     std::is_base_of< std::vector<typename T::value_type, typename T::allocator_type>, T > {};
 
-/// IsRemoteHandleDerived<T> - Check if @a T derives from Aida::RemoteHandle.
-template<class T> using IsRemoteHandleDerived = ::std::integral_constant<bool, ::std::is_base_of<RemoteHandle, T>::value>;
-
 /// IsImplicitBaseDerived<T> - Check if @a T derives from Aida::ImplicitBase.
 template<class T> using IsImplicitBaseDerived = ::std::integral_constant<bool, ::std::is_base_of<ImplicitBase, T>::value>;
 
@@ -167,21 +162,6 @@ template<class, class = void> struct
 Has___visit__ : std::false_type {};
 template<class T> struct
 Has___visit__<T, void_t< decltype (std::declval<T&>().__visit__ (HasHelper::visitor_lambda)) > > : std::true_type {};
-
-/// Has__accept_accessor__<T,Visitor> - Check if @a T provides a member template __accept_accessor__<>(Visitor).
-template<class, class, class = void> struct Has__accept_accessor__ : std::false_type {};
-template<class T, class V>
-struct Has__accept_accessor__<T, V, void_t< decltype (std::declval<T>().template __accept_accessor__<V> (*(V*) NULL)) >> : std::true_type {};
-
-/// Has__aida_from_any__<T> - Check if @a T provides a member __aida_from_any__(const Any&).
-template<class, class = void> struct Has__aida_from_any__ : std::false_type {};
-template<class T>
-struct Has__aida_from_any__<T, void_t< decltype (std::declval<T>().__aida_from_any__ (std::declval<Aida::Any>())) >> : std::true_type {};
-
-/// Has__aida_to_any__<T> - Check if @a T provides a member Has__aida_to_any__().
-template<class, class = void> struct Has__aida_to_any__ : std::false_type {};
-template<class T>
-struct Has__aida_to_any__<T, void_t< decltype (std::declval<T>().__aida_to_any__ ()) >> : std::true_type {};
 
 /// Provide the member typedef type which is the element_type of the shared_ptr type @a T.
 template<typename T> struct RemoveSharedPtr                                             { typedef T type; };
@@ -297,27 +277,6 @@ static_assert (sizeof (CastIffy) == sizeof (LongIffy), "CastIffy == LongIffy");
 static_assert (sizeof (UCastIffy) == sizeof (ULongIffy), "UCastIffy == ULongIffy");
 ///@}
 
-// == ExecutionContext ==
-class ExecutionContext {
-  struct Impl;
-  Impl &m;
-  explicit                 ExecutionContext ();
-  /*dtor*/                ~ExecutionContext ();
-public:
-  using                    Closure = std::function<void()>;
-  int                      notify_fd        ();
-  bool                     pending          ();
-  void                     dispatch         ();
-  void                     enqueue_mt       (const Closure &closure);
-  void                     enqueue_mt       (Closure *closure);
-  static ExecutionContext* new_context         ();
-  static ExecutionContext* get_current         ();
-  static void              pop_thread_current  ();
-  void                     push_thread_current ();
-  GSource*                 create_gsource      (const std::string &name, int priority = 0 /*G_PRIORITY_DEFAULT*/);
-  CallableIfaceP           adopt_deleter_mt    (const CallableIfaceP &sharedptr);
-};
-
 // == EventDispatcher ==
 class EventDispatcher {
   struct DispatcherImpl;
@@ -339,8 +298,6 @@ using IfaceEventConnection = EventDispatcher::EventConnection;
 // == CallableIface ==
 class CallableIface : public virtual SharedFromThis<CallableIface> {
 public:
-  /// Retrieve ExecutionContext, save to be called multi-threaded.
-  virtual ExecutionContext&    __execution_context_mt__ () const = 0;
   /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
   virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
   /// Retrieve the IDL type names of an instance, save to be called multi-threaded.
@@ -435,7 +392,7 @@ enum TypeKind {
   ENUM           = 'E', ///< Enumeration type to represent choices.
   SEQUENCE       = 'Q', ///< Type to form sequences of an other type.
   RECORD         = 'R', ///< Record type containing named fields.
-  INSTANCE       = 'C', ///< RemoteHandle type.
+  INSTANCE       = 'C', ///< ImplicitBase type.
   ANY            = 'Y', ///< Generic type to hold any other type.
 };
 
@@ -476,154 +433,6 @@ template<class Y> struct ValueType           { typedef Y T; };
 template<class Y> struct ValueType<Y&>       { typedef Y T; };
 template<class Y> struct ValueType<const Y&> { typedef Y T; };
 
-// == RemoteHandle ==
-/// Handle for a remote object living in a different thread or process.
-class RemoteHandle {
-  ImplicitBaseP     iface_ptr_;
-  struct EventHandlerRelay;
-public:
-  struct EventConnection : private std::weak_ptr<EventHandlerRelay> {
-    friend class RemoteHandle;
-    bool   connected  () const;
-    void   disconnect () const;
-  };
-public:
-  explicit                RemoteHandle         () = default;
-  /*copy*/                RemoteHandle         (const RemoteHandle &y) = default;       ///< Copy ctor
-  virtual                ~RemoteHandle         ();
-  EventConnection         __attach__           (const String &eventselector, EventHandlerF handler);
-  std::string             __typename__         () const;
-  StringVector            __typelist__         () const;
-  ImplicitBaseP&          __iface_ptr__        ()       { return iface_ptr_; }
-  RemoteHandle&           operator=            (const RemoteHandle &other) = default;   ///< Copy assignment
-  // Compare and determine if this RemoteHandle contains an object or null handle.
-  explicit    operator bool () const noexcept               { return !! iface_ptr_; }
-  bool        operator==    (std::nullptr_t) const noexcept { return !iface_ptr_; }
-  bool        operator!=    (std::nullptr_t) const noexcept { return !! iface_ptr_; }
-  bool        operator==    (const RemoteHandle &rh) const noexcept { return iface_ptr_ == rh.iface_ptr_; }
-  bool        operator!=    (const RemoteHandle &rh) const noexcept { return !operator== (rh); }
-  bool        operator<     (const RemoteHandle &rh) const noexcept { return iface_ptr_ < rh.iface_ptr_; }
-  bool        operator<=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ <= rh.iface_ptr_; }
-  bool        operator>     (const RemoteHandle &rh) const noexcept { return iface_ptr_ > rh.iface_ptr_; }
-  bool        operator>=    (const RemoteHandle &rh) const noexcept { return iface_ptr_ >= rh.iface_ptr_; }
-  friend bool operator==    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd == nullp; }
-  friend bool operator!=    (std::nullptr_t nullp, const RemoteHandle &shd) noexcept { return shd != nullp; }
-};
-using HandleEventConnection = RemoteHandle::EventConnection;
-
-// == RemoteMember ==
-template<class RemoteHandle>
-class RemoteMember : public RemoteHandle {
-public:
-  inline   RemoteMember (const RemoteHandle &src) : RemoteHandle() { *this = src; }
-  explicit RemoteMember () : RemoteHandle() {}
-  void     operator=   (const RemoteHandle &src) { RemoteHandle::operator= (src); }
-};
-
-/// Auxillary class for the ScopedHandle<> implementation.
-class DetacherHooks {
-  std::vector<HandleEventConnection> connections_;
-protected:
-  void __swap_hooks__   (DetacherHooks &other);
-  void __clear_hooks__  (RemoteHandle *scopedhandle);
-  void __manage_event__ (RemoteHandle *scopedhandle, const String &type, EventHandlerF handler);
-  void __manage_event__ (RemoteHandle *scopedhandle, const String &type, std::function<void()> vfunc);
-};
-
-/// ScopedHandle<> is a std::move()-only RemoteHandle with automatic event handler cleanup.
-template<class RH>
-class ScopedHandle : public RH, private DetacherHooks {
-  static_assert (std::is_base_of<Aida::RemoteHandle, RH>::value, "");
-public:
-  /*copy*/      ScopedHandle    (const ScopedHandle&) = delete; ///< Not copy-constructible
-  ScopedHandle& operator=       (const ScopedHandle&) = delete; ///< Not copy-assignable
-  explicit      ScopedHandle    () : RH() {}                    ///< Default constructor
-  ScopedHandle& operator=       (std::nullptr_t);               ///< Reset / unset handle
-  explicit      ScopedHandle    (ScopedHandle &&rh) noexcept;   ///< Move constructor
-  ScopedHandle& operator=       (ScopedHandle &&rh);            ///< Move assignment
-  explicit      ScopedHandle    (const RH &rh);                 ///< Construct via RemoteHandle copy
-  ScopedHandle& operator=       (const RH &rh);                 ///< Assignment via RemoteHandle
-  virtual      ~ScopedHandle    ();                             ///< Destructor for handler cleanups.
-  /// Attach event handler and automatically detach the handler when the ScopedHandle is deleted or re-assigned.
-  void          on              (const ::std::string &type, EventHandlerF handler);
-  /// Attach event handler and automatically detach the handler when the ScopedHandle is deleted or re-assigned.
-  void          on              (const ::std::string &type, std::function<void()> vfunc);
-  /// Copy as RemoteHandle
-  RH            __copy_handle__ () const  { return *this; }
-  // Provide RemoteHandle boolean operations
-  using         RH::operator==;
-  using         RH::operator!=;
-  using         RH::operator bool;
-};
-
-// == Implementations ==
-template<class RH> ScopedHandle<RH>&
-ScopedHandle<RH>::operator= (std::nullptr_t)
-{
-  this->DetacherHooks::__clear_hooks__ (this);
-  RH::operator= (RH());
-  return *this;
-}
-
-template<class RH>
-ScopedHandle<RH>::ScopedHandle (const RH &rh)
-{
-  /* NOTE: We cannot use the RH copy constructor here, because for that to work, the C++ standard
-   * requires us to know about *all* virtual base classes and copy-construct those for this case.
-   * That's impossible for a template argument, so we need to default construct and after that
-   * use assignment. See: https://stackoverflow.com/a/34995780 */
-  RH::operator= (rh);
-}
-
-template<class RH>
-ScopedHandle<RH>::ScopedHandle (ScopedHandle &&sh) noexcept
-{
-  RH::operator= (sh);
-  this->DetacherHooks::__swap_hooks__ (sh);
-}
-
-template<class RH> ScopedHandle<RH>&
-ScopedHandle<RH>::operator= (const RH &rh)
-{
-  if (this != &rh)
-    {
-      this->DetacherHooks::__clear_hooks__ (this);
-      RH::operator= (rh);
-    }
-  return *this;
-}
-
-template<class RH> ScopedHandle<RH>&
-ScopedHandle<RH>::operator= (ScopedHandle<RH> &&sh)
-{
-  if (this != &sh)
-    {
-      this->DetacherHooks::__clear_hooks__ (this); // may throw
-      RH &t = *this, &r = sh;
-      t = std::move (r);
-      this->DetacherHooks::__swap_hooks__ (sh);
-    }
-  return *this;
-}
-
-template<class RH>
-ScopedHandle<RH>::~ScopedHandle ()
-{
-  this->DetacherHooks::__clear_hooks__ (this);
-}
-
-template<class RH> void
-ScopedHandle<RH>::on (const ::std::string &type, ::Aida::EventHandlerF handler)
-{
-  this->DetacherHooks::__manage_event__ (this, type, handler);
-}
-
-template<class RH> void
-ScopedHandle<RH>::on (const ::std::string &type, ::std::function<void()> vfunc)
-{
-  this->DetacherHooks::__manage_event__ (this, type, vfunc);
-}
-
 // == Any Type ==
 class Any /// Generic value type that can hold values of all other types.
 {
@@ -662,17 +471,16 @@ protected:
 private:
   TypeKind type_kind_;
   ///@cond
-  typedef RemoteMember<RemoteHandle> ARemoteHandle;
   union {
     uint64 vuint64; int64 vint64; double vdouble; Any *vany;
-    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)), sizeof (ARemoteHandle)))];
+    int64 dummy_[AIDA_I64ELEMENTS (std::max (std::max (sizeof (String), sizeof (std::vector<void*>)), sizeof (ImplicitBaseP)))];
     AnyRec&              vfields () { return *(AnyRec*) this; static_assert (sizeof (AnyRec) <= sizeof (*this), ""); }
     const AnyRec&        vfields () const { return *(const AnyRec*) this; }
     AnySeq&              vanys   () { return *(AnySeq*) this; static_assert (sizeof (AnySeq) <= sizeof (*this), ""); }
     const AnySeq&        vanys   () const { return *(const AnySeq*) this; }
     String&              vstring () { return *(String*) this; static_assert (sizeof (String) <= sizeof (*this), ""); }
     const String&        vstring () const { return *(const String*) this; }
-    ARemoteHandle&       rhandle () const { return *(ARemoteHandle*) this; static_assert (sizeof (ARemoteHandle) <= sizeof (*this), ""); }
+    ImplicitBaseP&       ibasep  () const { return *(ImplicitBaseP*) this; static_assert (sizeof (ImplicitBaseP) <= sizeof (*this), ""); }
   } u_;
   ///@endcond
   void    ensure  (TypeKind _kind) { if (AIDA_LIKELY (kind() == _kind)) return; rekind (_kind); }
@@ -697,7 +505,6 @@ public:
   void      clear  ();                                  ///< Erase Any contents, making it empty like a newly constructed Any().
   bool      empty  () const;                            ///< Returns true if Any is newly constructed or after clear().
   void      set_enum (const String &enumerator);        ///< Set Any to hold an enumerator value.
-  RemoteHandle get_untyped_remote_handle () const;
   template<class T> using ToAnyRecConvertible =         ///< Check is_convertible<a T, AnyRec>.
     ::std::integral_constant<bool, ::std::is_convertible<T, AnyRec>::value && !::std::is_base_of<Any, T>::value>;
   template<class T> using ToAnySeqConvertible =        ///< Check is_convertible<a T, AnySeq > but give precedence to AnyRec.
@@ -729,14 +536,12 @@ private:
   void               set_seq     (const AnySeq &seq);
   const AnyRec&      get_rec     () const;
   void               set_rec     (const AnyRec &rec);
+  void               set_ibasep  (ImplicitBaseP ibaseptr);
   ImplicitBaseP      get_ibasep  () const;
   template<typename C>
   C*                 cast_ibase  () const               { return dynamic_cast<C*> (get_ibasep().get()); }
   template<typename SP>
   SP                 cast_ibasep () const               { return std::dynamic_pointer_cast<typename SP::element_type> (get_ibasep()); }
-  template<typename H>
-  H                  cast_handle () const               { return H::__cast__ (get_untyped_remote_handle()); }
-  void               set_handle  (const RemoteHandle &handle);
   const Any*         get_any     () const;
   void               set_any     (const Any *value);
 public:
@@ -755,7 +560,6 @@ public:
   template<typename T, REQUIRES< IsJustConvertible<const AnyRec, T>::value > = true>   T    get () const { return get_rec(); }
   template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             T&   get () const { return *cast_ibase<T>(); }
   template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            T    get () const { return cast_ibasep<T>(); }
-  template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             T    get () const { return cast_handle<T>(); }
   template<typename T, REQUIRES< std::is_base_of<const Any, T>::value > = true>        T    get () const { return *get_any(); }
   // void set (const Type&);
   template<typename T, REQUIRES< IsBool<T>::value > = true>                            void set (T v) { return set_bool (v); }
@@ -769,9 +573,8 @@ public:
   template<typename T, REQUIRES< ToAnySeqConvertible<T>::value > = true>               void set (const T *v) { return set_seq (*v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T &v) { return set_rec (v); }
   template<typename T, REQUIRES< ToAnyRecConvertible<T>::value > = true>               void set (const T *v) { return set_rec (*v); }
-  template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { return set_handle (v.__handle__()); }
-  template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { auto p = v.get(); set_handle (p ? p->__handle__() : RemoteHandle()); }
-  template<typename T, REQUIRES< IsRemoteHandleDerived<T>::value > = true>             void set (T v) { return set_handle (v); }
+  template<typename T, REQUIRES< IsImplicitBaseDerived<T>::value > = true>             void set (T &v) { set_ibasep (v.shared_from_this()); }
+  template<typename T, REQUIRES< IsImplicitBaseDerivedP<T>::value > = true>            void set (T v) { set_ibasep (v); }
   template<typename T, REQUIRES< ToAnyConvertible<T>::value > = true>                  void set (const T &v) { return set_any (&v); }
   // convenience
   static Any          any_from_strings (const std::vector<std::string> &string_container);
@@ -1032,52 +835,6 @@ private:
   void   (T::*setter_) (I*) = NULL;
 };
 
-// == RemoteHandle remote_call<> ==
-template<class T, class... I, class... A> inline void
-remote_callv (Aida::RemoteHandle &h, void (T::*const mfp) (I...), A&&... args)
-{
-  ScopedSemaphore sem;
-  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
-  std::function<void()> wrapper = [&sem, self, mfp, &args...] () {
-    (self->*mfp) (args...);
-    sem.post();
-  };
-  self->__execution_context_mt__().enqueue_mt (wrapper);
-  sem.wait();
-}
-
-template<class T, class R, class... I, class... A> inline R
-remote_callr (Aida::RemoteHandle &h, R (T::*const mfp) (I...), A&&... args)
-{
-  ScopedSemaphore sem;
-  T *const self = dynamic_cast<T*> (h.__iface_ptr__().get());
-  R r {};
-  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
-    r = (self->*mfp) (args...);
-    sem.post();
-  };
-  self->__execution_context_mt__().enqueue_mt (wrapper);
-  sem.wait();
-  return r;
-}
-
-template<class T, class R, class... I, class... A> inline R
-remote_callc (const Aida::RemoteHandle &h, R (T::*const mfp) (I...) const, A&&... args)
-{
-  ScopedSemaphore sem;
-  T *const self = dynamic_cast<T*> (const_cast<Aida::RemoteHandle&> (h).__iface_ptr__().get());
-  R r {};
-  std::function<void()> wrapper = [&sem, self, mfp, &args..., &r] () {
-    r = (self->*mfp) (args...);
-    sem.post();
-  };
-  self->__execution_context_mt__().enqueue_mt (wrapper);
-  sem.wait();
-  return r;
-}
-
 } // Aida
-
-#include "visitor.hh"
 
 #endif // __AIDA_CXX_AIDA_HH__

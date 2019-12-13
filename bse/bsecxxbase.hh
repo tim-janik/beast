@@ -4,7 +4,6 @@
 
 #include <bse/bsesource.hh>
 #include <bse/bsecxxvalue.hh>
-#include <bse/bsecxxclosure.hh>
 
 namespace Bse {
 #define BSE_CXX_INSTANCE_OFFSET    BSE_CXX_SIZEOF (BseSource)
@@ -23,10 +22,6 @@ public:
                        gboolean   (*editable_property) (BseObject*, guint,                         GParamSpec*) = NULL,
                        void       (*get_candidates)    (BseItem*,   guint, Bse::PropertyCandidates&, GParamSpec*) = NULL,
                        void       (*property_updated)  (BseSource*, guint, guint64, double,        GParamSpec*) = NULL);
-  guint add_signal    (const gchar *signal_name,
-                       GSignalFlags flags,
-                       guint        n_params,
-                       ...);
   void  add_ochannel  (const char  *ident,
                        const char  *label,
                        const char  *blurb,
@@ -65,19 +60,6 @@ public:
   void            get_property      (guint          prop_id,
                                      Value         &value,
                                      GParamSpec    *pspec);
-#if 0
-  gulong          connect           (const gchar   *signal,
-                                     GClosure      *closure,
-                                     bool           after);
-  gulong          connect           (const gchar   *signal,
-                                     GClosure      *closure) { return connect (signal, closure, false); }
-#endif
-  gulong          connect           (const gchar   *signal,
-                                     CxxClosure    *closure,
-                                     bool           after);
-  gulong          connect           (const gchar   *signal,
-                                     CxxClosure    *closure) { return connect (signal, closure, false); }
-  const String    tokenize_signal   (const gchar   *signal);
   GType           type              ();
   virtual void    compat_setup      (guint          vmajor,
                                      guint          vminor,
@@ -105,10 +87,7 @@ public:
   value_get_gobject (const GValue *v)
   {
     gpointer p;
-    if (SFI_VALUE_HOLDS_PROXY (v))
-      p = bse_object_from_id (sfi_value_get_proxy (v));
-    else
-      p = g_value_get_object (v);
+    p = g_value_get_object (v);
     return (OType*) p;
   }
   template<class CxxType> static inline CxxType
@@ -124,10 +103,7 @@ public:
   value_set_gobject (GValue  *value,
                      gpointer object)
   {
-    if (SFI_VALUE_HOLDS_PROXY (value))
-      sfi_value_set_proxy (value, BSE_IS_OBJECT (object) ? ((BseObject*) object)->unique_id : 0);
-    else
-      g_value_set_object (value, object);
+    g_value_set_object (value, object);
   }
   static inline void
   value_set_object (GValue        *value,

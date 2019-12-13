@@ -11,7 +11,6 @@
 #include "gsldatacache.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
-#include "bseglue.hh"
 #include "serializable.hh"
 #include "bse/internal.hh"
 #include <string.h>
@@ -24,7 +23,6 @@ using namespace Bse;
 
 /* --- prototypes --- */
 static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
-static void     attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context);
 namespace Bse {
 static void     run_registered_driver_loaders();
 } // Bse
@@ -102,7 +100,6 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
 
 static_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN, "");
 
-static Aida::ExecutionContext *bse_execution_context = NULL;
 static std::atomic<bool> main_loop_thread_running { true };
 
 static void
@@ -124,15 +121,8 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 
   // basic components
   bse_globals_init ();
-  _bse_init_signal();
   bse_type_init ();
   bse_cxx_init ();
-  // FIXME: global spawn dir is evil
-  {
-    gchar *dir = g_get_current_dir ();
-    sfi_com_set_spawn_dir (dir);
-    g_free (dir);
-  }
   // initialize GSL components
   gsl_init ();
   // remaining BSE components
@@ -182,12 +172,6 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
       TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
-
-  // enable handling of remote calls
-  assert_return (bse_execution_context == NULL);
-  bse_execution_context = Aida::ExecutionContext::new_context();
-  attach_execution_context (bse_main_context, bse_execution_context);
-  bse_execution_context->push_thread_current();
 
   // complete initialization
   bse_initialization_stage++;   // = 2
@@ -241,64 +225,42 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   delete init_queue;
 }
 
-/// Attach execution_context to a GLib main loop context.
-static void
-attach_execution_context (GMainContext *gmaincontext, Aida::ExecutionContext *execution_context)
-{
-  GSource *gsource = execution_context->create_gsource ("BSE::ExecutionContext", BSE_PRIORITY_GLUE);
-  g_source_attach (gsource, gmaincontext);
-  g_source_unref (gsource);
-}
-
-struct AsyncData {
-  const gchar *client;
-  const std::function<void()> &caller_wakeup;
-  Bse::AsyncBlockingQueue<SfiGlueContext*> result_queue;
-};
-
-static gboolean
-async_create_context (gpointer data)
-{
-  AsyncData *adata = (AsyncData*) data;
-  SfiComPort *port1, *port2;
-  sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
-			      "Server", bse_main_wakeup, &port2);
-  SfiGlueContext *context = sfi_glue_encoder_context (port1);
-  bse_glue_setup_dispatcher (port2);
-  adata->result_queue.push (context);
-  return false; // run-once
-}
-
-SfiGlueContext*
-_bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
-{
-  assert_return (client && caller_wakeup, NULL);
-  AsyncData adata = { client, caller_wakeup };
-  // function runs in user threads and queues handler in BSE thread to create context
-  if (bse_initialization_stage < 2)
-    {
-      Bse::warning ("%s: called without prior %s()", __func__, "Bse::init_async");
-      return NULL;
-    }
-  // queue handler to create context
-  GSource *source = g_idle_source_new ();
-  g_source_set_priority (source, G_PRIORITY_HIGH);
-  adata.client = client;
-  g_source_set_callback (source, async_create_context, &adata, NULL);
-  g_source_attach (source, bse_main_context);
-  g_source_unref (source);
-  // wake up BSE thread
-  g_main_context_wakeup (bse_main_context);
-  // receive result asynchronously
-  SfiGlueContext *context = adata.result_queue.pop();
-  return context;
-}
-
+/// Wake up the event loop in the BSE thread.
 void
 bse_main_wakeup ()
 {
   assert_return (bse_main_context != NULL);
   g_main_context_wakeup (bse_main_context);
+}
+
+static void
+bse_main_enqueue (const std::function<void()> &func)
+{
+  assert_return (bse_main_context != NULL);
+  using VFunc = std::function<void()>;
+  struct CxxSource : GSource {
+    VFunc func_;
+  };
+  auto prepare  = [] (GSource*, int*) -> gboolean { return true; };
+  auto check    = [] (GSource*)       -> gboolean { return true; };
+  auto dispatch = [] (GSource *source, GSourceFunc, void*) -> gboolean {
+    CxxSource &cs = *(CxxSource*) source;
+    cs.func_();
+    return false; // run once
+  };
+  auto finalize = [] (GSource *source) {
+    // this handler can be called from g_source_remove, or dispatch(), with or w/o main loop mutex...
+    CxxSource &cs = *(CxxSource*) source;
+    cs.func_.~VFunc();
+  };
+  static GSourceFuncs cxx_source_funcs = { prepare, check, dispatch, finalize };
+  GSource *source = g_source_new (&cxx_source_funcs, sizeof (CxxSource));
+  CxxSource &cs = *(CxxSource*) source;
+  new (&cs.func_) VFunc (func);
+  // g_source_set_priority (source, BSE_PRIORITY_GLUE); // g_source_new assigns G_PRIORITY_DEFAULT
+  static_assert (BSE_PRIORITY_GLUE == G_PRIORITY_DEFAULT);
+  g_source_attach (source, bse_main_context);
+  g_source_unref (source);
 }
 
 int
@@ -315,7 +277,7 @@ bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester
     retval = bsetester();
     sem.post();
   };
-  bse_execution_context->enqueue_mt (wrapper);
+  bse_main_enqueue (wrapper);
   sem.wait();
   return retval;
 }
@@ -329,7 +291,7 @@ JobQueue::call_remote (const std::function<void()> &job)
     job();
     sem.post();
   };
-  bse_execution_context->enqueue_mt (wrapper);
+  bse_main_enqueue (wrapper);
   sem.wait();
 }
 JobQueue jobs;
@@ -513,13 +475,6 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 }
 
 namespace Bse {
-
-Aida::ExecutionContext&
-execution_context () // bseutils.hh
-{
-  assert_return (bse_execution_context != NULL, *bse_execution_context);
-  return *bse_execution_context;
-}
 
 // == Bse::GlobalConfig ==
 static Configuration global_config_rcsettings;

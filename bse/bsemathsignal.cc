@@ -641,10 +641,6 @@ bse_transpose_factor (Bse::MusicalTuning musical_tuning, int index /* [-132..+13
   return table[CLAMP (index, -132, +132)];
 }
 
-/* --- cents & init --- */
-void
-_bse_init_signal (void) { /* FIXME: remove */ }
-
 /* --- bse_approx_atan1() --- */
 double
 bse_approx_atan1_prescale (double boost_amount)

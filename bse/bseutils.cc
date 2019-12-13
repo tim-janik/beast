@@ -57,45 +57,6 @@ bse_note_sequence_length (BseNoteSequence *rec)
   return rec->notes->n_notes;
 }
 
-BseIt3mSeq*
-bse_it3m_seq_from_item_seq (Bse::ItemSeq &items)
-{
-  BseIt3mSeq *i3s = bse_it3m_seq_new();
-  for (const auto &item : items)
-    bse_it3m_seq_append (i3s, item.__iface__()->as<BseItem*>());
-  return i3s;
-}
-
-Bse::ItemSeq
-bse_item_seq_from_it3m_seq (BseIt3mSeq *i3s)
-{
-  Bse::ItemSeq items;
-  for (size_t i = 0; i < i3s->n_items; i++)
-    items.push_back (i3s->items[i]->as<Bse::ItemIface*>()->__handle__());
-  return items;
-}
-
-SfiRing*
-bse_it3m_seq_to_ring (BseIt3mSeq *iseq)
-{
-  SfiRing *ring = NULL;
-  guint i;
-  if (iseq)
-    for (i = 0; i < iseq->n_items; i++)
-      ring = sfi_ring_append (ring, iseq->items[i]);
-  return ring;
-}
-
-BseIt3mSeq*
-bse_it3m_seq_from_ring (SfiRing *ring)
-{
-  BseIt3mSeq *iseq = bse_it3m_seq_new();
-  SfiRing *node;
-  for (node = ring; node; node = sfi_ring_walk (node, ring))
-    bse_it3m_seq_append (iseq, (BseItem*) node->data);
-  return iseq;
-}
-
 /* --- debugging --- */
 static int debug_fds[] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 #define MAX_DEBUG_STREAMS       (G_N_ELEMENTS (debug_fds))

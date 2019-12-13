@@ -201,7 +201,6 @@ bse_sub_synth_set_property (GObject      *object,
 	{
           if (self->snet)
             {
-              bse_object_unproxy_notifies (self->snet, self, "notify::snet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), sub_synth_uncross_snet);
               self->snet = NULL;
             }
@@ -209,7 +208,6 @@ bse_sub_synth_set_property (GObject      *object,
 	  if (self->snet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), sub_synth_uncross_snet);
-              bse_object_proxy_notifies (self->snet, self, "notify::snet");
             }
 	}
       break;

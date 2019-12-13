@@ -19,120 +19,14 @@ Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
 Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
-/* standard sequences */
-sequence TypeSeq {
-  SfiString types;
-};
-sequence Flo4tSeq {
-  Real values;
-};
-enum MidiChannelEventType {
-  MIDI_EVENT_NONE = 0,
-  /* channel voice messages */
-  MIDI_EVENT_NOTE_OFF,
-  MIDI_EVENT_NOTE_ON,
-  MIDI_EVENT_KEY_PRESSURE,
-  MIDI_EVENT_CONTROL_CHANGE,
-  MIDI_EVENT_PROGRAM_CHANGE,
-  MIDI_EVENT_CHANNEL_PRESSURE,
-  MIDI_EVENT_PITCH_BEND,
-  /* system common messages */
-  MIDI_EVENT_SYS_EX,
-  MIDI_EVENT_SONG_POINTER,
-  MIDI_EVENT_SONG_SELECT,
-  MIDI_EVENT_TUNE,
-  /* system realtime messages */
-  MIDI_EVENT_TIMING_CLOCK,
-  MIDI_EVENT_SONG_START,
-  MIDI_EVENT_SONG_CONTINUE,
-  MIDI_EVENT_SONG_STOP,
-  MIDI_EVENT_ACTIVE_SENSING,
-  MIDI_EVENT_SYSTEM_RESET,
-};
-record MidiChannelEvent
-{
-  MidiChannelEventType  event_type;
-  Int                   channel         = SfiInt ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
-  Num                   tick_stamp      = SfiNum ("Time Stamp", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
-  /* note (on/off/pressure) */
-  Real                  frequency       = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
-  Real                  velocity        = SfiReal ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
-  /* control change */
-  Int                   control         = SfiInt ("Control Number", "", 0, 0, 1024, 8, ":readwrite");
-  Real                  value           = SfiReal ("Value", "", 0, -1, +1, 0.1, ":readwrite");
-  /* program change */
-  Int                   program         = SfiInt ("Program", "", 0, 0, 0x7f, 0x10, ":readwrite");
-  /* channel pressure */
-  Real                  intensity       = SfiReal ("Intensity", "", 0, 0, 1.0, 0.1, ":readwrite");
-  /* pitch bend */
-  Real                  pitch_bend      = SfiReal ("Pitch Bend", "", 0, -1, +1, 0.1, ":readwrite");
-  /* song pointer */
-  Int                   song_pointer    = SfiInt ("Song Pointer", "", 0, 0, 0x3fff, 0x80, ":readwrite");
-  /* song select */
-  Int                   song_number     = SfiInt ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
-};
+
 sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
-};
-interface Item;
-sequence It3mSeq {
-  Info   blurb = ("A list of BSE items or derived types.");
-  Item   items;
 };
 record NoteSequence
 {
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
   NoteSeq notes  = SfiSeq ("Notes", "Sequence of notes", ":readwrite");
-};
-sequence P1xelSeq {
-  Int	pixels;
-};
-/* BSE Part structures */
-interface Part;
-interface Track;
-interface Janitor;
-
-// == BSE Global Config ==
-record GConfig {
-  group _("Synthesis Settings") {
-    Int synth_latency =
-      SfiInt (_("Latency [ms]"),
-	      _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
-	      50, 1, 2000, 5, STANDARD);
-    Int synth_mixing_freq =
-      SfiInt (_("Synth Mixing Frequency"),
-	      _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
-	      44100, 8000, 192000, 0, STANDARD);
-    Int synth_control_freq =
-      SfiInt (_("Synth Control Frequency"),
-	      _("Frequency at which control values are evaluated, "
-		"should be much smaller than Synth Mixing Frequency to reduce CPU load"),
-	      1000, 1, 192000, 0, STANDARD);
-  };
-  group _("MIDI") {
-    Bool invert_sustain = SfiBool (_("Invert Sustain Pedal"),
-                           _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
-                           FALSE, STANDARD);
-  };
-  group _("Default Values") {
-    SfiString author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"), "$(defaultauthor)", STANDARD);
-    SfiString license_default = SfiString (_("Default License"), _("Default value for 'License' fields"), "$(defaultlicense)", STANDARD);
-  };
-  group _("Search Paths") {
-    SfiString sample_path     = SfiString (_("Sample Path"),
-					   _("Search path of directories, seperated by \";\", used to find audio samples."),
-					   "$(defaultsamplepath)", STANDARD ":searchpath");
-    SfiString effect_path     = SfiString (_("Effect Path"),
-					   _("Search path of directories, seperated by \";\", used to find BSE effect files."),
-					   "$(defaulteffectpath)", STANDARD ":searchpath");
-    SfiString instrument_path = SfiString (_("Instrument Path"),
-					   _("Search path of directories, seperated by \";\", used to find BSE instrument files."),
-					   "$(defaultinstrumentpath)", STANDARD ":searchpath");
-    SfiString plugin_path     = SfiString (_("Plugin Path"),
-					   _("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
-					     "is searched for in addition to the standard BSE plugin location on this system."),
-					   "$(defaultpluginpath)", STANDARD ":searchpath");
-  };
 };
 
 } // Bse

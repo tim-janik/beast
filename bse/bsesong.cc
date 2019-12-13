@@ -33,8 +33,6 @@ static void         bse_song_init             (BseSong            *song);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint       signal_pointer_changed = 0;
-
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSong)
@@ -143,7 +141,6 @@ bse_song_set_property (GObject      *object,
         {
           if (self->pnet)
             {
-              bse_object_unproxy_notifies (self->pnet, self, "notify::pnet");
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
               self->pnet = NULL;
             }
@@ -151,7 +148,6 @@ bse_song_set_property (GObject      *object,
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
-              bse_object_proxy_notifies (self->pnet, self, "notify::pnet");
             }
           if (self->postprocess)
             g_object_set (self->postprocess, /* no undo */
@@ -340,7 +336,6 @@ song_position_handler (gpointer data)
       BSE_SEQUENCER_LOCK ();
       self->last_position = *self->tick_SL;
       BSE_SEQUENCER_UNLOCK ();
-      g_signal_emit (self, signal_pointer_changed, 0, self->last_position);
     }
   return TRUE;
 }
@@ -610,9 +605,6 @@ bse_song_class_init (BseSongClass *klass)
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
-
-  signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
-							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }
 
 namespace Bse {
@@ -757,12 +749,12 @@ TrackSeq
 SongImpl::list_tracks ()
 {
   TrackSeq tracks;
-  for (auto &hnd : list_children())
+  for (auto &childp : list_children())
     {
-      ItemIface *item = hnd.__iface__();
+      ItemIface *item = childp.get();
       TrackIfaceP track = item->as<TrackIfaceP>();
       if (track)
-        tracks.push_back (track->__handle__());
+        tracks.push_back (track);
     }
   return tracks;
 }

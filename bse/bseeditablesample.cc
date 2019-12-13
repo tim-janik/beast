@@ -23,7 +23,6 @@ static void	    bse_editable_sample_finalize	(GObject		*object);
 
 /* --- variables --- */
 static void          *parent_class = NULL;
-static uint           signal_changed = 0;
 static Notify        *changed_notify_list = NULL;
 
 
@@ -57,15 +56,11 @@ static void
 bse_editable_sample_class_init (BseEditableSampleClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
 
   parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->dispose = bse_editable_sample_dispose;
   gobject_class->finalize = bse_editable_sample_finalize;
-
-  signal_changed = bse_object_class_add_signal (object_class, "changed",
-						G_TYPE_NONE, 0);
 }
 
 static void
@@ -129,7 +124,7 @@ changed_notify_handler (void *editable)
 
       changed_notify_list = notify->next;
       if (!BSE_OBJECT_DISPOSING (notify->esample))
-	g_signal_emit (notify->esample, signal_changed, 0);
+	; // notify ("changed");
       g_free (notify);
     }
 

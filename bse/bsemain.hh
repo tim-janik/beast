@@ -9,7 +9,6 @@ void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::S
 bool _bse_initialized	();
 int  bse_init_and_test 	(int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args = Bse::StringVector());
 void bse_main_wakeup    ();
-SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
 
 namespace Bse {
 
