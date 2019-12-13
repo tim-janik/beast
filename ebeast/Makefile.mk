@@ -208,6 +208,13 @@ $>/app/assets/components.js: $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d) $(
 	  && NODE_PATH=node_modules node_modules/.bin/browserify --node --debug -t vueify \
 		-e ../$(build2srcdir)/ebeast/b/bundle.js -o ../app/assets/components.js
 
+# == check-ebeast ==
+check-ebeast: FORCE
+	$(QGEN)
+	@: # basic check for electron/ebeast startup
+	$Q $>/electron/ebeast --version | fgrep '$(VERSION_M.M.M)'
+check: check-ebeast
+
 # == installation ==
 ebeast/install: $>/ebeast/app.rules FORCE
 	@$(QECHO) INSTALL '$(DESTDIR)$(pkglibdir)/{app|electron}'
