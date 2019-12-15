@@ -19,6 +19,7 @@ const vue_components = [
   require ('./menurow.vue'),
   require ('./menuseparator.vue'),
   require ('./menutitle.vue'),
+  require ('./more.vue'),
   require ('./fed-number.vue'),
   require ('./fed-object.vue'),
   require ('./fed-picklist.vue'),
