@@ -16,11 +16,12 @@
 </style>
 
 <template>
-  <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" @contextmenu.stop="menuopen" >
+  <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
     <b-deviceeditor v-for="device in devices" :key="device.$id"
 		    :device="device" center style="margin: 5px" >
       {{ device.$id }}
     </b-deviceeditor>
+    <b-more @click.native.stop="menuopen" />
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Device </b-menutitle>
       <b-menuitem fa="plus-circle"      role="add-device" >      Add Device		</b-menuitem>
