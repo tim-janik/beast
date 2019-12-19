@@ -70,14 +70,12 @@ $>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
 	$Q sed	-e 's/@MAJOR@/$(VERSION_MAJOR)/g' \
 		-e 's/@MINOR@/$(VERSION_MINOR)/g' \
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
-		$< > $>/app/package.json
-	$Q cd $>/app/ \
-	  && $(NPM_INSTALL) --production \
-	  && rm -f package-lock.json \
-	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
-	$Q $(CP) -a $>/app/node_modules $>/app/package.json $>/ebeast/
+		$< > $>/ebeast/package.json
+	@: # Install all node_modules and anonymize build path
 	$Q cd $>/ebeast/ \
-	  && $(NPM_INSTALL)
+	  && $(NPM_INSTALL) \
+	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
+	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/
 	$Q : $(eval export EBEAST_VUEIFY_DIFF) \
 	&& echo "$$EBEAST_VUEIFY_DIFF" > $>/ebeast_vueify.diff \
 	&& patch -p0 < $>/ebeast_vueify.diff \
@@ -115,6 +113,9 @@ $>/ebeast/app.rules: $(app/js.files) $(app/generated) $(app/assets.copies) $>/eb
 	  && rm -fr $>/electron/resources/default_app.asar \
 	  && mv $>/electron/electron $>/electron/ebeast
 	$Q ln -s ../../app $>/electron/resources/app
+	$Q echo -e '{ "name": "ebeast",'			> $>/app/package.json
+	$Q echo -e '  "version": "$(VERSION_M.M.M)",'		>>$>/app/package.json
+	$Q echo -e '  "main": "main.js" }'			>>$>/app/package.json
 	$Q echo >$@
 $(app/assets.copies): $>/app/assets/%: ebeast/%		| $>/app/assets/
 	$(QECHO) COPY $@
