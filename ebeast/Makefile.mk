@@ -105,14 +105,22 @@ ebeast-lint: FORCE
 	@rm -f $>/ebeast/lint.rules
 	@$(MAKE) $>/ebeast/lint.rules
 
-# == app ==
-$>/ebeast/app.rules: $(app/js.files) $(app/generated) $(app/assets.copies) $>/ebeast/lint.rules
-	$(QECHO) MAKE $@
-	$Q rm -f -r $>/electron/ \
-	  && $(CP) -a $>/ebeast/node_modules/electron/dist/ $>/electron/ \
-	  && rm -fr $>/electron/resources/default_app.asar \
-	  && mv $>/electron/electron $>/electron/ebeast
+# == electron/ebeast ==
+$>/electron/ebeast:					| $>/
+	$(QGEN)
+	$Q rm -f -r $>/electron/ $>/electron.tmp/
+	$Q mkdir $>/electron.tmp/ && cd $>/electron.tmp/	\
+	  && echo '{"private":true}'	> package.json		\
+	  && $(NPM_INSTALL) --no-save electron@6		\
+	  && mv node_modules/electron/dist/ ../electron		\
+	  && cd .. && rm -f -r electron.tmp/
+	$Q rm -f -r $>/electron/resources/default_app.asar
 	$Q ln -s ../../app $>/electron/resources/app
+	$Q mv $>/electron/electron $>/electron/ebeast
+
+# == app ==
+$>/ebeast/app.rules: $(app/js.files) $(app/generated) $(app/assets.copies) $>/ebeast/lint.rules $>/electron/ebeast
+	$(QECHO) MAKE $@
 	$Q echo -e '{ "name": "ebeast",'			> $>/app/package.json
 	$Q echo -e '  "version": "$(VERSION_M.M.M)",'		>>$>/app/package.json
 	$Q echo -e '  "main": "main.js" }'			>>$>/app/package.json
