@@ -57,29 +57,30 @@ app/assets.copies	::= $(strip	\
 	$>/app/assets/spinners.svg	\
 )
 # provide node_modules/ for use in other makefiles
-NODE_MODULES.deps ::= $>/ebeast/npm.rules
+NODE_MODULES.deps ::= $>/ebeast/node_modules/npm.done
 NODE_MODULES.dir  ::= $>/ebeast/node_modules
 NODE_MODULES.bin  ::= $(NODE_MODULES.dir)/.bin/
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
-$>/ebeast/npm.rules: ebeast/package.json.in	| $>/ebeast/ $>/app/
-	$(QECHO) MAKE $@
-	$Q rm -f -r $>/ebeast/node_modules/ $>/app/node_modules/ $>/app/doc
-	$Q ln -s ../doc $>/app/doc
+$>/ebeast/package.json: ebeast/package.json.in	| $>/ebeast/
+	$(QGEN)
 	$Q sed	-e 's/@MAJOR@/$(VERSION_MAJOR)/g' \
 		-e 's/@MINOR@/$(VERSION_MINOR)/g' \
 		-e 's/@MICRO@/$(VERSION_MICRO)/g' \
-		$< > $>/ebeast/package.json
+		$< > $@
+$>/ebeast/node_modules/npm.done: $>/ebeast/package.json	| $>/ebeast/
+	$(QGEN)
+	$Q rm -f -r $>/ebeast/node_modules/
 	@: # Install all node_modules and anonymize build path
 	$Q cd $>/ebeast/ \
 	  && $(NPM_INSTALL) \
 	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
 	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/
 	$Q : $(eval export EBEAST_VUEIFY_DIFF) \
-	&& echo "$$EBEAST_VUEIFY_DIFF" > $>/ebeast_vueify.diff \
-	&& patch -p0 < $>/ebeast_vueify.diff \
-	&& rm $>/ebeast_vueify.diff
+	  && echo "$$EBEAST_VUEIFY_DIFF" > $>/ebeast_vueify.diff \
+	  && patch -p0 < $>/ebeast_vueify.diff \
+	  && rm $>/ebeast_vueify.diff
 	$Q echo >$@
 define EBEAST_VUEIFY_DIFF
 --- $(NODE_MODULES.dir)/vueify/lib/compiler.js
@@ -91,7 +92,7 @@ endef
 
 # == linting ==
 ebeast/sed.uncommentjs ::= sed -nr 's,//.*$$,,g ; 1h ; 1!H ; $$ { g; s,/\*(\*[^/]|[^*])*\*/,,g ; p }' # beware, ignores quoted strings
-$>/ebeast/lint.rules: $(ebeast/lint.appfiles) | $>/ebeast/npm.rules
+$>/ebeast/lint.rules: $(ebeast/lint.appfiles)		| $>/ebeast/node_modules/npm.done
 	$(QECHO) MAKE $@
 	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix $(ebeast/lint.appfiles)
 	@: # check for component pitfalls
@@ -156,7 +157,7 @@ $>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
 	$(QGEN)
 	$Q cd $(@D) \
 		$(call foreachpair, AND_DOWNLOAD_SHAURL, $(ebeast/inter-typeface-downloads))
-$>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/npm.rules
+$>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/node_modules/npm.done
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
@@ -210,7 +211,7 @@ $>/app/assets/tri-w.png: $>/app/assets/tri-n.png
 	$Q mv $@.tmp.png $@
 
 # == assets/components.js ==
-$>/app/assets/components.js: $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/npm.rules
+$>/app/assets/components.js: $(ebeast/b/bundle.js.d) $(ebeast/b/bundle.vue.d) $(ebeast/app.scss.d)	| $>/ebeast/node_modules/npm.done
 	$(QGEN)
 	@: # set NODE_PATH, since browserify fails to search ./node_modules for a ../ entry point
 	$Q cd $>/ebeast/ \

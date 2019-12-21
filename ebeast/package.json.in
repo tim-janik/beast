@@ -1,34 +1,27 @@
 {
-  "name": "ebeast",
+  "private": true,
   "version": "@MAJOR@.@MINOR@.@MICRO@",
-  "description": "Beast - Music Synthesizer and Composer",
-  "main": "main.js",
-  "dependencies": {
-    "vue": "^2.6.10"
-  },
   "babel": {
     "presets": [
       ["env", { "targets": { "chrome": "76" } } ]
     ]
   },
+  "dependencies": {
+    "vue": "^2.6.11"
+  },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/plugin-transform-runtime": "^7.6.2",
-    "babel-preset-env": "^1.7.0",
-    "babelify": "^10.0.0",
-    "browserify": "^16.2.3",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
     "eslint": "^5.16.0",
     "eslint-plugin-html": "^5.0.5",
     "eslint-plugin-vue": "^5.2.3",
+
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
     "node-sass": "^4.12.0",
     "vueify": "^9.4.1"
   },
-  "license": "LGPL-2.1+",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tim-janik/beast.git"
   }
 }
