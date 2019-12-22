@@ -80,7 +80,7 @@ function project_data () {
   return this.observable_from_getters (pdata, () => this.project);
 }
 
-module.exports = {
+export default {
   name: 'b-projectshell',
   data() { return {
     project: undefined,

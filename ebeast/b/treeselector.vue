@@ -72,7 +72,7 @@ async function create_data() {
   return result;
 }
 
-module.exports = {
+export default {
   name: 'b-treeselector',
   data: function() {
     create_data().then (r => this.tree = r);

@@ -71,7 +71,7 @@
 <script>
 const clamp = (v, mi, ma) => v < mi ? mi : v > ma ? ma : v;
 
-module.exports = {
+export default {
   name: 'b-hscrollbar',
   data_tmpl: {
     value_: 0,

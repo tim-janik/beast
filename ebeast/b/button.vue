@@ -32,7 +32,7 @@
 </style>
 
 <script>
-module.exports = {};
+export default {};
 
 const b_button = {
   name: 'b-button',

@@ -29,7 +29,7 @@
 </style>
 
 <script>
-module.exports = {
+export default {
   name: 'b-part-list',
   props: {
     'track': { type: Bse.Track, },

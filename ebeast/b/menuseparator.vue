@@ -17,7 +17,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-menuseparator',
 };
 </script>

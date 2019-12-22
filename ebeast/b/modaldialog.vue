@@ -108,7 +108,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-modaldialog',
   props:     { value: false, },
   data_tmpl: { focus_close: true, intransition: 0, },

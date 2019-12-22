@@ -98,7 +98,7 @@ function observable_part_data () {
   return this.observable_from_getters (data, () => this.part);
 }
 
-module.exports = {
+export default {
   name: 'b-piano-roll',
   mixins: [ Util.vue_mixins.hyphen_props ],
   props: {

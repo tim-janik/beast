@@ -72,7 +72,8 @@ async function about_pairs() {
     }
   return array;
 }
-module.exports = {
+
+export default {
   name: 'b-aboutdialog',
   props: {
     value: false,

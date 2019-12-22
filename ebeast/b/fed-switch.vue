@@ -44,7 +44,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-fed-switch',
   props: {
     value:	{ type: [ String, Boolean ], },

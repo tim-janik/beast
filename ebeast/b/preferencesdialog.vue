@@ -81,7 +81,7 @@ function component_data () {
   return this.observable_from_getters (data, () => true);
 }
 
-module.exports = {
+export default {
   name: 'b-preferencesdialog',
   props: {
     value: false,

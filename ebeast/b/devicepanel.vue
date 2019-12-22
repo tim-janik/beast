@@ -38,7 +38,7 @@ function observable_device_data () {
   return this.observable_from_getters (data, () => this.track);
 }
 
-module.exports = {
+export default {
   name: 'b-devicepanel',
   props: {
     track: { type: Bse.Track, },

@@ -88,7 +88,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-color-picker',
   mixins: [ Util.vue_mixins.hyphen_props ],
   props: {

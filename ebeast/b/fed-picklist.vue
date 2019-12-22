@@ -89,7 +89,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-fed-picklist',
   props: {
     value:	   { type: String, },

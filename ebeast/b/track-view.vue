@@ -179,7 +179,7 @@ function track_data () {
   return this.observable_from_getters (tdata, () => this.track);
 }
 
-module.exports = {
+export default {
   name: 'b-track-view',
   mixins: [ Util.vue_mixins.hyphen_props ],
   props: {

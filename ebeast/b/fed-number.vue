@@ -50,7 +50,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-fed-number',
   // https://vuejs.org/v2/guide/components.html#Using-v-model-on-Components
   props: {

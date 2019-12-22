@@ -31,7 +31,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-playcontrols',
   inject: [ 'b-projectshell' ],
   computed: {
