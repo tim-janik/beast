@@ -55,9 +55,9 @@ async function about_pairs() {
       const Eapp = Electron.app;
       const os = require ('os');
       const parray = [
-	[ 'Executable:',	Eapp.getPath ('exe') ],
-	[ 'Revision:',		Eapp.getName() + ' ' + Eapp.getVersion() ],
 	[ 'OS:',		process.platform + ' ' + process.arch + ' (' + os.release() + ')' ],
+	[ 'Executable:',	Eapp.getPath ('exe') ],
+	[ 'Application:',	Eapp.getName() + ' ' + Eapp.getVersion() ],
 	[ 'Electron:',		process.versions.electron ],
 	[ 'Chrome:',		process.versions.chrome ],
 	[ 'Node.js:',		process.versions.node ],
