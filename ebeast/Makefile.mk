@@ -24,7 +24,7 @@ ebeast/js.inputs ::= $(strip 		\
 	ebeast/utilities.js		\
 )
 ebeast/nolint.inputs ::= $(strip	\
-	ebeast/app.html			\
+	ebeast/index.html		\
 ) # eslint v5.16.0 fails to recognize import() expressions
 app/js.files		::= $(addprefix $>/app/, $(notdir $(ebeast/js.inputs) $(ebeast/nolint.inputs)))
 ebeast/b/js.inputs	::= $(wildcard ebeast/b/*.js)
