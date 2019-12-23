@@ -54,7 +54,7 @@ $(filter $>/app/%, $(ebeast/copy.targets)):	$>/app/%:    ebeast/% | $>/app/    ;
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
-$>/ebeast/node_modules/npm.done: ebeast/package.json.in	| $>/ebeast/
+$>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff | $>/ebeast/
 	$(QGEN)
 	$Q rm -f -r $>/ebeast/node_modules/
 	$Q cp $< $>/ebeast/package.json # avoids dependency on other ebeast/copy.targets
@@ -62,6 +62,8 @@ $>/ebeast/node_modules/npm.done: ebeast/package.json.in	| $>/ebeast/
 	$Q cd $>/ebeast/ \
 	  && $(NPM_INSTALL) \
 	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
+	@: # Patch broken modules
+	$Q (cd  $>/ebeast/ && patch -p0) < ebeast/fix-scss.diff
 	$Q echo >$@
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/

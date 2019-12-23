@@ -1,0 +1,7 @@
+--- node_modules/rollup-plugin-scss/index.cjs.js.orig	2019-12-20 18:04:38.447883639 +0100
++++ node_modules/rollup-plugin-scss/index.cjs.js	2019-12-20 18:05:03.500118015 +0100
+@@ -98,3 +98,3 @@
+           // Don't create unwanted empty stylesheets
+-          if (!css.length) {
++          if (!css || !css.length) {
+             return
