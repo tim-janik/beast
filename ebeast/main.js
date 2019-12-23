@@ -1,14 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 // Build time configuration, substituted in Javascript file headers by Makefile.mk
-const CONFIG = {
-  /*@EBEAST_CONFIG@*/
-  files: [],
-  p: '',
-  m: '',
-  norc: false,
-  uiscript: '',
-};
+const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295,              // plus delayed package.json values
+		 files: [], p: '', m: '', norc: false, uiscript: '' };
+Object.assign (CONFIG, require ('./package.json').config);
+
 let win;
 let bse_proc; // assigned spawn.child
 let verbose = false, verbose_binary = false;
@@ -97,7 +93,7 @@ function create_beast_sound_engine (datacb, errorcb) {
       args.push ('--bse-midi-driver');
       args.push (CONFIG.m);
     }
-  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version_m.m.m'] + '-rt';
+  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version'] + '-rt';
   const bse_proc = spawn (beastsoundengine, args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
