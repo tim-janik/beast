@@ -213,6 +213,12 @@ export function clamp (x, min, max) {
   return x < min ? min : x > max ? max : x;
 }
 
+/** Register all Vue components, needed before instantiating the Vue root component */
+export function vue_register (vcexport) {
+  if (vcexport.name)
+    Vue.component (vcexport.name, vcexport);
+}
+
 /** Create a Vue component provide() function that forwards selected properties. */
 export function fwdprovide (injectname, keys) {
   return function() {
