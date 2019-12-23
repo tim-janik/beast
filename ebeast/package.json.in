@@ -1,16 +1,14 @@
 {
   "private": true,
-  "version": "@MAJOR@.@MINOR@.@MICRO@",
-  "babel": {
-    "presets": [
-      ["env", { "targets": { "chrome": "76" } } ]
-    ]
-  },
   "dependencies": {
     "vue": "^2.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-export-default-from": "^7.7.4",
+    "@babel/plugin-proposal-export-namespace-from": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
     "@babel/preset-env": "^7.7.7",
     "eslint": "^5.16.0",
     "eslint-plugin-html": "^5.0.5",
