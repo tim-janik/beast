@@ -10,6 +10,7 @@
     "@babel/plugin-proposal-export-namespace-from": "^7.7.4",
     "@babel/plugin-proposal-optional-chaining": "^7.7.5",
     "@babel/preset-env": "^7.7.7",
+    "babel-eslint": "^10.0.3",
     "eslint": "^5.16.0",
     "eslint-plugin-html": "^5.0.5",
     "eslint-plugin-vue": "^5.2.3",
