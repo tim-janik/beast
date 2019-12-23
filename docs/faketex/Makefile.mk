@@ -63,7 +63,8 @@ $(doc/faketex/faketex.css): $>/doc/faketex/fonts/Inconsolata-Regular.css
 $(doc/faketex/faketex.css): $>/doc/faketex/fonts/CharisSIL-webfont.css
 $(doc/faketex/faketex.css): docs/faketex/faketex.scss docs/faketex/features.scss $(NODE_MODULES.deps)	| $>/doc/faketex/fonts/
 	$(QGEN)
-	$Q $(NODE_MODULES.bin)/node-sass $< -t compact $@ || { rm $@ ; exit -1 ; }
+	$Q $(NODE_MODULES.bin)/node-sass $< -t compact $@.tmp
+	$Q mv $@.tmp $@
 FAKETEX_TARGETS += $(doc/faketex/faketex.css)
 
 # == Downloads ==
