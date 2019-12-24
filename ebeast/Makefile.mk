@@ -80,7 +80,7 @@ $>/ebeast/pitfalls.done: $(ebeast/eslint.files)
 	  && { echo 'Error: __dirname is invalid inside Vue component files' | grep --color=auto . ; exit 9 ; } ; \
 	done ; :
 	$Q echo >$@
-$>/ebeast/eslint.done: $(ebeast/eslint.files)		| $>/ebeast/node_modules/npm.done
+$>/ebeast/eslint.done: $(ebeast/eslint.files) ebeast/.eslintrc.js		| $>/ebeast/node_modules/npm.done
 	$(QECHO) MAKE $@
 	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix \
 		--cache --cache-location $>/ebeast/eslint.cache $(ebeast/eslint.files)

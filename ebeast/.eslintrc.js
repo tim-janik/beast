@@ -37,6 +37,7 @@ module.exports = {
     'no-irregular-whitespace': 'off', /* ["error", { 'skipStrings': true, 'skipComments': true, 'skipTemplates': true, 'skipRegExps':true } ], */
     'no-useless-escape': 'off',
     'no-inner-declarations': 'off',
+    // 'prefer-const': [ 'warn' ],
     'vue/attributes-order': 'off',
     'vue/html-closing-bracket-newline': 'off',
     'vue/html-closing-bracket-spacing': 'off',
