@@ -97,7 +97,7 @@ $>/electron/ebeast:						| $>/
 	$Q rm -f -r $>/electron/ $>/electron.tmp/
 	$Q mkdir $>/electron.tmp/ && cd $>/electron.tmp/	\
 	  && echo '{"private":true}'	> package.json		\
-	  && $(NPM_INSTALL) --no-save electron@6		\
+	  && $(NPM_INSTALL) --no-save electron@7		\
 	  && mv node_modules/electron/dist/ ../electron		\
 	  && cd .. && rm -f -r electron.tmp/
 	$Q rm -f -r $>/electron/resources/default_app.asar
