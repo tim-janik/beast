@@ -122,6 +122,7 @@ $>/app/package.json: ebeast/index.html $>/app/b.vue.bundle.js $>/app/b.vue.bundl
 	$Q PACKAGE_JSON=$$(tr '\n' ' ' < $@.tmp) && R=$$'\036' \
 	  && sed -r "s$$R<!--@-html-head-package_json@-->$$R$$PACKAGE_JSON$$R" \
 		<ebeast/index.html	>$>/app/index.html
+	$Q ln -f -s ../doc $>/app/doc
 	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/
 	$Q $(CP) -a $>/ebeast/node_modules/vue-runtime-helpers/dist/index.mjs $>/app/vue-runtime-helpers.mjs \
 	  && sed 's|^//# sourceMappingURL=index\.mjs\.map$$||' -i $>/app/vue-runtime-helpers.mjs
