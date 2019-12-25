@@ -548,7 +548,7 @@ $(call BUILD_PROGRAM, \
 	$(lib/BeastSoundEngine), \
 	$(bse/BeastSoundEngine.objects), \
 	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(GLIB_LIBS), \
+	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(BSEDEPS_LIBS), \
 	../lib)
 $(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
 
@@ -559,7 +559,7 @@ $(call BUILD_TEST, \
 	$(bse/integrity), \
 	$(bse/integrity.objects), \
 	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR), \
+	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
 	../lib)
 
 # == bse-check-assertions ==
