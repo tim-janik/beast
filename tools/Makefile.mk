@@ -22,4 +22,4 @@ $(call BUILD_PROGRAM, \
 	$(tools/bsetool), \
 	$(tools/bsetool.objects), \
 	$(lib/libbse.so) | $>/tools/, \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), ../lib)
+	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), ../lib)

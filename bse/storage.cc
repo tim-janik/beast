@@ -167,7 +167,7 @@ beastbse_cachedir_cleanup()
           const std::string dirname = direntry.path().filename();
           if (dirname.size() == tmpprefix.size() + 6 && string_startswith (dirname, tmpprefix))
             {
-              const std::string guardfile = direntry / "guard.pid";
+              const std::string guardfile = direntry.path() / "guard.pid";
               if (Path::check (guardfile, "frw"))
                 {
                   std::string guardstring = Path::stringread (guardfile, 3 * 4096);

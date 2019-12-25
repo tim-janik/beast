@@ -33,9 +33,11 @@ typedef int64_t         int64;          ///< A 64-bit unsigned integer, use PRI*
 
 
 /* --- provide (historic) aliases --- */
+#undef g_scanner_add_symbol
 #define	g_scanner_add_symbol( scanner, symbol, value )	G_STMT_START { \
   g_scanner_scope_add_symbol ((scanner), 0, (symbol), (value)); \
 } G_STMT_END
+#undef g_scanner_remove_symbol
 #define	g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
   g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
 } G_STMT_END
@@ -268,16 +270,13 @@ type_name##_get_type (void) \
 /* --- GScanner --- */
 GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #ifndef G_DISABLE_DEPRECATED
-#define		g_scanner_add_symbol( scanner, symbol, value )	G_STMT_START { \
-  g_scanner_scope_add_symbol ((scanner), 0, (symbol), (value)); \
-} G_STMT_END
-#define		g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
-  g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
-} G_STMT_END
+#undef g_scanner_foreach_symbol
 #define		g_scanner_foreach_symbol( scanner, func, data )	G_STMT_START { \
   g_scanner_scope_foreach_symbol ((scanner), 0, (func), (data)); \
 } G_STMT_END
+#undef g_scanner_freeze_symbol_table
 #define g_scanner_freeze_symbol_table(scanner) ((void)0)
+#undef g_scanner_thaw_symbol_table
 #define g_scanner_thaw_symbol_table(scanner) ((void)0)
 #endif /* G_DISABLE_DEPRECATED */
 

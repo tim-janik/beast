@@ -21,10 +21,9 @@ endif
 CCACHE		 ?= $(if $(CCACHE_DIR), ccache)
 
 # == C/CXX/LD Flags ==
-COMMONFLAGS	::= -Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations
-COMMONFLAGS	 += -Werror=incompatible-pointer-types -Werror-implicit-function-declaration -Werror=return-type
+COMMONFLAGS	::= -Wall -Wdeprecated -Werror=format-security -Wredundant-decls -Wpointer-arith -Wmissing-declarations -Werror=return-type
 #COMMONFLAGS	 += -Wdate-time -Wconversion -Wshadow
-CONLYFLAGS	::= -Wmissing-prototypes -Wnested-externs -Wno-pointer-sign
+CONLYFLAGS	::= -Werror=incompatible-pointer-types -Werror-implicit-function-declaration -Wmissing-prototypes -Wnested-externs -Wno-pointer-sign
 CXXONLYFLAGS	::= -Woverloaded-virtual -Wsign-promo -fvisibility-inlines-hidden
 #CXXONLYFLAGS	 += -Wnon-virtual-dtor -Wempty-body -Wignored-qualifiers -Wunreachable-code -Wtype-limits
 OPTIMIZE	::= -funroll-loops -ftree-vectorize

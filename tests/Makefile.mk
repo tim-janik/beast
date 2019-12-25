@@ -47,7 +47,7 @@ $(call BUILD_PROGRAM, \
 	$(tests/suite1), \
 	$(tests/suite1.objects), \
 	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(GLIB_LIBS), \
+	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
 	$(tests/rpath..libbse))
 tests/all: $(tests/suite1)
 
