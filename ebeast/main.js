@@ -1,14 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 // Build time configuration, substituted in Javascript file headers by Makefile.mk
-const CONFIG = {
-  /*@EBEAST_CONFIG@*/
-  files: [],
-  p: '',
-  m: '',
-  norc: false,
-  uiscript: '',
-};
+const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295,              // plus delayed package.json values
+		 files: [], p: '', m: '', norc: false, uiscript: '' };
+Object.assign (CONFIG, require ('./package.json').config);
+
 let win;
 let bse_proc; // assigned spawn.child
 let verbose = false, verbose_binary = false;
@@ -97,7 +93,7 @@ function create_beast_sound_engine (datacb, errorcb) {
       args.push ('--bse-midi-driver');
       args.push (CONFIG.m);
     }
-  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version_m.m.m'] + '-rt';
+  const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version'] + '-rt';
   const bse_proc = spawn (beastsoundengine, args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
@@ -219,7 +215,7 @@ async function startup_components() {
   // TODO: when this BrowserWindow is close, also force closing of the beast-manual or other related (child) windows
   let win_ready = new Promise (resolve => win.once ('ready-to-show', () => resolve ()));
   let embedding_info = new Promise (resolve => bse_proc = create_beast_sound_engine (msg => resolve (msg), () => main_exit (3)));
-  const auth = JSON.parse (await embedding_info); // yields JSON: { "url": "http://127.0.0.1:<PORT>/app.html?subprotocol=<STRING>" }
+  const auth = JSON.parse (await embedding_info); // yields JSON: { "url": "http://127.0.0.1:<PORT>/index.html?subprotocol=<STRING>" }
   if (!auth.url)
     main_exit (2);
   win.loadURL (auth.url);

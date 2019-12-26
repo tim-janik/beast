@@ -39,7 +39,7 @@ function observable_device_data () {
   return this.observable_from_getters (data, () => this.device);
 }
 
-module.exports = {
+export default {
   name: 'b-deviceeditor',
   props: {
     device: { type: Bse.Device, },

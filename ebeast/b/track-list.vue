@@ -94,7 +94,7 @@ function song_data () {
   return this.observable_from_getters (sdata, () => this.song);
 }
 
-module.exports = {
+export default {
   name: 'b-track-list',
   props: {
     song: { type: Bse.Song }

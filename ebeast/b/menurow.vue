@@ -28,7 +28,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-menurow',
   props: {
     'noturn': false,

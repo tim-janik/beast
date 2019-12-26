@@ -74,7 +74,7 @@
 
 <script>
 const STR = { type: String, default: '' }; // empty string default
-module.exports = {
+export default {
   name: 'b-menuitem',
   props: { 'role': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',

@@ -63,7 +63,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-contextmenu',
   props: { 'notransitions': { default: false }, },
   computed: {

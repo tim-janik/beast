@@ -34,7 +34,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-fed-text',
   props: {
     value:	{ type: String, },

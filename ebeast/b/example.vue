@@ -31,7 +31,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-example',
   props: { valuefromparent: String, },
   computed: {

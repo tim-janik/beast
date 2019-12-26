@@ -66,7 +66,7 @@ function observable_song_data () {
   return this.observable_from_getters (data, () => this.song);
 }
 
-module.exports = {
+export default {
   name: 'b-positionview',
   props: {
     song: { type: Bse.Song, },

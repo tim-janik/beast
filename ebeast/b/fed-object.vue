@@ -98,7 +98,7 @@ function component_data () {
   return this.observable_from_getters (data, () => this.value);
 }
 
-module.exports = {
+export default {
   name: 'b-fed-object',
   mixins: [ Util.vue_mixins.hyphen_props ],
   data() { return component_data.call (this); },

@@ -45,7 +45,7 @@
 
 <script>
 const STR = { type: String, default: '' }; // empty string default
-module.exports = {
+export default {
   name: 'b-icon',
   props: { iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR,
 	   'nosize': undefined, 'fw': undefined, 'lg': undefined },

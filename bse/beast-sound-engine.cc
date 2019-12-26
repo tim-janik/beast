@@ -287,7 +287,7 @@ http_request (websocketpp::connection_hdl hdl)
       con->set_body ("<!DOCTYPE html>\n"
                      "<html><head><title>Beast-Sound-Engine</title></head><body>\n"
                      "<h1>Beast-Sound-Engine</h1>\n"
-                     "<a href='/app.html'>app.html</a><br/>\n"
+                     "<a href='/index.html'>index.html</a><br/>\n"
                      "Resource: " + con->get_resource() + "<br/>\n"
                      "URI: " + con->get_uri()->str() + "<br/>\n"
                      "</body></html>\n");
@@ -657,7 +657,7 @@ main (int argc, char *argv[])
   using namespace Bse::AnsiColors;
   auto B1 = color (BOLD);
   auto B0 = color (BOLD_OFF);
-  std::string fullurl = Bse::string_format ("http://127.0.0.1:%d/app.html", localhost_port);
+  std::string fullurl = Bse::string_format ("http://127.0.0.1:%d/index.html", localhost_port);
   if (embedding_pollfd.fd >= 0)
     {
       websocketpp::lib::asio::error_code ec;

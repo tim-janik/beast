@@ -118,5 +118,5 @@ const vflex = {
 };
 Vue.component (vflex.name, vflex);
 
-module.exports = {};
+export default {};
 </script>

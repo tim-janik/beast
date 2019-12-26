@@ -1,60 +1,97 @@
 <!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 <html><head>
 
-  <title>Beast - Music Synthesizer and Composer</title>
-  <script>
-  'use strict';
-  const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, /*@EBEAST_CONFIG@*/ };
-  window.CONFIG = CONFIG; // Makefile.mk substitutes /*@EBEAST_CONFIG@*/ in file headings
-  window.MAINCONFIG = { files: [], p: '', m: '', norc: false, uiscript: '' }; // default for non-Electron connections
-  </script>
-
-  <link rel="modulepreload" href="./utilities.js">
-  <link rel="modulepreload" href="./jsbse.js">
-  <link rel="modulepreload" href="./assets/components.js">
-  <link rel="modulepreload" href="./node_modules/vue/dist/vue.esm.browser.js">
+  <meta charset="utf-8">
+  <link rel="preload" as="script" href="./vue.esm.browser.js" crossorigin>
+  <link rel="preload" as="script" href="./vue-runtime-helpers.mjs" crossorigin>
+  <link rel="preload" as="script" href="./utilities.js" crossorigin>
+  <link rel="preload" as="script" href="./jsbse.js" crossorigin>
+  <link rel="preload" as="script" href="./b.vue.bundle.js" crossorigin>
+  <link rel="stylesheet" href="./b.vue.bundle.css">
   <link rel="stylesheet" href="assets/stylesheets.css">
   <link rel="stylesheet" href="assets/material-icons.css">
   <link rel="stylesheet" href="assets/forkawesome-webfont.css">
+  <title>Beast - Music Synthesizer and Composer</title>
 
+  <script type="application/json" id="-html-head-package_json"> <!--@-html-head-package_json@--> </script>
+
+  <!-- Early setup of .CONFIG and .Electron globals -->
   <script>
-  'use strict';
-  // When running inside Electron, provide 'Electron' globally. And to load
-  // browser scripts, hide the Electron nodeIntegration module temporarily
-  if (typeof module === 'object')
-    {
-      window.__module = module;
-      module = undefined;
-      window.Electron = require ('electron').remote;
-      window.MAINCONFIG = Electron.getCurrentWindow().MAINCONFIG;
-    }
-  </script>
-  <script>
-  // Restore the global 'module', now that scripts are laoded.
-  if (window.__module)
-    {
-      module = window.__module;
-      delete window.__module;
-      if (CONFIG.debug)	// show DevTools on hotkey
-	document.addEventListener ("keydown", (event) => {
-	  if (event.shiftKey && event.ctrlKey && event.keyCode == 73)	// Shift+Ctrl+I
-	    Electron.getCurrentWindow().toggleDevTools();
-	});
-    }
+    'use strict';
+
+    if (window)
+      {
+	// Global configuration
+	const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295,              // plus delayed package.json values
+			 files: [], p: '', m: '', norc: false, uiscript: '' }; // defaults for non-Electron connections
+	// Add package.json build info
+	const packagejson = JSON.parse (document.getElementById ('-html-head-package_json').innerHTML);
+	Object.assign (CONFIG, packagejson.config);
+	if (typeof module === 'object')
+	  {
+	    const Electron = require ('electron').remote;
+	    if (Electron) // When running inside Electron, provide 'Electron' globally
+	      {
+		Object.defineProperty (window, 'Electron', { value: Electron });
+		Object.assign (CONFIG, Electron.getCurrentWindow().MAINCONFIG);
+		if (CONFIG.debug) // show DevTools on hotkey
+		  document.addEventListener ("keydown", (event) => {
+		    // Shift+Ctrl+I
+		    if (event.shiftKey && event.ctrlKey && event.keyCode == 73)
+		      Electron.getCurrentWindow().toggleDevTools();
+		  });
+	      }
+	  }
+	Object.defineProperty (window, 'CONFIG', { value: CONFIG });
+      }
   </script>
 
-  <!-- async modules: https://v8.dev/features/modules -->
-  <script type="module" src="./jsbse.js" async>
-  // TODO: const url = "" + window.location; const wsurl = url.replace (/^[^\/]*\/*([^\/]*).*/, "ws://$1");
+  <!-- BSE bindings, Jsonipc based -->
+  <script type="module" src="./jsbse.js"></script>
+  <script type="module">
+    import * as Bse from './jsbse.js';
+    Object.defineProperty (globalThis, 'Bse', { value: Bse });
   </script>
+
+  <!-- Load and configure Vue, needed by all subsequent modules -->
+  <script type="module" src="./vue.esm.browser.js"></script>
+  <script type="module">
+    import Vue from './vue.esm.browser.js';
+    Object.assign (Vue.config, { productionTip: false, devtools: false, silent: !CONFIG.debug, performance: true });
+    Object.defineProperty (globalThis, 'Vue', { value: Vue });
+  </script>
+
+  <!-- Bundles need vue-runtime-helpers, see rollup.config.js -->
+  <script type="module" src="./vue-runtime-helpers.mjs"></script>
+  <script type="module">
+    import * as VueRuntimeHelpers from './vue-runtime-helpers.mjs';
+    Object.defineProperty (globalThis, 'vue-runtime-helpers', { value: VueRuntimeHelpers });
+  </script>
+
+  <!-- The bundled Vue components use Util -->
+  <script type="module" src="./utilities.js"></script>
+  <script type="module">
+    import * as Util from './utilities.js'; // depends on Vue
+    window.Util = Util;
+    window.EQ = Util.equals_recursively;
+    Vue.prototype.EQ = window.EQ;
+    Vue.prototype.observable_from_getters = Util.vue_observable_from_getters;
+    for (let directivename in Util.vue_directives) // register all utility directives
+    Vue.directive (directivename, Util.vue_directives[directivename]);
+    Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
+    Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
+  </script>
+
+  <!-- Load bundled Vue components, self registering -->
+  <script type="module" src="./b.vue.bundle.js"></script>
 
 </head>
 <body style="min-width: 320px; min-height: 320px">
 
   <script>
-  // Helper for browser specific CSS
-  document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
-  document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
+    // Helpers for browser specific CSS (needs body to exists)
+    document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
+    document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
   </script>
 
   <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
@@ -77,14 +114,9 @@
   // Load modules asynchronously
   const loadstatus = document.querySelector ("#body-load-status .load-status");
   loadstatus.innerText += "Loading Javascript modules...\n";
-  // Bse
-  import * as Bse from './jsbse.js';
-  window.Bse = Bse;
   loadstatus.innerText += "Loaded Bse...\n";
-  // Vue
-  import Vue from './node_modules/vue/dist/vue.esm.browser.js';
-  window.Vue = Vue;
   loadstatus.innerText += "Loaded Vue.js...\n";
+  loadstatus.innerText += "Loaded Vue Runtime Helpers...\n";
   // Vue.config
   Vue.config.productionTip = false;
   Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
@@ -96,16 +128,7 @@
   Vue.prototype.console = console;
   Vue.prototype.CONFIG = CONFIG;
   Vue.options.inheritAttrs = false; // Add non-props attributes to $attrs (default in Vue-3)
-  // utilities.js
-  import * as Util from './utilities.js'; // depends on Vue
-  window.Util = Util;
-  window.EQ = Util.equals_recursively;
-  Vue.prototype.EQ = window.EQ;
-  Vue.prototype.observable_from_getters = Util.vue_observable_from_getters;
-  for (let directivename in Util.vue_directives) // register all utility directives
-    Vue.directive (directivename, Util.vue_directives[directivename]);
-  Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
-  Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
+
   loadstatus.innerText += "Loaded Util...\n";
 
   // Start at onload and fetch remaining resources
@@ -121,8 +144,8 @@
     window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
     Vue.prototype._ = window._;
     // Beast Web Components, bundled via b/bundle.js
-    await import ('./assets/components.js'); // depends on Vue
-    loadstatus.innerText += "Loaded Components...\n";
+    await import ('./b.vue.bundle.js'); // depends on Vue
+    loadstatus.innerText += "Loaded Component Bundle...\n";
     // Fonts - wait for fonts before Vue components are mounted and compute sizes
     await document.fonts.ready;
     loadstatus.innerText += "Loaded Fonts...\n";
@@ -149,9 +172,9 @@
       loadstatus.innerText += "Skipped Menus...\n";
     // UI-Script
     const run_uiscript = async function () {
-      if (!window.MAINCONFIG.uiscript)
+      if (!window.CONFIG.uiscript)
 	return;
-      window.uiscript = await import (window.MAINCONFIG.uiscript);
+      window.uiscript = await import (window.CONFIG.uiscript);
       try {
 	await window.uiscript.run();
       } catch (e) {
@@ -162,7 +185,7 @@
     };
     // Load command line files
     const load_files = async () => {
-      for (let arg of window.MAINCONFIG.files)
+      for (let arg of window.CONFIG.files)
 	{
 	  const error = await Shell.load_project (arg);
 	  if (error != Bse.Error.NONE)
@@ -171,9 +194,9 @@
     };
     // Dismiss startup messages
     const bodyloadstatus = document.querySelector ("#body-load-status");
-    if (window.MAINCONFIG.uiscript)
+    if (window.CONFIG.uiscript)
       {
-	loadstatus.innerText += "Loading '" + window.MAINCONFIG.uiscript + "'...";
+	loadstatus.innerText += "Loading '" + window.CONFIG.uiscript + "'...";
 	await new Promise (r => setTimeout (() => r(), 450));
 	bodyloadstatus.parentElement.removeChild (bodyloadstatus);
 	await run_uiscript();
@@ -189,6 +212,7 @@
     setTimeout (() => Bse.server.purge_stale_cachedirs(), 1000);
   }
   window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
+  //window.addEventListener ("load", () => setTimeout (()=> Electron.app.exit (19), 500));
   </script>
 
 </body>

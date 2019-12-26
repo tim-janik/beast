@@ -49,5 +49,5 @@ const grid = {
 };
 Vue.component (grid.name, grid);
 
-module.exports = {};
+export default {};
 </script>

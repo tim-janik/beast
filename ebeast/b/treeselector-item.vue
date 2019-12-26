@@ -68,7 +68,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   name: 'b-treeselector-item',
   props: [ 'label', 'entries' ],
   data: function() { return { is_active: false, }; },
