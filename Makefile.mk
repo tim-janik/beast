@@ -153,6 +153,7 @@ help: FORCE
 	@echo '                    be customized. Deleting it will undo any customizations.'
 	@echo '  check           - Run selfttests and unit tests'
 	@echo '  check-audio     - Validate BSE rendering against reference files'
+	@echo '  check-x11       - Optional checks that are skipped without $$DISPLAY'
 	@echo '  check-bench     - Run the benchmark tests'
 	@echo '  check-loading   - Check all distributed BSE files load properly'
 	@echo '  check-suite     - Run the unit test suite'
@@ -179,6 +180,14 @@ $(foreach TEST, $(ALL_TESTS), $(eval $(call CHECK_ALL_TESTS_TEST, $(TEST))))
 check: $(CHECK_TARGETS) check-audio check-bench
 $(CHECK_TARGETS): FORCE
 check-bench: FORCE
+check-x11 check-x11-disabled: FORCE
+ifneq ($(DISPLAY),)
+check: check-x11
+else
+check: check-x11-disabled
+check-x11-disabled:
+	@echo '  SKIP    ' 'Tests that involve an X11 environment with $$DISPLAY'
+endif
 
 # == installcheck ==
 installcheck-buildtest:
