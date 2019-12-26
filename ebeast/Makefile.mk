@@ -213,7 +213,7 @@ check-ebeast: FORCE
 	$(QGEN)
 	@: # basic check for electron/ebeast startup
 	$Q $>/electron/ebeast --version | fgrep '$(VERSION_M.M.M)'
-check: check-ebeast
+check-x11: check-ebeast
 
 # == installation ==
 ebeast/install: $>/ebeast/app.rules FORCE
