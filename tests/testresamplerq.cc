@@ -89,7 +89,7 @@ ResamplerTest::check_resampler_up (Resampler2::Precision precision, bool use_sse
         {
           if (j >= i * 2)
             {
-              assert_return (output[j] == results[0][j - i * 2]);
+              TASSERT (output[j] == results[0][j - i * 2]);
             }
           // printf ("%d %.17g #p%d,%d\n", j, output[j], precision, i);
         }
@@ -129,7 +129,7 @@ ResamplerTest::check_resampler_down (Resampler2::Precision precision, bool use_s
       for (size_t j = 0; j < output.size(); j++)
         {
           if (j >= i/2)
-            assert_return (output[j] == results[i % 2][j - i/2]);
+            TASSERT (output[j] == results[i % 2][j - i/2]);
           //printf ("%zd %.17g #%d,%zd\n", j, output[j], precision, i);
         }
     }
