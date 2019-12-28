@@ -614,7 +614,7 @@ fcompare_run (const ArgParser &ap)
         }
       s += similarity[i];
       min_s = min (similarity[i], min_s);
-      min_s = min (similarity[i], max_s);
+      max_s = max (similarity[i], max_s);
     }
   if (options.compact)
     verbose_output += string_format ("minimum=%.2f%% maximum=%.2f%%", min_s * 100.0, max_s * 100.0);
