@@ -138,7 +138,7 @@ $>/app/b.vue.bundle.js: $(wildcard ebeast/b/*.vue) $(ebeast/copy.tool.targets) $
 	       && printf "%-64s Util.vue_register ($$v);\n" "import $$v from './$$f';" ; \
 	     done > b.vue.js
 	$Q cd $>/ebeast/ \
-	   && npx rollup -c -i b.vue.js -o ../app/b.vue.bundle.js
+	   && $(abspath $(NODE_MODULES.bin)/rollup) -c -i b.vue.js -o ../app/b.vue.bundle.js
 $>/app/b.vue.bundle.css: $>/app/b.vue.bundle.js
 	$Q test -r $@ && touch $@ # created via app.bundle.js generation
 

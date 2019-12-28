@@ -143,21 +143,22 @@ async function menu_command (menuitem)
 					filters: [ { name: 'BSE Projects', extensions: ['bse'] },
 						   { name: 'Audio Files', extensions: [ 'bse', 'mid', 'wav', 'mp3', 'ogg' ] },
 						   { name: 'All Files', extensions: [ '*' ] }, ],
-				      },
-				      async (result) => {
-					if (result && result.length == 1)
-					  {
-					    const Path = require ('path');
-					    open_dialog_lastdir = Path.dirname (result[0]);
-					    if (await Shell.load_project (result[0]) == Bse.Error.NONE)
-					      {
-						save_same_filename = result[0];
-						check_all_menu_items();
-					      }
-					    else
-					      console.error ('Failed to load:', result[0]);
-					  }
-				      });
+				      })
+	      .then (async result => {
+		if (!result.canceled && result.filePaths.length == 1)
+		  {
+		    const filename = result.filePaths[0];
+		    const Path = require ('path');
+		    open_dialog_lastdir = Path.dirname (filename);
+		    if (await Shell.load_project (filename) == Bse.Error.NONE)
+		      {
+			save_same_filename = filename;
+			check_all_menu_items();
+		      }
+		    else
+		      console.error ('Failed to load:', filename);
+		  }
+	      });
       break;
     case 'save-as':
       if (!save_dialog_lastdir)
@@ -171,25 +172,24 @@ async function menu_command (menuitem)
 					buttonLabel: 'Save As',
 					defaultPath: save_dialog_lastdir,
 					filters: [ { name: 'BSE Projects', extensions: ['bse'] }, ],
-				      },
-				      async (savepath) => {
-					if (!savepath)
-					  return;
-					const Path = require ('path');
-					save_dialog_lastdir = Path.dirname (savepath);
-					if (!savepath.endsWith ('.bse'))
-					  savepath += '.bse';
-					const Fs = require ('fs');
-					if (Fs.existsSync (savepath))
-					  Fs.unlinkSync (savepath);
-					const err = await Shell.save_project (savepath);
-					if (err == Bse.Error.NONE)
-					  {
-					    save_same_filename = savepath;
-					    check_all_menu_items();
-					  }
-					console.log ('Save-As:', savepath, err);
-				      });
+				      })
+	      .then (async result => {
+		if (result.canceled || !result.filePath)
+		  return;
+		const savepath = result.filePath.endsWith ('.bse') ? result.filePath : result.filePath + '.bse';
+		const Path = require ('path');
+		save_dialog_lastdir = Path.dirname (savepath);
+		const Fs = require ('fs');
+		if (Fs.existsSync (savepath))
+		  Fs.unlinkSync (savepath);
+		const err = await Shell.save_project (savepath);
+		if (err == Bse.Error.NONE)
+		  {
+		    save_same_filename = savepath;
+		    check_all_menu_items();
+		  }
+		console.log ('Save-As:', savepath, err);
+	      });
       break;
     case 'save-same':
       if (save_same_filename)
