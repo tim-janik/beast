@@ -9,9 +9,10 @@
   @import 'mixins.scss';
   .b-more {
     display: flex;
-    height: 100%;
+    height: 90%;
     align-items: center;
     padding: 0 0.2em;
+    margin: 0 0.2em;
     border-radius: 3px;
     font-weight: bold;
     font-size: 120%;
