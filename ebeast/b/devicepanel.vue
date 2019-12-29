@@ -10,18 +10,23 @@
 
 <style lang="scss">
   @import 'mixins.scss';
-  .b-devicepanel {
-    border: 5px solid #755;
+  .b-devicepanel.b-hflex {
+    border: 3px solid #777;
+    border-radius: $b-theme-border-radius;
+    justify-content: flex-start;
+    align-items: center;
   }
 </style>
 
 <template>
   <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
-    <b-deviceeditor v-for="device in devices" :key="device.$id"
-		    :device="device" center style="margin: 5px" >
-      {{ device.$id }}
-    </b-deviceeditor>
-    <b-more @click.native.stop="menuopen" />
+    <b-more @click.native.stop="menuopen" :key="0" />
+    <template v-for="device in devices" >
+      <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" >
+	{{ device.$id }}
+      </b-deviceeditor>
+      <b-more @click.native.stop="menuopen" :key="device.$id" />
+    </template>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Device </b-menutitle>
       <b-menuitem fa="plus-circle"      role="add-device" >      Add Device		</b-menuitem>
