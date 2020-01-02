@@ -22,9 +22,7 @@
   <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
     <b-more @click.native.stop="menuopen" :key="0" />
     <template v-for="device in devices" >
-      <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" >
-	{{ device.$id }}
-      </b-deviceeditor>
+      <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
       <b-more @click.native.stop="menuopen" :key="device.$id" />
     </template>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
