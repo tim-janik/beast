@@ -15,9 +15,8 @@ ebeast/all: $>/app/package.json
 
 # == sources ==
 ebeast/b/vue.inputs	::= $(wildcard ebeast/b/*.vue)
-ebeast/eslint.files	::= $(ebeast/b/vue.inputs)
-ebeast/eslint.files	 += $(wildcard ebeast/*.html)
-ebeast/eslint.files	 += $(wildcard ebeast/*.js ebeast/b/*.js)
+ebeast/b/vue.stems	::= $(patsubst ebeast/b/%.vue, %, $(ebeast/b/vue.inputs))
+ebeast/eslint.files	::= $(wildcard ebeast/*.html) $(wildcard ebeast/*.js ebeast/b/*.js)
 ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/b/*.scss)
 app/assets/tri-pngs	::= $(strip	\
 	$>/app/assets/tri-n.png		\
@@ -82,7 +81,7 @@ $>/ebeast/pitfalls.done: $(ebeast/eslint.files)
 	$Q echo >$@
 $>/ebeast/eslint.done: $(ebeast/eslint.files) ebeast/.eslintrc.js		| $>/ebeast/node_modules/npm.done
 	$(QECHO) MAKE $@
-	$Q $>/ebeast/node_modules/.bin/eslint -c ebeast/.eslintrc.js -f unix \
+	$Q $(NODE_MODULES.bin)/eslint -c ebeast/.eslintrc.js -f unix \
 		--cache --cache-location $>/ebeast/eslint.cache $(ebeast/eslint.files)
 	$Q echo >$@
 $>/ebeast/lint.done: $>/ebeast/pitfalls.done $>/ebeast/eslint.done
@@ -107,7 +106,7 @@ $>/electron/ebeast:						| $>/
 # == app ==
 $>/app/package.json: $>/electron/ebeast $>/ebeast/lint.done
 $>/app/package.json: $(ebeast/copy.targets) $(app/generated) $(app/assets.copies)
-$>/app/package.json: ebeast/index.html $>/app/b.vue.bundle.js $>/app/b.vue.bundle.css $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done
+$>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done
 	$(QGEN)
 	$Q echo -e '{ "name": "ebeast",'				> $@.tmp
 	$Q echo -e '  "productName": "EBeast",'				>>$@.tmp
@@ -128,20 +127,37 @@ $>/app/package.json: ebeast/index.html $>/app/b.vue.bundle.js $>/app/b.vue.bundl
 	  && sed 's|^//# sourceMappingURL=index\.mjs\.map$$||' -i $>/app/vue-runtime-helpers.mjs
 	$Q mv $@.tmp $@
 
-$>/app/b.vue.bundle.js: $(wildcard ebeast/b/*.vue) $(ebeast/copy.tool.targets) $>/ebeast/node_modules/npm.done
-	$(QGEN)
-	$Q rm -f $>/ebeast/b $>/ebeast/b.vue.js
-	$Q ln -s ../$(build2srcdir)/ebeast/b $>/ebeast/b
-	$Q cd $>/ebeast/ \
-	  && for f in b/*.vue ; do \
-	       v="$${f//[^[:alnum:]]/_}" \
-	       && printf "%-64s Util.vue_register ($$v);\n" "import $$v from './$$f';" ; \
-	     done > b.vue.js
-	$Q cd $>/ebeast/ \
-	   && $(abspath $(NODE_MODULES.bin)/rollup) -c -i b.vue.js -o ../app/b.vue.bundle.js
-$>/app/b.vue.bundle.css: $>/app/b.vue.bundle.js
-	$Q test -r $@ && touch $@ # created via app.bundle.js generation
 
+# == $>/app/b/%.bundle.js ==
+ebeast/targets.vuebundles.js  ::= $(patsubst %, $>/app/b/%.bundle.js,  $(ebeast/b/vue.stems))
+ebeast/targets.vuebundles.css ::= $(patsubst %, $>/app/b/%.bundle.css, $(ebeast/b/vue.stems))
+$>/app/b/%.bundle.js: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/ebeast/b/ $>/ebeast/node_modules/npm.done
+	$(QGEN)
+	$Q cd $>/ebeast/ && $(abspath $(NODE_MODULES.bin)/rollup) -c ./rollup.config.js -i $(abspath $<) -o $(abspath $>/ebeast/b/$(@F))
+	$Q mv $>/ebeast/b/$(@F) $>/ebeast/b/$(@F:.js=.css) $(@D)
+# Note: rollups babel config currently expects $CWD/babel.config.js
+$>/app/b/%.bundle.css: $>/app/b/%.bundle.js ;
+$>/app/package.json: $(ebeast/targets.vuebundles.js) $(ebeast/targets.vuebundles.css)
+
+# == $>/app/bundle.imports.js ==
+$>/app/bundle.imports.js: $(wildcard ebeast/b/*.vue) | $>/app/
+	$(QGEN)
+	$Q cd ebeast \
+	  && for f in b/*.vue ; do \
+	       v="$${f//[^[:alnum:]]/_}" && b="$${f%.vue}.bundle" \
+	       && printf "%-64s Util.vue_register ($$v, './$$b.css');\n" "import $$v from './$$b.js';" ; \
+	     done > $(abspath $@)
+$>/app/package.json: $>/app/bundle.imports.js
+
+# == $>/ebeast/b.*.lint ==
+ebeast/targets.lint ::= $(patsubst %, $>/ebeast/b/%.lint, $(ebeast/b/vue.stems))
+$>/ebeast/b/%.lint: ebeast/b/%.vue	| $>/ebeast/b/ $>/ebeast/node_modules/npm.done
+	$(QGEN)
+	$Q $(NODE_MODULES.bin)/eslint -c ebeast/.eslintrc.js -f unix --cache --cache-location $(@:%=%.cache) $<
+	$Q echo >$@
+$>/app/package.json: $(ebeast/targets.lint)
+
+# == $>/app/assets/ ==
 $(app/assets.copies): $>/app/assets/%: ebeast/%		| $>/app/assets/
 	$(QECHO) COPY $@
 	$Q $(CP) -P $< $@
@@ -165,7 +181,7 @@ $>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
 $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/node_modules/npm.done
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
-	$Q $>/ebeast/node_modules/.bin/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
+	$Q $(NODE_MODULES.bin)/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map-embed --source-map-contents --source-comments
 $>/app/assets/material-icons.css:			| $>/app/assets/
 	$(QECHO) FETCH material-icons-190326.1.tar.xz

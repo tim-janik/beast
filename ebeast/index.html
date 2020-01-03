@@ -6,8 +6,7 @@
   <link rel="preload" as="script" href="./vue-runtime-helpers.mjs" crossorigin>
   <link rel="preload" as="script" href="./utilities.js" crossorigin>
   <link rel="preload" as="script" href="./jsbse.js" crossorigin>
-  <link rel="preload" as="script" href="./b.vue.bundle.js" crossorigin>
-  <link rel="stylesheet" href="./b.vue.bundle.css">
+  <link rel="preload" as="script" href="./bundle.imports.js" crossorigin>
   <link rel="stylesheet" href="assets/stylesheets.css">
   <link rel="stylesheet" href="assets/material-icons.css">
   <link rel="stylesheet" href="assets/forkawesome-webfont.css">
@@ -83,8 +82,9 @@
   </script>
 
   <!-- Load bundled Vue components, self registering -->
-  <script type="module" src="./b.vue.bundle.js"></script>
+  <script type="module" src="./bundle.imports.js"></script>
 
+  <!-- End of static index.html -->
 </head>
 <body style="min-width: 320px; min-height: 320px">
 
@@ -144,7 +144,7 @@
     window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
     Vue.prototype._ = window._;
     // Beast Web Components, bundled via b/bundle.js
-    await import ('./b.vue.bundle.js'); // depends on Vue
+    await import ('./bundle.imports.js'); // depends on Vue
     loadstatus.innerText += "Loaded Component Bundle...\n";
     // Fonts - wait for fonts before Vue components are mounted and compute sizes
     await document.fonts.ready;
