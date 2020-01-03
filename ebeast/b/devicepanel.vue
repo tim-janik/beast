@@ -20,10 +20,10 @@
 
 <template>
   <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
-    <b-more @click.native.stop="menuopen" :key="0" />
+    <b-more @click.native.stop="menuopen" :sibling="null" />
     <template v-for="device in devices" >
       <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
-      <b-more @click.native.stop="menuopen" :key="device.$id" />
+      <b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id" />
     </template>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Device </b-menutitle>
@@ -50,13 +50,15 @@ export default {
   data() { return observable_device_data.call (this); },
   methods: {
     menuactivation (role) {
+      const popup_options = this.$refs.cmenu.popup_options;
       // close popup to remove focus guards
       this.$refs.cmenu.close();
+      if (role == 'add-device')
+	console.log ("create_device: after:", popup_options.device_sibling);
       if (role == 'add-device')
 	this.track.create_device ('Dummy');
     },
     menucheck (role, component) {
-      console.log ("devicepanel.vue", this.track);
       if (!this.track)
 	return false;
       switch (role)
@@ -66,7 +68,9 @@ export default {
       return false;
     },
     menuopen (event) {
-      this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this) });
+      const sibling = event?.path[0]?.__vue__?.$attrs?.sibling;
+      this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this),
+				       device_sibling: sibling });
     },
   },
 };
