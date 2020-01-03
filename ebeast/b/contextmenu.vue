@@ -16,7 +16,7 @@
   *click (role)*
   : Event signaling activation of a submenu item, the `role` of the submenu is provided as argument.
   ## Methods:
-  *popup (event, origin)*
+  *popup (event, { origin, tieclass })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
   : reference DOM element to use for drop-down positioning.
   *close()*
@@ -71,7 +71,7 @@ export default {
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
 	       resize_observer: undefined, checkedroles: {},
-	       showicons: true, showaccels: true, checker: undefined, },
+	       showicons: true, showaccels: true, popup_options: {}, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
 			    [ 'checkedroles', 'showicons', 'showaccels', 'clicked', 'close' ]),
   methods: {
@@ -99,8 +99,8 @@ export default {
 	  this.checkitems();
 	  this.position_popup();
 	  this.resize_observer.observe (document.body);
-	  if (this.origin)
-	    this.resize_observer.observe (this.origin.$el || this.origin);
+	  if (this.popup_options?.origin)
+	    this.resize_observer.observe (this.popup_options.origin.$el || this.popup_options.origin);
 	}
       else if (this.tieclass)
 	{
@@ -135,13 +135,13 @@ export default {
 	  area_el.style.top = '0px';
 	  const p = Util.popup_position (menu_el, { x: this.doc_x,
 						    y: this.doc_y,
-						    origin: this.origin && this.origin.$el || this.origin });
+						    origin: this.popup_options.origin?.$el || this.popup_options.origin });
 	  area_el.style.left = p.x + "px";
 	  area_el.style.top = p.y + "px";
 	}
     },
     checkitems() {
-      if (!this.checker)
+      if (!this.popup_options.checker)
 	return;
       const checkrecursive = component => {
 	if (component instanceof Element &&
@@ -149,7 +149,7 @@ export default {
 	  component = component.__vue__;
 	if (component.$options && component.$options.propsData && component.$options.propsData.role)
 	  {
-	    let result = this.checker.call (null, component.$options.propsData.role, component);
+	    let result = this.popup_options.checker.call (null, component.$options.propsData.role, component);
 	    if ('boolean' !== typeof result)
 	      result = undefined;
 	    if (result != this.checkedroles[component.$options.propsData.role])
@@ -181,11 +181,11 @@ export default {
 							close: this.close });
     },
     popup (event, options) {
-      const { origin, check, tieclass } = options || {};
+      this.popup_options = options || {};
       this.visible = false;
-      this.origin = origin;
-      this.checker = check;
-      this.tieclass = tieclass;
+      if (this.tieclass)
+	this.tieclass.element.classList.remove (this.tieclass.class);
+      this.tieclass = this.popup_options.tieclass;
       this.clear_dragging();
       if (event && event.pageX && event.pageY)
 	{
