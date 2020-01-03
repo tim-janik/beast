@@ -214,9 +214,17 @@ export function clamp (x, min, max) {
 }
 
 /** Register all Vue components, needed before instantiating the Vue root component */
-export function vue_register (vcexport) {
+export function vue_register (vcexport, cssfile) {
   if (vcexport.name)
     Vue.component (vcexport.name, vcexport);
+  if (cssfile)
+    {
+      const link = document.createElement ('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = cssfile;
+      document.head.appendChild (link);
+    }
 }
 
 /** Create a Vue component provide() function that forwards selected properties. */
