@@ -294,9 +294,9 @@ sfi_time_from_string_err (const gchar *time_string,
 				 minute[(index)] <= 59 &&	\
 				 second[(index)] >= 0 &&	\
 				 second[(index)] <= 61)
-  /* printout ("DEBUG: \"%s\" -> y%u m%u d%u h%u m%u s%u\n", string,
-   *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
-   */
+
+  // Bse::printerr ("DEBUG: \"%s\" -> y%u m%u d%u h%u m%u s%u\n", string, year[i], month[i], day[i], hour[i], minute[i], second[i]);
+
   if (!finished) /* parse "yyyy-mm-dd hh:mm:ss" e.g. "1998-04-16 23:59:59" */
     {
       gint n_values;
@@ -592,14 +592,14 @@ sfi_time_from_string_err (const gchar *time_string,
       tm_data.tm_year = year[i] - 1900;
       tm_data.tm_wday = 0;
       tm_data.tm_yday = 0;
-      tm_data.tm_isdst = 1;
+      tm_data.tm_isdst = 0;
 
 #if HAVE_TIMEGM
       ttime = timegm (&tm_data);			/* returns -1 on error */
 #else
       {
         char *tz = g_strdup (g_getenv ("TZ"));
-        g_setenv ("TZ", "", 1);
+        g_setenv ("TZ", "UTC", 1);
         tzset();
         ttime = mktime (&tm_data);
         if (tz)
