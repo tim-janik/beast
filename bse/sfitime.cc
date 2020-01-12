@@ -594,7 +594,7 @@ sfi_time_from_string_err (const gchar *time_string,
       tm_data.tm_yday = 0;
       tm_data.tm_isdst = 0;
 
-#if HAVE_TIMEGM
+#if BSE_HAVE_TIMEGM
       ttime = timegm (&tm_data);			/* returns -1 on error */
 #else
       {
@@ -608,6 +608,7 @@ sfi_time_from_string_err (const gchar *time_string,
           g_unsetenv ("TZ");
         tzset();
         g_free (tz);
+#warning "Missing timegm(3), using non-threadsafe mktime()"
       }
 #endif
 
