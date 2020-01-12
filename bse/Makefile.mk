@@ -470,7 +470,7 @@ $>/bse/zres.cc: res/resfiles.list misc/packres.py	| $>/bse/	# $(res_resfiles_lis
 	$Q mv $@.tmp $@
 
 # == bse/sysconfig.h ==
-$>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
+$>/bse/sysconfig.h: $(config-stamps) $>/bse/sysconfig-1.h $>/bse/sysconfig-2.h | $>/bse/ # bse/Makefile.mk
 	$(QGEN)
 	$Q echo '// make $@'							> $@.tmp
 	$Q echo '#define BSE_MAJOR_VERSION		($(VERSION_MAJOR))'	>>$@.tmp
@@ -479,12 +479,27 @@ $>/bse/sysconfig.h: $(config-stamps) | $>/bse/ # bse/Makefile.mk
 	$Q echo '#define BSE_VERSION_STRING		"$(VERSION_SHORT)"'	>>$@.tmp
 	$Q echo '#define BSE_GETTEXT_DOMAIN		"$(BSE_GETTEXT_DOMAIN)"'>>$@.tmp
 	$Q echo '#define BSE_VORBISFILE_BAD_SEEK 	$(VORBISFILE_BAD_SEEK)'	>>$@.tmp
+	$Q cat $>/bse/sysconfig-1.h $>/bse/sysconfig-2.h			>>$@.tmp
+	$Q mv $@.tmp $@
+
+# == bse/sysconfig-1 ==
+$>/bse/sysconfig-1.h: $(config-stamps) bse/Makefile.mk	| $>/bse/
+	$(QGEN)
+	$Q echo '#include <time.h>'				> $@-timegm.c \
+	&& echo 'void main() { struct tm t; timegm (&t); }'	>>$@-timegm.c \
+	&& $(CC) $@-timegm.c -o $@-timegm 2>/dev/null \
+	&& echo -e '#define BSE_HAVE_TIMEGM \t\t 1'		> $@ \
+	|| echo '// #undef BSE_HAVE_TIMEGM'			> $@ \
+	&& rm -f $@-timegm.c $@-timegm
+
+# == bse/sysconfig-2 ==
+$>/bse/sysconfig-2.h: $(config-stamps) bse/Makefile.mk	| $>/bse/
+	$(QGEN)
 	$Q : $(file > $>/bse/conftest_spinlock.c, $(bse/conftest_spinlock.c)) \
 	&& $(CC) -Wall $>/bse/conftest_spinlock.c -pthread -o $>/bse/conftest_spinlock \
 	&& (cd $> && ./bse/conftest_spinlock) \
-	&& echo '#define BSE_SPINLOCK_INITIALIZER' "	$$(cat $>/bse/conftest_spinlock.txt)"	>>$@.tmp \
+	&& echo '#define BSE_SPINLOCK_INITIALIZER' "	$$(cat $>/bse/conftest_spinlock.txt)" > $@ \
 	&& rm $>/bse/conftest_spinlock.c $>/bse/conftest_spinlock $>/bse/conftest_spinlock.txt
-	$Q mv $@.tmp $@
 # bse/conftest_spinlock.c
 define bse/conftest_spinlock.c
 #include <stdio.h>
