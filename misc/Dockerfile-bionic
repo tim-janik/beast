@@ -52,8 +52,11 @@ RUN \
 	libxml2-dev gawk python2.7-dev python3 libboost-system-dev \
 	cppcheck clang clang-tidy clang-tools python3-pandocfilters \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev gettext \
-	imagemagick libgconf-2-4 nodejs npm libxss1 \
+	imagemagick libgconf-2-4 nodejs libxss1 \
 	libgtk-3-bin libgdk-pixbuf2.0-dev && \
+  \
+  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+  apt-get install -y nodejs && \
   \
   echo '## Provide recent Pandoc' && \
   retry curl -ROL 'https://github.com/jgm/pandoc/releases/download/2.9/pandoc-2.9-1-amd64.deb' && \
