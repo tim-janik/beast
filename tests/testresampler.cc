@@ -6,6 +6,7 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfft.hh>
 #include "bse/internal.hh"
+#include "testresampler.hh"
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
@@ -903,8 +904,6 @@ static void testresampler_check_performance_sub24()     { run_perf (RES_SUBSAMPL
 TEST_PERF (testresampler_check_performance_sub24);
 static void testresampler_check_performance_over24()    { run_perf (RES_OVERSAMPLE, 24); }
 TEST_PERF (testresampler_check_performance_over24);
-
-int test_resampler (int argc, char **argv);
 
 int
 test_resampler (int argc, char **argv)

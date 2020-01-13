@@ -23,27 +23,17 @@ using namespace BseTool;
 using namespace std;
 
 struct FCompareOptions {
-  string	      program_name;
-  double              threshold;
-  bool                compact;
-  bool                strict;
-  bool                verbose;
-  FCompareOptions     ();
+  string              program_name = "bsefcompare";
+  double              threshold    = 100;
+  bool                compact      = false;
+  bool                strict       = false;
+  bool                verbose      = false;
   void assign_options (const ArgParser &ap);
 };
 
 namespace { // Anon
 FCompareOptions options;
 } // Anon
-
-FCompareOptions::FCompareOptions ()
-{
-  program_name = "bsefcompare";
-  threshold = 100;
-  compact = false;
-  strict = false;
-  verbose = false;
-}
 
 static double
 vector_len (const vector<double>& v)
@@ -193,7 +183,7 @@ struct FeatureValue {
     TYPE_MATRIX
   } type;
 
-  FeatureValue (string name, Type type) : name (name), type (type)
+  FeatureValue (const string& name, Type type) : name (name), type (type)
   {
   }
   virtual
@@ -217,7 +207,7 @@ struct FeatureValue {
 struct FeatureValueNumber : FeatureValue {
   double number;
 
-  FeatureValueNumber (const string& name) : FeatureValue (name, TYPE_NUMBER)
+  explicit FeatureValueNumber (const string& name) : FeatureValue (name, TYPE_NUMBER)
   {
     number = 0.0; /* hopefully never used, but initialized by parse */
   }
@@ -439,10 +429,10 @@ FeatureValueMatrix::similarity (const FeatureValue *value) const
   if (options.strict && (m != v->m || n != v->n))
     return -1;
 
-  double s = 0;
   uint min_m = min (m, v->m);
   if (min_m)
     {
+      double s = 0;
       for (uint i = 0; i < min_m; i++)
 	s += vector_similarity (matrix[i], v->matrix[i]);
       return s / min_m;
@@ -545,8 +535,8 @@ FeatureValueFile::parse (const string& filename)
 
 FeatureValueFile::~FeatureValueFile()
 {
-  for (vector<FeatureValue *>::iterator fvi = feature_values.begin(); fvi != feature_values.end(); fvi++)
-    delete *fvi;
+  for (FeatureValue *fp : feature_values)
+    delete fp;
 }
 
 static ArgDescription fcompare_options[32] = {
@@ -624,7 +614,7 @@ fcompare_run (const ArgParser &ap)
         }
       s += similarity[i];
       min_s = min (similarity[i], min_s);
-      min_s = min (similarity[i], max_s);
+      max_s = max (similarity[i], max_s);
     }
   if (options.compact)
     verbose_output += string_format ("minimum=%.2f%% maximum=%.2f%%", min_s * 100.0, max_s * 100.0);
