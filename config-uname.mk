@@ -51,6 +51,13 @@ MODEFLAGS	::= -O1 -fno-omit-frame-pointer -fstack-protector-all -fno-inline -g -
 LDMODEFLAGS	 += -llsan
 endif
 
+# Beware, -ffast-math disables errno from math functions, math traps and signaling NaNs.
+# It adds: -fno-math-errno -fno-rounding-math -fno-signaling-nans -fno-trapping-math
+# -ffinite-math-only -fcx-limited-range -fno-signed-zeros
+# -fexcess-precision=fast -fassociative-math -freciprocal-math
+MODEFLAGS	 += -ffast-math
+
+# Enable compiler specific options
 ifdef HAVE_CLANG  # clang++
   COMMONFLAGS	 += -Wno-tautological-compare -Wno-constant-logical-operand
   #COMMONFLAGS	 += -Wno-unused-command-line-argument
