@@ -56,6 +56,8 @@ endif
 # -ffinite-math-only -fcx-limited-range -fno-signed-zeros
 # -fexcess-precision=fast -fassociative-math -freciprocal-math
 MODEFLAGS	 += -ffast-math
+# Enforce proper handling of NaN and ±Inf
+MODEFLAGS	 += -fno-finite-math-only $(if $(HAVE_GCC), -fno-cx-limited-range)
 
 # Enable compiler specific options
 ifdef HAVE_CLANG  # clang++
