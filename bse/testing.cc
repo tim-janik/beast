@@ -162,6 +162,9 @@ test_output (int kind, const String &msg)
     case 'P':
       sout = "  PASS     " + ensure_newline (msg);
       break;
+    case 'B':
+      sout = "  BENCH    " + ensure_newline (msg);
+      break;
     case 'F':
       sout = "  FAIL     " + ensure_newline (msg);
       aborting = true;

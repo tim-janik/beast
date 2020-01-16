@@ -14,6 +14,7 @@ void init (int *argcp, char **argv, const StringVector &args = StringVector());
 #define TSTART(...)             Bse::Test::test_output ('S', ::Bse::string_format (__VA_ARGS__))  ///< Print message once a test case starts.
 #define TDONE()                 Bse::Test::test_output ('D', "")                                  ///< Print message for test case end.
 #define TPASS(...)              Bse::Test::test_output ('P', ::Bse::string_format (__VA_ARGS__))  ///< Print a message about a passing test.
+#define TBENCH(...)             Bse::Test::test_output ('B', ::Bse::string_format (__VA_ARGS__))  ///< Print a message about a passing benchmark.
 #define TNOTE(...)              Bse::Test::test_output ('I', ::Bse::string_format (__VA_ARGS__))  ///< Print a message from a test program.
 #define TCHECK(cond, ...)       Bse::Test::test_output (bool (cond) ? 'P' : 'F', \
                                                         ::Bse::string_format (__VA_ARGS__))       ///< Verbose assertion, calls TPASS() on success.
