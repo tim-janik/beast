@@ -131,6 +131,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/randomhash.hh		\
 	bse/regex.hh			\
 	bse/serializable.hh		\
+	bse/signalmath.hh		\
 	bse/storage.hh			\
 	bse/sfi.hh			\
 	bse/sficxx.hh			\
