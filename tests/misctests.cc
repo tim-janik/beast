@@ -5,6 +5,7 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
 #include "jsonipc/testjsonipc.cc" // test_jsonipc
+#include <bse/signalmath.hh>
 
 static void
 test_jsonipc_functions()
@@ -152,6 +153,47 @@ check_monotonic_tuning()
     }
 }
 TEST_ADD (check_monotonic_tuning);
+
+static void
+fast_math_test()
+{
+  float f;
+  double d;
+  // check proper Inf and NaN handling (depends on compiler flags)
+  f = d = .5 * INFINITY; TASSERT (d > 0 && f > 0 && std::isinf (f) && std::isinf (d));
+  f = d = -3 * INFINITY; TASSERT (d < 0 && f < 0 && std::isinf (f) && std::isinf (d));
+  f = f - f;            TASSERT (!(f == f) && std::isnan (f));  // Infinity - Infinity yields NaN
+  d = 0.0 / 0.0;        TASSERT (!(d == d) && std::isnan (d));
+  // check rounding
+  TASSERT (int (+0.40) == +0.0 && Bse::irintf (+0.40) == +0.0);
+  TASSERT (int (-0.40) == -0.0 && Bse::irintf (-0.40) == -0.0);
+  TASSERT (int (+0.51) == +0.0 && Bse::irintf (+0.51) == +1.0);
+  TASSERT (int (-0.51) == -0.0 && Bse::irintf (-0.51) == -1.0);
+  TASSERT (int (+1.90) == +1.0 && Bse::irintf (+1.90) == +2.0);
+  TASSERT (int (-1.90) == -1.0 && Bse::irintf (-1.90) == -2.0);
+  // check fast_exp2(int), 2^(-126..+127) must be calculated with 0 error
+  volatile float m = 1.0, p = 1.0;
+  for (ssize_t i = 0; i <= 127; i++)
+    {
+      // Bse::printerr ("2^±%-3d = %15.10g, %-.14g\n", i, fast_exp2 (i), fast_exp2 (-i));
+      TASSERT (fast_exp2 (i) == p);
+      if (i != 127)
+        TASSERT (fast_exp2 (-i) == m);
+      else
+        TASSERT (fast_exp2 (-i) <= m); // single precision result for 2^-127 is 0 or subnormal
+      p *= 2;
+      m /= 2;
+    }
+  // check fast_exp2 error margin in [-1..+1]
+  const double step = Bse::Test::slow() ? 0.0000001 : 0.0001;
+  for (double d = -1; d <= +1; d += step)
+    {
+      const double r = std::exp2 (d);
+      const double err = std::fabs (r - fast_exp2 (d));
+      TASSERT (err < 4e-7);
+    }
+}
+TEST_ADD (fast_math_test);
 
 #if 0
 int
