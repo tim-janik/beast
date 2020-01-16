@@ -195,6 +195,58 @@ fast_math_test()
 }
 TEST_ADD (fast_math_test);
 
+template<typename V, typename F, typename G> static long double
+range_error (V vmin, V vmax, V vstep, F f, G g, V *errpos)
+{
+  long double err = 0;
+  for (V input = vmin; input < vmax; input += vstep)
+    {
+      const long double vf = f (input), vg = g (input);
+      const auto old = err;
+      err = std::max (err, vf < vg ? vg - vf : vf - vg);
+      // err = std::max (err, vf < vg ? (vg - vf) / vf : (vf - vg) / vg);
+      if (old != err)
+        *errpos = input;
+    }
+  return err;
+}
+
+static const float START_RANGE = -90, END_RANGE = 90;
+static const float RANGE_STEP = 0.001;
+static const float ERROR_START = -1, ERROR_END = +1, ERROR_STEP = 0.0000001;
+static float frange_accu;
+
+template<typename Lambda> static void
+frange_print_bench (Lambda lambda, const String &name, double bench_time)
+{
+  const double N_STEPS = (END_RANGE - START_RANGE) / RANGE_STEP;
+  float pos = 0;
+  double rerr = range_error<float> (ERROR_START, ERROR_END, ERROR_STEP, exp2, lambda, &pos);
+  TBENCH ("%-18s # timing: fastest=%fs calls=%.1f/s diff=%.20f (@%f)\n",
+          name, bench_time, N_STEPS / bench_time, rerr, pos);
+  TASSERT (frange_accu != 0);
+  TASSERT (!std::isnan (frange_accu));
+}
+#define FRANGE_BENCH(FUN) ({                    \
+  frange_accu = 0;                                   \
+  double t = timer.benchmark ([] () {                                              \
+                                for (float n = START_RANGE; n <= END_RANGE; n += RANGE_STEP) \
+                                  frange_accu += FUN (n); \
+                              });                                       \
+  t; })
+
+static void
+fast_math_bench()
+{
+  Test::Timer timer (0.15); // maximum seconds
+  frange_print_bench (exp2f, "exp2f", FRANGE_BENCH (exp2f));
+  frange_print_bench (fast_exp2, "fast_exp2", FRANGE_BENCH (fast_exp2));
+  frange_print_bench (bse_approx5_exp2, "bse_approx5_exp2", FRANGE_BENCH (bse_approx5_exp2));
+  frange_print_bench (bse_approx6_exp2, "bse_approx6_exp2", FRANGE_BENCH (bse_approx6_exp2));
+  frange_print_bench (bse_approx7_exp2, "bse_approx7_exp2", FRANGE_BENCH (bse_approx7_exp2));
+}
+TEST_BENCH (fast_math_bench);
+
 #if 0
 int
 main (gint   argc,
