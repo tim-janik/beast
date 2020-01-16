@@ -10,6 +10,12 @@ namespace Bse {
 /// Fast version of `f < 0 ? int (f - 0.5) : int (f + 0.5)`.
 extern inline G_GNUC_CONST int irintf (float f) { return __builtin_rintf (f); }
 
+/// Force number into double precision floating point format, even with `-ffast-math`.
+extern inline double force_double (double d)   { volatile double v = d; return v; }
+
+/// Force number into single precision floating point format, even with `-ffast-math`.
+extern inline float  force_float  (float  f)   { volatile float v = f; return v; }
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	fast approximation of `2^ex`
