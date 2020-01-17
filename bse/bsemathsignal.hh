@@ -3,6 +3,7 @@
 #define __BSE_SIGNAL_H__
 
 #include <bse/bsemath.hh>
+#include <bse/signalmath.hh>
 #include <bse/bseglobals.hh>
 #include <bse/bsetype.hh> // for BseMusicalTuningType
 
@@ -594,7 +595,7 @@ bse_approx2_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx2_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -605,7 +606,7 @@ bse_approx3_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx3_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -616,7 +617,7 @@ bse_approx4_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx4_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
   /* tanha4(x)=x<-20 ? -1 : x>20 ? 1 : (exp2a4(x*2.885390081777926814719849362)-1) / (exp2a4(x*2.885390081777926814719849362)+1) */
 }
@@ -628,7 +629,7 @@ bse_approx5_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx5_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -639,7 +640,7 @@ bse_approx6_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx6_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -650,7 +651,7 @@ bse_approx7_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx7_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -661,7 +662,7 @@ bse_approx8_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx8_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
@@ -672,7 +673,7 @@ bse_approx9_tanh (float x)
     return -1;
   if (G_UNLIKELY (x > 20))
     return 1;
-  double bpot = bse_approx9_exp2 (x * BSE_2_DIV_LN2);
+  double bpot = Bse::fast_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
 
