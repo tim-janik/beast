@@ -234,7 +234,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 			    {
 			      envelope_value = new_value;
 			    }
-			  output = bse_approx3_exp2 (envelope_value*6) / 64.0;
+			  output = Bse::fast_exp2 (envelope_value*6) / 64.0;
 			}
 		      *done++ = (!gate_active && envelope_phase == 5) ? 1.0 : 0.0;
 		    }

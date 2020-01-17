@@ -2,6 +2,7 @@
 #include "gslwaveosc.hh"
 #include "gslfilter.hh"
 #include "bsemathsignal.hh"
+#include "bse/signalmath.hh"
 #include "bseengine.hh"	/* for bse_engine_sample_freq() */
 #include "bsemain.hh"
 #include "bse/internal.hh"

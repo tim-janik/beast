@@ -5,6 +5,7 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
 #include "jsonipc/testjsonipc.cc" // test_jsonipc
+#include <bse/signalmath.hh>
 
 static void
 test_jsonipc_functions()
@@ -152,6 +153,139 @@ check_monotonic_tuning()
     }
 }
 TEST_ADD (check_monotonic_tuning);
+
+extern inline uint64_t asuint64     (double f)   { union { double _f; uint64_t _i; } u { f }; return u._i; }
+extern inline double   asdouble     (uint64_t i) { union { uint64_t _i; double _f; } u { i }; return u._f; }
+static inline float G_GNUC_CONST
+arm_exp2f (float x)
+{
+  // MIT licensed, from: https://github.com/ARM-software/optimized-routines/blob/master/math/exp2f.c
+  constexpr const ssize_t EXP2F_TABLE_BITS = 5;
+  constexpr const ssize_t N = 1 << EXP2F_TABLE_BITS;
+  constexpr const double SHIFT = 0x1.8p+52 / N;
+  constexpr const ssize_t EXP2F_POLY_ORDER = 3;
+  constexpr const double C[EXP2F_POLY_ORDER] = { 0x1.c6af84b912394p-5, 0x1.ebfce50fac4f3p-3, 0x1.62e42ff0c52d6p-1, };
+  //                                             0.055503615593415351  0.240228452244572205  0.693147180691620290
+  constexpr const uint64_t T[N] = {
+    0x3ff0000000000000, 0x3fefd9b0d3158574, 0x3fefb5586cf9890f, 0x3fef9301d0125b51,
+    0x3fef72b83c7d517b, 0x3fef54873168b9aa, 0x3fef387a6e756238, 0x3fef1e9df51fdee1,
+    0x3fef06fe0a31b715, 0x3feef1a7373aa9cb, 0x3feedea64c123422, 0x3feece086061892d,
+    0x3feebfdad5362a27, 0x3feeb42b569d4f82, 0x3feeab07dd485429, 0x3feea47eb03a5585,
+    0x3feea09e667f3bcd, 0x3fee9f75e8ec5f74, 0x3feea11473eb0187, 0x3feea589994cce13,
+    0x3feeace5422aa0db, 0x3feeb737b0cdc5e5, 0x3feec49182a3f090, 0x3feed503b23e255d,
+    0x3feee89f995ad3ad, 0x3feeff76f2fb5e47, 0x3fef199bdd85529c, 0x3fef3720dcef9069,
+    0x3fef5818dcfba487, 0x3fef7c97337b9b5f, 0x3fefa4afa2a490da, 0x3fefd0765b6e4540,
+  };
+  const double xd = x;
+
+  /* x = k/N + r with r in [-1/(2N), 1/(2N)] and int k.  */
+  double kd = xd + SHIFT;
+  const uint64_t ki = asuint64 (kd);
+  kd = force_double (force_double (kd) - SHIFT); /* k/N for int k.  */
+  const double r = xd - kd;
+
+  /* exp2(x) = 2^(k/N) * 2^r ~= s * (C0*r^3 + C1*r^2 + C2*r + 1) */
+  uint64_t t = T[ki % N];
+  t += ki << (52 - EXP2F_TABLE_BITS);
+  const double s = asdouble(t);
+  const double z = C[0] * r + C[1];
+  const double r2 = r * r;
+  double y = C[2] * r + 1;
+  y = z * r2 + y;
+  y = y * s;
+  return y;
+}
+
+static void
+fast_math_test()
+{
+  float f;
+  double d;
+  // check proper Inf and NaN handling (depends on compiler flags)
+  f = d = .5 * INFINITY; TASSERT (d > 0 && f > 0 && std::isinf (f) && std::isinf (d));
+  f = d = -3 * INFINITY; TASSERT (d < 0 && f < 0 && std::isinf (f) && std::isinf (d));
+  f = f - f;            TASSERT (!(f == f) && std::isnan (f));  // Infinity - Infinity yields NaN
+  d = 0.0 / 0.0;        TASSERT (!(d == d) && std::isnan (d));
+  // check rounding
+  TASSERT (int (+0.40) == +0.0 && Bse::irintf (+0.40) == +0.0);
+  TASSERT (int (-0.40) == -0.0 && Bse::irintf (-0.40) == -0.0);
+  TASSERT (int (+0.51) == +0.0 && Bse::irintf (+0.51) == +1.0);
+  TASSERT (int (-0.51) == -0.0 && Bse::irintf (-0.51) == -1.0);
+  TASSERT (int (+1.90) == +1.0 && Bse::irintf (+1.90) == +2.0);
+  TASSERT (int (-1.90) == -1.0 && Bse::irintf (-1.90) == -2.0);
+  // check fast_exp2(int), 2^(-126..+127) must be calculated with 0 error
+  volatile float m = 1.0, p = 1.0;
+  for (ssize_t i = 0; i <= 127; i++)
+    {
+      // Bse::printerr ("2^±%-3d = %15.10g, %-.14g\n", i, fast_exp2 (i), fast_exp2 (-i));
+      TASSERT (fast_exp2 (i) == p);
+      if (i != 127)
+        TASSERT (fast_exp2 (-i) == m);
+      else
+        TASSERT (fast_exp2 (-i) <= m); // single precision result for 2^-127 is 0 or subnormal
+      p *= 2;
+      m /= 2;
+    }
+  // check fast_exp2 error margin in [-1..+1]
+  const double step = Bse::Test::slow() ? 0.0000001 : 0.0001;
+  for (double d = -1; d <= +1; d += step)
+    {
+      const double r = std::exp2 (d);
+      const double err = std::fabs (r - fast_exp2 (d));
+      TASSERT (err < 4e-7);
+    }
+}
+TEST_ADD (fast_math_test);
+
+template<typename V, typename F, typename G> static long double
+range_error (V vmin, V vmax, V vstep, F f, G g, V *errpos)
+{
+  long double err = 0;
+  for (V input = vmin; input < vmax; input += vstep)
+    {
+      const long double vf = f (input), vg = g (input);
+      const auto old = err;
+      err = std::max (err, vf < vg ? vg - vf : vf - vg);
+      // err = std::max (err, vf < vg ? (vg - vf) / vf : (vf - vg) / vg);
+      if (old != err)
+        *errpos = input;
+    }
+  return err;
+}
+
+static const float START_RANGE = -90, END_RANGE = 90;
+static const float RANGE_STEP = 0.001;
+static const float ERROR_START = -1, ERROR_END = +1, ERROR_STEP = 0.0000001;
+static float frange_accu;
+
+template<typename Lambda> static void
+frange_print_bench (Lambda lambda, const String &name, double bench_time)
+{
+  const double N_STEPS = (END_RANGE - START_RANGE) / RANGE_STEP;
+  float pos = 0;
+  double rerr = range_error<float> (ERROR_START, ERROR_END, ERROR_STEP, exp2, lambda, &pos);
+  TBENCH ("%-18s # timing: fastest=%fs calls=%.1f/s diff=%.20f (@%f)\n",
+          name, bench_time, N_STEPS / bench_time, rerr, pos);
+  TASSERT (frange_accu != 0);
+  TASSERT (!std::isnan (frange_accu));
+}
+#define FRANGE_BENCH(FUN) ({                    \
+  frange_accu = 0;                                   \
+  double t = timer.benchmark ([] () {                                              \
+                                for (float n = START_RANGE; n <= END_RANGE; n += RANGE_STEP) \
+                                  frange_accu += FUN (n); \
+                              });                                       \
+  t; })
+
+static void
+fast_math_bench()
+{
+  Test::Timer timer (0.15); // maximum seconds
+  frange_print_bench (fast_exp2, "fast_exp2", FRANGE_BENCH (fast_exp2));
+  frange_print_bench (arm_exp2f, "arm_exp2f", FRANGE_BENCH (arm_exp2f));
+  frange_print_bench (exp2f, "exp2f", FRANGE_BENCH (exp2f));
+}
+TEST_BENCH (fast_math_bench);
 
 #if 0
 int
