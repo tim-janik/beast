@@ -284,9 +284,6 @@ fast_math_bench()
   frange_print_bench (fast_exp2, "fast_exp2", FRANGE_BENCH (fast_exp2));
   frange_print_bench (arm_exp2f, "arm_exp2f", FRANGE_BENCH (arm_exp2f));
   frange_print_bench (exp2f, "exp2f", FRANGE_BENCH (exp2f));
-  frange_print_bench (bse_approx5_exp2, "bse_approx5_exp2", FRANGE_BENCH (bse_approx5_exp2));
-  frange_print_bench (bse_approx6_exp2, "bse_approx6_exp2", FRANGE_BENCH (bse_approx6_exp2));
-  frange_print_bench (bse_approx7_exp2, "bse_approx7_exp2", FRANGE_BENCH (bse_approx7_exp2));
 }
 TEST_BENCH (fast_math_bench);
 
