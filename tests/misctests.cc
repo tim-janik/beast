@@ -227,12 +227,39 @@ fast_math_test()
       m /= 2;
     }
   // check fast_exp2 error margin in [-1..+1]
-  const double step = Bse::Test::slow() ? 0.0000001 : 0.0001;
-  for (double d = -1; d <= +1; d += step)
+  const double exp2step = Bse::Test::slow() ? 0.0000001 : 0.0001;
+  for (double d = -1; d <= +1; d += exp2step)
     {
       const double r = std::exp2 (d);
       const double err = std::fabs (r - fast_exp2 (d));
       TASSERT (err < 4e-7);
+    }
+  // check fast_log2(int), log2(2^(1..127)) must be calculated with 0 error
+  p = 1.0;
+  for (ssize_t i = 0; i <= 127; i++)
+    {
+      if (fast_log2 (p) != float (i))
+        Bse::printerr ("fast_log2(%.17g)=%.17g\n", p, fast_log2(p));
+      TASSERT (fast_log2 (p) == float (i));
+      p *= 2;
+    }
+  TASSERT (-126 == fast_log2 (1.1754944e-38));
+  TASSERT ( -64 == fast_log2 (5.421011e-20));
+  TASSERT ( -16 == fast_log2 (1.525879e-5));
+  TASSERT (  -8 == fast_log2 (0.00390625));
+  TASSERT (  -4 == fast_log2 (0.0625));
+  TASSERT (  -2 == fast_log2 (0.25));
+  TASSERT (  -1 == fast_log2 (0.5));
+  TASSERT (   0 == fast_log2 (1));
+  // check fast_log2 error margin in [1/16..16]
+  const double log2step = Bse::Test::slow() ? 0.0000001 : 0.0001;
+  for (double d = 1 / 16.; d <= 16; d += log2step)
+    {
+      const double r = std::log2 (d);
+      const double err = std::fabs (r - fast_log2 (d));
+      if (!(err < 3.8e-6))
+        Bse::printerr ("fast_log2(%.17g)=%.17g (diff=%.17g)\n", d, fast_log2 (d), r - fast_log2 (d));
+      TASSERT (err < 3.8e-6);
     }
 }
 TEST_ADD (fast_math_test);
@@ -253,37 +280,53 @@ range_error (V vmin, V vmax, V vstep, F f, G g, V *errpos)
   return err;
 }
 
-static const float START_RANGE = -90, END_RANGE = 90;
-static const float RANGE_STEP = 0.001;
-static const float ERROR_START = -1, ERROR_END = +1, ERROR_STEP = 0.0000001;
+struct RangeBenchResult {
+  double bench_time = 0;
+  double n_steps = 0;
+  double diff = 0;
+  float pos = NAN;
+};
+
 static float frange_accu;
 
 template<typename Lambda> static void
-frange_print_bench (Lambda lambda, const String &name, double bench_time)
+frange_print_bench (Lambda lambda, const String &name, RangeBenchResult res)
 {
-  const double N_STEPS = (END_RANGE - START_RANGE) / RANGE_STEP;
-  float pos = 0;
-  double rerr = range_error<float> (ERROR_START, ERROR_END, ERROR_STEP, exp2, lambda, &pos);
   TBENCH ("%-18s # timing: fastest=%fs calls=%.1f/s diff=%.20f (@%f)\n",
-          name, bench_time, N_STEPS / bench_time, rerr, pos);
+          name, res.bench_time, res.n_steps / res.bench_time, res.diff, res.pos);
   TASSERT (frange_accu != 0);
   TASSERT (!std::isnan (frange_accu));
 }
-#define FRANGE_BENCH(FUN) ({                    \
+static constexpr const float EXP2RANGE_START = -90, EXP2RANGE_END = 90, EXP2RANGE_STEP = 0.001;
+#define EXP2RANGE_BENCH(FUN) ({                    \
   frange_accu = 0;                                   \
   double t = timer.benchmark ([] () {                                              \
-                                for (float n = START_RANGE; n <= END_RANGE; n += RANGE_STEP) \
+                                for (float n = EXP2RANGE_START; n <= EXP2RANGE_END; n += EXP2RANGE_STEP) \
                                   frange_accu += FUN (n); \
                               });                                       \
-  t; })
+  RangeBenchResult r { t, (EXP2RANGE_END - EXP2RANGE_START) / EXP2RANGE_STEP }; \
+  r.diff = range_error<float> (-1, +1, 0.0000001, exp2, FUN, &r.pos);   \
+  r; })
+static constexpr const float LOG2RANGE_START = 1e-38, LOG2RANGE_END = 90, LOG2RANGE_STEP = 0.001;
+#define LOG2RANGE_BENCH(FUN) ({                    \
+  frange_accu = 0;                                   \
+  double t = timer.benchmark ([] () {                                              \
+                                for (float n = LOG2RANGE_START; n <= LOG2RANGE_END; n += LOG2RANGE_STEP) \
+                                  frange_accu += FUN (n); \
+                              });                                       \
+  RangeBenchResult r { t, (LOG2RANGE_END - LOG2RANGE_START) / LOG2RANGE_STEP };     \
+  r.diff = range_error<float> (1e-7, +1, 1e-7, log2, FUN, &r.pos);   \
+  r; })
 
 static void
 fast_math_bench()
 {
   Test::Timer timer (0.15); // maximum seconds
-  frange_print_bench (fast_exp2, "fast_exp2", FRANGE_BENCH (fast_exp2));
-  frange_print_bench (arm_exp2f, "arm_exp2f", FRANGE_BENCH (arm_exp2f));
-  frange_print_bench (exp2f, "exp2f", FRANGE_BENCH (exp2f));
+  frange_print_bench (fast_log2, "fast_log2", LOG2RANGE_BENCH (fast_log2));
+  frange_print_bench (log2f, "log2f", LOG2RANGE_BENCH (log2f));
+  frange_print_bench (fast_exp2, "fast_exp2", EXP2RANGE_BENCH (fast_exp2));
+  frange_print_bench (arm_exp2f, "arm_exp2f", EXP2RANGE_BENCH (arm_exp2f));
+  frange_print_bench (exp2f, "exp2f", EXP2RANGE_BENCH (exp2f));
 }
 TEST_BENCH (fast_math_bench);
 
