@@ -28,7 +28,7 @@ jobs:
     # == 'Gcc' Pipeline ==
     # Build a highly optimized Gcc and upload it.
     - stage: Stage1
-      name: "GCC (gcc appimage + check + bintray)"
+      name: "GCC (gcc appimage check bintray)"
       env: PIPELINE=Gcc
       before_install: |
         travis_retry git fetch --unshallow --tags
@@ -39,20 +39,20 @@ jobs:
     # Generate all possible source code linting reports,
     # sort slow jobs into separate stages to avoid timeouts.
     - stage: Stage1
-      name: "Linting-1 (clang cppcheck + scan-build)"
+      name: "Linting-1 (clang cppcheck scan-build check)"
       env: PIPELINE=linting
       before_install: |
         rm -v -rf ~/cache/$TRAVIS_BUILD_NUMBER/ ~/beast &&
         travis_retry git fetch --unshallow --tags &&
         cd .. && mv beast ~/ && cd ~/beast/
       script: |
-        misc/cibuild.sh quick cppcheck scan-build
+        misc/cibuild.sh quick cppcheck scan-build check
       before_cache: |
         mkdir -p ~/cache/$TRAVIS_BUILD_NUMBER/ &&
         cd ~ && mv ~/beast/ ~/cache/$TRAVIS_BUILD_NUMBER/ &&
         (cd ~/cache/ && pwd && ls -al )
     - stage: Stage2
-      name: "Linting-2 (clang-tidy + listunused + listhacks + bintray)"
+      name: "Linting-2 (clang-tidy listunused listhacks bintray)"
       env: PIPELINE=linting
       before_install: |
         mv ~/cache/$TRAVIS_BUILD_NUMBER/beast ~/ && cd ~/beast/
@@ -65,7 +65,7 @@ jobs:
     # == Stage2 Fedora ==
     # Fedora build tests, runs *after* the 'appimage' succeeded
     - stage: Stage1
-      name: "Fedora-28 (build + check)"
+      name: "Fedora-28 (build check appimage)"
       env: PIPELINE=Fedora-28
       before_install: |
         travis_retry git fetch --unshallow --tags
