@@ -4,7 +4,7 @@
 all:		# Default Rule
 MAKEFLAGS      += -r
 SHELL         ::= /bin/bash -o pipefail
-PARALLEL_MAKE   = $(if $(filter -j, $(MFLAGS)),Yes,)
+PARALLEL_MAKE   = $(filter JOBSERVER, $(subst -j, JOBSERVER , $(MFLAGS)))
 S ::= # Variable containing 1 space
 S +=
 

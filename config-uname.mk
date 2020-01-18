@@ -74,7 +74,7 @@ endif
 
 # AMD64 / X86_64 optimizations
 ifeq ($(uname_M),x86_64)
-  proc/cpuinfo ::= $(file < /proc/cpuinfo)
+  proc/cpuinfo   != cat /proc/cpuinfo  # proc/cpuinfo ::= $(file < /proc/cpuinfo)
   OPTIMIZE	 += -minline-all-stringops
   # Use haswell (Intel) and bdver4 (AMD Excavator Family 15h) instruction sets, plus 2015 era tuning
   ARCHX64_2015	::= -march=core2 -mtune=skylake -mfpmath=sse
