@@ -92,7 +92,7 @@
       <b-menutitle> Track </b-menutitle>
       <b-menuitem fa="plus-circle"      role="add-track" >      Add Track		</b-menuitem>
       <b-menuitem fa="i-cursor"         role="rename-track" >   Rename Track		</b-menuitem>
-      <b-menuitem fa="toggle-down" disabled role="bounce-track"> Bounce Track		</b-menuitem>
+      <b-menuitem fa="toggle-down"	role="bounce-track">	Bounce Track		</b-menuitem>
       <b-menuitem mi="visibility_off"   role="track-details"
 		  @click.prevent="menuedit ('track-details')" > Show / Hide Track Details </b-menuitem>
       <b-menuseparator style="margin: 7px" />
@@ -246,9 +246,9 @@ export default {
     },
     menuopen (event) {
       Shell.current_track = this.track;
-      this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this) });
+      this.$refs.cmenu.popup (event, { checker: this.menucheck.bind (this) });
     },
-    menucheck (role, component) {
+    async menucheck (role, component) {
       switch (role)
       {
 	case 'add-track':    return true;

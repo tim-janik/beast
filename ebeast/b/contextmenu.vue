@@ -149,14 +149,18 @@ export default {
 	  component = component.__vue__;
 	if (component.$options && component.$options.propsData && component.$options.propsData.role)
 	  {
-	    let result = this.popup_options.checker.call (null, component.$options.propsData.role, component);
-	    if ('boolean' !== typeof result)
-	      result = undefined;
-	    if (result != this.checkedroles[component.$options.propsData.role])
-	      {
-		this.$set (this.checkedroles, component.$options.propsData.role, result); // Vue reactivity
-		component.$forceUpdate();
-	      }
+	    let async_check = async () => {
+	      let result = this.popup_options.checker.call (null, component.$options.propsData.role, component);
+	      result = await result;
+	      if ('boolean' !== typeof result)
+		result = undefined;
+	      if (result != this.checkedroles[component.$options.propsData.role])
+		{
+		  this.$set (this.checkedroles, component.$options.propsData.role, result); // Vue reactivity
+		  component.$forceUpdate();
+		}
+	    };
+	    async_check();
 	  }
 	if (component.$children)
 	  for (let child of component.$children)
