@@ -10,7 +10,7 @@
 
 <template>
 
-  <b-hflex class="b-track-list" >
+  <b-hflex class="b-track-list" @dblclick.stop="list_dblclick" >
     <div class="b-track-list-tracks" >
       <b-track-view class="b-track-list-row"
 		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
@@ -103,6 +103,9 @@ export default {
     sdata: song_data.call (this),
   }; },
   methods:  {
+    list_dblclick (event) {
+      Shell?.song?.create_track();
+    },
     bclick (method, e) {
       let project = Shell.project(), m = project[method], message;
       if (m !== undefined) {
