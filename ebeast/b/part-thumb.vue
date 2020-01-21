@@ -10,13 +10,6 @@
   : The Bse.Track tick position.
 </docs>
 
-<template>
-
-  <canvas ref="canvas" class="b-part-thumb" @click="Shell.open_part_edit (part)"
-	  :style="{ left: pxoffset + 'px', width: canvas_width + 'px', }" ></canvas>
-
-</template>
-
 <style lang="scss">
   @import 'mixins.scss';
   .b-part-thumb {
@@ -29,6 +22,11 @@
     box-shadow: inset 0px 0 1px #fff9, inset -1px 0 1px #000;
   }
 </style>
+
+<template>
+  <canvas ref="canvas" class="b-part-thumb" @click="Shell.open_part_edit (part)"
+	  :style="{ left: pxoffset + 'px', width: canvas_width + 'px', }" ></canvas>
+</template>
 
 <script>
 const tick_quant = 384; // FIXME
