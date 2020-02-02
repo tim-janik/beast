@@ -44,7 +44,15 @@ struct SharedArea {
       const int flags = MAP_PRIVATE | MAP_ANONYMOUS;
       memory = (char*) MAP_FAILED;
       if (area.length >= 2 * 1024 * 1024)
-        memory = (char*) mmap (NULL, area.length, protection, flags | MAP_HUGETLB, -1, 0);
+        {
+          static bool check_hugetlb = true;
+          memory = (char*) mmap (NULL, area.length, protection, flags | MAP_HUGETLB, -1, 0);
+          if (memory == MAP_FAILED && check_hugetlb)
+            {
+              check_hugetlb = false;
+              fprintf (stderr, "%s: failed to use HUGETLB (check /proc/sys/vm/nr_hugepages): %s\n", program_alias().c_str(), strerror (errno));
+            }
+        }
       if (memory == MAP_FAILED && area.length >= 4096)
         memory = (char*) mmap (NULL, area.length, protection, flags, -1, 0);
       if (memory != MAP_FAILED)
@@ -214,36 +222,42 @@ create_memory_area (uint32 mem_size, uint32 alignment)
   return create_internal_memory_area (mem_size, alignment, true);
 }
 
+static AlignedBlock
+fast_mem_allocate_aligned_block (uint32 length)
+{
+  AlignedBlock am;
+  // allocate from shared memory areas
+  SharedAreaExtent ext { 0, length };
+  for (size_t i = 0; i < shared_areas.size(); i++)
+    if (ISLIKELY (shared_areas[i]->external == false) and
+        shared_areas[i]->alloc_ext (ext))
+      {
+        am.mem_id = shared_areas[i]->mem_id;
+        am.block_length = ext.length;
+        am.block_start = shared_areas[i]->memory + ext.start;
+        return am;
+      }
+  // allocate a new area
+  const MemoryArea ma = create_internal_memory_area (MemoryArea::MEMORY_AREA_SIZE, BSE_CACHE_LINE_ALIGNMENT, false);
+  const uint32 mem_id = ma.mem_id;
+  SharedArea &sa = *get_shared_area (mem_id);
+  const bool block_in_new_area = sa.alloc_ext (ext);
+  assert_return (block_in_new_area, am);
+  am.mem_id = sa.mem_id;
+  am.block_length = ext.length;
+  am.block_start = sa.memory + ext.start;
+  return am;
+}
+
 AlignedBlock
 allocate_aligned_block (uint32 mem_id, uint32 length)
 {
   assert_return (length <= MemoryArea::MEMORY_AREA_SIZE, {});
   AlignedBlock am;
-  return_unless (length > 0, am);
+  return_unless (length > 0, {});
   SharedAreaExtent ext { 0, length };
-  // allocate from shared memory areas
   if (mem_id == 0)
-    {
-      for (size_t i = 0; i < shared_areas.size(); i++)
-        if (ISLIKELY (shared_areas[i]->external == false) and
-            shared_areas[i]->alloc_ext (ext))
-          {
-            am.mem_id = shared_areas[i]->mem_id;
-            am.block_length = ext.length;
-            am.block_start = shared_areas[i]->memory + ext.start;
-            return am;
-          }
-      // allocate a new area
-      const MemoryArea ma = create_internal_memory_area (MemoryArea::MEMORY_AREA_SIZE, BSE_CACHE_LINE_ALIGNMENT, false);
-      mem_id = ma.mem_id;
-      SharedArea &sa = *get_shared_area (mem_id);
-      const bool block_in_new_area = sa.alloc_ext (ext);
-      assert_return (block_in_new_area, am);
-      am.mem_id = sa.mem_id;
-      am.block_length = ext.length;
-      am.block_start = sa.memory + ext.start;
-      return am;
-    }
+    return fast_mem_allocate_aligned_block (length);
   // allocate from known memory area, mem_id != 0
   SharedArea *memory_area_from_mem_id = get_shared_area (mem_id);
   assert_return (memory_area_from_mem_id != NULL, {});
