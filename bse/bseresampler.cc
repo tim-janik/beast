@@ -467,8 +467,8 @@ fir_test_filter_sse (bool       verbose,
 	  printf ("\n\n");
 	}
 
-      AlignedArray<float,16> random_mem (order + 4);
-      for (uint i = 0; i < order + 4; i++)
+      AlignedArray<float,16> random_mem (order + 6);
+      for (uint i = 0; i < order + 6; i++)
 	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
 
       /* FIXME: the problem with this test is that we explicitely test SSE code
