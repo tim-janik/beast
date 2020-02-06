@@ -245,4 +245,4 @@ test_resampler_variants()
   if (Resampler2::sse_available())
     run_tests (true);
 }
-TEST_ADD (test_resampler_variants);
+TEST_SLOW (test_resampler_variants);

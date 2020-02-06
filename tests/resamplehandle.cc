@@ -117,7 +117,7 @@ check (const char           *up_down,
   TCHECK (worst_diff_db < max_db, "%s: seeking below epsilon: %.1f < %.1f dB", samplestr, worst_diff_db, max_db);
 
   // benchmarks
-  if (1)
+  if (Bse::Test::slow())
     {
       const uint RUNS = 1;
       const uint bytes_per_run = sizeof (float) * gsl_data_handle_n_values (rhandle);
@@ -426,7 +426,7 @@ test_resample_delay_compensation()
   if (Resampler2::sse_available())
     test_delay_compensation (true);
 }
-TEST_ADD (test_resample_delay_compensation);
+TEST_SLOW (test_resample_delay_compensation);
 
 static void
 test_resample_state_length()
@@ -447,25 +447,25 @@ test_resample_handle_12()
 {
   run_tests ("SSE", 1);
 }
-TEST_ADD (test_resample_handle_12);
+TEST_SLOW (test_resample_handle_12);
 
 static void
 test_resample_handle_16()
 {
   run_tests ("SSE", 2);
 }
-TEST_ADD (test_resample_handle_16);
+TEST_SLOW (test_resample_handle_16);
 
 static void
 test_resample_handle_20()
 {
   run_tests ("SSE", 3);
 }
-TEST_ADD (test_resample_handle_20);
+TEST_SLOW (test_resample_handle_20);
 
 static void
 test_resample_handle_24()
 {
   run_tests ("SSE", 4);
 }
-TEST_ADD (test_resample_handle_24);
+TEST_SLOW (test_resample_handle_24);
