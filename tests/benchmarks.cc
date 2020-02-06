@@ -148,10 +148,15 @@ TEST_BENCH (utf8_strlen_bench_ascii);
 namespace { // Anon
 using namespace Bse;
 
-template<int C> struct TestAllocator;
+enum class AllocatorType {
+  AlignedBlock = 1,
+  PosixMemalign,
+};
+
+template<AllocatorType C> struct TestAllocator;
 
 template<>
-struct TestAllocator<0> {
+struct TestAllocator<AllocatorType::AlignedBlock> {
   static std::string    name                    ()      { return "Bse::aligned__"; }
   static AlignedBlock   allocate_block  (uint32 mem_id, uint32 length)
   { return allocate_aligned_block (mem_id, length); }
@@ -160,7 +165,7 @@ struct TestAllocator<0> {
 };
 
 template<>
-struct TestAllocator<1> {
+struct TestAllocator<AllocatorType::PosixMemalign> {
   static std::string    name                    ()      { return "posix_memalign"; }
   static AlignedBlock
   allocate_block (uint32 mem_id, uint32 length)
@@ -190,7 +195,7 @@ quick_rand32 ()
   return quick_rand32_seed;
 }
 
-template<int C> static void
+template<AllocatorType AT> static void
 bse_aligned_allocator_benchloop (uint32 seed)
 {
   constexpr const size_t RUNS = 3;
@@ -206,13 +211,13 @@ bse_aligned_allocator_benchloop (uint32 seed)
         for (size_t i = 0; i < N_ALLOCS; i++)
           {
             const size_t length = 1 + ((quick_rand32() * MAX_CHUNK_SIZE) >> 32);
-            blocks[i] = TestAllocator<C>::allocate_block (0, length);
+            blocks[i] = TestAllocator<AT>::allocate_block (0, length);
             TASSERT (blocks[i].block_length > 0);
             if (i > RESIDENT && (i & 1))
               {
                 AlignedBlock &rblock = blocks[i - RESIDENT];
                 // Bse::printerr ("%d) AlignedBlock{%u,%x,%x,%p}\n", i, rblock.shm_id, rblock.mem_offset, rblock.mem_length, rblock.mem_start);
-                TestAllocator<C>::release_block (rblock);
+                TestAllocator<AT>::release_block (rblock);
                 rblock = AlignedBlock();
               }
           }
@@ -228,14 +233,14 @@ bse_aligned_allocator_benchloop (uint32 seed)
             const uint l2 = blocks[i2].block_length;
             const uint l3 = blocks[i3].block_length;
             if (l1)
-              TestAllocator<C>::release_block (blocks[i1]);
+              TestAllocator<AT>::release_block (blocks[i1]);
             if (l2)
-              TestAllocator<C>::release_block (blocks[i2]);
+              TestAllocator<AT>::release_block (blocks[i2]);
             if (l3)
-              TestAllocator<C>::release_block (blocks[i3]);
-            blocks[i2] = TestAllocator<C>::allocate_block (0, l1 ? l1 : MAX_CHUNK_SIZE / 3);
-            blocks[i1] = TestAllocator<C>::allocate_block (0, l3 ? l3 : MAX_CHUNK_SIZE / 3);
-            blocks[i3] = TestAllocator<C>::allocate_block (0, l2 ? l2 : MAX_CHUNK_SIZE / 3);
+              TestAllocator<AT>::release_block (blocks[i3]);
+            blocks[i2] = TestAllocator<AT>::allocate_block (0, l1 ? l1 : MAX_CHUNK_SIZE / 3);
+            blocks[i1] = TestAllocator<AT>::allocate_block (0, l3 ? l3 : MAX_CHUNK_SIZE / 3);
+            blocks[i3] = TestAllocator<AT>::allocate_block (0, l2 ? l2 : MAX_CHUNK_SIZE / 3);
           }
         // release blocks randomized (frees ca 59%)
         for (size_t j = 0; j < N_ALLOCS; j++)
@@ -243,14 +248,14 @@ bse_aligned_allocator_benchloop (uint32 seed)
             const uint i = (quick_rand32() * N_ALLOCS) >> 32;
             if (!blocks[i].block_length)
               continue;
-            TestAllocator<C>::release_block (blocks[i]);
+            TestAllocator<AT>::release_block (blocks[i]);
             blocks[i] = AlignedBlock();
           }
         // release everything
         for (size_t i = 0; i < N_ALLOCS; i++)
           if (blocks[i].block_length)
             {
-              TestAllocator<C>::release_block (blocks[i]);
+              TestAllocator<AT>::release_block (blocks[i]);
               blocks[i] = AlignedBlock();
             }
       }
@@ -260,7 +265,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   const size_t n_allocations = RUNS * N_ALLOCS * (1 + 3.0 / 2);
   const double ns_p_a = 1000000000.0 * bench_aa / n_allocations;
   Bse::printerr ("  BENCH    %s:   %u allocations in %.2f seconds, %.1fnsecs/allocation\n",
-                 TestAllocator<C>::name(), n_allocations, bench_aa, ns_p_a);
+                 TestAllocator<AT>::name(), n_allocations, bench_aa, ns_p_a);
 }
 
 static void
@@ -278,7 +283,7 @@ static void
 aligned_allocator_bench31_bse()
 {
   ensure_block_allocator_initialization();
-  bse_aligned_allocator_benchloop<0> (2654435769);
+  bse_aligned_allocator_benchloop<AllocatorType::AlignedBlock> (2654435769);
 }
 TEST_BENCH (aligned_allocator_bench31_bse);
 
@@ -286,7 +291,7 @@ static void
 aligned_allocator_bench31_posix()
 {
   ensure_block_allocator_initialization();
-  bse_aligned_allocator_benchloop<1> (2654435769);
+  bse_aligned_allocator_benchloop<AllocatorType::PosixMemalign> (2654435769);
   // phi = 1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475
   // 2^64 / phi = 11400714819323198485.95161058762180694985
   // 2^32 / phi = 2654435769.49723029647758477079
