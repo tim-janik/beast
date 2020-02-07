@@ -9,25 +9,26 @@
 
 namespace Bse {
 
-struct SharedAreaExtent {
+struct Extent32 {
   uint32   start = 0;
   uint32   length = 0;
-  explicit SharedAreaExtent (uint32 sz = 0) : length (sz) {}
-  explicit SharedAreaExtent (uint32 st, uint32 len) : start (st), length (len) {}
-  void     reset (uint32 sz = 0)                          { start = 0; length = sz; }
-  void     zero (char *area) const                        { memset (area + start, 0, length); }
+  explicit Extent32 (uint32 sz = 0) : length (sz) {}
+  explicit Extent32 (uint32 st, uint32 len) : start (st), length (len) {}
+  void     reset    (uint32 sz = 0)     { start = 0; length = sz; }
+  void     zero     (char *area) const  { memset (area + start, 0, length); }
 };
 
 static uint32 shared_area_nextid = BSE_STARTID_MEMORY_AREA;
 
-struct SharedArea {
-  const uint32                  mem_id, mem_alignment;
-  SharedAreaExtent              area;
-  std::vector<SharedAreaExtent> extents; // free list
-  char                         *memory = NULL;
-  std::function<void (SharedArea&)> mem_release;
+// SequentialFitAllocator
+struct SequentialFitAllocator {
+  const uint32          mem_id, mem_alignment;
+  Extent32              area;
+  std::vector<Extent32> extents; // free list
+  char                 *memory = NULL;
+  std::function<void (SequentialFitAllocator&)> mem_release;
   bool                          external;
-  SharedArea (uint32 areasize, uint32 alignment, bool is_external) :
+  SequentialFitAllocator (uint32 areasize, uint32 alignment, bool is_external) :
     mem_id (shared_area_nextid++), mem_alignment (alignment), external (is_external)
   {
     assert_return (areasize > 0 && alignment < areasize);
@@ -56,20 +57,20 @@ struct SharedArea {
       if (memory == MAP_FAILED && area.length >= 4096)
         memory = (char*) mmap (NULL, area.length, protection, flags, -1, 0);
       if (memory != MAP_FAILED)
-        mem_release = [] (SharedArea &self) { munmap (self.memory, self.area.length); self.memory = NULL; };
+        mem_release = [] (SequentialFitAllocator &self) { munmap (self.memory, self.area.length); self.memory = NULL; };
       else
         {
           const int posix_memalign_result = posix_memalign ((void**) &memory, mem_alignment, area.length);
           if (posix_memalign_result)
             fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", area.length, strerror (posix_memalign_result));
-          mem_release = [] (SharedArea &self) { free (self.memory); self.memory = NULL; };
+          mem_release = [] (SequentialFitAllocator &self) { free (self.memory); self.memory = NULL; };
         }
     }
     assert_return (memory != NULL);
     release_ext (area);
     assert_return ((size_t (memory) & (mem_alignment - 1)) == 0); // ensure alignment
   }
-  ~SharedArea()
+  ~SequentialFitAllocator()
   {
     const ssize_t s = sum();
     if (s != area.length)
@@ -86,7 +87,7 @@ struct SharedArea {
     return s;
   }
   void
-  release_ext (const SharedAreaExtent &ext)
+  release_ext (const Extent32 &ext)
   {
     assert_return (ext.start >= area.start);
     assert_return (ext.length > 0);
@@ -148,7 +149,7 @@ struct SharedArea {
     return candidate;
   }
   bool
-  alloc_ext (SharedAreaExtent &ext)
+  alloc_ext (Extent32 &ext)
   {
     assert_return (ext.start == 0, false);
     assert_return (ext.length > 0, false);
@@ -172,7 +173,7 @@ struct SharedArea {
   {
     if (extents.size())
       {
-        auto isless_start = [] (const SharedAreaExtent &a, const SharedAreaExtent &b) -> bool {
+        auto isless_start = [] (const Extent32 &a, const Extent32 &b) -> bool {
           return a.start < b.start;
         };
         std::sort (extents.begin(), extents.end(), isless_start);
@@ -186,18 +187,18 @@ struct SharedArea {
   }
 #endif
 };
-static std::vector<SharedArea*> shared_areas;
+static std::vector<SequentialFitAllocator*> shared_areas;
 
 static MemoryArea
 create_internal_memory_area (uint32 mem_size, uint32 alignment, bool external)
 {
-  shared_areas.push_back (new SharedArea (mem_size, alignment, external));
-  SharedArea &sa = *shared_areas.back();
+  shared_areas.push_back (new SequentialFitAllocator (mem_size, alignment, external));
+  SequentialFitAllocator &sa = *shared_areas.back();
   assert_return (sa.mem_id == BSE_STARTID_MEMORY_AREA + shared_areas.size() - 1, {});
   return MemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory), sa.area.length };
 }
 
-static SharedArea*
+static SequentialFitAllocator*
 get_shared_area (uint32 mem_id)
 {
   if (mem_id >= BSE_STARTID_MEMORY_AREA)
@@ -212,7 +213,7 @@ get_shared_area (uint32 mem_id)
 MemoryArea
 find_memory_area (uint32 mem_id)
 {
-  SharedArea *sa = get_shared_area (mem_id);
+  SequentialFitAllocator *sa = get_shared_area (mem_id);
   return sa ? MemoryArea { sa->mem_id, sa->mem_alignment, uint64 (sa->memory), sa->area.length } : MemoryArea{};
 }
 
@@ -227,7 +228,7 @@ fast_mem_allocate_aligned_block (uint32 length)
 {
   AlignedBlock am;
   // allocate from shared memory areas
-  SharedAreaExtent ext { 0, length };
+  Extent32 ext { 0, length };
   for (size_t i = 0; i < shared_areas.size(); i++)
     if (ISLIKELY (shared_areas[i]->external == false) and
         shared_areas[i]->alloc_ext (ext))
@@ -240,7 +241,7 @@ fast_mem_allocate_aligned_block (uint32 length)
   // allocate a new area
   const MemoryArea ma = create_internal_memory_area (MemoryArea::MEMORY_AREA_SIZE, BSE_CACHE_LINE_ALIGNMENT, false);
   const uint32 mem_id = ma.mem_id;
-  SharedArea &sa = *get_shared_area (mem_id);
+  SequentialFitAllocator &sa = *get_shared_area (mem_id);
   const bool block_in_new_area = sa.alloc_ext (ext);
   assert_return (block_in_new_area, am);
   am.mem_id = sa.mem_id;
@@ -255,13 +256,13 @@ allocate_aligned_block (uint32 mem_id, uint32 length)
   assert_return (length <= MemoryArea::MEMORY_AREA_SIZE, {});
   AlignedBlock am;
   return_unless (length > 0, {});
-  SharedAreaExtent ext { 0, length };
+  Extent32 ext { 0, length };
   if (mem_id == 0)
     return fast_mem_allocate_aligned_block (length);
   // allocate from known memory area, mem_id != 0
-  SharedArea *memory_area_from_mem_id = get_shared_area (mem_id);
+  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (mem_id);
   assert_return (memory_area_from_mem_id != NULL, {});
-  SharedArea &sa = *memory_area_from_mem_id;
+  SequentialFitAllocator &sa = *memory_area_from_mem_id;
   if (sa.alloc_ext (ext))
     {
       am.mem_id = sa.mem_id;
@@ -274,14 +275,14 @@ allocate_aligned_block (uint32 mem_id, uint32 length)
 void
 release_aligned_block (const AlignedBlock &am)
 {
-  SharedArea *memory_area_from_mem_id = get_shared_area (am.mem_id);
+  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (am.mem_id);
   assert_return (memory_area_from_mem_id != NULL);
-  SharedArea &sa = *memory_area_from_mem_id;
+  SequentialFitAllocator &sa = *memory_area_from_mem_id;
   assert_return (am.block_start >= sa.memory);
   assert_return (am.block_start < sa.memory + sa.area.length);
   const uint32 block_offset = ((char*) am.block_start) - sa.memory;
   assert_return (block_offset + am.block_length <= sa.area.length);
-  SharedAreaExtent ext { block_offset, am.block_length };
+  Extent32 ext { block_offset, am.block_length };
   sa.release_ext (ext);
 }
 
@@ -298,25 +299,25 @@ bse_aligned_allocator_tests()
   const ssize_t kb = 1024, asz = 4 * 1024;
   // create small area
   const MemoryArea ma = create_internal_memory_area (asz, BSE_CACHE_LINE_ALIGNMENT, true);
-  SharedArea *memory_area_from_mem_id = get_shared_area (ma.mem_id);
+  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (ma.mem_id);
   assert_return (memory_area_from_mem_id != NULL);
-  SharedArea &sa = *memory_area_from_mem_id;
+  SequentialFitAllocator &sa = *memory_area_from_mem_id;
   assert_return (sa.sum() == asz);
   // allocate 4 * 1mb
   bool success;
-  SharedAreaExtent s1 (kb);
+  Extent32 s1 (kb);
   success = sa.alloc_ext (s1);
   assert_return (success);
   assert_return (sa.sum() == asz - kb);
-  SharedAreaExtent s2 (kb - 1);
+  Extent32 s2 (kb - 1);
   success = sa.alloc_ext (s2);
   assert_return (success && s2.length == kb); // check alignment
   assert_return (sa.sum() == asz - 2 * kb);
-  SharedAreaExtent s3 (kb);
+  Extent32 s3 (kb);
   success = sa.alloc_ext (s3);
   assert_return (success);
   assert_return (sa.sum() == asz - 3 * kb);
-  SharedAreaExtent s4 (kb);
+  Extent32 s4 (kb);
   success = sa.alloc_ext (s4);
   assert_return (success);
   assert_return (sa.sum() == 0);
