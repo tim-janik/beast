@@ -1252,17 +1252,17 @@ ServerImpl::broadcast_shm_fragments (const ShmFragmentSeq &plan, int interval_ms
 static constexpr ssize_t SHARED_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
 static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 
-static const MemoryArea&
+static const FastMemoryArea&
 server_shared_memory_area()
 {
-  static MemoryArea shm_area = create_memory_area (current_shared_memory_area_size, 2 * BSE_CACHE_LINE_ALIGNMENT);
+  static FastMemoryArea shm_area = FastMemoryArea::create (current_shared_memory_area_size, 2 * FastMemoryArea::minimum_alignment);
   return shm_area;
 }
 
 SharedMemory
 ServerImpl::get_shared_memory()
 {
-  const MemoryArea &ma = server_shared_memory_area();
+  const FastMemoryArea &ma = server_shared_memory_area();
   SharedMemory sm;
   sm.shm_start = ma.mem_start;
   sm.shm_length = ma.mem_length;
@@ -1276,8 +1276,8 @@ ServerImpl::allocate_shared_block (int64 length)
   SharedBlock sb;
   assert_return (length <= SHARED_MEMORY_AREA_SIZE, sb);
   return_unless (length > 0, sb);
-  const MemoryArea &ma = server_shared_memory_area();
-  AlignedBlock ab = allocate_aligned_block (ma.mem_id, length);
+  const FastMemoryArea &ma = server_shared_memory_area();
+  FastMemoryBlock ab = ma.allocate (length);
   if (!ab.block_start)
     {
       // Generally, this should not happen, if it does, we need to increase the area size
@@ -1304,9 +1304,9 @@ void
 ServerImpl::release_shared_block (const SharedBlock &sb)
 {
   assert_return (sb.mem_length >= 0);
-  const MemoryArea &ma = server_shared_memory_area();
-  AlignedBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
-  release_aligned_block (ab);
+  const FastMemoryArea &ma = server_shared_memory_area();
+  FastMemoryBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
+  ab.release();
   assert_return (current_shared_memory_area_size + ab.block_length <= SHARED_MEMORY_AREA_SIZE);
   current_shared_memory_area_size += ab.block_length;
 }

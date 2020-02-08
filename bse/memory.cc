@@ -7,6 +7,8 @@
 #define MEM_ALIGN(addr, alignment)      (alignment * ((size_t (addr) + alignment - 1) / alignment))
 #define CHECK_FREE_OVERLAPS             0       /* paranoid chcks that slow down */
 
+static constexpr size_t INTERNAL_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
+
 namespace Bse {
 
 class LargeAllocation {
@@ -233,7 +235,7 @@ struct SequentialFitAllocator {
 };
 static std::vector<SequentialFitAllocator*> shared_areas;
 
-static MemoryArea
+static FastMemoryArea
 create_internal_memory_area (uint32 mem_size, uint32 alignment, bool external)
 {
   auto blob = LargeAllocation::allocate (MEM_ALIGN (mem_size, alignment), alignment);
@@ -242,7 +244,7 @@ create_internal_memory_area (uint32 mem_size, uint32 alignment, bool external)
   shared_areas.push_back (new SequentialFitAllocator (std::move (blob), alignment, external));
   SequentialFitAllocator &sa = *shared_areas.back();
   assert_return (sa.mem_id == BSE_STARTID_MEMORY_AREA + shared_areas.size() - 1, {});
-  return MemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory()), sa.size() };
+  return FastMemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory()), sa.size() };
 }
 
 static SequentialFitAllocator*
@@ -257,23 +259,23 @@ get_shared_area (uint32 mem_id)
   return NULL;
 }
 
-MemoryArea
-find_memory_area (uint32 mem_id)
+FastMemoryArea
+FastMemoryArea::find (uint32 mem_id)
 {
   SequentialFitAllocator *sa = get_shared_area (mem_id);
-  return sa ? MemoryArea { sa->mem_id, sa->mem_alignment, uint64 (sa->memory()), sa->size() } : MemoryArea{};
+  return sa ? FastMemoryArea { sa->mem_id, sa->mem_alignment, uint64 (sa->memory()), sa->size() } : FastMemoryArea{};
 }
 
-MemoryArea
-create_memory_area (uint32 mem_size, uint32 alignment)
+FastMemoryArea
+FastMemoryArea::create (uint32 mem_size, uint32 alignment)
 {
   return create_internal_memory_area (mem_size, alignment, true);
 }
 
-static AlignedBlock
+static FastMemoryBlock
 fast_mem_allocate_aligned_block (uint32 length)
 {
-  AlignedBlock am;
+  FastMemoryBlock am;
   // allocate from shared memory areas
   Extent32 ext { 0, length };
   for (size_t i = 0; i < shared_areas.size(); i++)
@@ -286,7 +288,7 @@ fast_mem_allocate_aligned_block (uint32 length)
         return am;
       }
   // allocate a new area
-  const MemoryArea ma = create_internal_memory_area (MemoryArea::MEMORY_AREA_SIZE, BSE_CACHE_LINE_ALIGNMENT, false);
+  const FastMemoryArea ma = create_internal_memory_area (INTERNAL_MEMORY_AREA_SIZE, FastMemoryArea::minimum_alignment, false);
   const uint32 mem_id = ma.mem_id;
   SequentialFitAllocator &sa = *get_shared_area (mem_id);
   const bool block_in_new_area = sa.alloc_ext (ext);
@@ -297,11 +299,11 @@ fast_mem_allocate_aligned_block (uint32 length)
   return am;
 }
 
-AlignedBlock
-allocate_aligned_block (uint32 mem_id, uint32 length)
+FastMemoryBlock
+FastMemoryArea::allocate (uint32 length) const
 {
-  assert_return (length <= MemoryArea::MEMORY_AREA_SIZE, {});
-  AlignedBlock am;
+  assert_return (length <= INTERNAL_MEMORY_AREA_SIZE, {});
+  FastMemoryBlock am;
   return_unless (length > 0, {});
   Extent32 ext { 0, length };
   if (mem_id == 0)
@@ -320,16 +322,16 @@ allocate_aligned_block (uint32 mem_id, uint32 length)
 }
 
 void
-release_aligned_block (const AlignedBlock &am)
+FastMemoryBlock::release () const
 {
-  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (am.mem_id);
+  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (mem_id);
   assert_return (memory_area_from_mem_id != NULL);
   SequentialFitAllocator &sa = *memory_area_from_mem_id;
-  assert_return (am.block_start >= sa.memory());
-  assert_return (am.block_start < sa.memory() + sa.size());
-  const uint32 block_offset = ((char*) am.block_start) - sa.memory();
-  assert_return (block_offset + am.block_length <= sa.size());
-  Extent32 ext { block_offset, am.block_length };
+  assert_return (block_start >= sa.memory());
+  assert_return (block_start < sa.memory() + sa.size());
+  const uint32 block_offset = ((char*) block_start) - sa.memory();
+  assert_return (block_offset + block_length <= sa.size());
+  Extent32 ext { block_offset, block_length };
   sa.release_ext (ext);
 }
 
@@ -345,7 +347,7 @@ bse_aligned_allocator_tests()
 {
   const ssize_t kb = 1024, asz = 4 * 1024;
   // create small area
-  const MemoryArea ma = create_internal_memory_area (asz, BSE_CACHE_LINE_ALIGNMENT, true);
+  const FastMemoryArea ma = create_internal_memory_area (asz, FastMemoryArea::minimum_alignment, true);
   SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (ma.mem_id);
   assert_return (memory_area_from_mem_id != NULL);
   SequentialFitAllocator &sa = *memory_area_from_mem_id;
