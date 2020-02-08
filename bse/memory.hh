@@ -12,7 +12,7 @@ struct MemoryArea {
   uint32 mem_id = 0;           ///< Identifier for the associated memory area.
   uint32 mem_alignment = 0;    ///< Alignment for block addresses and length.
   uint64 mem_start = 0;        ///< Memory area location.
-  uint32 mem_length = 0;       ///< Memory area length in bytes
+  uint64 mem_length = 0;       ///< Memory area length in bytes
   static const constexpr size_t MEMORY_AREA_SIZE = size_t (4) * 1024 * 1024;
 };
 

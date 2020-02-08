@@ -9,6 +9,71 @@
 
 namespace Bse {
 
+class LargeAllocation {
+  using ReleaseMFP = void (LargeAllocation::*) ();
+  void      *start_ = nullptr;
+  size_t     length_ = 0;
+  ReleaseMFP release_ = nullptr;
+  void  free_start ()           { free (start_); }
+  void  munmap_start ()         { munmap (start_, length_); }
+  void  unadvise_free_start ()  { madvise (start_, length_, MADV_NOHUGEPAGE); free (start_); }
+  /*ctor*/         LargeAllocation (void *m, size_t l, ReleaseMFP r) : start_ (m), length_ (l), release_ (r) {}
+  explicit         LargeAllocation (const LargeAllocation&) = delete; // move-only
+  LargeAllocation& operator=       (const LargeAllocation&) = delete; // move-only
+public:
+  /*move*/         LargeAllocation (LargeAllocation &&t) { operator= (std::move (t)); }
+  /*ctor*/         LargeAllocation ()           {}
+  /*dtor*/        ~LargeAllocation ()           { if (release_) (this->*release_) (); release_ = nullptr; }
+  LargeAllocation& operator=       (LargeAllocation &&t)
+  {
+    std::swap (start_, t.start_);
+    std::swap (length_, t.length_);
+    std::swap (release_, t.release_);
+    return *this;
+  }
+  char*            mem             () const     { return (char*) start_; }
+  size_t           size            () const     { return length_; }
+  static LargeAllocation
+  allocate (const size_t length, size_t minalign)
+  {
+    const size_t minhugepage = 2 * 1024 * 1024;
+    // try reserved hugepages for large allocations
+    if (length >= minhugepage)
+      {
+        const int protection = PROT_READ | PROT_WRITE;
+        const int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+        void *memory = mmap (nullptr, length, protection, flags | MAP_HUGETLB, -1, 0);
+        if (memory != MAP_FAILED)
+          {
+            assert_return ((size_t (memory) & (minalign - 1)) == 0, {}); // ensure alignment
+            return { memory, length, &LargeAllocation::munmap_start };
+          }
+      }
+    // try transparent hugepages for large allocations
+    if (length >= minhugepage)
+      {
+        void *memory = std::aligned_alloc (std::max (minhugepage, minalign), length);
+        if (memory)
+          {
+            assert_return ((size_t (memory) & (minalign - 1)) == 0, {}); // ensure alignment
+            ReleaseMFP release;
+            // linux/Documentation/admin-guide/mm/transhuge.rst
+            if (madvise (memory, length, MADV_HUGEPAGE) >= 0)
+              release = &LargeAllocation::unadvise_free_start;
+            else
+              release = &LargeAllocation::free_start;
+            return { memory, length, release };
+          }
+      }
+    // otherwise fallback to aligned_alloc for other allocations
+    void *memory = std::aligned_alloc (minalign, length);
+    if (!memory)
+      return {};
+    assert_return ((size_t (memory) & (minalign - 1)) == 0, {}); // ensure alignment
+    return { memory, length, &LargeAllocation::free_start };
+  }
+};
+
 struct Extent32 {
   uint32   start = 0;
   uint32   length = 0;
@@ -22,61 +87,43 @@ static uint32 shared_area_nextid = BSE_STARTID_MEMORY_AREA;
 
 // SequentialFitAllocator
 struct SequentialFitAllocator {
-  const uint32          mem_id, mem_alignment;
-  Extent32              area;
+  LargeAllocation       blob;
   std::vector<Extent32> extents; // free list
-  char                 *memory = NULL;
-  std::function<void (SequentialFitAllocator&)> mem_release;
+  const uint32          mem_id, mem_alignment;
   bool                          external;
   SequentialFitAllocator (uint32 areasize, uint32 alignment, bool is_external) :
     mem_id (shared_area_nextid++), mem_alignment (alignment), external (is_external)
   {
-    assert_return (areasize > 0 && alignment < areasize);
+    assert_return (areasize > 0 && mem_alignment < areasize);
     assert_return (mem_id != 0);
-    assert_return ((alignment & (alignment - 1)) == 0); // check for power of 2
-    assert_return (area.length == 0 && areasize > 0);
-    area.length = MEM_ALIGN (areasize, mem_alignment);
-    assert_return (area.length >= areasize);
-    if (area.length >= 1024 * 1024)
+    assert_return ((mem_alignment & (mem_alignment - 1)) == 0); // check for power of 2
+    uint32 arealength = MEM_ALIGN (areasize, mem_alignment);
+    assert_return (arealength >= areasize);
+    if (arealength >= 1024 * 1024)
       extents.reserve (1024);
-    area.start = 0;
-    {
-      const int protection = PROT_READ | PROT_WRITE;
-      const int flags = MAP_PRIVATE | MAP_ANONYMOUS;
-      memory = (char*) MAP_FAILED;
-      if (area.length >= 2 * 1024 * 1024)
-        {
-          static bool check_hugetlb = true;
-          memory = (char*) mmap (NULL, area.length, protection, flags | MAP_HUGETLB, -1, 0);
-          if (memory == MAP_FAILED && check_hugetlb)
-            {
-              check_hugetlb = false;
-              fprintf (stderr, "%s: failed to use HUGETLB (check /proc/sys/vm/nr_hugepages): %s\n", program_alias().c_str(), strerror (errno));
-            }
-        }
-      if (memory == MAP_FAILED && area.length >= 4096)
-        memory = (char*) mmap (NULL, area.length, protection, flags, -1, 0);
-      if (memory != MAP_FAILED)
-        mem_release = [] (SequentialFitAllocator &self) { munmap (self.memory, self.area.length); self.memory = NULL; };
-      else
-        {
-          const int posix_memalign_result = posix_memalign ((void**) &memory, mem_alignment, area.length);
-          if (posix_memalign_result)
-            fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", area.length, strerror (posix_memalign_result));
-          mem_release = [] (SequentialFitAllocator &self) { free (self.memory); self.memory = NULL; };
-        }
-    }
-    assert_return (memory != NULL);
+    blob = LargeAllocation::allocate (arealength, alignment);
+    if (!blob.mem())
+      fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", arealength, strerror (errno));
+    Extent32 area { 0, uint32_t (blob.size()) };
+    area.zero (blob.mem());
     release_ext (area);
-    assert_return ((size_t (memory) & (mem_alignment - 1)) == 0); // ensure alignment
+    assert_return (area.length == blob.size());
   }
   ~SequentialFitAllocator()
   {
     const ssize_t s = sum();
-    if (s != area.length)
-      warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, area.length - s);
-    if (mem_release)
-      mem_release (*this);
+    if (s != blob.size())
+      warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, blob.size() - s);
+  }
+  char*
+  memory () const
+  {
+    return blob.mem();
+  }
+  size_t
+  size () const
+  {
+    return blob.size();
   }
   size_t
   sum () const
@@ -89,10 +136,9 @@ struct SequentialFitAllocator {
   void
   release_ext (const Extent32 &ext)
   {
-    assert_return (ext.start >= area.start);
     assert_return (ext.length > 0);
-    assert_return (ext.start + ext.length <= area.start + area.length);
-    ext.zero (memory);
+    assert_return (ext.start + ext.length <= blob.size());
+    ext.zero (blob.mem());
     ssize_t overlaps_existing = -1, before = -1, after = -1;
     for (size_t i = 0; i < extents.size(); i++)
       if (ext.start == extents[i].start + extents[i].length)
@@ -195,7 +241,7 @@ create_internal_memory_area (uint32 mem_size, uint32 alignment, bool external)
   shared_areas.push_back (new SequentialFitAllocator (mem_size, alignment, external));
   SequentialFitAllocator &sa = *shared_areas.back();
   assert_return (sa.mem_id == BSE_STARTID_MEMORY_AREA + shared_areas.size() - 1, {});
-  return MemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory), sa.area.length };
+  return MemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory()), sa.size() };
 }
 
 static SequentialFitAllocator*
@@ -214,7 +260,7 @@ MemoryArea
 find_memory_area (uint32 mem_id)
 {
   SequentialFitAllocator *sa = get_shared_area (mem_id);
-  return sa ? MemoryArea { sa->mem_id, sa->mem_alignment, uint64 (sa->memory), sa->area.length } : MemoryArea{};
+  return sa ? MemoryArea { sa->mem_id, sa->mem_alignment, uint64 (sa->memory()), sa->size() } : MemoryArea{};
 }
 
 MemoryArea
@@ -235,7 +281,7 @@ fast_mem_allocate_aligned_block (uint32 length)
       {
         am.mem_id = shared_areas[i]->mem_id;
         am.block_length = ext.length;
-        am.block_start = shared_areas[i]->memory + ext.start;
+        am.block_start = shared_areas[i]->memory() + ext.start;
         return am;
       }
   // allocate a new area
@@ -246,7 +292,7 @@ fast_mem_allocate_aligned_block (uint32 length)
   assert_return (block_in_new_area, am);
   am.mem_id = sa.mem_id;
   am.block_length = ext.length;
-  am.block_start = sa.memory + ext.start;
+  am.block_start = sa.memory() + ext.start;
   return am;
 }
 
@@ -267,7 +313,7 @@ allocate_aligned_block (uint32 mem_id, uint32 length)
     {
       am.mem_id = sa.mem_id;
       am.block_length = ext.length;
-      am.block_start = sa.memory + ext.start;
+      am.block_start = sa.memory() + ext.start;
     }
   return am;
 }
@@ -278,10 +324,10 @@ release_aligned_block (const AlignedBlock &am)
   SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (am.mem_id);
   assert_return (memory_area_from_mem_id != NULL);
   SequentialFitAllocator &sa = *memory_area_from_mem_id;
-  assert_return (am.block_start >= sa.memory);
-  assert_return (am.block_start < sa.memory + sa.area.length);
-  const uint32 block_offset = ((char*) am.block_start) - sa.memory;
-  assert_return (block_offset + am.block_length <= sa.area.length);
+  assert_return (am.block_start >= sa.memory());
+  assert_return (am.block_start < sa.memory() + sa.size());
+  const uint32 block_offset = ((char*) am.block_start) - sa.memory();
+  assert_return (block_offset + am.block_length <= sa.size());
   Extent32 ext { block_offset, am.block_length };
   sa.release_ext (ext);
 }
