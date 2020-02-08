@@ -31,8 +31,9 @@ public:
     std::swap (release_, t.release_);
     return *this;
   }
-  char*            mem             () const     { return (char*) start_; }
-  size_t           size            () const     { return length_; }
+  char*  mem       () const { return (char*) start_; }
+  size_t size      () const { return length_; }
+  size_t alignment () const { return start_ ? size_t (1) << __builtin_ctz (size_t (start_)) : 0; }
   static LargeAllocation
   allocate (const size_t length, size_t minalign)
   {
@@ -89,29 +90,26 @@ static uint32 shared_area_nextid = BSE_STARTID_MEMORY_AREA;
 struct SequentialFitAllocator {
   LargeAllocation       blob;
   std::vector<Extent32> extents; // free list
-  const uint32          mem_id, mem_alignment;
-  bool                          external;
-  SequentialFitAllocator (uint32 areasize, uint32 alignment, bool is_external) :
-    mem_id (shared_area_nextid++), mem_alignment (alignment), external (is_external)
+  const uint32          mem_alignment, mem_id;
+  bool                  external;
+  SequentialFitAllocator (LargeAllocation &&newblob, uint32 alignment, bool is_external) :
+    blob (std::move (newblob)), mem_alignment (alignment), mem_id (shared_area_nextid++), external (is_external)
   {
-    assert_return (areasize > 0 && mem_alignment < areasize);
+    assert_return (size() > 0);
+    assert_return (mem_alignment <= blob.alignment());
+    assert_return ((size_t (blob.mem()) & (blob.alignment() - 1)) == 0);
     assert_return (mem_id != 0);
-    assert_return ((mem_alignment & (mem_alignment - 1)) == 0); // check for power of 2
-    uint32 arealength = MEM_ALIGN (areasize, mem_alignment);
-    assert_return (arealength >= areasize);
-    if (arealength >= 1024 * 1024)
+    if (size() >= 1024 * 1024)
       extents.reserve (1024);
-    blob = LargeAllocation::allocate (arealength, alignment);
-    if (!blob.mem())
-      fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", arealength, strerror (errno));
-    Extent32 area { 0, uint32_t (blob.size()) };
+    assert_return (size() <= 4294967295);
+    Extent32 area { 0, uint32_t (size()) };
     area.zero (blob.mem());
     release_ext (area);
     assert_return (area.length == blob.size());
   }
   ~SequentialFitAllocator()
   {
-    const ssize_t s = sum();
+    const size_t s = sum();
     if (s != blob.size())
       warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, blob.size() - s);
   }
@@ -238,7 +236,10 @@ static std::vector<SequentialFitAllocator*> shared_areas;
 static MemoryArea
 create_internal_memory_area (uint32 mem_size, uint32 alignment, bool external)
 {
-  shared_areas.push_back (new SequentialFitAllocator (mem_size, alignment, external));
+  auto blob = LargeAllocation::allocate (MEM_ALIGN (mem_size, alignment), alignment);
+  if (!blob.mem())
+    fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", mem_size, strerror (errno));
+  shared_areas.push_back (new SequentialFitAllocator (std::move (blob), alignment, external));
   SequentialFitAllocator &sa = *shared_areas.back();
   assert_return (sa.mem_id == BSE_STARTID_MEMORY_AREA + shared_areas.size() - 1, {});
   return MemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory()), sa.size() };
