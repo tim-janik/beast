@@ -335,9 +335,95 @@ FastMemoryBlock::release () const
   sa.release_ext (ext);
 }
 
+// == MemoryMetaTable ==
+struct MemoryMetaInfo {
+  std::mutex mutex;
+  std::vector<Bse::FastMemoryBlock> ablocks;
+};
+
+static MemoryMetaInfo&
+mm_info_lookup (void *ptr)
+{
+  static MemoryMetaInfo mm_info[1024];
+  const size_t arrsz = sizeof (mm_info) / sizeof (mm_info[0]);
+  union { uint64_t v; uint8_t a[8]; } u { uintptr_t (ptr) };
+  const uint64_t M = 11400714819323198487ull; // golden ratio, rounded up to next odd
+  const uint64_t S = 0xcbf29ce484222325;
+  size_t hash = S; // swap a[0]..a[7] on big-endian for good avalange effect
+  hash = (u.a[0] ^ hash) * M;
+  hash = (u.a[1] ^ hash) * M;
+  hash = (u.a[2] ^ hash) * M;
+  hash = (u.a[3] ^ hash) * M;
+  hash = (u.a[4] ^ hash) * M;
+  hash = (u.a[5] ^ hash) * M;
+  hash = (u.a[6] ^ hash) * M;
+  hash = (u.a[7] ^ hash) * M;
+  return mm_info[hash % arrsz];
+}
+
+static void
+mm_info_push_mt (const FastMemoryBlock &ablock) // MT-Safe
+{
+  MemoryMetaInfo &mi = mm_info_lookup (ablock.block_start);
+  std::lock_guard<std::mutex> locker (mi.mutex);
+  mi.ablocks.push_back (ablock);
+}
+
+static FastMemoryBlock
+mm_info_pop_mt (void *block_start) // MT-Safe
+{
+  MemoryMetaInfo &mi = mm_info_lookup (block_start);
+  std::lock_guard<std::mutex> locker (mi.mutex);
+  auto it = std::find_if (mi.ablocks.begin(), mi.ablocks.end(),
+                          [block_start] (const auto &ab) {
+                            return ab.block_start == block_start;
+                          });
+  FastMemoryBlock ab;
+  if (it != mi.ablocks.end())   // found it, now pop
+    {
+      ab = *it;
+      if (it < mi.ablocks.end() - 1)
+        *it = mi.ablocks.back(); // swap with tail for quick shrinking
+      mi.ablocks.resize (mi.ablocks.size() - 1);
+    }
+  return ab;
+}
+
+// == aligned malloc/calloc/free ==
+static std::mutex fast_mem_mutex;
+
+void*
+fast_mem_alloc (size_t size)
+{
+  std::unique_lock<std::mutex> shortlock (fast_mem_mutex);
+  FastMemoryBlock ab = FastMemoryArea { 0, }.allocate (size); // MT-Safe
+  shortlock.unlock();
+  void *const ptr = ab.block_start;
+  if (ptr)
+    mm_info_push_mt (ab);
+  return ptr;
+}
+
+void
+fast_mem_free (void *mem)
+{
+  if (mem)
+    {
+      FastMemoryBlock ab = mm_info_pop_mt (mem);
+      if (ab.block_start)
+        { // MT-Safe
+          std::lock_guard<std::mutex> locker (fast_mem_mutex);
+          ab.release();
+        }
+      else
+        Bse::printerr ("%s: invalid memory pointer: %p\n", mem);
+    }
+}
+
 } // Bse
 
 // == Allocator Tests ==
+#include "randomhash.hh"
 namespace { // Anon
 using namespace Bse;
 
@@ -390,6 +476,21 @@ bse_aligned_allocator_tests()
   sa.release_ext (s1);
   sa.release_ext (s4);
   assert_return (sa.sum() == asz);
+  // test general purpose allocations exceeding a single FastMemoryArea
+  std::vector<void*> ptrs;
+  size_t sum = 0;
+  while (sum < 37 * 1024 * 1024)
+    {
+      const size_t sz = random_irange (8, 98304);
+      ptrs.push_back (fast_mem_alloc (sz));
+      assert_return (ptrs.back() != nullptr);
+      sum += sz;
+    }
+  while (!ptrs.empty())
+    {
+      fast_mem_free (ptrs.back());
+      ptrs.pop_back();
+    }
 }
 
 } // Anon
