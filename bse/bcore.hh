@@ -38,7 +38,6 @@ using   Aida::EventHandlerF;
 using   Aida::void_t;
 
 // == Id Spaces ==
-#define BSE_STARTID_MEMORY_AREA         0x0100000
 #define BSE_STARTID_FRAME_HANDLER       0x0200000
 #define BSE_STARTID_EVENT_HANDLER	0xe000000
 

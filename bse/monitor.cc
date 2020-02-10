@@ -207,7 +207,6 @@ static const BseModuleClass monitor_module_class = {
 #define MIN_DB_SPL      -140    // -140dB is beyond float mantissa precision
 
 class MonitorModule : public Bse::Module {
-  FastMemoryBlock ablock_;
   float          *fblock_ = NULL;
   int64 counter_ = 0;
   float db_tip_ = MIN_DB_SPL;
@@ -224,13 +223,12 @@ public:
     Module (monitor_module_class),
     char8_ (mfields)
   {
-    ablock_ = FastMemoryArea { 0, }.allocate (BSE_STREAM_MAX_VALUES * sizeof (float)); // FIXME
-    assert_return (ablock_.block_start);
-    fblock_ = (float*) ablock_.block_start;
+    fblock_ = (float*) fast_mem_alloc (BSE_STREAM_MAX_VALUES * sizeof (float));
+    assert_return (fblock_ != nullptr);
   }
   virtual ~MonitorModule()
   {
-    ablock_.release();
+    fast_mem_free (fblock_);
   }
   virtual void
   reset () override

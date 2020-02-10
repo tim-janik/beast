@@ -7,7 +7,7 @@
 #define MEM_ALIGN(addr, alignment)      (alignment * ((size_t (addr) + alignment - 1) / alignment))
 #define CHECK_FREE_OVERLAPS             0       /* paranoid chcks that slow down */
 
-static constexpr size_t INTERNAL_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
+static constexpr size_t MINIMUM_ARENA_SIZE = 4 * 1024 * 1024;
 
 namespace Bse {
 
@@ -86,21 +86,17 @@ struct Extent32 {
   void     zero     (char *area) const  { memset (area + start, 0, length); }
 };
 
-static uint32 shared_area_nextid = BSE_STARTID_MEMORY_AREA;
-
 // SequentialFitAllocator
 struct SequentialFitAllocator {
   LargeAllocation       blob;
   std::vector<Extent32> extents; // free list
-  const uint32          mem_alignment, mem_id;
-  bool                  external;
-  SequentialFitAllocator (LargeAllocation &&newblob, uint32 alignment, bool is_external) :
-    blob (std::move (newblob)), mem_alignment (alignment), mem_id (shared_area_nextid++), external (is_external)
+  const uint32          mem_alignment;
+  SequentialFitAllocator (LargeAllocation &&newblob, uint32 alignment) :
+    blob (std::move (newblob)), mem_alignment (alignment)
   {
     assert_return (size() > 0);
     assert_return (mem_alignment <= blob.alignment());
     assert_return ((size_t (blob.mem()) & (blob.alignment() - 1)) == 0);
-    assert_return (mem_id != 0);
     if (size() >= 1024 * 1024)
       extents.reserve (1024);
     assert_return (size() <= 4294967295);
@@ -185,7 +181,7 @@ struct SequentialFitAllocator {
     for (size_t j = 0; j < extents.size(); j++)
       {
         const size_t i = extents.size() - 1 - j; // recent blocks are at the end
-        if (ISLIKELY (length == extents[i].length))
+        if (ISLIKELY (length == extents[i].length)) // profiled, UNLIKELY costs ~20%
           return i;
         if (UNLIKELY (length < extents[i].length) and
             (UNLIKELY (candidate < 0) ||
@@ -233,106 +229,90 @@ struct SequentialFitAllocator {
   }
 #endif
 };
-static std::vector<SequentialFitAllocator*> shared_areas;
+
+struct FastMemoryAllocator : SequentialFitAllocator {
+  FastMemoryAllocator (LargeAllocation &&newblob, uint32 alignment) :
+    SequentialFitAllocator (std::move (newblob), alignment)
+  {}
+};
 
 static FastMemoryArea
-create_internal_memory_area (uint32 mem_size, uint32 alignment, bool external)
+create_internal_memory_area (uint32 mem_size, uint32 alignment)
 {
   auto blob = LargeAllocation::allocate (MEM_ALIGN (mem_size, alignment), alignment);
   if (!blob.mem())
     fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", mem_size, strerror (errno));
-  shared_areas.push_back (new SequentialFitAllocator (std::move (blob), alignment, external));
-  SequentialFitAllocator &sa = *shared_areas.back();
-  assert_return (sa.mem_id == BSE_STARTID_MEMORY_AREA + shared_areas.size() - 1, {});
-  return FastMemoryArea { sa.mem_id, sa.mem_alignment, uint64 (sa.memory()), sa.size() };
-}
-
-static SequentialFitAllocator*
-get_shared_area (uint32 mem_id)
-{
-  if (mem_id >= BSE_STARTID_MEMORY_AREA)
-    {
-      const size_t index = mem_id - BSE_STARTID_MEMORY_AREA;
-      if (index < shared_areas.size())
-        return shared_areas[index];
-    }
-  return NULL;
-}
-
-FastMemoryArea
-FastMemoryArea::find (uint32 mem_id)
-{
-  SequentialFitAllocator *sa = get_shared_area (mem_id);
-  return sa ? FastMemoryArea { sa->mem_id, sa->mem_alignment, uint64 (sa->memory()), sa->size() } : FastMemoryArea{};
+  FastMemoryAllocator *fmap = new FastMemoryAllocator (std::move (blob), alignment);
+  FastMemoryAllocator &fma = *fmap;
+  return FastMemoryArea { &fma, fma.mem_alignment, uint64 (fma.memory()), fma.size() };
 }
 
 FastMemoryArea
 FastMemoryArea::create (uint32 mem_size, uint32 alignment)
 {
-  return create_internal_memory_area (mem_size, alignment, true);
+  return create_internal_memory_area (mem_size, alignment);
 }
 
-static FastMemoryBlock
-fast_mem_allocate_aligned_block (uint32 length)
+FastMemoryBlock
+FastMemoryArea::allocate (uint32 length, std::nothrow_t) const
 {
-  FastMemoryBlock am;
-  // allocate from shared memory areas
+  const FastMemoryBlock zeroblock = { fma, 0, nullptr };
+  assert_return (fma, zeroblock);
+  return_unless (length > 0, zeroblock);
   Extent32 ext { 0, length };
-  for (size_t i = 0; i < shared_areas.size(); i++)
-    if (ISLIKELY (shared_areas[i]->external == false) and
-        shared_areas[i]->alloc_ext (ext))
-      {
-        am.mem_id = shared_areas[i]->mem_id;
-        am.block_length = ext.length;
-        am.block_start = shared_areas[i]->memory() + ext.start;
-        return am;
-      }
-  // allocate a new area
-  const FastMemoryArea ma = create_internal_memory_area (INTERNAL_MEMORY_AREA_SIZE, FastMemoryArea::minimum_alignment, false);
-  const uint32 mem_id = ma.mem_id;
-  SequentialFitAllocator &sa = *get_shared_area (mem_id);
-  const bool block_in_new_area = sa.alloc_ext (ext);
-  assert_return (block_in_new_area, am);
-  am.mem_id = sa.mem_id;
-  am.block_length = ext.length;
-  am.block_start = sa.memory() + ext.start;
-  return am;
+  if (fma->alloc_ext (ext))
+    return FastMemoryBlock { fma, ext.length, fma->memory() + ext.start };
+  // FIXME: try growing
+  return zeroblock;
 }
 
 FastMemoryBlock
 FastMemoryArea::allocate (uint32 length) const
 {
-  assert_return (length <= INTERNAL_MEMORY_AREA_SIZE, {});
-  FastMemoryBlock am;
-  return_unless (length > 0, {});
-  Extent32 ext { 0, length };
-  if (mem_id == 0)
-    return fast_mem_allocate_aligned_block (length);
-  // allocate from known memory area, mem_id != 0
-  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (mem_id);
-  assert_return (memory_area_from_mem_id != NULL, {});
-  SequentialFitAllocator &sa = *memory_area_from_mem_id;
-  if (sa.alloc_ext (ext))
-    {
-      am.mem_id = sa.mem_id;
-      am.block_length = ext.length;
-      am.block_start = sa.memory() + ext.start;
-    }
-  return am;
+  FastMemoryBlock ab = allocate (length, std::nothrow);
+  if (!ab.block_start)
+    throw std::bad_alloc();
+  return ab;
 }
 
 void
 FastMemoryBlock::release () const
 {
-  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (mem_id);
-  assert_return (memory_area_from_mem_id != NULL);
-  SequentialFitAllocator &sa = *memory_area_from_mem_id;
-  assert_return (block_start >= sa.memory());
-  assert_return (block_start < sa.memory() + sa.size());
-  const uint32 block_offset = ((char*) block_start) - sa.memory();
-  assert_return (block_offset + block_length <= sa.size());
+  assert_return (fma);
+  assert_return (block_start >= fma->memory());
+  assert_return (block_start < fma->memory() + fma->size());
+  assert_return (0 == (size_t (block_start) & FastMemoryArea::minimum_alignment - 1));
+  const uint32 block_offset = ((char*) block_start) - fma->memory();
+  assert_return (block_offset + block_length <= fma->size());
   Extent32 ext { block_offset, block_length };
-  sa.release_ext (ext);
+  fma->release_ext (ext);
+}
+
+static FastMemoryBlock
+fast_mem_allocate_aligned_block (uint32 length)
+{
+  static std::vector<FastMemoryArea> arenas;
+  // try to allocate from existing arenas
+  Extent32 ext { 0, length };
+  for (auto arena : arenas)
+    if (arena.fma->alloc_ext (ext))
+      {
+        void *const ptr = arena.fma->memory() + ext.start;
+        return FastMemoryBlock { arena.fma, ext.length, ptr };
+      }
+  // FIXME: try to grow the *last* arena first
+  // allocate a new area
+  const FastMemoryArea ma = create_internal_memory_area (std::max (size_t (length), MINIMUM_ARENA_SIZE), FastMemoryArea::minimum_alignment);
+  assert_return (ma.fma, {});
+  arenas.push_back (ma);
+  FastMemoryAllocator &fma = *ma.fma;
+  if (fma.alloc_ext (ext))
+    {
+      void *const ptr = fma.memory() + ext.start;
+      FastMemoryBlock ab { &fma, ext.length, ptr };
+      return ab;
+    }
+  fatal_error ("newly allocated arena too short for request: %u < %u", ma.fma->size(), ext.length);
 }
 
 // == MemoryMetaTable ==
@@ -378,15 +358,15 @@ mm_info_pop_mt (void *block_start) // MT-Safe
                           [block_start] (const auto &ab) {
                             return ab.block_start == block_start;
                           });
-  FastMemoryBlock ab;
   if (it != mi.ablocks.end())   // found it, now pop
     {
-      ab = *it;
+      const FastMemoryBlock ab = *it;
       if (it < mi.ablocks.end() - 1)
         *it = mi.ablocks.back(); // swap with tail for quick shrinking
       mi.ablocks.resize (mi.ablocks.size() - 1);
+      return ab;
     }
-  return ab;
+  return {};
 }
 
 // == aligned malloc/calloc/free ==
@@ -396,28 +376,25 @@ void*
 fast_mem_alloc (size_t size)
 {
   std::unique_lock<std::mutex> shortlock (fast_mem_mutex);
-  FastMemoryBlock ab = FastMemoryArea { 0, }.allocate (size); // MT-Safe
+  FastMemoryBlock ab = fast_mem_allocate_aligned_block (size); // MT-Guarded
   shortlock.unlock();
   void *const ptr = ab.block_start;
   if (ptr)
     mm_info_push_mt (ab);
+  else
+    fatal_error ("%s: failed to allocate %u bytes\n", __func__, size);
   return ptr;
 }
 
 void
 fast_mem_free (void *mem)
 {
-  if (mem)
-    {
-      FastMemoryBlock ab = mm_info_pop_mt (mem);
-      if (ab.block_start)
-        { // MT-Safe
-          std::lock_guard<std::mutex> locker (fast_mem_mutex);
-          ab.release();
-        }
-      else
-        Bse::printerr ("%s: invalid memory pointer: %p\n", mem);
-    }
+  return_unless (mem);
+  FastMemoryBlock ab = mm_info_pop_mt (mem);
+  if (!ab.block_start)
+    fatal_error ("%s: invalid memory pointer: %p\n", __func__, mem);
+  std::lock_guard<std::mutex> locker (fast_mem_mutex);
+  ab.release(); // MT-Guarded
 }
 
 } // Bse
@@ -433,49 +410,48 @@ bse_aligned_allocator_tests()
 {
   const ssize_t kb = 1024, asz = 4 * 1024;
   // create small area
-  const FastMemoryArea ma = create_internal_memory_area (asz, FastMemoryArea::minimum_alignment, true);
-  SequentialFitAllocator *memory_area_from_mem_id = get_shared_area (ma.mem_id);
-  assert_return (memory_area_from_mem_id != NULL);
-  SequentialFitAllocator &sa = *memory_area_from_mem_id;
-  assert_return (sa.sum() == asz);
+  const FastMemoryArea ma = create_internal_memory_area (asz, FastMemoryArea::minimum_alignment);
+  assert_return (ma.fma);
+  FastMemoryAllocator &fma = *ma.fma;
+  assert_return (fma.sum() == asz);
   // allocate 4 * 1mb
   bool success;
   Extent32 s1 (kb);
-  success = sa.alloc_ext (s1);
+  success = fma.alloc_ext (s1);
   assert_return (success);
-  assert_return (sa.sum() == asz - kb);
+  assert_return (fma.sum() == asz - kb);
   Extent32 s2 (kb - 1);
-  success = sa.alloc_ext (s2);
+  success = fma.alloc_ext (s2);
   assert_return (success && s2.length == kb); // check alignment
-  assert_return (sa.sum() == asz - 2 * kb);
+  assert_return (fma.sum() == asz - 2 * kb);
   Extent32 s3 (kb);
-  success = sa.alloc_ext (s3);
+  success = fma.alloc_ext (s3);
   assert_return (success);
-  assert_return (sa.sum() == asz - 3 * kb);
+  assert_return (fma.sum() == asz - 3 * kb);
   Extent32 s4 (kb);
-  success = sa.alloc_ext (s4);
+  success = fma.alloc_ext (s4);
   assert_return (success);
-  assert_return (sa.sum() == 0);
+  assert_return (fma.sum() == 0);
   // release with fragmentation
-  sa.release_ext (s1);
-  assert_return (sa.sum() == kb);
-  sa.release_ext (s3);
-  assert_return (sa.sum() == 2 * kb);
+  fma.release_ext (s1);
+  assert_return (fma.sum() == kb);
+  fma.release_ext (s3);
+  assert_return (fma.sum() == 2 * kb);
   // fail allocation due to fragmentation
   s1.reset (2 * kb);
-  success = sa.alloc_ext (s1);
+  success = fma.alloc_ext (s1);
   assert_return (success == false);
   // release middle block and allocate coalesced result
-  sa.release_ext (s2);
-  assert_return (sa.sum() == 3 * kb);
+  fma.release_ext (s2);
+  assert_return (fma.sum() == 3 * kb);
   s1.reset (3 * kb);
-  success = sa.alloc_ext (s1);
+  success = fma.alloc_ext (s1);
   assert_return (success);
-  assert_return (sa.sum() == 0);
+  assert_return (fma.sum() == 0);
   // release all
-  sa.release_ext (s1);
-  sa.release_ext (s4);
-  assert_return (sa.sum() == asz);
+  fma.release_ext (s1);
+  fma.release_ext (s4);
+  assert_return (fma.sum() == asz);
   // test general purpose allocations exceeding a single FastMemoryArea
   std::vector<void*> ptrs;
   size_t sum = 0;

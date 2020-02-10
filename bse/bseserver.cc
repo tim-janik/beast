@@ -1305,7 +1305,7 @@ ServerImpl::release_shared_block (const SharedBlock &sb)
 {
   assert_return (sb.mem_length >= 0);
   const FastMemoryArea &ma = server_shared_memory_area();
-  FastMemoryBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
+  FastMemoryBlock ab { ma.fma, uint32 (sb.mem_length), sb.mem_start };
   ab.release();
   assert_return (current_shared_memory_area_size + ab.block_length <= SHARED_MEMORY_AREA_SIZE);
   current_shared_memory_area_size += ab.block_length;

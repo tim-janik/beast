@@ -148,9 +148,29 @@ TEST_BENCH (utf8_strlen_bench_ascii);
 namespace { // Anon
 using namespace Bse;
 
+#define TEST_AREA_SIZE  (16 * 1024 * 1024)
+
+static FastMemoryArea fast_memory_area = FastMemoryArea::create (TEST_AREA_SIZE); // FIXME: use ctor
+
+static void
+ensure_block_allocator_initialization()
+{
+  fast_mem_free (fast_mem_alloc (1024));
+  const size_t areasize = 4 * 1024 * 1024;
+  // FIXME: assert_return (fast_memory_area.reserved() >= areasize);
+  const size_t r = 4;
+  FastMemoryBlock b[r];
+  for (size_t j = 0; j < r; j++)
+    b[j] = fast_memory_area.allocate (areasize / r);
+  for (size_t j = 0; j < r; j++)
+    b[j].release();
+}
+
 enum class AllocatorType {
   FastMemoryArea = 1,
-  PosixMemalign
+  FastMemAlloc,
+  PosixMemalign,
+  LibcCalloc,
 };
 
 template<AllocatorType C> struct TestAllocator;
@@ -159,7 +179,7 @@ template<>
 struct TestAllocator<AllocatorType::FastMemoryArea> {
   static std::string     name            ()      { return "Bse::FastMemoryArea"; }
   static FastMemoryBlock allocate_block  (uint32 length)
-  { return FastMemoryArea { 0, }.allocate (length); } // FIXME
+  { return FastMemoryArea { fast_memory_area, }.allocate (length); }
   static void            release_block   (const FastMemoryBlock &block)
   { block.release(); }
 };
@@ -173,6 +193,44 @@ struct TestAllocator<AllocatorType::PosixMemalign> {
     FastMemoryBlock ab { 0, length, };
     const int posix_memalign_result = posix_memalign (&ab.block_start, FastMemoryArea::minimum_alignment, ab.block_length);
     TASSERT (posix_memalign_result == 0);
+    return ab;
+  }
+  static void
+  release_block (const FastMemoryBlock &block)
+  {
+    memset (block.block_start, 0, block.block_length); // match release_aligned_block() semantics
+    free (block.block_start);
+  }
+};
+
+template<>
+struct TestAllocator<AllocatorType::FastMemAlloc> {
+  static std::string    name                    ()      { return "fast_mem_alloc"; }
+  static FastMemoryBlock
+  allocate_block (uint32 length)
+  {
+    FastMemoryBlock ab { 0, length, };
+    ab.block_start = fast_mem_alloc (ab.block_length);
+    TASSERT (ab.block_start != nullptr);
+    return ab;
+  }
+  static void
+  release_block (const FastMemoryBlock &block)
+  {
+    memset (block.block_start, 0, block.block_length); // match release_aligned_block() semantics
+    fast_mem_free (block.block_start);
+  }
+};
+
+template<>
+struct TestAllocator<AllocatorType::LibcCalloc> {
+  static std::string    name                    ()      { return "::calloc (misaligned)"; }
+  static FastMemoryBlock
+  allocate_block (uint32 length)
+  {
+    FastMemoryBlock ab { 0, length, };
+    ab.block_start = calloc (ab.block_length, 1);
+    TASSERT (ab.block_start != nullptr);
     return ab;
   }
   static void
@@ -199,9 +257,10 @@ template<AllocatorType AT> static void
 bse_aligned_allocator_benchloop (uint32 seed)
 {
   constexpr const size_t RUNS = 3;
-  constexpr const int64 MAX_CHUNK_SIZE = 8192;
-  constexpr const int64 N_ALLOCS = 5555;
+  constexpr const int64 MAX_CHUNK_SIZE = 4096;
+  constexpr const int64 N_ALLOCS = 4093;
   constexpr const int64 RESIDENT = N_ALLOCS / 3;
+  static_assert (MAX_CHUNK_SIZE * N_ALLOCS <= TEST_AREA_SIZE);
   static FastMemoryBlock blocks[N_ALLOCS];
   auto loop_aa = [&] () {
     quick_rand32_seed = seed;
@@ -269,18 +328,6 @@ bse_aligned_allocator_benchloop (uint32 seed)
 }
 
 static void
-ensure_block_allocator_initialization()
-{
-  const size_t r = 4;
-  const size_t areasize = 4 * 1024 * 1024;
-  FastMemoryBlock b[r];
-  for (size_t j = 0; j < r; j++)
-    b[j] = FastMemoryArea { 0, }.allocate (areasize);
-  for (size_t j = 0; j < r; j++)
-    b[j].release();
-}
-
-static void
 aligned_allocator_bench31_aligned_block()
 {
   ensure_block_allocator_initialization();
@@ -298,5 +345,21 @@ aligned_allocator_bench31_memalign()
   // 2^32 / phi = 2654435769.49723029647758477079
 }
 TEST_BENCH (aligned_allocator_bench31_memalign);
+
+static void
+aligned_allocator_bench31_calloc()
+{
+  ensure_block_allocator_initialization();
+  bse_aligned_allocator_benchloop<AllocatorType::LibcCalloc> (2654435769);
+}
+TEST_BENCH (aligned_allocator_bench31_calloc);
+
+static void
+aligned_allocator_bench31_fast_mem_alloc()
+{
+  ensure_block_allocator_initialization();
+  bse_aligned_allocator_benchloop<AllocatorType::FastMemAlloc> (2654435769);
+}
+TEST_BENCH (aligned_allocator_bench31_fast_mem_alloc);
 
 } // Anon
