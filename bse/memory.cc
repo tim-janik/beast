@@ -238,10 +238,11 @@ struct SequentialFitAllocator {
     const ssize_t candidate = fit_block (aligned_length);
     if (candidate < 0)
       return false;     // OOM
-    // allocate from end of larger block
-    extents[candidate].length -= aligned_length;
-    ext.start = extents[candidate].start + extents[candidate].length;
+    // allocate from start of larger block (to facilitate future Arena growth)
+    ext.start = extents[candidate].start;
     ext.length = aligned_length;
+    extents[candidate].start += aligned_length;
+    extents[candidate].length -= aligned_length;
     // unlist if block wasn't larger
     if (extents[candidate].length == 0)
       extents.erase (extents.begin() + candidate);
