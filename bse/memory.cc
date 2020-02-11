@@ -121,7 +121,7 @@ struct Extent32 {
   explicit Extent32 (uint32 sz = 0) : length (sz) {}
   explicit Extent32 (uint32 st, uint32 len) : start (st), length (len) {}
   void     reset    (uint32 sz = 0)     { start = 0; length = sz; }
-  void     zero     (char *area) const  { memset (area + start, 0, length); }
+  void     zero     (char *area) const  { memset (__builtin_assume_aligned (area + start, cache_line_size), 0, length); }
 };
 
 // SequentialFitAllocator
