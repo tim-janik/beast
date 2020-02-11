@@ -14,7 +14,7 @@ void    fast_mem_free   (void *mem);
 namespace FastMemory {
 
 /// Minimum alignment >= cache line size, see getconf LEVEL1_DCACHE_LINESIZE.
-constexpr inline size_t cache_line_size = 64;
+inline constexpr size_t cache_line_size = 64;
 
 /// Internal allocator handle.
 struct Allocator;

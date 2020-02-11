@@ -3,11 +3,13 @@
 #include "bse/internal.hh"
 #include <bse/testing.hh>
 #include <sys/mman.h>
+#include <unistd.h>     // _SC_PAGESIZE
 
-#define MEM_ALIGN(addr, alignment)      (alignment * ((size_t (addr) + alignment - 1) / alignment))
+#define MEM_ALIGN(addr, alignment)      (alignment * size_t ((size_t (addr) + alignment - 1) / alignment))
 #define CHECK_FREE_OVERLAPS             0       /* paranoid chcks that slow down */
 
-static constexpr size_t MINIMUM_ARENA_SIZE = 4 * 1024 * 1024;
+inline constexpr size_t MINIMUM_ARENA_SIZE = 4 * 1024 * 1024;
+inline constexpr size_t MINIMUM_HUGEPAGE = 2 * 1024 * 1024;
 
 namespace Bse {
 
@@ -18,9 +20,10 @@ class LargeAllocation {
   void      *start_ = nullptr;
   size_t     length_ = 0;
   ReleaseMFP release_ = nullptr;
-  void  free_start ()           { free (start_); }
-  void  munmap_start ()         { munmap (start_, length_); }
-  void  unadvise_free_start ()  { madvise (start_, length_, MADV_NOHUGEPAGE); free (start_); }
+  void  free_start ()            { free (start_); }
+  void  munmap_start ()          { munmap (start_, length_); }
+  void  unadvise_free_start ()   { madvise (start_, length_, MADV_NOHUGEPAGE); free_start(); }
+  void  unadvise_munmap_start () { madvise (start_, length_, MADV_NOHUGEPAGE); munmap_start(); }
   /*ctor*/         LargeAllocation (void *m, size_t l, ReleaseMFP r) : start_ (m), length_ (l), release_ (r) {}
   explicit         LargeAllocation (const LargeAllocation&) = delete; // move-only
   LargeAllocation& operator=       (const LargeAllocation&) = delete; // move-only
@@ -41,12 +44,12 @@ public:
   static LargeAllocation
   allocate (const size_t length, size_t minalign, bool willgrow)
   {
-    const size_t minhugepage = 2 * 1024 * 1024;
+    assert_return (0 == (minalign & (minalign - 1)), {});
+    constexpr int protection = PROT_READ | PROT_WRITE;
+    constexpr int flags = MAP_PRIVATE | MAP_ANONYMOUS;
     // try reserved hugepages for large allocations
-    if (length >= minhugepage)
+    if (length == MEM_ALIGN (length, MINIMUM_HUGEPAGE) && minalign <= MINIMUM_HUGEPAGE)
       {
-        const int protection = PROT_READ | PROT_WRITE;
-        const int flags = MAP_PRIVATE | MAP_ANONYMOUS;
         void *memory = mmap (nullptr, length, protection, flags | MAP_HUGETLB, -1, 0);
         if (memory != MAP_FAILED)
           {
@@ -54,10 +57,43 @@ public:
             return { memory, length, &LargeAllocation::munmap_start };
           }
       }
-    // try transparent hugepages for large allocations
-    if (length >= minhugepage)
+    // try transparent hugepages for large allocations and large alignments
+    if (length == MEM_ALIGN (length, std::max (minalign, MINIMUM_HUGEPAGE)))
       {
-        void *memory = std::aligned_alloc (std::max (minhugepage, minalign), length);
+        static const size_t pagesize = sysconf (_SC_PAGESIZE);
+        minalign = std::max (minalign, MINIMUM_HUGEPAGE);
+        size_t areasize = minalign - pagesize + length;
+        char *memory = (char*) mmap (nullptr, areasize, protection, flags, -1, 0);
+        if (memory)
+          {
+            // discard unaligned head
+            const uintptr_t start = uintptr_t (memory);
+            size_t extra = MEM_ALIGN (start, minalign) - start;
+            if (extra && munmap (memory, extra) != 0)
+              printerr ("%s: munmap(%p,%u) failed: %s\n", __func__, memory, extra, strerror (errno));
+            memory += extra;
+            areasize -= extra;
+            // discard unaligned tail
+            extra = areasize - size_t (areasize / minalign) * minalign;
+            areasize -= extra;
+            if (extra && munmap (memory + areasize, extra) != 0)
+              printerr ("%s: munmap(%p,%u) failed: %s\n", __func__, memory + areasize, extra, strerror (errno));
+            // double check, use THP
+            assert_return (areasize == length, {});
+            assert_return ((size_t (memory) & (minalign - 1)) == 0, {}); // ensure alignment
+            ReleaseMFP release;
+            // linux/Documentation/admin-guide/mm/transhuge.rst
+            if (madvise (memory, areasize, MADV_HUGEPAGE) >= 0)
+              release = &LargeAllocation::unadvise_munmap_start;
+            else
+              release = &LargeAllocation::munmap_start;
+            return { memory, areasize, release };
+          }
+      }
+    // fallback to aligned_alloc with hugepages
+    if (length == MEM_ALIGN (length, MINIMUM_HUGEPAGE) && minalign <= MINIMUM_HUGEPAGE)
+      {
+        void *memory = std::aligned_alloc (std::max (MINIMUM_HUGEPAGE, minalign), length);
         if (memory)
           {
             assert_return ((size_t (memory) & (minalign - 1)) == 0, {}); // ensure alignment
@@ -70,7 +106,7 @@ public:
             return { memory, length, release };
           }
       }
-    // otherwise fallback to aligned_alloc for other allocations
+    // otherwise fallback to just aligned_alloc
     void *memory = std::aligned_alloc (minalign, length);
     if (!memory)
       return {};
@@ -257,7 +293,9 @@ Arena::Arena (AllocatorP xfma) :
 static Arena
 create_arena (uint32 mem_size, uint32 alignment, bool willgrow)
 {
-  auto blob = LargeAllocation::allocate (MEM_ALIGN (mem_size, alignment), alignment, willgrow);
+  alignment = std::max (alignment, uint32 (cache_line_size));
+  mem_size = MEM_ALIGN (mem_size, alignment);
+  auto blob = LargeAllocation::allocate (mem_size, alignment, willgrow);
   if (!blob.mem())
     fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", mem_size, strerror (errno));
   FastMemory::AllocatorP fmap = std::make_shared<FastMemory::Allocator> (std::move (blob), alignment);
@@ -267,6 +305,8 @@ create_arena (uint32 mem_size, uint32 alignment, bool willgrow)
 Arena::Arena (uint32 mem_size, uint32 alignment)
 {
   assert_return (alignment <= 2147483648);
+  assert_return (0 == (alignment & (alignment - 1)));
+  assert_return (mem_size <= 2147483648);
   *this = create_arena (mem_size, alignment, false);
 }
 
