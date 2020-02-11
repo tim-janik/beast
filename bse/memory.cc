@@ -213,17 +213,21 @@ struct SequentialFitAllocator {
     extents.push_back (ext);
   }
   ssize_t
-  fit_block (size_t length) const
+  best_fit (size_t length) const
   {
     ssize_t candidate = -1;
     for (size_t j = 0; j < extents.size(); j++)
       {
         const size_t i = extents.size() - 1 - j; // recent blocks are at the end
-        if (ISLIKELY (length == extents[i].length)) // profiled, UNLIKELY costs ~20%
+        if (ISLIKELY (length > extents[i].length))
+          continue;                                     // profiled, ISLIKELY saves ~7%
+        if (ISLIKELY (length == extents[i].length))     // profiled, ISLIKELY saves ~20%
           return i;
-        if (UNLIKELY (length < extents[i].length) and
-            (UNLIKELY (candidate < 0) ||
-             extents[i].length < extents[candidate].length))
+        // length < extents[i].length
+        if (ISLIKELY (candidate < 0) or                 // profiled, ISLIKELY saves ~20%
+            ISLIKELY (extents[i].length < extents[candidate].length) or
+            (ISLIKELY (extents[i].length == extents[candidate].length) and
+             ISLIKELY (extents[i].start < extents[candidate].start)))
           candidate = i;
       }
     return candidate;
@@ -235,17 +239,23 @@ struct SequentialFitAllocator {
     assert_return (ext.length > 0, false);
     const uint32 aligned_length = MEM_ALIGN (ext.length, mem_alignment);
     // find block
-    const ssize_t candidate = fit_block (aligned_length);
+    const ssize_t candidate = best_fit (aligned_length);
     if (candidate < 0)
       return false;     // OOM
     // allocate from start of larger block (to facilitate future Arena growth)
     ext.start = extents[candidate].start;
     ext.length = aligned_length;
-    extents[candidate].start += aligned_length;
-    extents[candidate].length -= aligned_length;
-    // unlist if block wasn't larger
-    if (extents[candidate].length == 0)
-      extents.erase (extents.begin() + candidate);
+    if (UNLIKELY (extents[candidate].length > aligned_length))
+      {
+        extents[candidate].start += aligned_length;
+        extents[candidate].length -= aligned_length;
+      }
+    else // unlist if block wasn't larger
+      {
+        // extents.erase (extents.begin() + candidate);
+        extents[candidate] = extents.back();
+        extents.resize (extents.size() - 1);
+      }
     return true;
   }
 #if 0 // only needed for deferred coalescing which rarely speeds things up
