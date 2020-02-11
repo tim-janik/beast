@@ -96,7 +96,7 @@ SourceImpl::cmon_get (uint ochannel)
   return cmons_[ochannel];
 }
 
-static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (MonitorField::END_BYTE, FastMemoryArea::minimum_alignment);
+static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (MonitorField::END_BYTE, FastMemory::cache_line_size);
 
 SharedBlock
 SourceImpl::cmon_get_block ()

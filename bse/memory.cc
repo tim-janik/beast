@@ -11,6 +11,8 @@ static constexpr size_t MINIMUM_ARENA_SIZE = 4 * 1024 * 1024;
 
 namespace Bse {
 
+namespace FastMemory {
+
 class LargeAllocation {
   using ReleaseMFP = void (LargeAllocation::*) ();
   void      *start_ = nullptr;
@@ -37,7 +39,7 @@ public:
   size_t size      () const { return length_; }
   size_t alignment () const { return start_ ? size_t (1) << __builtin_ctz (size_t (start_)) : 0; }
   static LargeAllocation
-  allocate (const size_t length, size_t minalign)
+  allocate (const size_t length, size_t minalign, bool willgrow)
   {
     const size_t minhugepage = 2 * 1024 * 1024;
     // try reserved hugepages for large allocations
@@ -230,95 +232,151 @@ struct SequentialFitAllocator {
 #endif
 };
 
-struct FastMemoryAllocator : SequentialFitAllocator {
-  FastMemoryAllocator (LargeAllocation &&newblob, uint32 alignment) :
+struct Allocator : SequentialFitAllocator {
+  Allocator (LargeAllocation &&newblob, uint32 alignment) :
     SequentialFitAllocator (std::move (newblob), alignment)
   {}
 };
 
-static FastMemoryArea
-create_internal_memory_area (uint32 mem_size, uint32 alignment)
+struct FastMemoryArena : Arena {
+  FastMemoryArena (AllocatorP a) : Arena (a) {}
+  static Allocator*
+  allocator (const Arena &base)
+  {
+    static_assert (sizeof (Arena) == sizeof (FastMemoryArena));
+    return reinterpret_cast<const FastMemoryArena*> (&base)->fma.get();
+  }
+};
+static Allocator* fmallocator (const Arena &a) { return FastMemoryArena::allocator (a); }
+
+// == Arena ==
+Arena::Arena (AllocatorP xfma) :
+  fma (xfma)
+{}
+
+static Arena
+create_arena (uint32 mem_size, uint32 alignment, bool willgrow)
 {
-  auto blob = LargeAllocation::allocate (MEM_ALIGN (mem_size, alignment), alignment);
+  auto blob = LargeAllocation::allocate (MEM_ALIGN (mem_size, alignment), alignment, willgrow);
   if (!blob.mem())
     fatal_error ("BSE: failed to allocate aligned memory (%u bytes): %s", mem_size, strerror (errno));
-  FastMemoryAllocator *fmap = new FastMemoryAllocator (std::move (blob), alignment);
-  FastMemoryAllocator &fma = *fmap;
-  return FastMemoryArea { &fma, fma.mem_alignment, uint64 (fma.memory()), fma.size() };
+  FastMemory::AllocatorP fmap = std::make_shared<FastMemory::Allocator> (std::move (blob), alignment);
+  return FastMemoryArena (fmap);
 }
 
-FastMemoryArea
-FastMemoryArea::create (uint32 mem_size, uint32 alignment)
+Arena::Arena (uint32 mem_size, uint32 alignment)
 {
-  return create_internal_memory_area (mem_size, alignment);
+  assert_return (alignment <= 2147483648);
+  *this = create_arena (mem_size, alignment, false);
 }
 
-FastMemoryBlock
-FastMemoryArea::allocate (uint32 length, std::nothrow_t) const
+uint64
+Arena::location () const
 {
-  const FastMemoryBlock zeroblock = { fma, 0, nullptr };
+  return fma ? uint64 (fma->memory()) : 0;
+}
+
+uint64
+Arena::reserved () const
+{
+  return fma ? fma->size() : 0;
+}
+
+size_t
+Arena::alignment () const
+{
+  return fma ? fma->mem_alignment : 0;
+}
+
+Block
+Arena::allocate (uint32 length, std::nothrow_t) const
+{
+  const Block zeroblock = { nullptr, 0 };
   assert_return (fma, zeroblock);
   return_unless (length > 0, zeroblock);
   Extent32 ext { 0, length };
   if (fma->alloc_ext (ext))
-    return FastMemoryBlock { fma, ext.length, fma->memory() + ext.start };
+    return Block { fma->memory() + ext.start, ext.length };
   // FIXME: try growing
   return zeroblock;
 }
 
-FastMemoryBlock
-FastMemoryArea::allocate (uint32 length) const
+Block
+Arena::allocate (uint32 length) const
 {
-  FastMemoryBlock ab = allocate (length, std::nothrow);
+  Block ab = allocate (length, std::nothrow);
   if (!ab.block_start)
     throw std::bad_alloc();
   return ab;
 }
 
 void
-FastMemoryBlock::release () const
+Arena::release (Block ab) const
 {
   assert_return (fma);
-  assert_return (block_start >= fma->memory());
-  assert_return (block_start < fma->memory() + fma->size());
-  assert_return (0 == (size_t (block_start) & FastMemoryArea::minimum_alignment - 1));
-  const uint32 block_offset = ((char*) block_start) - fma->memory();
-  assert_return (block_offset + block_length <= fma->size());
-  Extent32 ext { block_offset, block_length };
+  assert_return (ab.block_start >= fma->memory());
+  assert_return (ab.block_start < fma->memory() + fma->size());
+  assert_return (0 == (size_t (ab.block_start) & alignment() - 1));
+  assert_return (0 == (size_t (ab.block_length) & alignment() - 1));
+  const size_t block_offset = ((char*) ab.block_start) - fma->memory();
+  assert_return (block_offset + ab.block_length <= fma->size());
+  Extent32 ext { uint32 (block_offset), ab.block_length };
   fma->release_ext (ext);
 }
 
-static FastMemoryBlock
+struct EmptyArena : Arena {
+  EmptyArena() :
+    Arena (AllocatorP (nullptr))
+  {}
+};
+
+struct ArenaBlock {
+  void  *block_start = nullptr; // FIXME: remove
+  uint32 block_length = 0;
+  Arena  arena = EmptyArena(); // FIXME: turn into index for arenas[]
+  ArenaBlock () = default;
+  ArenaBlock (void *ptr, uint32 length, Arena a) :
+    block_start (ptr), block_length (length), arena (a)
+  {}
+  ArenaBlock& operator= (const ArenaBlock &src) = default;
+  /*copy*/ ArenaBlock   (const ArenaBlock &src) = default;
+  Block    block        () const        { return { block_start, block_length }; }
+};
+
+static ArenaBlock
 fast_mem_allocate_aligned_block (uint32 length)
 {
-  static std::vector<FastMemoryArea> arenas;
+  static std::vector<FastMemory::Arena> arenas;
   // try to allocate from existing arenas
   Extent32 ext { 0, length };
   for (auto arena : arenas)
-    if (arena.fma->alloc_ext (ext))
-      {
-        void *const ptr = arena.fma->memory() + ext.start;
-        return FastMemoryBlock { arena.fma, ext.length, ptr };
-      }
+    {
+      FastMemory::Allocator *fma = fmallocator (arena);
+      if (fma->alloc_ext (ext))
+        {
+          void *const ptr = fma->memory() + ext.start;
+          return { ptr, ext.length, arena };
+        }
+    }
   // FIXME: try to grow the *last* arena first
   // allocate a new area
-  const FastMemoryArea ma = create_internal_memory_area (std::max (size_t (length), MINIMUM_ARENA_SIZE), FastMemoryArea::minimum_alignment);
-  assert_return (ma.fma, {});
-  arenas.push_back (ma);
-  FastMemoryAllocator &fma = *ma.fma;
-  if (fma.alloc_ext (ext))
+  const bool willgrow = arenas.size() > 0; // prepare for growth after the first is too small
+  Arena arena = create_arena (std::max (size_t (length), MINIMUM_ARENA_SIZE), cache_line_size, willgrow);
+  assert_return (fmallocator (arena), {});
+  arenas.push_back (arena);
+  FastMemory::Allocator *fma = fmallocator (arena);
+  if (fma->alloc_ext (ext))
     {
-      void *const ptr = fma.memory() + ext.start;
-      FastMemoryBlock ab { &fma, ext.length, ptr };
-      return ab;
+      void *const ptr = fma->memory() + ext.start;
+      return { ptr, ext.length, arena };
     }
-  fatal_error ("newly allocated arena too short for request: %u < %u", ma.fma->size(), ext.length);
+  fatal_error ("newly allocated arena too short for request: %u < %u", fma->size(), ext.length);
 }
 
 // == MemoryMetaTable ==
 struct MemoryMetaInfo {
   std::mutex mutex;
-  std::vector<Bse::FastMemoryBlock> ablocks;
+  std::vector<ArenaBlock> ablocks;
 };
 
 static MemoryMetaInfo&
@@ -342,14 +400,14 @@ mm_info_lookup (void *ptr)
 }
 
 static void
-mm_info_push_mt (const FastMemoryBlock &ablock) // MT-Safe
+mm_info_push_mt (const ArenaBlock &ablock) // MT-Safe
 {
   MemoryMetaInfo &mi = mm_info_lookup (ablock.block_start);
   std::lock_guard<std::mutex> locker (mi.mutex);
   mi.ablocks.push_back (ablock);
 }
 
-static FastMemoryBlock
+static ArenaBlock
 mm_info_pop_mt (void *block_start) // MT-Safe
 {
   MemoryMetaInfo &mi = mm_info_lookup (block_start);
@@ -360,7 +418,7 @@ mm_info_pop_mt (void *block_start) // MT-Safe
                           });
   if (it != mi.ablocks.end())   // found it, now pop
     {
-      const FastMemoryBlock ab = *it;
+      const ArenaBlock ab = *it;
       if (it < mi.ablocks.end() - 1)
         *it = mi.ablocks.back(); // swap with tail for quick shrinking
       mi.ablocks.resize (mi.ablocks.size() - 1);
@@ -369,6 +427,8 @@ mm_info_pop_mt (void *block_start) // MT-Safe
   return {};
 }
 
+} // FastMemory
+
 // == aligned malloc/calloc/free ==
 static std::mutex fast_mem_mutex;
 
@@ -376,7 +436,7 @@ void*
 fast_mem_alloc (size_t size)
 {
   std::unique_lock<std::mutex> shortlock (fast_mem_mutex);
-  FastMemoryBlock ab = fast_mem_allocate_aligned_block (size); // MT-Guarded
+  FastMemory::ArenaBlock ab = FastMemory::fast_mem_allocate_aligned_block (size); // MT-Guarded
   shortlock.unlock();
   void *const ptr = ab.block_start;
   if (ptr)
@@ -390,11 +450,11 @@ void
 fast_mem_free (void *mem)
 {
   return_unless (mem);
-  FastMemoryBlock ab = mm_info_pop_mt (mem);
+  FastMemory::ArenaBlock ab = FastMemory::mm_info_pop_mt (mem);
   if (!ab.block_start)
     fatal_error ("%s: invalid memory pointer: %p\n", __func__, mem);
   std::lock_guard<std::mutex> locker (fast_mem_mutex);
-  ab.release(); // MT-Guarded
+  ab.arena.release (ab.block()); // MT-Guarded
 }
 
 } // Bse
@@ -408,11 +468,13 @@ BSE_INTEGRITY_TEST (bse_aligned_allocator_tests);
 static void
 bse_aligned_allocator_tests()
 {
+  using FastMemory::Extent32;
   const ssize_t kb = 1024, asz = 4 * 1024;
   // create small area
-  const FastMemoryArea ma = create_internal_memory_area (asz, FastMemoryArea::minimum_alignment);
-  assert_return (ma.fma);
-  FastMemoryAllocator &fma = *ma.fma;
+  FastMemory::Arena arena { asz, FastMemory::cache_line_size };
+  FastMemory::Allocator *fmap = fmallocator (arena);
+  assert_return (fmap != nullptr);
+  FastMemory::Allocator &fma = *fmap;
   assert_return (fma.sum() == asz);
   // allocate 4 * 1mb
   bool success;
@@ -452,7 +514,7 @@ bse_aligned_allocator_tests()
   fma.release_ext (s1);
   fma.release_ext (s4);
   assert_return (fma.sum() == asz);
-  // test general purpose allocations exceeding a single FastMemoryArea
+  // test general purpose allocations exceeding a single FastMemory::Arena
   std::vector<void*> ptrs;
   size_t sum = 0;
   while (sum < 37 * 1024 * 1024)

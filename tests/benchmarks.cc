@@ -150,20 +150,22 @@ using namespace Bse;
 
 #define TEST_AREA_SIZE  (16 * 1024 * 1024)
 
-static FastMemoryArea fast_memory_area = FastMemoryArea::create (TEST_AREA_SIZE); // FIXME: use ctor
+static FastMemory::Arena fast_memory_arena { TEST_AREA_SIZE }; // FIXME: use ctor
 
 static void
 ensure_block_allocator_initialization()
 {
   fast_mem_free (fast_mem_alloc (1024));
   const size_t areasize = 4 * 1024 * 1024;
-  // FIXME: assert_return (fast_memory_area.reserved() >= areasize);
-  const size_t r = 4;
-  FastMemoryBlock b[r];
-  for (size_t j = 0; j < r; j++)
-    b[j] = fast_memory_area.allocate (areasize / r);
-  for (size_t j = 0; j < r; j++)
-    b[j].release();
+  TASSERT (fast_memory_arena.reserved() >= areasize);
+  FastMemory::Block b1 = fast_memory_arena.allocate (areasize / 4);
+  FastMemory::Block b2 = fast_memory_arena.allocate (areasize / 4);
+  FastMemory::Block b3 = fast_memory_arena.allocate (areasize / 4);
+  FastMemory::Block b4 = fast_memory_arena.allocate (areasize / 4);
+  fast_memory_arena.release (b1);
+  fast_memory_arena.release (b2);
+  fast_memory_arena.release (b3);
+  fast_memory_arena.release (b4);
 }
 
 enum class AllocatorType {
@@ -177,26 +179,26 @@ template<AllocatorType C> struct TestAllocator;
 
 template<>
 struct TestAllocator<AllocatorType::FastMemoryArea> {
-  static std::string     name            ()      { return "Bse::FastMemoryArea"; }
-  static FastMemoryBlock allocate_block  (uint32 length)
-  { return FastMemoryArea { fast_memory_area, }.allocate (length); }
-  static void            release_block   (const FastMemoryBlock &block)
-  { block.release(); }
+  static std::string       name            ()      { return "Bse::FastMemoryArea"; }
+  static FastMemory::Block allocate_block  (uint32 length)
+  { return fast_memory_arena.allocate (length); }
+  static void              release_block   (FastMemory::Block block)
+  { fast_memory_arena.release (block); }
 };
 
 template<>
 struct TestAllocator<AllocatorType::PosixMemalign> {
   static std::string    name                    ()      { return "posix_memalign"; }
-  static FastMemoryBlock
+  static FastMemory::Block
   allocate_block (uint32 length)
   {
-    FastMemoryBlock ab { 0, length, };
-    const int posix_memalign_result = posix_memalign (&ab.block_start, FastMemoryArea::minimum_alignment, ab.block_length);
+    void *ptr = nullptr;
+    const int posix_memalign_result = posix_memalign (&ptr, FastMemory::cache_line_size, length);
     TASSERT (posix_memalign_result == 0);
-    return ab;
+    return { ptr, length };
   }
   static void
-  release_block (const FastMemoryBlock &block)
+  release_block (FastMemory::Block block)
   {
     memset (block.block_start, 0, block.block_length); // match release_aligned_block() semantics
     free (block.block_start);
@@ -206,16 +208,15 @@ struct TestAllocator<AllocatorType::PosixMemalign> {
 template<>
 struct TestAllocator<AllocatorType::FastMemAlloc> {
   static std::string    name                    ()      { return "fast_mem_alloc"; }
-  static FastMemoryBlock
+  static FastMemory::Block
   allocate_block (uint32 length)
   {
-    FastMemoryBlock ab { 0, length, };
-    ab.block_start = fast_mem_alloc (ab.block_length);
-    TASSERT (ab.block_start != nullptr);
-    return ab;
+    void *ptr = fast_mem_alloc (length);
+    TASSERT (ptr != nullptr);
+    return { ptr, length };
   }
   static void
-  release_block (const FastMemoryBlock &block)
+  release_block (FastMemory::Block block)
   {
     memset (block.block_start, 0, block.block_length); // match release_aligned_block() semantics
     fast_mem_free (block.block_start);
@@ -225,18 +226,16 @@ struct TestAllocator<AllocatorType::FastMemAlloc> {
 template<>
 struct TestAllocator<AllocatorType::LibcCalloc> {
   static std::string    name                    ()      { return "::calloc (misaligned)"; }
-  static FastMemoryBlock
+  static FastMemory::Block
   allocate_block (uint32 length)
   {
-    FastMemoryBlock ab { 0, length, };
-    ab.block_start = calloc (ab.block_length, 1);
-    TASSERT (ab.block_start != nullptr);
-    return ab;
+    void *ptr = calloc (length, 1);
+    TASSERT (ptr != nullptr);
+    return { ptr, length };
   }
   static void
-  release_block (const FastMemoryBlock &block)
+  release_block (FastMemory::Block block)
   {
-    memset (block.block_start, 0, block.block_length); // match release_aligned_block() semantics
     free (block.block_start);
   }
 };
@@ -261,7 +260,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   constexpr const int64 N_ALLOCS = 4093;
   constexpr const int64 RESIDENT = N_ALLOCS / 3;
   static_assert (MAX_CHUNK_SIZE * N_ALLOCS <= TEST_AREA_SIZE);
-  static FastMemoryBlock blocks[N_ALLOCS];
+  static FastMemory::Block blocks[N_ALLOCS];
   auto loop_aa = [&] () {
     quick_rand32_seed = seed;
     for (size_t j = 0; j < RUNS; j++)
@@ -274,10 +273,10 @@ bse_aligned_allocator_benchloop (uint32 seed)
             TASSERT (blocks[i].block_length > 0);
             if (i > RESIDENT && (i & 1))
               {
-                FastMemoryBlock &rblock = blocks[i - RESIDENT];
+                FastMemory::Block &rblock = blocks[i - RESIDENT];
                 // Bse::printerr ("%d) FastMemoryBlock{%u,%x,%x,%p}\n", i, rblock.shm_id, rblock.mem_offset, rblock.mem_length, rblock.mem_start);
                 TestAllocator<AT>::release_block (rblock);
-                rblock = FastMemoryBlock();
+                rblock = {};
               }
           }
         // shuffle some blocks
@@ -308,14 +307,14 @@ bse_aligned_allocator_benchloop (uint32 seed)
             if (!blocks[i].block_length)
               continue;
             TestAllocator<AT>::release_block (blocks[i]);
-            blocks[i] = FastMemoryBlock();
+            blocks[i] = {};
           }
         // release everything
         for (size_t i = 0; i < N_ALLOCS; i++)
           if (blocks[i].block_length)
             {
               TestAllocator<AT>::release_block (blocks[i]);
-              blocks[i] = FastMemoryBlock();
+              blocks[i] = {};
             }
       }
   };
