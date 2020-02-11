@@ -150,7 +150,7 @@ using namespace Bse;
 
 #define TEST_AREA_SIZE  (16 * 1024 * 1024)
 
-static FastMemory::Arena fast_memory_arena { TEST_AREA_SIZE }; // FIXME: use ctor
+static FastMemory::Arena fast_memory_arena { TEST_AREA_SIZE };
 
 static void
 ensure_block_allocator_initialization()
