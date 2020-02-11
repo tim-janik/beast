@@ -330,14 +330,19 @@ struct EmptyArena : Arena {
   {}
 };
 
+static std::mutex fast_mem_mutex;
+static std::vector<FastMemory::Arena> fast_mem_arenas;
+
 struct ArenaBlock {
-  void  *block_start = nullptr; // FIXME: remove
+  void  *block_start = nullptr;
   uint32 block_length = 0;
-  Arena  arena = EmptyArena(); // FIXME: turn into index for arenas[]
+  uint32 arena_index = ~0;
   ArenaBlock () = default;
-  ArenaBlock (void *ptr, uint32 length, Arena a) :
-    block_start (ptr), block_length (length), arena (a)
-  {}
+  ArenaBlock (void *ptr, uint32 length, uint32 index) :
+    block_start (ptr), block_length (length), arena_index (index)
+  {
+    assert_return (index < fast_mem_arenas.size());
+  }
   ArenaBlock& operator= (const ArenaBlock &src) = default;
   /*copy*/ ArenaBlock   (const ArenaBlock &src) = default;
   Block    block        () const        { return { block_start, block_length }; }
@@ -346,29 +351,29 @@ struct ArenaBlock {
 static ArenaBlock
 fast_mem_allocate_aligned_block (uint32 length)
 {
-  static std::vector<FastMemory::Arena> arenas;
   // try to allocate from existing arenas
   Extent32 ext { 0, length };
-  for (auto arena : arenas)
+  for (uint32 i = 0; i < fast_mem_arenas.size(); i++)
     {
-      FastMemory::Allocator *fma = fmallocator (arena);
+      FastMemory::Allocator *fma = fmallocator (fast_mem_arenas[i]);
       if (fma->alloc_ext (ext))
         {
           void *const ptr = fma->memory() + ext.start;
-          return { ptr, ext.length, arena };
+          return { ptr, ext.length, i };
         }
     }
   // FIXME: try to grow the *last* arena first
   // allocate a new area
-  const bool willgrow = arenas.size() > 0; // prepare for growth after the first is too small
+  const bool willgrow = fast_mem_arenas.size() > 0; // prepare for growth after the first is too small
   Arena arena = create_arena (std::max (size_t (length), MINIMUM_ARENA_SIZE), cache_line_size, willgrow);
   assert_return (fmallocator (arena), {});
-  arenas.push_back (arena);
+  const uint32 arena_index = fast_mem_arenas.size();
+  fast_mem_arenas.push_back (arena);
   FastMemory::Allocator *fma = fmallocator (arena);
   if (fma->alloc_ext (ext))
     {
       void *const ptr = fma->memory() + ext.start;
-      return { ptr, ext.length, arena };
+      return { ptr, ext.length, arena_index };
     }
   fatal_error ("newly allocated arena too short for request: %u < %u", fma->size(), ext.length);
 }
@@ -430,12 +435,10 @@ mm_info_pop_mt (void *block_start) // MT-Safe
 } // FastMemory
 
 // == aligned malloc/calloc/free ==
-static std::mutex fast_mem_mutex;
-
 void*
 fast_mem_alloc (size_t size)
 {
-  std::unique_lock<std::mutex> shortlock (fast_mem_mutex);
+  std::unique_lock<std::mutex> shortlock (FastMemory::fast_mem_mutex);
   FastMemory::ArenaBlock ab = FastMemory::fast_mem_allocate_aligned_block (size); // MT-Guarded
   shortlock.unlock();
   void *const ptr = ab.block_start;
@@ -453,8 +456,8 @@ fast_mem_free (void *mem)
   FastMemory::ArenaBlock ab = FastMemory::mm_info_pop_mt (mem);
   if (!ab.block_start)
     fatal_error ("%s: invalid memory pointer: %p\n", __func__, mem);
-  std::lock_guard<std::mutex> locker (fast_mem_mutex);
-  ab.arena.release (ab.block()); // MT-Guarded
+  std::lock_guard<std::mutex> locker (FastMemory::fast_mem_mutex);
+  FastMemory::fast_mem_arenas[ab.arena_index].release (ab.block()); // MT-Guarded
 }
 
 } // Bse
