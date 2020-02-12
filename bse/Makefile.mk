@@ -7,7 +7,6 @@ CHECK_TARGETS  += bse/check
 
 # == bse/ files ==
 bse/libbse.headers ::= $(strip		\
-	bse/backtrace.hh		\
 	bse/bcore.hh			\
 	bse/blob.hh			\
 	bse/bse.hh			\
@@ -153,7 +152,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/unicode.hh			\
 )
 bse/libbse.sources ::= $(strip		\
-	bse/backtrace.cc		\
 	bse/bcore.cc			\
 	bse/blob.cc			\
 	bse/bsebasics.cc		\
