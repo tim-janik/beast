@@ -6,10 +6,58 @@
 
 namespace Bse {
 
+namespace FastMemory {
+/// Minimum alignment >= cache line size, see getconf LEVEL1_DCACHE_LINESIZE.
+inline constexpr size_t cache_line_size = 64;
+} // FastMemory
+
 // Allocate cache-line aligned memory block from fast memory pool, MT-Safe.
 void*   fast_mem_alloc  (size_t size);
 // Free a memory block allocated with aligned_malloc(), MT-Safe.
 void    fast_mem_free   (void *mem);
+
+/// Array with cache-line-alignment containing a fixed numer of PODs.
+template<typename T, size_t ALIGNMENT = FastMemory::cache_line_size>
+class FastMemArray {
+  static_assert (std::is_trivially_copyable<T>::value);
+  static_assert (ALIGNMENT <= FastMemory::cache_line_size);
+  static_assert ((ALIGNMENT & (ALIGNMENT - 1)) == 0);
+  static_assert (alignof (T) <= ALIGNMENT);
+  const size_t n_elements_ = 0;
+  T     *const data_ = nullptr;
+  BSE_CLASS_NON_COPYABLE (FastMemArray);
+protected:
+  void     range_check (size_t n) const
+  {
+    if (n >= n_elements_)
+      throw std::out_of_range (string_format ("FastMemArray::range_check: n >= size(): %u >= %u", n, size()));
+  }
+public:
+  FastMemArray (size_t n_elements) :
+    n_elements_ (n_elements),
+    data_ ((T*) fast_mem_alloc (sizeof (T) * n_elements_))
+  {
+    std::fill (begin(), end(), T());
+  }
+  FastMemArray (const vector<T>& elements) :
+    n_elements_ (elements.size()),
+    data_ ((T*) fast_mem_alloc (sizeof (T) * n_elements_))
+  {
+    std::copy (elements.begin(), elements.end(), begin());
+  }
+  ~FastMemArray()
+  {
+    static_assert (std::is_trivially_destructible<T>::value);
+    fast_mem_free (data_);
+  }
+  T*       begin      ()                { return &data_[0]; }
+  T*       end        ()                { return &data_[n_elements_]; }
+  size_t   size       () const          { return n_elements_; }
+  T&       operator[] (size_t n)        { return data_[n]; }
+  const T& operator[] (size_t n) const  { return data_[n]; }
+  T&       at         (size_t n)        { range_check (n); return data_[n]; }
+  const T& at         (size_t n) const  { range_check (n); return data_[n]; }
+};
 
 namespace FastMemory {
 
@@ -30,9 +78,6 @@ public:
   void  operator delete   (void *ptr, std::size_t sz, std::align_val_t al) { delete_ (ptr, sz, al); }
   void  operator delete[] (void *ptr, std::size_t sz, std::align_val_t al) { delete_ (ptr, sz, al); }
 };
-
-/// Minimum alignment >= cache line size, see getconf LEVEL1_DCACHE_LINESIZE.
-inline constexpr size_t cache_line_size = 64;
 
 /// Internal allocator handle.
 struct Allocator;
