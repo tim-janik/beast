@@ -3,7 +3,6 @@
 #define __BSE_BCORE_HH__
 
 #include <bse/blob.hh>
-#include <bse/backtrace.hh>
 #include <bse/platform.hh>
 #include <bse/regex.hh>
 #include <bse/strings.hh>
@@ -75,6 +74,19 @@ template<class ...Args> void   debug                (const char *cond, const cha
 #define BSE_DEBUG(cond, ...) ::Bse::debug_message (__FILE__, __LINE__, __func__, cond, __VA_ARGS__)
 
 // == Diagnostic Helpers ==
+/// Helper to generate backtraces externally via system(3).
+struct BacktraceCommand {
+  explicit    BacktraceCommand ();      ///< Setup, currently facilitates just gdb.
+  bool        can_backtrace ();         ///< Assess whether backtrace printing is possible.
+  const char* command ();               ///< Command for system(3) to print backtrace.
+  const char* message ();               ///< Notice about errors or inability to backtrace.
+  const char* heading (const char *file, int line, const char *func,
+                       const char *prefix = "", const char *postfix = "");
+private:
+  static constexpr uint32 tlen_ = 3075; ///< Length of `cmdbuf`.
+  char txtbuf_[tlen_ + 1] = { 0, };     ///< Command for system() iff `can_backtrace==true`.
+};
+
 template<class ...Args>
 void   debug_message        (const char *file, int line, const char *func, const char *cond, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
 void   diag_debug_message   (const char *file, int line, const char *func, const char *cond, const ::std::string &message);
