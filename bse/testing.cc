@@ -20,12 +20,6 @@ namespace Bse {
  */
 namespace Test {
 
-static void
-test_assertion_failed (const std::string &message)
-{
-  print_backtrace (__FILE__, __LINE__, NULL);
-}
-
 /** Initialize the Bse core for a test program.
  * Initializes Bse to execute unit tests by calling parse_settings_and_args()
  * with args "autonomous=1" and "testing=1" and setting the application name.
@@ -35,7 +29,6 @@ void
 init (int *argcp, char **argv, const StringVector &args)
 {
   Bse::set_debug_flags (Bse::DebugFlags::FATAL_WARNINGS);
-  diag_abort_hook (test_assertion_failed);
   unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
   g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
   sfi_init (argcp, argv, Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));
