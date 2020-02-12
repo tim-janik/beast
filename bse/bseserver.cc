@@ -1255,7 +1255,7 @@ static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 static FastMemory::Arena&
 server_shared_memory_area()
 {
-  static FastMemory::Arena shm_area { uint32 (current_shared_memory_area_size), 2 * FastMemory::cache_line_size };
+  static FastMemory::Arena &shm_area = *new FastMemory::Arena { uint32 (current_shared_memory_area_size), 2 * FastMemory::cache_line_size };
   return shm_area;
 }
 
