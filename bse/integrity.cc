@@ -32,24 +32,11 @@ IntegrityCheck::Test::register_test (const char *file, int line, const char *fun
 }
 } // Bse
 
-static int      // for backtrace tests
-my_compare_func (const void*, const void*)
-{
-  BSE_BACKTRACE();
-  _Exit (0);
-}
-
-
 // == Main test program ==
 static int
 test_main (int argc, char *argv[])
 {
-  if (argc >= 2 && String ("--backtrace") == argv[1])
-    {
-      char dummy_array[3] = { 1, 2, 3 };
-      qsort (dummy_array, 3, 1, my_compare_func);
-    }
-  else if (argc >= 2 && String ("--assert_return1") == argv[1])
+  if (argc >= 2 && String ("--assert_return1") == argv[1])
     {
       assert_return (1, 0);
       return 0;
