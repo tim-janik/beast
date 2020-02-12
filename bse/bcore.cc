@@ -515,19 +515,40 @@ diag_debug_message (const char *file, int line, const char *func, const char *co
     }
 }
 
+#ifndef NDEBUG
+#define PRINT_BACKTRACE(file, line, func)                          do { \
+  using namespace AnsiColors;                                           \
+  const std::string col = color (FG_YELLOW /*, BOLD*/), reset = color (RESET); \
+  BacktraceCommand btrace;                                              \
+  bool btrace_ok = false;                                               \
+  if (btrace.can_backtrace()) {                                         \
+    const char *heading = btrace.heading (file, line, func, col.c_str(), reset.c_str()); \
+    diag_printerr (heading);                                            \
+    const char *btrace_cmd = btrace.command();                          \
+    btrace_ok = btrace_cmd[0] && system (btrace_cmd) == 0;              \
+  }                                                                     \
+  const char *btrace_msg = btrace.message();                            \
+  if (!btrace_ok && btrace_msg[0])                                      \
+    diag_printerr (btrace_msg); /* print bt errors */                   \
+  } while (0)
+#else // NDEBUG
+#define PRINT_BACKTRACE(file, line, func)               do { } while (0)
+#endif
+
 // Mimick relevant parts of glibc's abort_msg_s
 struct AbortMsg {
   const char *msg = NULL;
 };
 static AbortMsg abort_msg;
 
-#define ABORT_WITH_MESSAGE(abort_message)                          do { \
+#define ABORT_WITH_MESSAGE(abort_message, file, line, func)        do { \
   Bse::diag_printerr (abort_message);                                   \
   __sync_synchronize();                                                 \
   if (Bse::global_abort_hook)                                           \
     Bse::global_abort_hook (abort_message);                             \
   Bse::abort_msg.msg = abort_message.c_str();                           \
   __sync_synchronize();                                                 \
+  PRINT_BACKTRACE (file, line, func);                                   \
   if (Bse::global_debug_flags & Bse::DebugFlags::SIGQUIT_ON_ABORT)      \
     raise (SIGQUIT);                                                    \
   ::abort();   /* default action for SIGABRT is core dump */            \
@@ -538,32 +559,14 @@ void
 assertion_failed (const std::string &msg, const char *const file, const int line, const char *const func)
 {
   const ::std::string abort_message = diag_format (true, file, line, func, 'A', msg.empty() ? "state unreachable" : msg);
-  diag_printerr (abort_message);
 #ifdef NDEBUG
   if (!(global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS))
-    return;
-#endif
-  using namespace AnsiColors;
-  const std::string col = color (FG_YELLOW /*, BOLD*/), reset = color (RESET);
-  if (true) // backtrace
     {
-      BacktraceCommand btrace;
-      bool btrace_ok = false;
-      if (btrace.can_backtrace())
-        {
-          const char *heading = btrace.heading (file, line, func, col.c_str(), reset.c_str());
-          diag_printerr (heading);
-          const char *btrace_cmd = btrace.command();
-          btrace_ok = btrace_cmd[0] && system (btrace_cmd) == 0;
-        }
-      const char *btrace_msg = btrace.message();
-      if (!btrace_ok && btrace_msg[0])
-        diag_printerr (btrace_msg);     // may print: "enable ptrace_scope", etc
+      diag_printerr (abort_message);
+      return;
     }
-  diag_printerr ("Aborting...\n");
-  raise (SIGABRT);
-  while (true)
-    ::_exit (-1);   // ensures noreturn
+#endif
+  ABORT_WITH_MESSAGE (abort_message, file, line, func);
 }
 
 void
@@ -571,7 +574,7 @@ diag_failed_assert (const char *file, int line, const char *func, const char *st
 {
   const ::std::string abort_message = diag_format (true, file, line, func, 'A', stmt ? stmt : "state unreachable");
   if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (abort_message);
+    ABORT_WITH_MESSAGE (abort_message, file, line, func);
   diag_printerr (abort_message);
 }
 
@@ -580,7 +583,7 @@ diag_warning (const ::std::string &message)
 {
   const ::std::string msg = diag_format (true, NULL, 0, NULL, 'W', message);
   if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (msg);
+    ABORT_WITH_MESSAGE (msg, NULL, 0, NULL);
   diag_printerr (diag_format (true, NULL, 0, NULL, 'W', message));
 }
 
@@ -588,7 +591,7 @@ void
 diag_fatal_error (const ::std::string &message)
 {
   const ::std::string abort_message = diag_format (true, NULL, 0, NULL, 'E', message);
-  ABORT_WITH_MESSAGE (abort_message);
+  ABORT_WITH_MESSAGE (abort_message, NULL, 0, NULL);
 }
 
 struct EarlyStartup101 {
@@ -651,7 +654,7 @@ aida_diagnostic_impl (const char *file, int line, const char *func, char kind, c
     }
   const ::std::string diag_message = Bse::diag_format (true, file, line, func, kind, msg);
   if (kind != 'D' && Bse::global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (diag_message);
+    ABORT_WITH_MESSAGE (diag_message, file, line, func);
   Bse::diag_printerr (diag_message);
 }
 
