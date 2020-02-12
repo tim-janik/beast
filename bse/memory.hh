@@ -13,6 +13,24 @@ void    fast_mem_free   (void *mem);
 
 namespace FastMemory {
 
+// == NewDeleteBase ==
+class NewDeleteBase {
+  static constexpr const std::align_val_t __cxxalignment = std::align_val_t (__STDCPP_DEFAULT_NEW_ALIGNMENT__);
+  static void    delete_  (void *ptr, std::size_t sz, std::align_val_t al);
+  static void*   new_     (std::size_t sz, std::align_val_t al);
+public:
+  // 'static' is implicit for operator new/delete
+  void* operator new      (std::size_t sz)                            { return new_ (sz, __cxxalignment); }
+  void* operator new[]    (std::size_t sz)                            { return new_ (sz, __cxxalignment); }
+  void* operator new      (std::size_t sz, std::align_val_t al)       { return new_ (sz, al); }
+  void* operator new[]    (std::size_t sz, std::align_val_t al)       { return new_ (sz, al); }
+  // variants without size_t MUST NOT be defined for the following to be used
+  void  operator delete   (void *ptr, std::size_t sz)                 { delete_ (ptr, sz, __cxxalignment); }
+  void  operator delete[] (void *ptr, std::size_t sz)                 { delete_ (ptr, sz, __cxxalignment); }
+  void  operator delete   (void *ptr, std::size_t sz, std::align_val_t al) { delete_ (ptr, sz, al); }
+  void  operator delete[] (void *ptr, std::size_t sz, std::align_val_t al) { delete_ (ptr, sz, al); }
+};
+
 /// Minimum alignment >= cache line size, see getconf LEVEL1_DCACHE_LINESIZE.
 inline constexpr size_t cache_line_size = 64;
 

@@ -389,6 +389,31 @@ struct EmptyArena : Arena {
   {}
 };
 
+// == NewDeleteBase ==
+static constexpr bool trace_NewDeleteBase = false;
+
+void
+NewDeleteBase::delete_ (void *ptr, std::size_t sz, std::align_val_t al)
+{
+  if (trace_NewDeleteBase)
+    Bse::printerr ("del: %p (%d, %d)\n", ptr, sz, al);
+  // sz and al are both bogus if delete is called via base class
+  fast_mem_free (ptr);
+  //::operator delete[] (ptr, al);
+}
+
+void*
+NewDeleteBase::new_ (std::size_t sz, std::align_val_t al)
+{
+  //auto ptr = ::operator new[] (sz, al);
+  void *ptr = nullptr;
+  if (size_t (al) <= FastMemory::cache_line_size)
+    ptr = fast_mem_alloc (sz);
+  if (trace_NewDeleteBase)
+    Bse::printerr ("new: %p (%d, %d)\n", ptr, sz, al);
+  return ptr;
+}
+
 // == ArenaBlock ==
 static std::mutex fast_mem_mutex;
 static std::vector<FastMemory::Arena> &fast_mem_arenas = *new std::vector<FastMemory::Arena>();
