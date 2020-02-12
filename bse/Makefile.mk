@@ -7,7 +7,6 @@ CHECK_TARGETS  += bse/check
 
 # == bse/ files ==
 bse/libbse.headers ::= $(strip		\
-	bse/backtrace.hh		\
 	bse/bcore.hh			\
 	bse/blob.hh			\
 	bse/bse.hh			\
@@ -153,7 +152,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/unicode.hh			\
 )
 bse/libbse.sources ::= $(strip		\
-	bse/backtrace.cc		\
 	bse/bcore.cc			\
 	bse/blob.cc			\
 	bse/bsebasics.cc		\
@@ -587,10 +585,6 @@ $>/bse/t279-assertions-test: FORCE	$(bse/integrity)
 	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return0) $(QSTDERR) ; test "$$?"  != 0 || $(QDIE) --assert_return0 failed
 	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return_unreached) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return_unreached failed
 	$Q (trap ':' SIGTRAP && $(bse/integrity) --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
-	$Q $(bse/integrity) --backtrace	2> $@.tmp && \
-		grep -qi 'Backtrace'		   $@.tmp && \
-		grep -qi 'in.*my_compare_func'	   $@.tmp || $(QDIE) --backtrace failed
-	$Q rm $@.tmp
 	@echo "  PASS    " $@
 bse/check: $>/bse/t279-assertions-test
 

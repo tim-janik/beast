@@ -3,7 +3,6 @@
 #define __BSE_BCORE_HH__
 
 #include <bse/blob.hh>
-#include <bse/backtrace.hh>
 #include <bse/platform.hh>
 #include <bse/regex.hh>
 #include <bse/strings.hh>
@@ -55,6 +54,9 @@ enum class DebugFlags {
 };
 AIDA_DEFINE_FLAGS_ARITHMETIC (DebugFlags);
 
+void    assertion_failed        (const std::string &msg = "", const char *file = __builtin_FILE(),
+                                 int line = __builtin_LINE(), const char *func = __builtin_FUNCTION());
+
 template<class... Args> String string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
 template<class... Args> String string_locale_format (const char *format, const Args &...args) BSE_PRINTF (1, 0);
 template<class ...Args> void   fatal_error          (const char *format, const Args &...args) BSE_NORETURN;
@@ -72,6 +74,19 @@ template<class ...Args> void   debug                (const char *cond, const cha
 #define BSE_DEBUG(cond, ...) ::Bse::debug_message (__FILE__, __LINE__, __func__, cond, __VA_ARGS__)
 
 // == Diagnostic Helpers ==
+/// Helper to generate backtraces externally via system(3).
+struct BacktraceCommand {
+  explicit    BacktraceCommand ();      ///< Setup, currently facilitates just gdb.
+  bool        can_backtrace ();         ///< Assess whether backtrace printing is possible.
+  const char* command ();               ///< Command for system(3) to print backtrace.
+  const char* message ();               ///< Notice about errors or inability to backtrace.
+  const char* heading (const char *file, int line, const char *func,
+                       const char *prefix = "", const char *postfix = "");
+private:
+  static constexpr uint32 tlen_ = 3075; ///< Length of `cmdbuf`.
+  char txtbuf_[tlen_ + 1] = { 0, };     ///< Command for system() iff `can_backtrace==true`.
+};
+
 template<class ...Args>
 void   debug_message        (const char *file, int line, const char *func, const char *cond, const char *format, const Args &...args) BSE_ALWAYS_INLINE;
 void   diag_debug_message   (const char *file, int line, const char *func, const char *cond, const ::std::string &message);
@@ -320,9 +335,9 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define BSE_ASSERT_RETURN(cond, ...)     AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
+#define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (#cond); return __VA_ARGS__; } while (0)
 /// Return from the current function and issue an assertion warning.
-#define BSE_ASSERT_RETURN_UNREACHED(...) AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+#define BSE_ASSERT_RETURN_UNREACHED(...) do { ::Bse::assertion_failed (""); return __VA_ARGS__; } while (0)
 
 // == Memory Utilities ==
 int     fmsb          (uint64  word) BSE_CONST; ///< Find most significant bit set in a word.

@@ -5,6 +5,7 @@
 #include <cstring>
 #include <unistd.h>     // _exit
 #include <sys/time.h>   // gettimeofday
+#include <fcntl.h>      // open()
 
 // == limits.h & float.h checks ==
 // assert several assumptions the code makes
@@ -229,6 +230,111 @@ url_show (const char *url)
   return false;
 }
 
+// == GDB Backtrace ==
+BacktraceCommand::BacktraceCommand()
+{}
+
+static const char *const usr_bin_gdb = "/usr/bin/gdb";
+static const char *const ptrace_scope = "/proc/sys/kernel/yama/ptrace_scope";
+
+/// Check /proc/sys/kernel/yama/ptrace_scope for working ptrace().
+static bool
+backtrace_may_ptrace()
+{
+  bool allow_ptrace = false;
+#ifdef  __linux__
+  int fd = open (ptrace_scope, 0);
+  char b[8] = { 0 };
+  if (read (fd, b, 8) > 0)
+    allow_ptrace = b[0] == '0';
+  close (fd);
+#else
+  allow_ptrace = true;
+#endif
+  return allow_ptrace;
+}
+
+/// Check for executable /usr/bin/gdb
+static bool
+backtrace_have_gdb()
+{
+  return access (usr_bin_gdb, X_OK) == 0;
+}
+
+bool
+BacktraceCommand::can_backtrace ()
+{
+  return backtrace_may_ptrace() && backtrace_have_gdb();
+}
+
+const char*
+BacktraceCommand::command ()
+{
+  txtbuf_[0] = 0;
+  if (can_backtrace())
+    snprintf (txtbuf_, tlen_,
+              "%s -q -n -p %u --batch "
+              "-iex 'set auto-load python-scripts off' "
+              "-iex 'set script-extension off' "
+              "-ex 'set print address off' "
+              // "-ex 'set print frame-arguments none' "
+              "-ex 'thread apply all backtrace 25' >&2 2>/dev/null",
+              usr_bin_gdb, gettid());
+  return txtbuf_;
+}
+
+const char*
+BacktraceCommand::message ()
+{
+  txtbuf_[0] = 0;
+  if (!backtrace_have_gdb())
+    {
+      strncat (txtbuf_, "Backtrace requires a debugger, e.g.: ", tlen_);
+      strncat (txtbuf_, usr_bin_gdb, tlen_);
+      strncat (txtbuf_, "\n", tlen_);
+    }
+  else if (!backtrace_may_ptrace())
+    {
+      strncat (txtbuf_, "Backtrace needs ptrace permissions, ", tlen_);
+      strncat (txtbuf_, "try: echo 0 > /proc/sys/kernel/yama/ptrace_scope\n", tlen_);
+    }
+  return txtbuf_;
+}
+
+///< Heading to print before backtrace.
+const char*
+BacktraceCommand::heading (const char *const file, const int line, const char *const func,
+                           const char *prefix, const char *postfix)
+{
+  txtbuf_[0] = 0;
+  strncat (txtbuf_, prefix, tlen_);
+  int l = strlen (txtbuf_);
+  snprintf (txtbuf_ + l, tlen_ - l, "Backtrace[%u]", getpid());
+  if (!file)
+    {
+      strncat (txtbuf_, ":", tlen_);
+      strncat (txtbuf_, postfix, tlen_);
+      strncat (txtbuf_, "\n", tlen_);
+      return txtbuf_;
+    }
+  strncat (txtbuf_, " from ", tlen_);
+  strncat (txtbuf_, file, tlen_);
+  strncat (txtbuf_, ":", tlen_);
+  if (line > 0)
+    {
+      l = strlen (txtbuf_);
+      snprintf (txtbuf_ + l, tlen_ - l, "%d:", line);
+    }
+  if (func)
+    {
+      strncat (txtbuf_, func, tlen_);
+      strncat (txtbuf_, "():", tlen_);
+    }
+  strncat (txtbuf_, postfix, tlen_);
+  strncat (txtbuf_, "\n", tlen_);
+  return txtbuf_;
+}
+
 // == Diagnostics ==
 static ::std::string
 diag_format (bool with_executable, const char *file, int line, const char *func, char kind, const std::string &info, bool will_abort = false)
@@ -409,19 +515,40 @@ diag_debug_message (const char *file, int line, const char *func, const char *co
     }
 }
 
+#ifndef NDEBUG
+#define PRINT_BACKTRACE(file, line, func)                          do { \
+  using namespace AnsiColors;                                           \
+  const std::string col = color (FG_YELLOW /*, BOLD*/), reset = color (RESET); \
+  BacktraceCommand btrace;                                              \
+  bool btrace_ok = false;                                               \
+  if (btrace.can_backtrace()) {                                         \
+    const char *heading = btrace.heading (file, line, func, col.c_str(), reset.c_str()); \
+    diag_printerr (heading);                                            \
+    const char *btrace_cmd = btrace.command();                          \
+    btrace_ok = btrace_cmd[0] && system (btrace_cmd) == 0;              \
+  }                                                                     \
+  const char *btrace_msg = btrace.message();                            \
+  if (!btrace_ok && btrace_msg[0])                                      \
+    diag_printerr (btrace_msg); /* print bt errors */                   \
+  } while (0)
+#else // NDEBUG
+#define PRINT_BACKTRACE(file, line, func)               do { } while (0)
+#endif
+
 // Mimick relevant parts of glibc's abort_msg_s
 struct AbortMsg {
   const char *msg = NULL;
 };
 static AbortMsg abort_msg;
 
-#define ABORT_WITH_MESSAGE(abort_message)                          do { \
+#define ABORT_WITH_MESSAGE(abort_message, file, line, func)        do { \
   Bse::diag_printerr (abort_message);                                   \
   __sync_synchronize();                                                 \
   if (Bse::global_abort_hook)                                           \
     Bse::global_abort_hook (abort_message);                             \
   Bse::abort_msg.msg = abort_message.c_str();                           \
   __sync_synchronize();                                                 \
+  PRINT_BACKTRACE (file, line, func);                                   \
   if (Bse::global_debug_flags & Bse::DebugFlags::SIGQUIT_ON_ABORT)      \
     raise (SIGQUIT);                                                    \
   ::abort();   /* default action for SIGABRT is core dump */            \
@@ -429,11 +556,25 @@ static AbortMsg abort_msg;
 } while (0)
 
 void
+assertion_failed (const std::string &msg, const char *const file, const int line, const char *const func)
+{
+  const ::std::string abort_message = diag_format (true, file, line, func, 'A', msg.empty() ? "state unreachable" : msg);
+#ifdef NDEBUG
+  if (!(global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS))
+    {
+      diag_printerr (abort_message);
+      return;
+    }
+#endif
+  ABORT_WITH_MESSAGE (abort_message, file, line, func);
+}
+
+void
 diag_failed_assert (const char *file, int line, const char *func, const char *stmt)
 {
   const ::std::string abort_message = diag_format (true, file, line, func, 'A', stmt ? stmt : "state unreachable");
   if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (abort_message);
+    ABORT_WITH_MESSAGE (abort_message, file, line, func);
   diag_printerr (abort_message);
 }
 
@@ -442,7 +583,7 @@ diag_warning (const ::std::string &message)
 {
   const ::std::string msg = diag_format (true, NULL, 0, NULL, 'W', message);
   if (global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (msg);
+    ABORT_WITH_MESSAGE (msg, NULL, 0, NULL);
   diag_printerr (diag_format (true, NULL, 0, NULL, 'W', message));
 }
 
@@ -450,7 +591,7 @@ void
 diag_fatal_error (const ::std::string &message)
 {
   const ::std::string abort_message = diag_format (true, NULL, 0, NULL, 'E', message);
-  ABORT_WITH_MESSAGE (abort_message);
+  ABORT_WITH_MESSAGE (abort_message, NULL, 0, NULL);
 }
 
 struct EarlyStartup101 {
@@ -513,7 +654,7 @@ aida_diagnostic_impl (const char *file, int line, const char *func, char kind, c
     }
   const ::std::string diag_message = Bse::diag_format (true, file, line, func, kind, msg);
   if (kind != 'D' && Bse::global_debug_flags & Bse::DebugFlags::FATAL_WARNINGS)
-    ABORT_WITH_MESSAGE (diag_message);
+    ABORT_WITH_MESSAGE (diag_message, file, line, func);
   Bse::diag_printerr (diag_message);
 }
 
