@@ -340,49 +340,6 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 
 // == Memory Utilities ==
 int     fmsb          (uint64  word) BSE_CONST; ///< Find most significant bit set in a word.
-void*   aligned_alloc (size_t  total_size, size_t alignment, uint8 **free_pointer);
-void    aligned_free  (uint8 **free_pointer);
-
-/// Class to maintain an array of aligned memory.
-template<class T, int ALIGNMENT>
-class AlignedArray {
-  uint8 *unaligned_mem_;
-  T     *data_;
-  size_t n_elements_;
-  void
-  allocate_aligned_data()
-  {
-    static_assert (ALIGNMENT % sizeof (T) == 0, "ALIGNMENT must exactly fit a multiple of sizeof (T)");
-    data_ = reinterpret_cast<T*> (aligned_alloc (n_elements_ * sizeof (T), ALIGNMENT, &unaligned_mem_));
-  }
-  // disallow copy constructor assignment operator
-  BSE_CLASS_NON_COPYABLE (AlignedArray);
-public:
-  AlignedArray (const vector<T>& elements) :
-    n_elements_ (elements.size())
-  {
-    allocate_aligned_data();
-    for (size_t i = 0; i < n_elements_; i++)
-      new (data_ + i) T (elements[i]);
-  }
-  AlignedArray (size_t n_elements) :
-    n_elements_ (n_elements)
-  {
-    allocate_aligned_data();
-    for (size_t i = 0; i < n_elements_; i++)
-      new (data_ + i) T();
-  }
-  ~AlignedArray()
-  {
-    // C++ destruction order: last allocated element is deleted first
-    while (n_elements_)
-      data_[--n_elements_].~T();
-    aligned_free (&unaligned_mem_);
-  }
-  T&            operator[] (size_t pos)         { return data_[pos]; }
-  const T&      operator[] (size_t pos) const   { return data_[pos]; }
-  size_t        size       () const             { return n_elements_; }
-};
 
 // == Threading ==
 /**
