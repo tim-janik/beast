@@ -30,7 +30,14 @@ class LargeAllocation {
 public:
   /*move*/         LargeAllocation (LargeAllocation &&t) { operator= (std::move (t)); }
   /*ctor*/         LargeAllocation ()           {}
-  /*dtor*/        ~LargeAllocation ()           { if (release_) (this->*release_) (); release_ = nullptr; }
+  /*dtor*/        ~LargeAllocation ()
+  {
+    if (release_)
+      (this->*release_) ();
+    release_ = nullptr;
+    start_ = nullptr;
+    length_ = 0;
+  }
   LargeAllocation& operator=       (LargeAllocation &&t)
   {
     std::swap (start_, t.start_);
@@ -148,6 +155,7 @@ struct SequentialFitAllocator {
     const size_t s = sum();
     if (s != blob.size())
       warning ("%s:%s: deleting area while bytes are unreleased: %zd", __FILE__, __func__, blob.size() - s);
+    extents.clear();
   }
   char*
   memory () const
@@ -381,8 +389,9 @@ struct EmptyArena : Arena {
   {}
 };
 
+// == ArenaBlock ==
 static std::mutex fast_mem_mutex;
-static std::vector<FastMemory::Arena> fast_mem_arenas;
+static std::vector<FastMemory::Arena> &fast_mem_arenas = *new std::vector<FastMemory::Arena>();
 
 struct ArenaBlock {
   void  *block_start = nullptr;
