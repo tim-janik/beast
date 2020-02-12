@@ -429,6 +429,30 @@ static AbortMsg abort_msg;
 } while (0)
 
 void
+assertion_failed (const std::string &msg, const char *const file, const int line, const char *const func)
+{
+  const ::std::string abort_message = diag_format (true, file, line, func, 'A', msg.empty() ? "state unreachable" : msg);
+  diag_printerr (abort_message);
+  using namespace AnsiColors;
+  const std::string col = color (FG_YELLOW /*, BOLD*/), reset = color (RESET);
+  if (true) // backtrace
+    {
+      constexpr int len = 1024;
+      char buf[len] = { 0, };
+      snprintf (buf, len, "%sBacktrace[%u] for %s:%d:%s():%s\n", col.c_str(), getpid(), file, line, func, reset.c_str());
+      diag_printerr (buf);
+      BacktraceCommand btrace;
+      const bool btrace_ok = btrace.can_backtrace && system (btrace.cmdbuf) == 0;
+      if (!btrace_ok && !btrace.can_backtrace && btrace.cmdbuf[0])
+        diag_printerr (btrace.cmdbuf);  // may print: "enable ptrace_scope", etc
+    }
+  // diag_printerr ("Aborting...\n");
+  raise (SIGKILL);
+  while (true)
+    ::_exit (-1);  /* ensure noreturn */
+}
+
+void
 diag_failed_assert (const char *file, int line, const char *func, const char *stmt)
 {
   const ::std::string abort_message = diag_format (true, file, line, func, 'A', stmt ? stmt : "state unreachable");

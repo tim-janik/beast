@@ -55,6 +55,9 @@ enum class DebugFlags {
 };
 AIDA_DEFINE_FLAGS_ARITHMETIC (DebugFlags);
 
+void    assertion_failed        (const std::string &msg = "", const char *file = __builtin_FILE(),
+                                 int line = __builtin_LINE(), const char *func = __builtin_FUNCTION());
+
 template<class... Args> String string_format        (const char *format, const Args &...args) BSE_PRINTF (1, 0);
 template<class... Args> String string_locale_format (const char *format, const Args &...args) BSE_PRINTF (1, 0);
 template<class ...Args> void   fatal_error          (const char *format, const Args &...args) BSE_NORETURN;
