@@ -12,7 +12,7 @@
 
 using namespace Bse;
 
-using Bse::AlignedArray;
+using Bse::FastMemArray;
 using std::vector;
 using std::max;
 using std::min;
@@ -74,8 +74,8 @@ void
 ResamplerTest::check_resampler_up (Resampler2::Precision precision, bool use_sse)
 {
   Resampler2 ups (Resampler2::UP, precision, use_sse);
-  AlignedArray<float,16> input (options.test_size);
-  AlignedArray<float,16> output (options.test_size * 2);
+  FastMemArray<float> input (options.test_size);
+  FastMemArray<float> output (options.test_size * 2);
   vector< vector<float> > results;
 
   TASSERT (ups.sse_enabled() == use_sse);
@@ -115,8 +115,8 @@ void
 ResamplerTest::check_resampler_down (Resampler2::Precision precision, bool use_sse)
 {
   Resampler2 downs (Resampler2::DOWN, precision, use_sse);
-  AlignedArray<float,16> input (options.test_size * 2);
-  AlignedArray<float,16> output (options.test_size);
+  FastMemArray<float> input (options.test_size * 2);
+  FastMemArray<float> output (options.test_size);
   vector< vector<float> > results;
 
   TASSERT (downs.sse_enabled() == use_sse);
