@@ -6,9 +6,12 @@
 
 namespace Bse {
 
+/// Utilities for allocating cache line aligned memory from huge pages.
 namespace FastMemory {
+
 /// Minimum alignment >= cache line size, see getconf LEVEL1_DCACHE_LINESIZE.
 inline constexpr size_t cache_line_size = 64;
+
 } // FastMemory
 
 // Allocate cache-line aligned memory block from fast memory pool, MT-Safe.
