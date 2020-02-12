@@ -335,9 +335,9 @@ bool url_show (const char *url); ///< Display @a url via a suitable WWW user age
 
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define BSE_ASSERT_RETURN(cond, ...)     AIDA_ASSERT_RETURN (cond, __VA_ARGS__)
+#define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (#cond); return __VA_ARGS__; } while (0)
 /// Return from the current function and issue an assertion warning.
-#define BSE_ASSERT_RETURN_UNREACHED(...) AIDA_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+#define BSE_ASSERT_RETURN_UNREACHED(...) do { ::Bse::assertion_failed (""); return __VA_ARGS__; } while (0)
 
 // == Memory Utilities ==
 int     fmsb          (uint64  word) BSE_CONST; ///< Find most significant bit set in a word.
