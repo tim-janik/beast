@@ -808,7 +808,7 @@ static void testresampler_check_precision_up16()        { TASSERT (run_accuracy 
 TEST_ADD (testresampler_check_precision_up16);
 static void testresampler_check_precision_over20()      { TASSERT (run_accuracy (RES_OVERSAMPLE, false, 20, 180, 18000, 1671, 113.5)); }
 TEST_ADD (testresampler_check_precision_over20);
-static void testresampler_check_precision_sub24()       { TASSERT (run_accuracy (RES_SUBSAMPLE, false, 24, 90, 9000, 983, 126)); }
+static void testresampler_check_precision_sub24()       { TASSERT (run_accuracy (RES_SUBSAMPLE, false, 24, 90, 9000, 983, 124.5)); }
 TEST_ADD (testresampler_check_precision_sub24);
 
 static void
