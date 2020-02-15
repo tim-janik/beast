@@ -46,14 +46,24 @@ RUN \
   eatmydata apt-get --purge remove -y cmake && \
   \
   echo '## Provide Beast dependencies, add libXss.so for electron' && \
+  V=9 && \
   retry eatmydata apt-get install -y \
 	build-essential automake autoconf autoconf-archive libtool \
 	curl doxygen graphviz texlive-binaries git libxml2-utils \
 	libxml2-dev gawk python2.7-dev python3 libboost-system-dev \
-	cppcheck clang clang-tidy clang-tools python3-pandocfilters \
+	cppcheck clang-$V clang-tidy-$V clang-tools-$V python3-pandocfilters \
 	libasound2-dev libflac-dev libvorbis-dev libmad0-dev gettext \
 	imagemagick libgconf-2-4 nodejs libxss1 \
 	libgtk-3-bin libgdk-pixbuf2.0-dev && \
+  \
+  update-alternatives \
+    --install /usr/bin/clang               clang               /usr/bin/clang-$V 900 \
+    --slave   /usr/bin/asan_symbolize      asan_symbolize      /usr/bin/asan_symbolize-$V \
+    --slave   /usr/bin/clang++             clang++             /usr/bin/clang++-$V  \
+    --slave   /usr/bin/clang-check         clang-check         /usr/bin/clang-check-$V \
+    --slave   /usr/bin/clang-cpp           clang-cpp           /usr/bin/clang-cpp-$V \
+    --slave   /usr/bin/clang-tidy          clang-tidy          /usr/bin/clang-tidy-$V \
+    --slave   /usr/bin/scan-build          scan-build          /usr/bin/scan-build-$V && \
   \
   curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
   apt-get install -y nodejs && \
