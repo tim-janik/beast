@@ -1252,20 +1252,20 @@ ServerImpl::broadcast_shm_fragments (const ShmFragmentSeq &plan, int interval_ms
 static constexpr ssize_t SHARED_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
 static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 
-static const MemoryArea&
+static FastMemory::Arena&
 server_shared_memory_area()
 {
-  static MemoryArea shm_area = create_memory_area (current_shared_memory_area_size, 2 * BSE_CACHE_LINE_ALIGNMENT);
+  static FastMemory::Arena &shm_area = *new FastMemory::Arena { uint32 (current_shared_memory_area_size), 2 * FastMemory::cache_line_size };
   return shm_area;
 }
 
 SharedMemory
 ServerImpl::get_shared_memory()
 {
-  const MemoryArea &ma = server_shared_memory_area();
+  const FastMemory::Arena &arena = server_shared_memory_area();
   SharedMemory sm;
-  sm.shm_start = ma.mem_start;
-  sm.shm_length = ma.mem_length;
+  sm.shm_start = arena.location();
+  sm.shm_length = arena.reserved();
   sm.shm_creator = this_thread_getpid();
   return sm;
 }
@@ -1276,8 +1276,8 @@ ServerImpl::allocate_shared_block (int64 length)
   SharedBlock sb;
   assert_return (length <= SHARED_MEMORY_AREA_SIZE, sb);
   return_unless (length > 0, sb);
-  const MemoryArea &ma = server_shared_memory_area();
-  AlignedBlock ab = allocate_aligned_block (ma.mem_id, length);
+  FastMemory::Arena &arena = server_shared_memory_area();
+  FastMemory::Block ab = arena.allocate (length);
   if (!ab.block_start)
     {
       // Generally, this should not happen, if it does, we need to increase the area size
@@ -1296,7 +1296,7 @@ ServerImpl::allocate_shared_block (int64 length)
     }
   sb.mem_length = ab.block_length;
   sb.mem_start = ab.block_start;
-  sb.mem_offset = uint64 (sb.mem_start) - ma.mem_start;
+  sb.mem_offset = uint64 (sb.mem_start) - arena.location();
   return sb;
 }
 
@@ -1304,9 +1304,9 @@ void
 ServerImpl::release_shared_block (const SharedBlock &sb)
 {
   assert_return (sb.mem_length >= 0);
-  const MemoryArea &ma = server_shared_memory_area();
-  AlignedBlock ab { ma.mem_id, uint32 (sb.mem_length), sb.mem_start };
-  release_aligned_block (ab);
+  FastMemory::Arena &arena = server_shared_memory_area();
+  FastMemory::Block ab { sb.mem_start, uint32 (sb.mem_length) };
+  arena.release (ab);
   assert_return (current_shared_memory_area_size + ab.block_length <= SHARED_MEMORY_AREA_SIZE);
   current_shared_memory_area_size += ab.block_length;
 }

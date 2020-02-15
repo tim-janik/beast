@@ -59,38 +59,6 @@ fmsb (uint64 val)
   return 0; /* none found */
 }
 
-/// Allocate a block of memory aligned to at least @a alignment bytes.
-void*
-aligned_alloc (size_t total_size, size_t alignment, uint8 **free_pointer)
-{
-  assert_return (free_pointer != NULL, NULL);
-  uint8 *aligned_mem = new uint8[total_size];
-  *free_pointer = aligned_mem;
-  if (aligned_mem && (!alignment || 0 == size_t (aligned_mem) % alignment))
-    return aligned_mem;
-  if (aligned_mem)
-    delete[] aligned_mem;
-  aligned_mem = new uint8[total_size + alignment - 1];
-  assert_return (aligned_mem != NULL, NULL);
-  *free_pointer = aligned_mem;
-  if (size_t (aligned_mem) % alignment)
-    aligned_mem += alignment - size_t (aligned_mem) % alignment;
-  return aligned_mem;
-}
-
-/// Release a block of memory allocated through aligned_malloc().
-void
-aligned_free (uint8 **free_pointer)
-{
-  assert_return (free_pointer != NULL);
-  if (*free_pointer)
-    {
-      uint8 *data = *free_pointer;
-      *free_pointer = NULL;
-      delete[] data;
-    }
-}
-
 /// Find @a feature in @a config, return its value or @a fallback.
 String
 feature_toggle_find (const String &config, const String &feature, const String &fallback)
@@ -279,7 +247,7 @@ BacktraceCommand::command ()
               "-ex 'set print address off' "
               // "-ex 'set print frame-arguments none' "
               "-ex 'thread apply all backtrace 25' >&2 2>/dev/null",
-              usr_bin_gdb, gettid());
+              usr_bin_gdb, this_thread_gettid());
   return txtbuf_;
 }
 

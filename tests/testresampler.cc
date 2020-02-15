@@ -343,7 +343,7 @@ perform_test()
   TASSERT (options.use_sse == ups.sse_enabled());
   TASSERT (options.use_sse == downs.sse_enabled());
 
-  AlignedArray<float, 16> in_a (block_size * 2), out_a (block_size * 2), out2_a (block_size * 2);
+  FastMemArray<float, 16> in_a (block_size * 2), out_a (block_size * 2), out2_a (block_size * 2);
   float *input = &in_a[0], *output = &out_a[0], *output2 = &out2_a[0]; /* ensure aligned data */
 
   if (TEST == TEST_PERFORMANCE)

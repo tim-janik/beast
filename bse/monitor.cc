@@ -96,7 +96,7 @@ SourceImpl::cmon_get (uint ochannel)
   return cmons_[ochannel];
 }
 
-static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (MonitorField::END_BYTE, BSE_CACHE_LINE_ALIGNMENT);
+static constexpr const size_t aligned_sizeof_MonitorFields = BSE_ALIGN (MonitorField::END_BYTE, FastMemory::cache_line_size);
 
 SharedBlock
 SourceImpl::cmon_get_block ()
@@ -207,8 +207,7 @@ static const BseModuleClass monitor_module_class = {
 #define MIN_DB_SPL      -140    // -140dB is beyond float mantissa precision
 
 class MonitorModule : public Bse::Module {
-  AlignedBlock ablock_;
-  float       *fblock_ = NULL;
+  float          *fblock_ = NULL;
   int64 counter_ = 0;
   float db_tip_ = MIN_DB_SPL;
   union {
@@ -224,13 +223,12 @@ public:
     Module (monitor_module_class),
     char8_ (mfields)
   {
-    ablock_ = allocate_aligned_block (0, BSE_STREAM_MAX_VALUES * sizeof (float));
-    assert_return (ablock_.block_start);
-    fblock_ = (float*) ablock_.block_start;
+    fblock_ = (float*) fast_mem_alloc (BSE_STREAM_MAX_VALUES * sizeof (float));
+    assert_return (fblock_ != nullptr);
   }
   virtual ~MonitorModule()
   {
-    release_aligned_block (ablock_);
+    fast_mem_free (fblock_);
   }
   virtual void
   reset () override

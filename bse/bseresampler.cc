@@ -453,7 +453,7 @@ fir_test_filter_sse (bool       verbose,
       for (uint i = 0; i < order; i++)
 	taps[i] = i + 1;
 
-      AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
+      FastMemArray<float> sse_taps (fir_compute_sse_taps (taps));
       if (verbose)
 	{
 	  for (uint i = 0; i < sse_taps.size(); i++)
@@ -467,7 +467,7 @@ fir_test_filter_sse (bool       verbose,
 	  printf ("\n\n");
 	}
 
-      AlignedArray<float,16> random_mem (order + 6);
+      FastMemArray<float> random_mem (order + 6);
       for (uint i = 0; i < order + 6; i++)
 	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
 
@@ -509,8 +509,8 @@ fir_test_filter_sse (bool       verbose,
 template<uint ORDER, bool USE_SSE>
 class Resampler2::Upsampler2 final : public Resampler2::Impl {
   vector<float>          taps;
-  AlignedArray<float,16> history;
-  AlignedArray<float,16> sse_taps;
+  FastMemArray<float> history;
+  FastMemArray<float> sse_taps;
 protected:
   /* fast SSE optimized convolution */
   void
@@ -646,9 +646,9 @@ public:
 template<uint ORDER, bool USE_SSE>
 class Resampler2::Downsampler2 final : public Resampler2::Impl {
   vector<float>        taps;
-  AlignedArray<float,16> history_even;
-  AlignedArray<float,16> history_odd;
-  AlignedArray<float,16> sse_taps;
+  FastMemArray<float> history_even;
+  FastMemArray<float> history_odd;
+  FastMemArray<float> sse_taps;
   /* fast SSE optimized convolution */
   template<int ODD_STEPPING> void
   process_4samples_aligned (const float *input_even /* aligned */,

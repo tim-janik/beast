@@ -109,7 +109,6 @@ int      this_thread_online_cpus ();
 extern inline void breakpoint               () BSE_ALWAYS_INLINE;       ///< Cause a debugging breakpoint, for development only.
 
 // == Memory Barriers ==
-#define  BSE_CACHE_LINE_ALIGNMENT       64      // generally enough on x86, see getconf LEVEL1_DCACHE_LINESIZE
 #if defined __x86_64__ || defined __amd64__
 #define  BSE_MFENCE __sync_synchronize()
 #define  BSE_SFENCE __asm__ __volatile__ ("sfence" ::: "memory")
