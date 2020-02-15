@@ -279,7 +279,7 @@ BacktraceCommand::command ()
               "-ex 'set print address off' "
               // "-ex 'set print frame-arguments none' "
               "-ex 'thread apply all backtrace 25' >&2 2>/dev/null",
-              usr_bin_gdb, gettid());
+              usr_bin_gdb, this_thread_gettid());
   return txtbuf_;
 }
 
