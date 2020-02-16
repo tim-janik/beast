@@ -73,13 +73,13 @@ clang-tidy:								| $>/misc/clang-tidy/
 	  -I $> \
 	  -I sfi \
 	  -I $>/plugins \
-	  -I external/v8pp/ \
+	  -I external/ \
 	  -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/src/ \
 	  -I ebeast/node_modules/node-gyp/cache/.node-gyp/iojs-*/deps/v8/include/ \
 	  -DBSE_COMPILATION \
 	  -DGXK_COMPILATION \
 	  -D__TOPDIR__=\"`pwd`\" \
-	  `$(PKG_CONFIG) --cflags libgnomecanvas-2.0`			> $>/misc/clang-tidy/clang-tidy.raw
+	  `$(PKG_CONFIG) --cflags glib-2.0`				> $>/misc/clang-tidy/clang-tidy.raw
 	$Q sed "s,^`pwd`/,," $>/misc/clang-tidy/clang-tidy.raw		> $>/misc/clang-tidy/clang-tidy.log
 	$Q rm -f $>/misc/clang-tidy/clang-tidy.raw  $>/misc/tmpls.all  $>/misc/tmpls.cchh  $>/misc/tmpls.clangtidy
 	misc/blame-lines -b $>/misc/clang-tidy/clang-tidy.log
