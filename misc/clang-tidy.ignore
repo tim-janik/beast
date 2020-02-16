@@ -8,6 +8,7 @@ bse/gsloscillator-aux\.cc
 bse/gslwaveosc-aux\.cc
 bse/internal\.hh
 bse/tests/filtercatalog\.cc
+plugins/bseblockutils\.cc
 plugins/bsefirfilter\.hh
 plugins/bsesimpleadsr-aux\.cc
 plugins/evaluator/.*\.cc
@@ -15,3 +16,6 @@ plugins/evaluator/.*\.hh
 sfi/gbsearcharray.hh
 sfi/private.hh
 sfi/sfidl-.*\.cc
+tools/bsewavetool\.cc
+tools/cutvorbis\.cc
+tools/mathtool\.cc
