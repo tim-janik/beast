@@ -37,8 +37,8 @@ In order to build release tarballs, `GnomeCanvas`, `Ogg/Vorbis`,
 `libflac` and `npm` and `libfluidsynth` are required.
 Support for MP3 files is optional and requires `libmad` (MPEG audio
 decoder library) when compiling Beast.
-Compilation requires `g++-5.2.1` or later and a recent Linux
-distribution like Ubuntu-18.04.
+Compilation requires at least `g++-8.3.0` or `clang++-9` and a recent
+Linux distribution like Ubuntu-18.04.
 
 
 # INSTALLATION
