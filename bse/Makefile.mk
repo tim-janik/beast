@@ -6,6 +6,7 @@ ALL_TARGETS    += bse/all
 CHECK_TARGETS  += bse/check
 
 # == bse/ files ==
+bse/libbse.bseonly.headers = $(filter bse/bse%, $(bse/libbse.headers))
 bse/libbse.headers ::= $(strip		\
 	bse/bcore.hh			\
 	bse/blob.hh			\
@@ -407,37 +408,37 @@ $(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-insert
 	$Q sed '1i#define _(x) x' -i $>/bse/bseapi_interfaces.cc && sed '1i#undef _' -i $>/bse/bseapi_interfaces.cc
 
 # == sfidl rules ==
-$>/bse/bseenum_arrays.cc: $(bse/libbse.headers)		| $>/bse/
+$>/bse/bseenum_arrays.cc: $(bse/libbse.bseonly.headers)		| $>/bse/
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
 				--vhead "/* @EnumName@\n */\n" \
 				--vhead "static G@Type@Value @enum_name@_values[] = { // enum_values\n" \
 				--vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 				--vtail "  { 0, NULL, NULL }\n};\n" \
-				$(bse/libbse.headers)			> $@.tmp
+				$(bse/libbse.bseonly.headers)			> $@.tmp
 	$Q mv $@.tmp $@
-$>/bse/bseenum_list.cc: $(bse/libbse.headers)		| $>/bse/
+$>/bse/bseenum_list.cc: $(bse/libbse.bseonly.headers)		| $>/bse/
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */" \
 				--eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-				$(bse/libbse.headers)			> $@.tmp
+				$(bse/libbse.bseonly.headers)			> $@.tmp
 	$Q mv $@.tmp $@
-$>/bse/bsegentypes.h: bse/bsebasics.idl		$(bse/libbse.headers) bse/mktypes.pl $(sfi/sfidl) | $>/bse/
+$>/bse/bsegentypes.h: bse/bsebasics.idl	$(bse/libbse.bseonly.headers) bse/mktypes.pl $(sfi/sfidl) | $>/bse/
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--fprod "\n/* --- @filename@ --- */" \
 				--eprod "#define BSE_TYPE_@ENUMSHORT@\t (BSE_TYPE_ID (@EnumName@)) // enum\n" \
 				--eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-				$(bse/libbse.headers)			> $@.tmp
+				$(bse/libbse.bseonly.headers)		> $@.tmp
 	$Q $(PERL) bse/mktypes.pl --externs $(bse/libbse.sources)	>>$@.tmp
 	$Q $(sfi/sfidl) $(sfi/sfidl.includes)	--core-c --header $<	>>$@.tmp
 	$Q mv $@.tmp $@
-$>/bse/bsegentypes.cc: $(bse/libbse.headers) bse/mktypes.pl | $>/bse/	# $(bse/libbse.sources)
+$>/bse/bsegentypes.cc: $(bse/libbse.bseonly.headers) bse/mktypes.pl | $>/bse/	# $(bse/libbse.sources)
 	$(QGEN)
 	$Q $(GLIB_MKENUMS)	--eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-				$(bse/libbse.headers)					> $@.tmp
+				$(bse/libbse.bseonly.headers)				> $@.tmp
 	$Q $(PERL) bse/mktypes.pl --interns --export-proto $(bse/libbse.sources)	>>$@.tmp
 	$Q mv $@.tmp $@
-$>/bse/bsegentype_array.cc: $(bse/libbse.headers) bse/mktypes.pl | $>/bse/	# $(bse/libbse.sources)
+$>/bse/bsegentype_array.cc: $(bse/libbse.bseonly.headers) bse/mktypes.pl | $>/bse/  # $(bse/libbse.sources)
 	$(QGEN)
 	$Q $(PERL) bse/mktypes.pl --array $(bse/libbse.sources)	> $@.tmp
 	$Q mv $@.tmp $@
