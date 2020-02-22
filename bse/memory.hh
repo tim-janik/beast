@@ -117,6 +117,95 @@ protected:
 
 } // FastMemory
 
+/// Compact string variant for constant strings that never need to be freed.
+class CString {
+  uint quark_ = 0;
+public:
+  using size_type = std::string::size_type;
+  using const_iterator = std::string::const_iterator;
+  using const_reference = std::string::const_reference;
+  using const_reverse_iterator = std::string::const_reverse_iterator;
+  /*ctor*/           CString     () noexcept                     = default;
+  /*ctor*/           CString     (const char *c)                 { assign (c); }
+  /*ctor*/           CString     (const char *c, size_type s)    { assign (c, s); }
+  /*ctor*/           CString     (const std::string &s)          { assign (s); }
+  /*copy*/           CString     (const CString&) noexcept       = default;
+  /*move*/           CString     (CString&&) noexcept            = default;
+  CString&           operator=   (const CString&) noexcept       = default;
+  CString&           operator=   (CString&&) noexcept            = default;
+  CString&           operator=   (const std::string &s)          { return assign (s); }
+  CString&           operator=   (const char *c)                 { return assign (c); }
+  CString&           operator=   (char ch)                       { return assign (std::addressof (ch), 1); }
+  CString&           operator=   (std::initializer_list<char> l) { return assign (l.begin(), l.size()); }
+  CString&           assign      (const CString &s)              { return this->operator= (s); }
+  CString&           assign      (const std::string &s);
+  CString&           assign      (const char *c, size_type s)   { return assign (std::string (c, s)); }
+  CString&           assign      (const char *c)                { return assign (std::string (c)); }
+  CString&           assign      (size_type count, char ch)     { return this->operator= (std::string (count, ch)); }
+  const std::string& string      () const;
+  const char*        c_str       () const noexcept      { return string().c_str(); }
+  const char*        data        () const noexcept      { return string().data(); }
+  const_reference    at          (size_type pos) const  { return string().at (pos); }
+  const_reference    operator[]  (size_type pos) const  { return string().operator[] (pos); }
+  size_type          capacity    () const noexcept      { return string().capacity(); }
+  size_type          length      () const noexcept      { return string().length(); }
+  bool               empty       () const noexcept      { return string().empty(); }
+  size_type          size        () const noexcept      { return string().size(); }
+  const_iterator     begin       () const noexcept      { return string().begin(); }
+  const_iterator     cbegin      () const noexcept      { return string().cbegin(); }
+  const_iterator     end         () const noexcept      { return string().end(); }
+  const_iterator     cend        () const noexcept      { return string().cend(); }
+  const_reverse_iterator rbegin  () const noexcept      { return string().rbegin(); }
+  const_reverse_iterator crbegin () const noexcept      { return string().crbegin(); }
+  const_reverse_iterator rend    () const noexcept      { return string().rend(); }
+  const_reverse_iterator crend   () const noexcept      { return string().crend(); }
+  /*conv*/  operator std::string () const noexcept      { return string(); }
+  bool               operator==  (const CString &b) noexcept            { return quark_ == b.quark_; }
+  bool               operator==  (const std::string &b) noexcept        { return string() == b; }
+  bool               operator==  (const char *s) noexcept               { return string() == s; }
+  bool               operator!=  (const CString &b) noexcept            { return quark_ != b.quark_; }
+  bool               operator!=  (const std::string &b) noexcept        { return string() != b; }
+  bool               operator!=  (const char *s) noexcept               { return string() != s; }
+  bool               operator<   (const CString &b) noexcept            { return string() < b.string(); }
+  bool               operator<   (const std::string &b) noexcept        { return string() < b; }
+  bool               operator<   (const char *s) noexcept               { return string() < s; }
+  bool               operator<=  (const CString &b) noexcept            { return string() <= b.string(); }
+  bool               operator<=  (const std::string &b) noexcept        { return string() <= b; }
+  bool               operator<=  (const char *s) noexcept               { return string() <= s; }
+  bool               operator>   (const CString &b) noexcept            { return string() > b.string(); }
+  bool               operator>   (const std::string &b) noexcept        { return string() > b; }
+  bool               operator>   (const char *s) noexcept               { return string() > s; }
+  bool               operator>=  (const CString &b) noexcept            { return string() >= b.string(); }
+  bool               operator>=  (const std::string &b) noexcept        { return string() >= b; }
+  bool               operator>=  (const char *s) noexcept               { return string() >= s; }
+  static CString     lookup      (const std::string &s);
+  static const std::string::size_type npos = -1;
+};
+
+inline bool operator== (const std::string &s, const CString &c) { return s == c.string(); }
+inline bool operator!= (const std::string &s, const CString &c) { return s != c.string(); }
+inline bool operator<  (const std::string &s, const CString &c) { return s <  c.string(); }
+inline bool operator<= (const std::string &s, const CString &c) { return s <= c.string(); }
+inline bool operator>  (const std::string &s, const CString &c) { return s >  c.string(); }
+inline bool operator>= (const std::string &s, const CString &c) { return s >= c.string(); }
+
+inline bool operator== (const char *s, const CString &c) { return s == c.string(); }
+inline bool operator!= (const char *s, const CString &c) { return s != c.string(); }
+inline bool operator<  (const char *s, const CString &c) { return s <  c.string(); }
+inline bool operator<= (const char *s, const CString &c) { return s <= c.string(); }
+inline bool operator>  (const char *s, const CString &c) { return s >  c.string(); }
+inline bool operator>= (const char *s, const CString &c) { return s >= c.string(); }
+
 } // Bse
+
+namespace std {
+template<>
+struct hash<::Bse::CString> {
+  size_t operator() (const ::Bse::CString &cs) const
+  {
+    return ::std::hash<::std::string>{} (cs.string());
+  }
+};
+} // std
 
 #endif /* __BSE_MEMORY_HH__ */

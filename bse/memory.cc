@@ -4,6 +4,7 @@
 #include <bse/testing.hh>
 #include <sys/mman.h>
 #include <unistd.h>     // _SC_PAGESIZE
+#include <shared_mutex>
 
 #define MEM_ALIGN(addr, alignment)      (alignment * size_t ((size_t (addr) + alignment - 1) / alignment))
 #define CHECK_FREE_OVERLAPS             0       /* paranoid chcks that slow down */
@@ -547,6 +548,93 @@ fast_mem_free (void *mem)
   FastMemory::fast_mem_arenas[ab.arena_index].release (ab.block()); // MT-Guarded
 }
 
+// == CString ==
+constexpr size_t static_quarks_max = 2048; // results in ca 64k for sizeof (static_quarks)
+static std::string static_quarks[static_quarks_max];
+static std::atomic n_static_quarks = 1;
+static std::shared_mutex quarks_mutex;
+static std::unordered_map<uint, std::string> quarks_map;
+
+/// Assign a new std::string to CString, its memory will never be released.
+/// Note that CString::assign() is not particularly fast, use only to save
+/// memory for strings that are known to persist throughout runtime.
+CString&
+CString::assign (const std::string &s)
+{
+  const size_t lastmax = n_static_quarks;
+  for (size_t i = 0; i < lastmax; i++)
+    if (s == static_quarks[i])
+      {
+        quark_ = i;
+        return *this; // fast path
+      }
+  std::unique_lock ulock (quarks_mutex);
+  for (size_t i = lastmax; i < n_static_quarks; i++)
+    if (s == static_quarks[i])
+      {
+        quark_ = i;
+        return *this; // found concurrently assigned quark
+      }
+  if (n_static_quarks < static_quarks_max)
+    {
+      quark_ = n_static_quarks;
+      std::string str = s;
+      str.shrink_to_fit();
+      static_quarks[quark_] = str;
+      n_static_quarks += 1;
+      return *this; // assignment via static_quarks
+    }
+  for (auto it = quarks_map.begin(); it != quarks_map.end(); it++)
+    if (it->second == s)
+      {
+        quark_ = it->first;
+        return *this; // found quark in map
+      }
+  quark_ = static_quarks_max + quarks_map.size();
+  std::string str = s;
+  str.shrink_to_fit();
+  quarks_map[quark_] = str;
+  return *this; // assignment via quarks_map
+}
+
+/// Lookup a previously existing CString for std::string `s`.
+/// If `s` has never been assigned to a CString before, the returned CString is empty.
+CString
+CString::lookup (const std::string &s)
+{
+  CString cstring;
+  const size_t lastmax = n_static_quarks;
+  for (size_t i = 0; i < lastmax; i++)
+    if (s == static_quarks[i])
+      {
+        cstring.quark_ = i;
+        return cstring; // fast path
+      }
+  std::shared_lock ulock (quarks_mutex);
+  for (size_t i = lastmax; i < n_static_quarks; i++)
+    if (s == static_quarks[i])
+      {
+        cstring.quark_ = i;
+        return cstring; // found concurrently assigned quark
+      }
+  for (auto it = quarks_map.begin(); it != quarks_map.end(); it++)
+    if (it->second == s)
+      {
+        cstring.quark_ = it->first;
+        return cstring; // found quark in map
+      }
+  return cstring; // giving up
+}
+
+const std::string&
+CString::string () const
+{
+  if (BSE_ISLIKELY (quark_ < n_static_quarks))
+    return static_quarks[quark_];
+  std::shared_lock slock (quarks_mutex);
+  return quarks_map[quark_];
+}
+
 } // Bse
 
 // == Allocator Tests ==
@@ -619,6 +707,41 @@ bse_aligned_allocator_tests()
       fast_mem_free (ptrs.back());
       ptrs.pop_back();
     }
+  // test CString
+  CString c;
+  assert_return (c == "");
+  assert_return (c == CString (""));
+  c = "foo";
+  assert_return (c == "foo");
+  assert_return (c != "");
+  assert_return (c == CString ("foo", 3));
+  assert_return (c == CString::lookup ("foo"));
+  c = "bar";
+  assert_return (c == "bar");
+  assert_return (c == CString (std::string ("bar")));
+  c = "three";
+  assert_return (c == "three");
+  assert_return (c == CString (CString ("three")));
+  CString d = "four";
+  assert_return (d == "four");
+  assert_return (CString ("four") == d.c_str());
+  assert_return (std::string ("four") == d.c_str());
+  std::string stdstring = d;
+  assert_return (stdstring == d);
+  assert_return (std::hash<CString>{} ("four") == std::hash<std::string>{} (stdstring));
+  assert_return (d != c);
+  c = "four";
+  assert_return (d == c);
+  assert_return (c.c_str() == d.c_str()); // works only for CString, not std:::string
+  const char *unique_str = "Af00-61c34bc5fd7c#nosuchthing";
+  c = CString::lookup (unique_str);     // yields, empty, unique_str never seen before
+  assert_return (c.empty() == true);
+  d = unique_str;                       // unique_str forced assignment
+  assert_return (d.empty() == false);
+  c = CString::lookup (unique_str);     // succeeds, unique_str has been seen before
+  assert_return (c.empty() == false);
+  struct TwoCStrings { CString a, b; };
+  static_assert (sizeof (TwoCStrings) <= 2 * 4);
 }
 
 } // Anon
