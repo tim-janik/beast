@@ -411,6 +411,8 @@ NewDeleteBase::new_ (std::size_t sz, std::align_val_t al)
     ptr = fast_mem_alloc (sz);
   if (trace_NewDeleteBase)
     Bse::printerr ("new: %p (%d, %d)\n", ptr, sz, al);
+  if (!ptr)
+    throw std::bad_alloc();
   return ptr;
 }
 
