@@ -98,6 +98,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/driver.hh			\
 	bse/effectbase.hh		\
 	bse/entropy.hh			\
+	bse/floatutils.hh		\
 	bse/formatter.hh		\
 	bse/gbsearcharray.hh		\
 	bse/glib-extra.hh		\
