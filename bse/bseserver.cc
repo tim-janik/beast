@@ -1249,13 +1249,13 @@ ServerImpl::broadcast_shm_fragments (const ShmFragmentSeq &plan, int interval_ms
   broad.timerid = exec_timeout (broadcast_timer_func, std::max (interval_ms, 16));
 }
 
-static constexpr ssize_t SHARED_MEMORY_AREA_SIZE = 4 * 1024 * 1024;
+static constexpr ssize_t SHARED_MEMORY_AREA_SIZE = 8 * 1024 * 1024;
 static size_t current_shared_memory_area_size = SHARED_MEMORY_AREA_SIZE;
 
 static FastMemory::Arena&
 server_shared_memory_area()
 {
-  static FastMemory::Arena &shm_area = *new FastMemory::Arena { uint32 (current_shared_memory_area_size), 2 * FastMemory::cache_line_size };
+  static FastMemory::Arena &shm_area = *new FastMemory::Arena { uint32 (current_shared_memory_area_size), FastMemory::cache_line_size };
   return shm_area;
 }
 
@@ -1268,6 +1268,22 @@ ServerImpl::get_shared_memory()
   sm.shm_length = arena.reserved();
   sm.shm_creator = this_thread_getpid();
   return sm;
+}
+
+size_t
+ServerImpl::shared_block_offset (const void *mem) const
+{
+  assert_return (mem != nullptr, -1);
+  FastMemory::Arena &arena = server_shared_memory_area();
+  const uintptr_t addr = uintptr_t (mem);
+  const uintptr_t start = arena.location();
+  if (addr >= start)
+    {
+      const uintptr_t offset = addr - start;
+      if (offset < arena.reserved() && offset == int32 (offset))
+        return offset;
+    }
+  return -1;
 }
 
 SharedBlock
