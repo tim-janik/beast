@@ -117,7 +117,7 @@ protected:
 
 } // FastMemory
 
-/// Compact string variant for constant strings that never need to be freed.
+/// Compact, deduplicating string variant for constant strings that never need to be freed.
 class CString {
   uint quark_ = 0;
 public:

@@ -555,8 +555,10 @@ static std::atomic n_static_quarks = 1;
 static std::shared_mutex quarks_mutex;
 static std::unordered_map<uint, std::string> quarks_map;
 
-/// Assign a new std::string to CString, its memory will never be released.
-/// Note that CString::assign() is not particularly fast, use only to save
+/// Assign a std::string to a CString, after deduplication, its memory is never released.
+/// In contrast to lookup(), the resulting CString is guaranteed to resolve to the contents
+/// of std::string `s`, memory is allocated if needed.
+/// Note that CString::assign() is not particularly fast, use it only to save
 /// memory for strings that are known to persist throughout runtime.
 CString&
 CString::assign (const std::string &s)
@@ -597,8 +599,9 @@ CString::assign (const std::string &s)
   return *this; // assignment via quarks_map
 }
 
-/// Lookup a previously existing CString for std::string `s`.
+/// Lookup a previously existing CString for a std::string `s`.
 /// If `s` has never been assigned to a CString before, the returned CString is empty.
+/// In constrast to assign(), no new memory is allocated.
 CString
 CString::lookup (const std::string &s)
 {
