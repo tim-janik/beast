@@ -30,6 +30,9 @@ using Bse::String;
 /// Return from the current function and issue an assertion warning.
 #define assert_return_unreached(...)    BSE_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
 
+/// Indentation helper for editors that cannot (yet) decipher `if constexpr`
+#define	if_constexpr	if constexpr
+
 /// Produce a const char* string, wrapping @a str into C-style double quotes.
 #define CQUOTE(str)                                     BSE_CQUOTE(str)
 
