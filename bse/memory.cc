@@ -549,11 +549,17 @@ fast_mem_free (void *mem)
 }
 
 // == CString ==
-constexpr size_t static_quarks_max = 2048; // results in ca 64k for sizeof (static_quarks)
-static std::string static_quarks[static_quarks_max];
-static std::atomic n_static_quarks = 1;
-static std::shared_mutex quarks_mutex;
-static std::unordered_map<uint, std::string> quarks_map;
+struct CStringGlobals {
+  static constexpr size_t static_quarks_max = 2048; // results in ca 64k for sizeof (static_quarks)
+  std::string static_quarks[static_quarks_max];
+  std::atomic<size_t> n_static_quarks = 1;
+  std::shared_mutex quarks_mutex;
+  std::unordered_map<uint, std::string> quarks_map;
+  uint               assign_quark (const std::string &s);
+  uint               lookup_quark (const std::string &s);
+  const std::string& string       (uint quark);
+};
+static PersistentStaticInstance<CStringGlobals> cstring_globals;
 
 /// Assign a std::string to a CString, after deduplication, its memory is never released.
 /// In contrast to lookup(), the resulting CString is guaranteed to resolve to the contents
@@ -563,40 +569,39 @@ static std::unordered_map<uint, std::string> quarks_map;
 CString&
 CString::assign (const std::string &s)
 {
+  CStringGlobals &csg = *cstring_globals;
+  quark_ = csg.assign_quark (s);
+  return *this;
+}
+
+uint
+CStringGlobals::assign_quark (const std::string &s)
+{
   const size_t lastmax = n_static_quarks;
   for (size_t i = 0; i < lastmax; i++)
     if (s == static_quarks[i])
-      {
-        quark_ = i;
-        return *this; // fast path
-      }
+      return i; // fast path
   std::unique_lock ulock (quarks_mutex);
   for (size_t i = lastmax; i < n_static_quarks; i++)
     if (s == static_quarks[i])
-      {
-        quark_ = i;
-        return *this; // found concurrently assigned quark
-      }
+      return i; // found concurrently assigned quark
   if (n_static_quarks < static_quarks_max)
     {
-      quark_ = n_static_quarks;
+      const uint quark = n_static_quarks;
       std::string str = s;
       str.shrink_to_fit();
-      static_quarks[quark_] = str;
+      static_quarks[quark] = str;
       n_static_quarks += 1;
-      return *this; // assignment via static_quarks
+      return quark; // assignment via static_quarks
     }
   for (auto it = quarks_map.begin(); it != quarks_map.end(); it++)
     if (it->second == s)
-      {
-        quark_ = it->first;
-        return *this; // found quark in map
-      }
-  quark_ = static_quarks_max + quarks_map.size();
+      return it->first; // found quark in map
+  const uint quark = static_quarks_max + quarks_map.size();
   std::string str = s;
   str.shrink_to_fit();
-  quarks_map[quark_] = str;
-  return *this; // assignment via quarks_map
+  quarks_map[quark] = str;
+  return quark; // assignment via quarks_map
 }
 
 /// Lookup a previously existing CString for a std::string `s`.
@@ -605,37 +610,44 @@ CString::assign (const std::string &s)
 CString
 CString::lookup (const std::string &s)
 {
+  CStringGlobals &csg = *cstring_globals;
   CString cstring;
+  cstring.quark_ = csg.lookup_quark (s);
+  return cstring;
+}
+
+uint
+CStringGlobals::lookup_quark (const std::string &s)
+{
   const size_t lastmax = n_static_quarks;
   for (size_t i = 0; i < lastmax; i++)
     if (s == static_quarks[i])
-      {
-        cstring.quark_ = i;
-        return cstring; // fast path
-      }
+      return i; // fast path
   std::shared_lock ulock (quarks_mutex);
   for (size_t i = lastmax; i < n_static_quarks; i++)
     if (s == static_quarks[i])
-      {
-        cstring.quark_ = i;
-        return cstring; // found concurrently assigned quark
-      }
+      return i; // found concurrently assigned quark
   for (auto it = quarks_map.begin(); it != quarks_map.end(); it++)
     if (it->second == s)
-      {
-        cstring.quark_ = it->first;
-        return cstring; // found quark in map
-      }
-  return cstring; // giving up
+      return it->first; // found quark in map
+  return 0; // giving up
 }
 
+/// Convert `CString` into a std::string.
 const std::string&
 CString::string () const
 {
-  if (BSE_ISLIKELY (quark_ < n_static_quarks))
-    return static_quarks[quark_];
+  CStringGlobals &csg = *cstring_globals;
+  return csg.string (quark_);
+}
+
+const std::string&
+CStringGlobals::string (uint quark)
+{
+  if (BSE_ISLIKELY (quark < n_static_quarks))
+    return static_quarks[quark];
   std::shared_lock slock (quarks_mutex);
-  return quarks_map[quark_];
+  return quarks_map[quark];
 }
 
 } // Bse
