@@ -160,24 +160,25 @@ public:
   const_reverse_iterator rend    () const noexcept      { return string().rend(); }
   const_reverse_iterator crend   () const noexcept      { return string().crend(); }
   /*conv*/  operator std::string () const noexcept      { return string(); }
-  bool               operator==  (const CString &b) noexcept            { return quark_ == b.quark_; }
-  bool               operator==  (const std::string &b) noexcept        { return string() == b; }
-  bool               operator==  (const char *s) noexcept               { return string() == s; }
-  bool               operator!=  (const CString &b) noexcept            { return quark_ != b.quark_; }
-  bool               operator!=  (const std::string &b) noexcept        { return string() != b; }
-  bool               operator!=  (const char *s) noexcept               { return string() != s; }
-  bool               operator<   (const CString &b) noexcept            { return string() < b.string(); }
-  bool               operator<   (const std::string &b) noexcept        { return string() < b; }
-  bool               operator<   (const char *s) noexcept               { return string() < s; }
-  bool               operator<=  (const CString &b) noexcept            { return string() <= b.string(); }
-  bool               operator<=  (const std::string &b) noexcept        { return string() <= b; }
-  bool               operator<=  (const char *s) noexcept               { return string() <= s; }
-  bool               operator>   (const CString &b) noexcept            { return string() > b.string(); }
-  bool               operator>   (const std::string &b) noexcept        { return string() > b; }
-  bool               operator>   (const char *s) noexcept               { return string() > s; }
-  bool               operator>=  (const CString &b) noexcept            { return string() >= b.string(); }
-  bool               operator>=  (const std::string &b) noexcept        { return string() >= b; }
-  bool               operator>=  (const char *s) noexcept               { return string() >= s; }
+  bool                 operator== (const CString &b) noexcept           { return quark_ == b.quark_; }
+  bool                 operator== (const std::string &b) noexcept       { return string() == b; }
+  bool                 operator== (const char *s) noexcept              { return string() == s; }
+  bool                 operator!= (const CString &b) noexcept           { return quark_ != b.quark_; }
+  bool                 operator!= (const std::string &b) noexcept       { return string() != b; }
+  bool                 operator!= (const char *s) noexcept              { return string() != s; }
+  bool                 operator<  (const CString &b) noexcept           { return string() < b.string(); }
+  bool                 operator<  (const std::string &b) noexcept       { return string() < b; }
+  bool                 operator<  (const char *s) noexcept              { return string() < s; }
+  bool                 operator<= (const CString &b) noexcept           { return string() <= b.string(); }
+  bool                 operator<= (const std::string &b) noexcept       { return string() <= b; }
+  bool                 operator<= (const char *s) noexcept              { return string() <= s; }
+  bool                 operator>  (const CString &b) noexcept           { return string() > b.string(); }
+  bool                 operator>  (const std::string &b) noexcept       { return string() > b; }
+  bool                 operator>  (const char *s) noexcept              { return string() > s; }
+  bool                 operator>= (const CString &b) noexcept           { return string() >= b.string(); }
+  bool                 operator>= (const std::string &b) noexcept       { return string() >= b; }
+  bool                 operator>= (const char *s) noexcept              { return string() >= s; }
+  friend std::ostream& operator<< (std::ostream &os, const CString &cs) { return os << cs.string(); }
   static CString     lookup      (const std::string &s);
   static const std::string::size_type npos = -1;
 };
