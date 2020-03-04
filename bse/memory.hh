@@ -179,23 +179,21 @@ public:
   bool                 operator>= (const std::string &b) noexcept       { return string() >= b; }
   bool                 operator>= (const char *s) noexcept              { return string() >= s; }
   friend std::ostream& operator<< (std::ostream &os, const CString &cs) { return os << cs.string(); }
-  static CString     lookup      (const std::string &s);
+  friend bool          operator== (const char *s, const CString &c)     { return s == c.string(); }
+  friend bool          operator!= (const char *s, const CString &c)     { return s != c.string(); }
+  friend bool          operator<  (const char *s, const CString &c)     { return s <  c.string(); }
+  friend bool          operator<= (const char *s, const CString &c)     { return s <= c.string(); }
+  friend bool          operator>  (const char *s, const CString &c)     { return s >  c.string(); }
+  friend bool          operator>= (const char *s, const CString &c)     { return s >= c.string(); }
+  friend bool          operator== (const std::string &s, const CString &c) { return s == c.string(); }
+  friend bool          operator!= (const std::string &s, const CString &c) { return s != c.string(); }
+  friend bool          operator<  (const std::string &s, const CString &c) { return s <  c.string(); }
+  friend bool          operator<= (const std::string &s, const CString &c) { return s <= c.string(); }
+  friend bool          operator>  (const std::string &s, const CString &c) { return s >  c.string(); }
+  friend bool          operator>= (const std::string &s, const CString &c) { return s >= c.string(); }
+  static CString       lookup     (const std::string &s);
   static const std::string::size_type npos = -1;
 };
-
-inline bool operator== (const std::string &s, const CString &c) { return s == c.string(); }
-inline bool operator!= (const std::string &s, const CString &c) { return s != c.string(); }
-inline bool operator<  (const std::string &s, const CString &c) { return s <  c.string(); }
-inline bool operator<= (const std::string &s, const CString &c) { return s <= c.string(); }
-inline bool operator>  (const std::string &s, const CString &c) { return s >  c.string(); }
-inline bool operator>= (const std::string &s, const CString &c) { return s >= c.string(); }
-
-inline bool operator== (const char *s, const CString &c) { return s == c.string(); }
-inline bool operator!= (const char *s, const CString &c) { return s != c.string(); }
-inline bool operator<  (const char *s, const CString &c) { return s <  c.string(); }
-inline bool operator<= (const char *s, const CString &c) { return s <= c.string(); }
-inline bool operator>  (const char *s, const CString &c) { return s >  c.string(); }
-inline bool operator>= (const char *s, const CString &c) { return s >= c.string(); }
 
 } // Bse
 
