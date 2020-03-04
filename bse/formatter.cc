@@ -507,3 +507,43 @@ ScopedPosixLocale::posix_locale ()
 
 } // Lib
 } // Bse
+
+#include "testing.hh"
+
+namespace { // Anon
+struct UncopyablePoint {
+  double x, y;
+  friend inline std::ostream&
+  operator<< (std::ostream &s, const UncopyablePoint &p) { return s << "{" << p.x << ";" << p.y << "}"; }
+  UncopyablePoint (double _x, double _y) : x (_x), y (_y) {}
+  BSE_CLASS_NON_COPYABLE (UncopyablePoint);
+};
+
+BSE_INTEGRITY_TEST (bse_string_format);
+static void
+bse_string_format()
+{
+  using namespace Bse;
+  // string_format
+  enum { TEST17 = 17 };
+  TCMP (string_format ("%d %s", -9223372036854775808uLL, "FOO"), ==, "-9223372036854775808 FOO");
+  TCMP (string_format ("%g %d", 0.5, TEST17), ==, "0.5 17");
+  TCMP (string_format ("0x%08x", 0xc0ffee), ==, "0x00c0ffee");
+  static_assert (TEST17 == 17, "!");
+  TCMP (string_format ("Only %c%%", '3'), ==, "Only 3%");
+  // ostream tests
+  UncopyablePoint point { 1, 2 };
+  TCMP (string_format ("%s", point), ==, "{1;2}");
+  TCMP (string_format ("%s+%s+%s", point, point, point), ==, "{1;2}+{1;2}+{1;2}");
+  String sfoo ("foo");
+  typedef char MutableChar;
+  MutableChar *foo = &sfoo[0];
+  TCMP (string_format ("%s", foo), ==, "foo");
+  // test robustness for arcane/rarely-used width modifiers
+  const char *arcane_format = "| %qd %Zd %LF |";
+  TCMP (string_format (arcane_format, (long long) 1234, size_t (4321), (long double) 1234.), ==, "| 1234 4321 1234.000000 |");
+  TCMP (string_format ("- %C - %lc -", long ('X'), long ('x')), ==, "- X - x -");
+  // TCMP (string_format ("+ %S +", (wchar_t*) "\1\1\1\1\0\0\0\0"), ==, "+ \1\1\1\1 +");
+}
+
+} // Anon
