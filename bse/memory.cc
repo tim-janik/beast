@@ -745,6 +745,15 @@ bse_aligned_allocator_tests()
   assert_return (stdstring == d);
   assert_return (std::hash<CString>{} ("four") == std::hash<std::string>{} (stdstring));
   assert_return (d != c);
+  std::ostringstream os;
+  os << c;
+  assert_return (os.str() == "three");
+  os << d;
+  assert_return (os.str() == "threefour");
+  // assert_return (c + d == "threefour"); // not-ok: avoid implicit CString creation
+  assert_return (c + "FOO" == "threeFOO"); // ok, just allocates a std::string
+  assert_return ("FOO" + d == "FOOfour");  // ok, just allocates a std::string
+  assert_return (string_format ("%s+%s", c, d) == "three+four");
   c = "four";
   assert_return (d == c);
   assert_return (c.c_str() == d.c_str()); // works only for CString, not std:::string

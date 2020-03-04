@@ -130,18 +130,18 @@ public:
   /*ctor*/           CString     (const char *c, size_type s)    { assign (c, s); }
   /*ctor*/           CString     (const std::string &s)          { assign (s); }
   /*copy*/           CString     (const CString&) noexcept       = default;
-  /*move*/           CString     (CString&&) noexcept            = default;
+  /*move*/           CString     (CString &&c) noexcept          { quark_ = c.quark_; }
   CString&           operator=   (const CString&) noexcept       = default;
-  CString&           operator=   (CString&&) noexcept            = default;
+  CString&           operator=   (CString &&c) noexcept          { return assign (c); }
   CString&           operator=   (const std::string &s)          { return assign (s); }
   CString&           operator=   (const char *c)                 { return assign (c); }
   CString&           operator=   (char ch)                       { return assign (std::addressof (ch), 1); }
   CString&           operator=   (std::initializer_list<char> l) { return assign (l.begin(), l.size()); }
-  CString&           assign      (const CString &s)              { return this->operator= (s); }
+  CString&           assign      (const CString &c)              { quark_ = c.quark_; return *this; }
   CString&           assign      (const std::string &s);
-  CString&           assign      (const char *c, size_type s)   { return assign (std::string (c, s)); }
-  CString&           assign      (const char *c)                { return assign (std::string (c)); }
-  CString&           assign      (size_type count, char ch)     { return this->operator= (std::string (count, ch)); }
+  CString&           assign      (const char *c, size_type s)    { return assign (std::string (c, s)); }
+  CString&           assign      (const char *c)                 { return assign (std::string (c)); }
+  CString&           assign      (size_type count, char ch)      { return this->operator= (std::string (count, ch)); }
   const std::string& string      () const;
   const char*        c_str       () const noexcept      { return string().c_str(); }
   const char*        data        () const noexcept      { return string().data(); }
@@ -178,7 +178,6 @@ public:
   bool                 operator>= (const CString &b) noexcept           { return string() >= b.string(); }
   bool                 operator>= (const std::string &b) noexcept       { return string() >= b; }
   bool                 operator>= (const char *s) noexcept              { return string() >= s; }
-  friend std::ostream& operator<< (std::ostream &os, const CString &cs) { return os << cs.string(); }
   friend bool          operator== (const char *s, const CString &c)     { return s == c.string(); }
   friend bool          operator!= (const char *s, const CString &c)     { return s != c.string(); }
   friend bool          operator<  (const char *s, const CString &c)     { return s <  c.string(); }
@@ -191,6 +190,9 @@ public:
   friend bool          operator<= (const std::string &s, const CString &c) { return s <= c.string(); }
   friend bool          operator>  (const std::string &s, const CString &c) { return s >  c.string(); }
   friend bool          operator>= (const std::string &s, const CString &c) { return s >= c.string(); }
+  friend std::string   operator+  (const std::string &s, const CString &c) { return s + c.string(); }
+  friend std::string   operator+  (const CString &c, const std::string &s) { return c.string() + s; }
+  friend std::ostream& operator<< (std::ostream &os, const CString &c)     { os << c.string(); return os; }
   static CString       lookup     (const std::string &s);
   static const std::string::size_type npos = -1;
 };
