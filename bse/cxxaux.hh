@@ -228,8 +228,8 @@ make_jump_table (const J &mkjump)
 template<class Class>
 class PersistentStaticInstance final {
   static_assert (std::is_class<Class>::value, "PersistentStaticInstance<Class> requires class template argument");
-  Class *ptr_;
-  uint64 mem_[(sizeof (Class) + sizeof (uint64) - 1) / sizeof (uint64)];
+  Class *ptr_ = nullptr;
+  uint64 mem_[(sizeof (Class) + sizeof (uint64) - 1) / sizeof (uint64)] = { 0, };
   void
   initialize() BSE_NOINLINE
   {
@@ -239,7 +239,7 @@ class PersistentStaticInstance final {
       ptr_ = new (mem_) Class(); // exclusive construction
   }
 public:
-  constexpr  PersistentStaticInstance() : ptr_ (nullptr) {}
+  constexpr PersistentStaticInstance() noexcept {}
   /// Retrieve pointer to `Class` instance, always returns the same pointer.
   Class*
   operator->() __attribute__ ((pure))
