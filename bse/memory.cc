@@ -376,8 +376,8 @@ Arena::release (Block ab) const
   assert_return (fma);
   assert_return (ab.block_start >= fma->memory());
   assert_return (ab.block_start < fma->memory() + fma->size());
-  assert_return (0 == (size_t (ab.block_start) & alignment() - 1));
-  assert_return (0 == (size_t (ab.block_length) & alignment() - 1));
+  assert_return (0 == (size_t (ab.block_start) & (alignment() - 1)));
+  assert_return (0 == (size_t (ab.block_length) & (alignment() - 1)));
   const size_t block_offset = ((char*) ab.block_start) - fma->memory();
   assert_return (block_offset + ab.block_length <= fma->size());
   Extent32 ext { uint32 (block_offset), ab.block_length };
@@ -549,6 +549,9 @@ fast_mem_free (void *mem)
 }
 
 // == CString ==
+#ifndef NDEBUG
+static CString cstring_early_test = "NULL"; // initialization must preceede cstring_globals
+#endif
 struct CStringGlobals {
   static constexpr size_t static_quarks_max = 2048; // results in ca 64k for sizeof (static_quarks)
   std::string static_quarks[static_quarks_max];
@@ -723,6 +726,9 @@ bse_aligned_allocator_tests()
       ptrs.pop_back();
     }
   // test CString
+#ifndef NDEBUG
+  assert_return (cstring_early_test == "NULL");
+#endif
   CString c;
   assert_return (c == "");
   assert_return (c == CString (""));
