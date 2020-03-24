@@ -84,6 +84,9 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			*next);
 namespace Bse {
 
+class SongImpl;
+using SongImplP = std::shared_ptr<SongImpl>;
+
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
   std::vector<DeviceImplP> devices_;
 protected:
@@ -92,7 +95,9 @@ protected:
   virtual void         xml_reflink       (SerializationNode &xs) override;
 public:
   explicit             TrackImpl         (BseObject*);
+  SongImplP            get_song          ();
   virtual SongTiming   get_timing        (int tick) override;
+  virtual PartIfaceP   create_part       (int32 tick) override;
   virtual int          insert_part       (int tick, PartIface &part) override;
   virtual void         remove_tick       (int tick) override;
   virtual void         remove_link       (int id) override;

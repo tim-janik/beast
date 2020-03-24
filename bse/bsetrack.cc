@@ -1195,17 +1195,37 @@ TrackImpl::n_voices (int voices)
       self->max_voices = value;
 }
 
+SongImplP
+TrackImpl::get_song ()
+{
+  ItemIfaceP parent = get_parent();
+  return parent ? parent->as<SongImplP>() : nullptr;
+}
+
 SongTiming
 TrackImpl::get_timing (int tick)
 {
-  BseTrack *self = as<BseTrack*>();
   SongTiming timing;
-  BseItem *parent = BSE_ITEM (self)->parent;
-  if (BSE_IS_SONG (parent))
-    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
+  SongImplP song = get_song();
+  if (song)
+    bse_song_get_timing (song->as<BseSong*>(), tick, &timing);
   else
     bse_song_timing_get_default (&timing);
   return timing;
+}
+
+PartIfaceP
+TrackImpl::create_part (int32 tick)
+{
+  PartIfaceP part;
+  SongImplP song = get_song();
+  return_unless (song, part);
+  group_undo (__func__);
+  part = song->create_part();
+  if (part)
+    insert_part (0, *part);
+  ungroup_undo();
+  return part;
 }
 
 int

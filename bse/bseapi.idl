@@ -984,6 +984,7 @@ sequence DeviceSeq { Device devices; };
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
+  Part       create_part (int32 tick);            ///< Create a new Part in a Song.
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
   void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
