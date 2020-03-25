@@ -164,6 +164,7 @@ $>/doc/bse-api.pdf: docs/refman.patch $>/bse/bseapi_interfaces.hh docs/Makefile.
 	&& echo "PROJECT_NUMBER   = $(VERSION_M.M.M)" \
 	&& echo "INPUT            = src/" \
 	&& echo "STRIP_FROM_PATH  = $(abspath $>/doc/doxy/src)" \
+	&& echo "STRIP_FROM_INC_PATH = $(abspath $>/doc/doxy/src)" \
 	&& echo "OUTPUT_DIRECTORY = ." \
 	&& echo "EXAMPLE_PATH     = src/" \
 	&& echo "TAGFILES        += tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/" \

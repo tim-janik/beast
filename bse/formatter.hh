@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 #include <functional>
-#include <vector>
+#include <list>
 
 namespace Bse {
 
@@ -84,7 +84,7 @@ class StringFormatter {
     std::ostringstream os;
     os << arg;
     temporaries_.push_back (os.str());
-    assign (farg, temporaries_[temporaries_.size()-1]);
+    assign (farg, temporaries_.back());
   }
   const FormatArg& format_arg       (size_t nth);
   uint32_t         arg_as_width     (size_t nth);
@@ -109,7 +109,7 @@ class StringFormatter {
   const size_t        nargs_;
   const int           locale_context_;
   const ArgTransform &arg_transform_;
-  std::vector<std::string> temporaries_;
+  std::list<std::string> temporaries_; // must use list to keep c_str() references stable
   static std::string            format_error     (const char *err, const char *format, size_t directive);
   static const char*            parse_directive  (const char **stringp, size_t *indexp, Directive *dirp);
   std::string                   locale_format    (size_t last, const char *format);

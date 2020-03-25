@@ -2,6 +2,7 @@
 #include <bse/testing.hh>
 #include <bse/unicode.hh>
 #include <bse/memory.hh>
+#include <cmath>
 
 static constexpr size_t RUNS = 1;
 static constexpr double MAXTIME = 0.15;
@@ -260,6 +261,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   constexpr const int64 N_ALLOCS = 4093;
   constexpr const int64 RESIDENT = N_ALLOCS / 3;
   static_assert (MAX_CHUNK_SIZE * N_ALLOCS <= TEST_AREA_SIZE);
+  double accu = 0;
   static FastMemory::Block blocks[N_ALLOCS];
   auto loop_aa = [&] () {
     quick_rand32_seed = seed;
@@ -270,6 +272,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
           {
             const size_t length = 1 + ((quick_rand32() * MAX_CHUNK_SIZE) >> 32);
             blocks[i] = TestAllocator<AT>::allocate_block (length);
+            accu += *((double*) blocks[i].block_start);
             TASSERT (blocks[i].block_length > 0);
             if (i > RESIDENT && (i & 1))
               {
@@ -299,6 +302,9 @@ bse_aligned_allocator_benchloop (uint32 seed)
             blocks[i2] = TestAllocator<AT>::allocate_block (l1 ? l1 : MAX_CHUNK_SIZE / 3);
             blocks[i1] = TestAllocator<AT>::allocate_block (l3 ? l3 : MAX_CHUNK_SIZE / 3);
             blocks[i3] = TestAllocator<AT>::allocate_block (l2 ? l2 : MAX_CHUNK_SIZE / 3);
+            accu += *((double*) blocks[i2].block_start);
+            accu += *((double*) blocks[i1].block_start);
+            accu += *((double*) blocks[i3].block_start);
           }
         // release blocks randomized (frees ca 59%)
         for (size_t j = 0; j < N_ALLOCS; j++)
@@ -324,6 +330,7 @@ bse_aligned_allocator_benchloop (uint32 seed)
   const double ns_p_a = 1000000000.0 * bench_aa / n_allocations;
   Bse::printerr ("  BENCH    %-21s %u allocations in %.1f msecs, %.1fnsecs/allocation\n",
                  TestAllocator<AT>::name() + ":", n_allocations, 1000 * bench_aa, ns_p_a);
+  TASSERT (!std::isnan (accu));
 }
 
 static void

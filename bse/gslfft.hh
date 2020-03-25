@@ -130,8 +130,8 @@ void	gsl_power2_fftar (const uint         n_values,
  * with gsl_power2_fftar() can be reconstructed using this function.
  *
  * This function does not perform normalization, so data that is transformed
- * back from gsl_power2_fftar() will be scaled by a factor of n_values. See
- * also gsl_power2_fftsr_scale().
+ * back from gsl_power2_fftar() will be scaled by a factor of n_values/2.
+ * See also gsl_power2_fftsr_scale().
  *
  * More details on normalization can be found in the documentation of
  * gsl_power2_fftac().
