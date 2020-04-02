@@ -17,7 +17,7 @@ floatfill (float *dst, float f, size_t n)
 
 /// Copy `n` values from `src` to `dst`, the buffers must not overlap.
 extern inline void
-floatcopy (float *dst, const float *src, size_t n)
+floatcopy (float *__restrict dst, const float *__restrict src, size_t n)
 {
   for (size_t i = 0; i < n; i++)
     dst[i] = src[i];
@@ -25,7 +25,7 @@ floatcopy (float *dst, const float *src, size_t n)
 
 /// Add `n` values from `a` pairwise to `b` and store the result in `dst`.
 extern inline void
-floatadd (float *dst, const float *a, const float *b, size_t n)
+floatadd (float *__restrict dst, const float *__restrict a, const float *__restrict b, size_t n)
 {
   for (size_t i = 0; i < n; i++)
     dst[i] = a[i] + b[i];
@@ -33,7 +33,7 @@ floatadd (float *dst, const float *a, const float *b, size_t n)
 
 /// For `n` values, multiply `src` and `factors` pairwise and store the result in `dst`.
 extern inline void
-floatmul (float *dst, const float *src, const float *factors, size_t n)
+floatmul (float *__restrict dst, const float *__restrict src, const float *__restrict factors, size_t n)
 {
   for (size_t i = 0; i < n; i++)
     dst[i] = src[i] * factors[i];
@@ -41,7 +41,7 @@ floatmul (float *dst, const float *src, const float *factors, size_t n)
 
 /// Multiply all `n` values from `src` with `scalar` and store the result in `dst`.
 extern inline void
-floatscale (float *dst, const float *src, float scalar, size_t n)
+floatscale (float *__restrict dst, const float *__restrict src, float scalar, size_t n)
 {
   for (size_t i = 0; i < n; i++)
     dst[i] = src[i] * scalar;
