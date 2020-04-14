@@ -15,6 +15,16 @@ floatfill (float *dst, float f, size_t n)
     dst[i] = f;
 }
 
+/// Check if *all* `n` values in `src` are exactly equal to `vconst`.
+extern inline bool
+floatisconst (const float *__restrict src, float vconst, size_t n)
+{
+  for (size_t i = 0; i < n; i++)
+    if (BSE_UNLIKELY (src[i] != vconst))
+      return false;
+  return true;
+}
+
 /// Copy `n` values from `src` to `dst`, the buffers must not overlap.
 extern inline void
 floatcopy (float *__restrict dst, const float *__restrict src, size_t n)
