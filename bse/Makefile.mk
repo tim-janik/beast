@@ -128,6 +128,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/object.hh			\
 	bse/path.hh			\
 	bse/platform.hh			\
+	bse/processor.hh		\
 	bse/pugixml.hh			\
 	bse/randomhash.hh		\
 	bse/regex.hh			\
@@ -273,6 +274,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/object.cc			\
 	bse/path.cc			\
 	bse/platform.cc			\
+	bse/processor.cc		\
 	bse/pugixml.cc			\
 	bse/randomhash.cc		\
 	bse/regex.cc			\
