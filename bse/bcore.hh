@@ -117,7 +117,8 @@ vector_erase_element (V &v, const typename V::value_type &value)
     }
   return false;
 }
-/// Erase element @a value from std::vector @a v if it matches a vector elements __iface__().
+
+/// Erase element `value` from std::vector `v` if it matches a vector elements __iface__().
 template<class V, class O> bool
 vector_erase_iface (V &v, O *value)
 {
@@ -127,6 +128,26 @@ vector_erase_iface (V &v, O *value)
         v.erase (it);
         return true;
       }
+  return false;
+}
+
+/// Returns `true` if vector `v` contains `e1`.
+template<typename E> static bool
+vector_contains (const vector<E> &v, const E &e1)
+{
+  for (const E &e : v)
+    if (e == e1)
+      return true;
+  return false;
+}
+
+/// Returns `true` if vector `v` contains `e1` or `e2`.
+template<typename E> static bool
+vector_contains (const vector<E> &v, const E &e1, const E &e2)
+{
+  for (const E &e : v)
+    if (e == e1 || e == e2)
+      return true;
   return false;
 }
 
