@@ -150,6 +150,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/sfiustore.hh		\
 	bse/sfivalues.hh		\
 	bse/sfiwrapper.hh		\
+	bse/sndfiles.hh			\
 	bse/strings.hh			\
 	bse/testing.hh			\
 	bse/unicode.hh			\
@@ -293,6 +294,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/sfiustore.cc		\
 	bse/sfivalues.cc		\
 	bse/sfiwrapper.cc		\
+	bse/sndfiles.cc			\
 	bse/strings.cc			\
 	bse/testing.cc			\
 	bse/unicode.cc			\
