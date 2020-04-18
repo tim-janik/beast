@@ -33,7 +33,8 @@ crawl_directory (DeviceEntrySeq &eseq, const std::string &dir, const bool force 
         crawl_directory (entry.entries, e.path());
       if (!e.is_regular_file())
         continue;
-      if (string_endswith (string_tolower (filepath), ".sf2"))
+      if (string_endswith (string_tolower (filepath), ".sf2") ||
+          string_endswith (string_tolower (filepath), ".wav"))
         {
           const auto identifier = e.path();
           entry.entries.push_back (device_entry (DeviceEntryType::DIRECTORY, Path::basename (identifier), identifier, e.file_size()));
