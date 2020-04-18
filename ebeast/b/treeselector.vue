@@ -67,9 +67,9 @@ const tree_data = {
 };
 
 async function create_data() {
-  const crawler = await Bse.server.get_device_crawler();
-  const result = await crawler.list_device_origin ('user-downloads');
-  return result;
+  const crawler = await Bse.server.resource_crawler();
+  const entries = await crawler.list_files ('wave', 'user-downloads');
+  return { entries: entries };
 }
 
 export default {
