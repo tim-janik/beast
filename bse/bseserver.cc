@@ -1448,10 +1448,10 @@ ServerImpl::list_midi_drivers ()
   return MidiDriver::list_drivers();
 }
 
-DeviceCrawlerIfaceP
-ServerImpl::get_device_crawler ()
+ResourceCrawlerIfaceP
+ServerImpl::resource_crawler()
 {
-  return DeviceCrawlerImpl::instance_p();
+  return ResourceCrawlerImpl::instance_p();
 }
 
 int

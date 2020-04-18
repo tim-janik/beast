@@ -138,8 +138,8 @@ class SNetImpl;
 class ProjectImpl;
 class ServerImpl;
 
-class DeviceCrawlerImpl;
-typedef std::shared_ptr<DeviceCrawlerImpl> DeviceCrawlerImplP;
+class ResourceCrawlerImpl;
+using ResourceCrawlerImplP = std::shared_ptr<ResourceCrawlerImpl>;
 
 namespace AudioSignal {
 struct RenderSetup;

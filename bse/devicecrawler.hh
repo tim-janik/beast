@@ -6,14 +6,14 @@
 
 namespace Bse {
 
-class DeviceCrawlerImpl : public ObjectImpl, public virtual DeviceCrawlerIface {
+class ResourceCrawlerImpl : public ObjectImpl, public virtual ResourceCrawlerIface {
 protected:
-  virtual                   ~DeviceCrawlerImpl  ();
-  friend class               FriendAllocator<DeviceCrawlerImpl>;
+  virtual     ~ResourceCrawlerImpl  ();
+  friend class FriendAllocator<ResourceCrawlerImpl>;
 public:
-  virtual DeviceEntry        list_device_origin (DeviceOrigin origin) override;
-  static  DeviceCrawlerImplP instance_p         ();
-  static  DeviceCrawlerImpl& instance           () { return *instance_p(); }
+  ResourceList list_files           (ResourceType file_type, ResourceOrigin file_origin) override;
+  static ResourceCrawlerImplP instance_p ();
+  static ResourceCrawlerImpl& instance   () { return *instance_p(); }
 };
 
 } // Bse

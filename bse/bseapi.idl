@@ -1334,39 +1334,45 @@ sequence CategorySeq {
   Category cats;
 };
 
-enum DeviceOrigin {
+/// Origin or collection of resource classes.
+enum ResourceOrigin {
   NONE                  = 0,
-  STANDARD_LIBRARY      = 1,
-  PACKAGE_LIBRARY       = 2,
-  SYSTEM_LIBRARY        = 3,
-  USER_LIBRARY          = 4,
+  // STANDARD_LIBRARY      = 1,
+  // PACKAGE_LIBRARY       = 2,
+  // SYSTEM_LIBRARY        = 3,
+  // USER_LIBRARY          = 4,
   USER_DOWNLOADS        = 5,
-  FAVORITES             = 6,
+  // FAVORITES             = 6,
+  // AUDIO_DEVICES         = 7,
 };
 
-enum DeviceEntryType {
+/// Classification for various resource listings.
+enum ResourceType {
   NONE                  = 0,
-  DIRECTORY             = 1,
-  FILE                  = 2,
-  SOUNDFONT             = 3,
-  PRESET                = 4,
+  FOLDER                = 1,
+  AUDIO_DEVICE          = 2,
+  // PRESET             = 4,
+  FILE                  = 100,
+  WAVE                  = 101,          ///< Multi channel audio sample.
+  SOUNDFONT             = 102,          ///< Layered sample instrument bank.
 };
 
-record DeviceEntry;
-sequence DeviceEntrySeq {
-  DeviceEntry entries;
-};
-record DeviceEntry {
-  DeviceEntryType type;
-  String          label;
-  String          identifier;
-  int64           size;
-  bool            favorite;
-  DeviceEntrySeq  entries;
+record ResourceEntry;
+sequence ResourceList { ResourceEntry entries; };
+
+/// Description of a resource, possibly nested.
+record ResourceEntry {
+  ResourceType type;        ///< Resource classification.
+  String       uri;         ///< Unique identifier for a resource.
+  String       label;       ///< Preferred user interface name.
+  String       category;    ///< Category of resource, often used for logical grouping.
+  String       blurb;       ///< Short description for a resource.
+  String       hints;       ///< Colon separated unspecified extensions.
+  ResourceList entries;     ///< Subentry list for nested resources.
 };
 
-interface DeviceCrawler : Object {
-  DeviceEntry list_device_origin (DeviceOrigin origin);
+interface ResourceCrawler : Object {
+  ResourceList list_files (ResourceType file_type, ResourceOrigin file_origin);
 };
 
 /// Driver information for PCM and MIDI handling.
@@ -1442,7 +1448,7 @@ interface Server : Container {
   bool           locked_config ();      ///< Returns whether `Configuration` is in use and locked against modifications.
   DriverEntrySeq list_pcm_drivers  ();  ///< List available drivers for PCM input/output handling.
   DriverEntrySeq list_midi_drivers ();  ///< List available drivers for MIDI input/output handling.
-  DeviceCrawler  get_device_crawler();
+  ResourceCrawler resource_crawler();   ///< Retrieve interface for listing resources.
 
   // properties
   group "Misc" {

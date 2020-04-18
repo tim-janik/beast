@@ -6,23 +6,22 @@ namespace Fs = std::filesystem;
 
 namespace Bse {
 
-static DeviceEntry
-device_entry (DeviceEntryType type, String label, String identifier, int64 size = -1, bool favorite = false)
+static ResourceEntry
+device_entry (ResourceType type, const String &uri, const String &name, const String &hints = "")
 {
-  DeviceEntry r;
+  ResourceEntry r;
   r.type = type;
-  r.label = label;
-  r.identifier = identifier;
-  r.size = size;
-  r.favorite = favorite;
+  r.uri = uri;
+  r.label = name;
+  r.hints = hints;
   return r;
 }
 
-static DeviceEntrySeq&
-crawl_directory (DeviceEntrySeq &eseq, const std::string &dir, const bool force = false)
+static ResourceList&
+crawl_directory (ResourceList &eseq, const std::string &dir, ResourceType file_type, const bool force = false)
 {
   const String bname = Path::basename (dir);
-  DeviceEntry entry = device_entry (DeviceEntryType::DIRECTORY, bname, dir);
+  ResourceEntry entry = device_entry (ResourceType::FOLDER, dir, bname);
   for (auto &e : Fs::directory_iterator (dir))
     {
       const auto filepath = e.path();
@@ -30,14 +29,15 @@ crawl_directory (DeviceEntrySeq &eseq, const std::string &dir, const bool force 
       if (bname.size() && bname[0] == '.')
         continue;
       if (e.is_directory())
-        crawl_directory (entry.entries, e.path());
+        crawl_directory (entry.entries, e.path(), file_type);
       if (!e.is_regular_file())
         continue;
-      if (string_endswith (string_tolower (filepath), ".sf2") ||
-          string_endswith (string_tolower (filepath), ".wav"))
+      if ((file_type == ResourceType::SOUNDFONT && string_endswith (string_tolower (filepath), ".sf2")) ||
+          (file_type == ResourceType::WAVE && string_endswith (string_tolower (filepath), ".wav")))
         {
           const auto identifier = e.path();
-          entry.entries.push_back (device_entry (DeviceEntryType::DIRECTORY, Path::basename (identifier), identifier, e.file_size()));
+          // needs extra syscall: hints += string_format ("size=%u", e.file_size());
+          entry.entries.push_back (device_entry (ResourceType::FOLDER, identifier, Path::basename (identifier)));
         }
     }
   if (force || entry.entries.size())
@@ -45,35 +45,35 @@ crawl_directory (DeviceEntrySeq &eseq, const std::string &dir, const bool force 
   return eseq;
 }
 
-DeviceEntry
-DeviceCrawlerImpl::list_device_origin (DeviceOrigin origin)
+ResourceList
+ResourceCrawlerImpl::list_files (ResourceType file_type, ResourceOrigin file_origin)
 {
-  DeviceEntrySeq eseq;
-  switch (origin)
+  ResourceList eseq;
+  switch (file_origin)
     {
       const char *cstr;
-    case DeviceOrigin::USER_DOWNLOADS:
+    case ResourceOrigin::USER_DOWNLOADS:
       cstr = g_get_user_special_dir (G_USER_DIRECTORY_DOWNLOAD);
       if (cstr)
-        crawl_directory (eseq, cstr, true);
+        crawl_directory (eseq, cstr, file_type);
       break;
-    case DeviceOrigin::STANDARD_LIBRARY:        break;
-    case DeviceOrigin::PACKAGE_LIBRARY:		break;
-    case DeviceOrigin::SYSTEM_LIBRARY:		break;
-    case DeviceOrigin::USER_LIBRARY:		break;
-    case DeviceOrigin::FAVORITES:	        break;
-    case DeviceOrigin::NONE:                    break;
+      // case DeviceOrigin::STANDARD_LIBRARY:        break;
+      // case DeviceOrigin::PACKAGE_LIBRARY:		break;
+      // case DeviceOrigin::SYSTEM_LIBRARY:		break;
+      // case DeviceOrigin::USER_LIBRARY:		break;
+      // case DeviceOrigin::FAVORITES:	        break;
+    case ResourceOrigin::NONE:                  break;
     };
-  return eseq.empty() ? DeviceEntry() : eseq[0];
+  return eseq.empty() ? ResourceList() : eseq;
 }
 
-DeviceCrawlerImpl::~DeviceCrawlerImpl ()
+ResourceCrawlerImpl::~ResourceCrawlerImpl ()
 {}
 
-DeviceCrawlerImplP
-DeviceCrawlerImpl::instance_p()
+ResourceCrawlerImplP
+ResourceCrawlerImpl::instance_p()
 {
-  static DeviceCrawlerImplP singleton = FriendAllocator<DeviceCrawlerImpl>::make_shared ();
+  static ResourceCrawlerImplP singleton = FriendAllocator<ResourceCrawlerImpl>::make_shared ();
   return singleton;
 }
 
