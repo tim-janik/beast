@@ -214,16 +214,33 @@ export function clamp (x, min, max) {
 }
 
 /** Register all Vue components, needed before instantiating the Vue root component */
-export function vue_register (vcexport, cssfile) {
-  if (vcexport.name)
-    Vue.component (vcexport.name, vcexport);
-  if (cssfile)
+export async function vue_load_bundles (filelist) {
+  // hook up CSS files *before* importing modules that use the styles
+  for (const fname of filelist)
     {
+      if (!fname.endsWith ('.css'))
+	continue;
       const link = document.createElement ('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
-      link.href = cssfile;
+      link.href = fname;
       document.head.appendChild (link);
+      continue;
+    }
+  // load all non-CSS files as modules
+  const modules = [];
+  for (const fname of filelist)
+    {
+      if (fname.endsWith ('.css'))
+	continue;
+      modules.push (import (fname));
+    }
+  // register all Vue components
+  for (const mod of modules)
+    {
+      const vcexport = await mod;
+      if (vcexport.default && vcexport.default.name)
+	Vue.component (vcexport.default.name, vcexport.default);
     }
 }
 
