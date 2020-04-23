@@ -16,6 +16,7 @@ module.exports = {
     "assert": false,
     "Electron": false,
     "$log": false,
+    "debug": false,
     "Vue": false,
     "Bse": false,
     "Shell": false,
