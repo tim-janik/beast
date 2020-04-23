@@ -848,54 +848,10 @@ class FocusGuard {
     return false; // not interfering
   }
   keydown_handler (event) {
-    const up = event.keyCode == KeyCode.UP;
-    const down = event.keyCode == KeyCode.DOWN;
-    const home = event.keyCode == KeyCode.HOME;
-    const end = event.keyCode == KeyCode.END;
-    if (this.focus_root_list.length == 0 || !this.updown_focus ||
-	!(up || down || home || end) ||
-	is_nav_input (document.activeElement) ||
-	(document.activeElement.tagName == "INPUT" &&
-	 !is_button_input (document.activeElement)))
+    if (document.activeElement == document.body) // no focus
+      return keydown_move_focus (event);
+    else
       return false; // not interfering
-    const root = this.focus_root_list[0][0];
-    const focuslist = list_focusables (root);
-    if (!focuslist)
-      return false; // not interfering
-    let idx = focuslist.indexOf (document.activeElement);
-    if (idx < 0 && (up || down))
-      { // re-focus last element if possible
-	idx = focuslist.indexOf (this.last_focus);
-	if (idx >= 0)
-	  {
-	    focuslist[idx].focus();
-	    event.preventDefault();
-	    return true;
-	  }
-      }
-    let next; // position to move new focus to
-    if (idx < 0)
-      next = (down || home) ? 0 : focuslist.length - 1;
-    else if (home || end)
-      next = home ? 0 : focuslist.length - 1;
-    else // up || down
-      {
-	next = idx + (up ? -1 : +1);
-	if (this.updown_cycling)
-	  {
-	    if (next < 0)
-	      next += focuslist.length;
-	    else if (next >= focuslist.length)
-	      next -= focuslist.length;
-	  }
-      }
-    if (next >= 0 && next < focuslist.length)
-      {
-	focuslist[next].focus();
-	event.preventDefault();
-	return true;
-      }
-    return false;
   }
 }
 const the_focus_guard = new FocusGuard();
@@ -908,6 +864,78 @@ export function push_focus_root (element) {
 /** Remove an `element` previously installed via push_focus_root() */
 export function remove_focus_root (element) {
   the_focus_guard.remove_focus_root (element);
+}
+
+/** Move focus on UP/DOWN/HOME/END `keydown` events */
+export function keydown_move_focus (event) {
+  let dir;
+  if (event.keyCode == KeyCode.UP)
+    dir = -1;
+  else if (event.keyCode == KeyCode.DOWN)
+    dir = +1;
+  else if (event.keyCode == KeyCode.HOME)
+    dir = -99999;
+  else if (event.keyCode == KeyCode.END)
+    dir = +99999;
+  return move_focus (dir);
+}
+
+/** Move focus to prev or next focus widget */
+export function move_focus (dir = 0) {
+  const home = dir < -1;
+  const up = dir == -1;
+  const down = dir == +1;
+  const end = dir > +1;
+  const updown_focus = the_focus_guard.updown_focus;
+  const updown_cycling = the_focus_guard.updown_cycling;
+  const last_focus = the_focus_guard.last_focus;
+  if (!(home || up || down || end))
+    return false; // nothing to move
+
+  if (the_focus_guard.focus_root_list.length == 0 || !updown_focus ||
+      !(up || down || home || end) ||
+      is_nav_input (document.activeElement) ||
+      (document.activeElement.tagName == "INPUT" &&
+       !is_button_input (document.activeElement)))
+    return false; // not interfering
+  const root = the_focus_guard.focus_root_list[0][0];
+  const focuslist = list_focusables (root);
+  if (!focuslist)
+    return false; // not interfering
+  let idx = focuslist.indexOf (document.activeElement);
+  if (idx < 0 && (up || down))
+    { // re-focus last element if possible
+      idx = focuslist.indexOf (last_focus);
+      if (idx >= 0)
+	{
+	  focuslist[idx].focus();
+	  event.preventDefault();
+	  return true;
+	}
+    }
+  let next; // position to move new focus to
+  if (idx < 0)
+    next = (down || home) ? 0 : focuslist.length - 1;
+  else if (home || end)
+    next = home ? 0 : focuslist.length - 1;
+  else // up || down
+    {
+      next = idx + (up ? -1 : +1);
+      if (updown_cycling)
+	{
+	  if (next < 0)
+	    next += focuslist.length;
+	  else if (next >= focuslist.length)
+	    next -= focuslist.length;
+	}
+    }
+  if (next >= 0 && next < focuslist.length)
+    {
+      focuslist[next].focus();
+      event.preventDefault();
+      return true;
+    }
+  return false;
 }
 
 /** Installing a modal shield prevents mouse and key events for all elements */
@@ -1586,14 +1614,14 @@ function hotkey_handler (event) {
   if (is_nav_input (document.activeElement) ||
       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement)))
     {
-      log ("IGNORE-NAV: " + event.code + ' (' + document.activeElement.tagName + ')');
+      // debug ("hotkey_handler: ignore-nav: " + event.code + ' (' + document.activeElement.tagName + ')');
       return false;
     }
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
       event.preventDefault();
-      log ("KEYBOARD_CLICK: " + ' (' + document.activeElement.tagName + ')');
+      debug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
       Util.keyboard_click (document.activeElement);
       return true;
     }
@@ -1604,7 +1632,7 @@ function hotkey_handler (event) {
       {
 	const callback = array[i][1];
 	event.preventDefault();
-	log ("HOTKEY-HANDLER: '" + array[i][0] + "'", callback.name);
+	debug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
 	callback.call (null, event);
 	return true;
       }
@@ -1614,12 +1642,11 @@ function hotkey_handler (event) {
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
 	event.preventDefault();
-	log ("HOTKEY: '" + el.getAttribute ('data-hotkey') + "'", el);
+	debug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
 	return true;
       }
-  log ('KEYDOWN: ' + event.code + ' ' + event.which + ' ' + event.charCode +
-       ' (' + document.activeElement.tagName + ')');
+  // debug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
