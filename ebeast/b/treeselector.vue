@@ -84,17 +84,22 @@ export default {
     focus_updown (event) {
       const UP = 38;
       const DOWN = 40;
-      if (event.keyCode != UP && event.keyCode != DOWN)
-	return;
-      event.preventDefault();
-      const nodes = Util.list_focusables (this.$el); // selector for focussable elements
-      const array1 = [].slice.call (nodes);
-      // filter elements with display:none parents
-      const array = array1.filter (element => element.offsetWidth > 0 && element.offsetHeight > 0);
-      const idx = array.indexOf (document.activeElement);
-      const next = idx + (event.keyCode == UP ? -1 : +1);
-      if (next >= 0 && next < array.length)
-	array[next].focus();
+      if (event.keyCode == UP || event.keyCode == DOWN)
+	{
+	  const nodes = Util.list_focusables (this.$el); // selector for focussable elements
+	  const array1 = [].slice.call (nodes);
+	  // filter elements with display:none parents
+	  const array = array1.filter (element => element.offsetWidth > 0 && element.offsetHeight > 0);
+	  const idx = array.indexOf (document.activeElement);
+	  const next = idx + (event.keyCode == UP ? -1 : +1);
+	  if (next >= 0 && next < array.length)
+	    {
+	      event.preventDefault();
+	      array[next].focus();
+	      return true;
+	    }
+	}
+      return Util.keydown_move_focus (event);
     },
   },
 };
