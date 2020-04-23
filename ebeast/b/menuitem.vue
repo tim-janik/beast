@@ -66,6 +66,7 @@
   <button class="b-menuitem"
 	  :disabled="isdisabled()"
 	  @mouseenter="focus"
+	  @keydown="Util.keydown_move_focus"
 	  @click="clicked" >
     <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
