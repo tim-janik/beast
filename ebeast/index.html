@@ -48,6 +48,7 @@
 	      }
 	  }
 	Object.defineProperty (window, 'CONFIG', { value: CONFIG });
+	Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
       }
   </script>
 
@@ -148,7 +149,9 @@
       CONFIG: CONFIG,
       console: console,
       $log: console.log.bind (console),
+      debug: debug,
       EQ: Util.equals_recursively,
+      Util: Util,
       observable_from_getters: Util.vue_observable_from_getters,
     });
     // _() - add translation indicator
