@@ -12,6 +12,10 @@
   </div>
   ```
   ## Props:
+  *xscale*
+  : Consider a wider area than the context menu width for popup positioning.
+  *yscale*
+  : Consider a taller area than the context menu height for popup positioning.
   ## Events:
   *click (role)*
   : Event signaling activation of a submenu item, the `role` of the submenu is provided as argument.
@@ -65,7 +69,9 @@
 <script>
 export default {
   name: 'b-contextmenu',
-  props: { 'notransitions': { default: false }, },
+  props: { notransitions: { default: false },
+	   xscale: { default: 1, },
+	   yscale: { default: 1, }, },
   computed: {
     cmenu_class() { return this.notransitions !== false ? 'b-contextmenu-notransitions' : ''; },
   },
@@ -133,8 +139,8 @@ export default {
 	  // can take dozens of resize_observer/popup_position frame iterations
 	  area_el.style.left = '0px';
 	  area_el.style.top = '0px';
-	  const p = Util.popup_position (menu_el, { x: this.doc_x,
-						    y: this.doc_y,
+	  const p = Util.popup_position (menu_el, { x: this.doc_x, xscale: this.xscale,
+						    y: this.doc_y, yscale: this.yscale,
 						    origin: this.popup_options.origin?.$el || this.popup_options.origin });
 	  area_el.style.left = p.x + "px";
 	  area_el.style.top = p.y + "px";
