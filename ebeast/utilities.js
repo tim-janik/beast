@@ -1076,7 +1076,8 @@ export function swallow_event (type, timeout = 0) {
 }
 
 /** Determine position for a popup */
-export function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined }) {
+export function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined,
+						  xscale: 0, yscale: 0, }) {
   const p = 1; // padding;
   // Ignore window.innerWidth & window.innerHeight, these include space for scrollbars
   // Viewport size, https://developer.mozilla.org/en-US/docs/Web/CSS/Viewport_concepts
@@ -1085,6 +1086,10 @@ export function popup_position (element, opts = { origin: undefined, x: undefine
   const sx = window.pageXOffset, sy = window.pageYOffset;
   // Element area, relative to the viewport.
   const r = element.getBoundingClientRect();
+  if (opts.xscale > 0)
+    r.width *= opts.xscale;
+  if (opts.yscale > 0)
+    r.height *= opts.yscale;
   // Position element without an origin element
   if (!opts.origin || !opts.origin.getBoundingClientRect)
     {
@@ -1609,7 +1614,6 @@ export function match_key_event (event, keyname)
 const hotkey_list = [];
 
 function hotkey_handler (event) {
-  const log = console.log ? console.log : () => 0;
   // give precedence to navigatable element with focus
   if (is_nav_input (document.activeElement) ||
       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement)))
