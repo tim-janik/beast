@@ -25,19 +25,41 @@
       <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
       <b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id" />
     </template>
-    <b-contextmenu ref="cmenu" @click="menuactivation" >
+    <b-contextmenu ref="cmenu" @click="menuactivation" yscale="1.6" >
       <b-menutitle> Device </b-menutitle>
       <b-menuitem fa="plus-circle"      role="add-device" >      Add Device		</b-menuitem>
       <b-menuitem fa="times-circle"     role="delete-device" >   Delete Device		</b-menuitem>
+      <b-treeselector :tree="devicetypes"> </b-treeselector>
     </b-contextmenu>
   </b-hflex>
 </template>
 
 <script>
+async function list_audio_device_types () {
+  if (list_audio_device_types.return_entries)
+    return list_audio_device_types.return_entries;
+  const crawler = await Bse.server.resource_crawler();
+  const entries = await crawler.list_devices ('audio-device');
+  const cats = {};
+  for (const e of entries)
+    {
+      const category = e.category || 'Other';
+      cats[category] = cats[category] || { label: category, type: 'bse-resource-type-folder', entries: [] };
+      cats[category].entries.push (e);
+    }
+  const list = [];
+  for (const c of Object.keys (cats).sort())
+    list.push (cats[c]);
+  list_audio_device_types.return_entries = { entries: list };
+  return list_audio_device_types.return_entries;
+}
+list_audio_device_types();
+
 function observable_device_data () {
   const data = {
     devices:	{ default: [],  	notify: n => this.track.on ("notify:devices", n),
 		  getter: async c => Object.freeze (await this.track.list_devices()), },
+    devicetypes: { getter: async c => Object.freeze (await list_audio_device_types()), },
   };
   return this.observable_from_getters (data, () => this.track);
 }
