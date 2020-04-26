@@ -29,8 +29,8 @@
     </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
-      <b-menuitem fa="plus-circle"      role="add-module" >      Add Module		</b-menuitem>
-      <b-menuitem fa="times-circle"     role="delete-module" >   Delete Module		</b-menuitem>
+      <b-menuitem fa="plus-circle"      uri="add-module" >      Add Module		</b-menuitem>
+      <b-menuitem fa="times-circle"     uri="delete-module" >   Delete Module		</b-menuitem>
     </b-contextmenu>
   </b-hflex>
 </template>
@@ -53,17 +53,17 @@ export default {
   },
   data() { return observable_device_data.call (this); },
   methods: {
-    menuactivation (role) {
+    menuactivation (uri) {
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      if (role == 'add-module')
+      if (uri == 'add-module')
 	this.device.create_module ('Dummy');
     },
-    menucheck (role, component) {
+    menucheck (uri, component) {
       console.log ("deviceeditor.vue", this.device);
       if (!this.device)
 	return false;
-      switch (role)
+      switch (uri)
       {
 	case 'add-module':   return true;
       }

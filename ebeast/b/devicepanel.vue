@@ -27,8 +27,8 @@
     </template>
     <b-contextmenu ref="cmenu" @click="menuactivation" yscale="1.6" >
       <b-menutitle> Device </b-menutitle>
-      <b-menuitem fa="plus-circle"      role="add-device" >      Add Device		</b-menuitem>
-      <b-menuitem fa="times-circle"     role="delete-device" >   Delete Device		</b-menuitem>
+      <b-menuitem fa="plus-circle"      uri="add-device" >      Add Device		</b-menuitem>
+      <b-menuitem fa="times-circle"     uri="delete-device" >   Delete Device		</b-menuitem>
       <b-treeselector :tree="devicetypes"> </b-treeselector>
     </b-contextmenu>
   </b-hflex>
@@ -71,19 +71,19 @@ export default {
   },
   data() { return observable_device_data.call (this); },
   methods: {
-    menuactivation (role) {
+    menuactivation (uri) {
       const popup_options = this.$refs.cmenu.popup_options;
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      if (role == 'add-device')
+      if (uri == 'add-device')
 	console.log ("create_device: after:", popup_options.device_sibling);
-      if (role == 'add-device')
+      if (uri == 'add-device')
 	this.track.create_device ('Dummy');
     },
-    menucheck (role, component) {
+    menucheck (uri, component) {
       if (!this.track)
 	return false;
-      switch (role)
+      switch (uri)
       {
 	case 'add-device':   return true;
       }

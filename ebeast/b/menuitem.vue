@@ -4,12 +4,12 @@
   # B-MENUITEM
   A menuitem element to be used as a descendant of a [B-CONTEXTMENU](#b-contextmenu).
   The menuitem can be activated via keyboard focus or mouse click and will notify
-  its B-CONTEXTMENU about the click and its `role`, unless the `@click.prevent`
+  its B-CONTEXTMENU about the click and its `uri`, unless the `@click.prevent`
   modifier is used.
-  If no `role` is specified, the B-CONTEXTMENU will still be notified to be closed,
+  If no `uri` is specified, the B-CONTEXTMENU will still be notified to be closed,
   unless `$event.preventDefault()` is called.
   ## Props:
-  *role*
+  *uri*
   : Descriptor for this menuitem that is passed on to its B-CONTEXTMENU `onclick`.
   *disabled*
   : Boolean flag indicating disabled state.
@@ -77,17 +77,17 @@
 const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-menuitem',
-  props: { 'role': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
+  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
 			default: { 'showicons': true, 'showaccels': true, checkedroles: {} }, },
   },
   methods: {
     clicked (event) {
-      this.$emit ('click', event, this.role);
+      this.$emit ('click', event, this.uri);
       if (!event.defaultPrevented)
 	{
-	  if (this.role && this.menudata.clicked)
-	    this.menudata.clicked (this.role);
+	  if (this.uri && this.menudata.clicked)
+	    this.menudata.clicked (this.uri);
 	  else if (this.menudata.close)
 	    this.menudata.close();
 	}
@@ -95,8 +95,8 @@ export default {
       event.preventDefault(); // avoid submit, etc
     },
     isdisabled() {
-      if (this.role && undefined !== this.menudata.checkedroles[this.role])
-	return !this.menudata.checkedroles[this.role];
+      if (this.uri && undefined !== this.menudata.checkedroles[this.uri])
+	return !this.menudata.checkedroles[this.uri];
       if (this.disabled == "" || !!this.disabled ||
 	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])
 	return true;

@@ -17,8 +17,8 @@
   *yscale*
   : Consider a taller area than the context menu height for popup positioning.
   ## Events:
-  *click (role)*
-  : Event signaling activation of a submenu item, the `role` of the submenu is provided as argument.
+  *click (uri)*
+  : Event signaling activation of a submenu item, the `uri` of the submenu is provided as argument.
   ## Methods:
   *popup (event, { origin, tieclass })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
@@ -153,16 +153,16 @@ export default {
 	if (component instanceof Element &&
 	    component.__vue__)
 	  component = component.__vue__;
-	if (component.$options && component.$options.propsData && component.$options.propsData.role)
+	if (component.$options && component.$options.propsData && component.$options.propsData.uri)
 	  {
 	    let async_check = async () => {
-	      let result = this.popup_options.checker.call (null, component.$options.propsData.role, component);
+	      let result = this.popup_options.checker.call (null, component.$options.propsData.uri, component);
 	      result = await result;
 	      if ('boolean' !== typeof result)
 		result = undefined;
-	      if (result != this.checkedroles[component.$options.propsData.role])
+	      if (result != this.checkedroles[component.$options.propsData.uri])
 		{
-		  this.$set (this.checkedroles, component.$options.propsData.role, result); // Vue reactivity
+		  this.$set (this.checkedroles, component.$options.propsData.uri, result); // Vue reactivity
 		  component.$forceUpdate();
 		}
 	    };
@@ -261,8 +261,8 @@ export default {
 	this.shield.destroy (false);
       this.shield = undefined;
     },
-    clicked (role) {
-      this.$emit ('click', role);
+    clicked (uri) {
+      this.$emit ('click', uri);
       this.close();
     },
   },
