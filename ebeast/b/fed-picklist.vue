@@ -69,7 +69,7 @@
     <b-contextmenu class="b-fed-picklist-contextmenu" ref="cmenu" @click="menuactivation" notransitions >
       <b-menutitle v-if="title" > {{ title }} </b-menutitle>
 
-      <b-menuitem v-for="item in picklist_" :key="item.key || item.role" :uri="item.role || item.key"
+      <b-menuitem v-for="item in picklist_" :key="item.key || item.uri" :uri="item.uri || item.key"
 		  :ic="item.icon"      :iconclass='item.iconclass' >
 	<span class="b-fed-picklist-label" :class='item.labelclass' v-if="item.label" > {{ item.label }} </span>
 	<span class="b-fed-picklist-line1" :class='item.line1class' v-if="item.line1" > {{ item.line1 }} </span>
@@ -109,7 +109,7 @@ export default {
     },
     currentitem() {
       for (const item of this.picklist_)
-	if (item.key == this.value || item.role == this.value)
+	if (item.key == this.value || item.uri == this.value)
 	  return item;
       // fallback for unlisted value
       return { label: this.value, icon: 'fa-question-circle-o' };	// � ⟁

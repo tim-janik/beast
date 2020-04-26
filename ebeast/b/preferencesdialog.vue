@@ -38,7 +38,7 @@ function drivers2picklist (e) {
   if (e.notice.startsWith ("Note:") || e.notice.startsWith ("Notice:"))
     noticeclass = "b-preferencesdialog-notice";
   const item = {
-    role:  e.devid,
+    uri:  e.devid,
     icon:  this.driver_icon (e),
     label: e.device_name,
     line1: e.capabilities,
