@@ -67,7 +67,7 @@
 	  :disabled="isdisabled()"
 	  @mouseenter="focus"
 	  @keydown="Util.keydown_move_focus"
-	  @click="clicked" >
+	  @click="onclick" >
     <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
   </button>
@@ -79,33 +79,16 @@ export default {
   name: 'b-menuitem',
   props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { 'showicons': true, 'showaccels': true, checkeduris: {} }, },
+			default: { showicons: true, showaccels: true, checkeduris: {},
+				   isdisabled: () => false, onclick: () => 0, }, },
   },
   methods: {
-    clicked (event) {
-      this.$emit ('click', event, this.uri);
-      if (!event.defaultPrevented)
-	{
-	  if (this.uri && this.menudata.clicked)
-	    this.menudata.clicked (this.uri);
-	  else if (this.menudata.close)
-	    this.menudata.close();
-	}
-      event.stopPropagation();
-      event.preventDefault(); // avoid submit, etc
-    },
-    isdisabled() {
-      if (this.uri && undefined !== this.menudata.checkeduris[this.uri])
-	return !this.menudata.checkeduris[this.uri];
-      if (this.disabled == "" || !!this.disabled ||
-	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])
-	return true;
-      return false;
-    },
     focus() {
       if (this.$el && !this.isdisabled())
 	this.$el.focus();
     },
+    onclick (event) 	{ return this.menudata.onclick.call (this, event); },
+    isdisabled ()	{ return this.menudata.isdisabled.call (this); },
   },
 };
 </script>

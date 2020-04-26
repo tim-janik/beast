@@ -67,6 +67,28 @@
 </template>
 
 <script>
+const menuitem_onclick = function (event) {
+  this.$emit ('click', event, this.uri);
+  if (!event.defaultPrevented)
+    {
+      if (this.uri && this.menudata.clicked)
+	this.menudata.clicked (this.uri);
+      else if (this.menudata.close)
+	this.menudata.close();
+    }
+  event.stopPropagation();
+  event.preventDefault(); // avoid submit, etc
+};
+
+const menuitem_isdisabled = function () {
+  if (this.uri && undefined !== this.menudata.checkeduris[this.uri])
+    return !this.menudata.checkeduris[this.uri];
+  if (this.disabled == "" || !!this.disabled ||
+      (this.$attrs && (this.$attrs['disabled'] == "" || !!this.$attrs['disabled'])))
+    return true;
+  return false;
+};
+
 export default {
   name: 'b-contextmenu',
   props: { notransitions: { default: false },
@@ -77,9 +99,10 @@ export default {
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
 	       resize_observer: undefined, checkeduris: {},
-	       showicons: true, showaccels: true, popup_options: {}, },
+	       showicons: true, showaccels: true, popup_options: {},
+	       onclick: menuitem_onclick, isdisabled: menuitem_isdisabled, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
-			    [ 'checkeduris', 'showicons', 'showaccels', 'clicked', 'close' ]),
+			    [ 'checkeduris', 'showicons', 'showaccels', 'clicked', 'close', 'onclick', 'isdisabled' ]),
   methods: {
     dom_update () {
       if (!this.resize_observer)
