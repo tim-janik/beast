@@ -11,6 +11,9 @@
     user-select: none;
     & > span div:focus { outline: $b-focus-outline; }
     margin: $b-menu-vpad 0;
+    &[disabled], &[disabled] * {
+      color: $b-menu-disabled;
+    }
   }
   .b-treeselector ul { // /* beware, adds styles via parent */
     list-style-type: none;
@@ -46,6 +49,7 @@
 <template>
   <li
       :is="li_or_div()"
+      :disabled="isdisabled()"
       class="b-treeselector-item"
       :class="{ 'b-treeselector-active': is_active }" >
     <span class="b-treeselector-leaf"
@@ -62,6 +66,7 @@
 	  v-for="entry in entries"
           :entries="entry.entries"
           :label="entry.label"
+          :disabled="entry.disabled"
           :key="entry.label"
       ></b-treeselector-item>
     </ul>
@@ -73,6 +78,10 @@ export default {
   name: 'b-treeselector-item',
   props: [ 'label', 'entries' ],
   data: function() { return { is_active: false, }; },
+  inject: { menudata: { from: 'b-contextmenu.menudata',
+			default: { showicons: true, showaccels: true, checkeduris: {},
+				   isdisabled: () => false, onclick: undefined, }, },
+  },
   methods: {
     caret_keydown: function (event) {
       if (Util.match_key_event (event, 'ArrowRight'))
@@ -120,13 +129,23 @@ export default {
     },
     leaf_click1: function (event) {
       // trigger via focus/keyboard activation
-      if (Util.in_keyboard_click())
-	console.log ("SELECTED:", event);
+      if (this.isdisabled() || !Util.in_keyboard_click())
+	return;
+      if (this.menudata.onclick)
+	this.menudata.onclick.call (this, event);
+      else
+	debug ("SELECTED1:", event);
     },
     leaf_click2: function() {
+      if (this.isdisabled())
+	return;
       // using the mouse, only trigger on double click
-      console.log ("SELECTED:", this.label);
+      if (this.menudata.onclick)
+	this.menudata.onclick.call (this, event);
+      else
+	debug ("SELECTED2:", event);
     },
+    isdisabled ()	{ return this.menudata.isdisabled.call (this); },
     li_or_div: function() { return 'li'; },
   },
 };

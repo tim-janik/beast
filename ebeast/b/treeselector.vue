@@ -28,6 +28,7 @@
 			    v-for="entry in tree.entries"
 			    :entries="entry.entries"
 			    :label="entry.label"
+			    :disabled="entry.disabled"
 			    :key="entry.label" >
       </b-treeselector-item>
     </ul>
