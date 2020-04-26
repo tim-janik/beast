@@ -33,7 +33,7 @@
       <b-hflex ref="sidebarcontainer" style="width:15%" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
 	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
-	  <b-treeselector></b-treeselector>
+	  <b-treeselector :tree="o.filetree"></b-treeselector>
 	</b-vflex>
       </b-hflex>
     </b-hflex>
@@ -72,19 +72,27 @@
 </style>
 
 <script>
-function project_data () {
-  const pdata = {
+async function list_sample_files() {
+  const crawler = await Bse.server.resource_crawler();
+  const entries = await crawler.list_files ('wave', 'user-downloads');
+  return Object.freeze ({ entries: entries });
+}
+
+function observable_project_data () { // yields reactive Proxy object
+  const data = {
+    filetree:	{ default: {}, getter: c => list_sample_files(), },
     // TODO: tracks: { getter: c => list_tracks.call (this), notify: n => this.song.on ("treechange", n), },
     // update current_track if tracks change
+    __update__: Util.observable_force_update,
   };
-  return this.observable_from_getters (pdata, () => this.project);
+  return this.observable_from_getters (data, () => this.project);
 }
 
 export default {
   name: 'b-projectshell',
   data() { return {
     project: undefined,
-    pdata: project_data.call (this),
+    o: observable_project_data.call (this),
     current_track: undefined,
     piano_roll_part: undefined,
     show_about_dialog: false,
@@ -241,6 +249,7 @@ export default {
       this.notifynameclear = this.project.on ("notify:uname", update_title);
       update_title();
       this.$forceUpdate();
+      this.o.__update__();
       return Bse.Error.NONE;
     },
     async save_project (projectpath)
