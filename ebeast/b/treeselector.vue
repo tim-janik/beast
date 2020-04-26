@@ -67,17 +67,14 @@ const tree_data = {
   ]
 };
 
-async function create_data() {
-  const crawler = await Bse.server.resource_crawler();
-  const entries = await crawler.list_files ('wave', 'user-downloads');
-  return { entries: entries };
-}
-
 export default {
   name: 'b-treeselector',
   data: function() {
-    create_data().then (r => this.tree = r);
-    return { tree: tree_data, };
+    // create_data().then (r => this.tree = r);
+    return {};
+  },
+  props: {
+    tree: { default: () => Object.freeze (tree_data) },
   },
   methods: {
     dummy (method, e) {
