@@ -76,10 +76,10 @@ export default {
     cmenu_class() { return this.notransitions !== false ? 'b-contextmenu-notransitions' : ''; },
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
-	       resize_observer: undefined, checkedroles: {},
+	       resize_observer: undefined, checkeduris: {},
 	       showicons: true, showaccels: true, popup_options: {}, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
-			    [ 'checkedroles', 'showicons', 'showaccels', 'clicked', 'close' ]),
+			    [ 'checkeduris', 'showicons', 'showaccels', 'clicked', 'close' ]),
   methods: {
     dom_update () {
       if (!this.resize_observer)
@@ -160,9 +160,9 @@ export default {
 	      result = await result;
 	      if ('boolean' !== typeof result)
 		result = undefined;
-	      if (result != this.checkedroles[component.$options.propsData.uri])
+	      if (result != this.checkeduris[component.$options.propsData.uri])
 		{
-		  this.$set (this.checkedroles, component.$options.propsData.uri, result); // Vue reactivity
+		  this.$set (this.checkeduris, component.$options.propsData.uri, result); // Vue reactivity
 		  component.$forceUpdate();
 		}
 	    };

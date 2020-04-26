@@ -79,7 +79,7 @@ export default {
   name: 'b-menuitem',
   props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { 'showicons': true, 'showaccels': true, checkedroles: {} }, },
+			default: { 'showicons': true, 'showaccels': true, checkeduris: {} }, },
   },
   methods: {
     clicked (event) {
@@ -95,8 +95,8 @@ export default {
       event.preventDefault(); // avoid submit, etc
     },
     isdisabled() {
-      if (this.uri && undefined !== this.menudata.checkedroles[this.uri])
-	return !this.menudata.checkedroles[this.uri];
+      if (this.uri && undefined !== this.menudata.checkeduris[this.uri])
+	return !this.menudata.checkeduris[this.uri];
       if (this.disabled == "" || !!this.disabled ||
 	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])
 	return true;
