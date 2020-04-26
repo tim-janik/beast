@@ -27,7 +27,7 @@
   @import 'mixins.scss';
   body button.b-menuitem { //* since menus are often embedded, this needs high specificity */
     display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap;
-    margin: 0; padding: 5px 1em; text-align: left;
+    margin: 0; padding: $b-menu-vpad $b-menu-hpad; text-align: left;
     //* button-reset */
     background: transparent; cursor: pointer; user-select: none; outline: none;
     border: 1px solid transparent;

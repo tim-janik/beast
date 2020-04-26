@@ -10,12 +10,13 @@
   .b-treeselector-item {
     user-select: none;
     & > span div:focus { outline: $b-focus-outline; }
+    margin: $b-menu-vpad 0;
   }
   .b-treeselector ul { // /* beware, adds styles via parent */
     list-style-type: none;
     margin: 0; padding: 0;
     margin-left: 1em;
-    li { margin: 0; padding: 0; }
+    //* li { margin: 0; padding: 0; } */
     .b-treeselector-leaf {
       cursor: pointer; user-select: none;
       margin-left: 0;

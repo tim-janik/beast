@@ -11,6 +11,7 @@
 <style lang="scss">
   @import 'mixins.scss';
   .b-treeselector {
+    margin: 0 $b-menu-hpad;
     .b-modaldialog-container	{ max-width: 70em; height: 90vh; align-items: stretch; }
     .b-modaldialog-body	{ flex-grow: 1; }
   }
