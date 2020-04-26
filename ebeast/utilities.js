@@ -1696,6 +1696,11 @@ class FallbackResizeObserver {
 /// Work around FireFox 68 having ResizeObserver disabled
 export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
+/** Method to be added to a `vue_observable_from_getters()` template to force updates. */
+export function observable_force_update () {
+  // This method works as a tag for vue_observable_from_getters()
+}
+
 /** Create an observable binding for the fields in `tmpl`.
  * Once the expression `predicate` changes and becomes true-ish, the `getter` of each field in `tmpl` is
  * called, resolved and assigned to the corresponding field in the observable binding returned from this function.
@@ -1708,9 +1713,17 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   const monitoring_getters = [];
   const getter_cleanups = {};
   const notify_cleanups = {};
+  let add_functions = false;
   let odata; // Vue.observable
   for (const key in tmpl)
     {
+      if (tmpl[key] instanceof Function)
+	{
+	  add_functions = true;
+	  continue;
+	}
+      else if (!(tmpl[key] instanceof Object))
+	continue;
       const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
       const getter = async () => {
 	let newcleaner = undefined;
@@ -1767,8 +1780,33 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	getter_cleanups[key] ();
   };
   this.$once ('hook:destroyed', run_notify_cleanups);
-  // update monitoring getters once `predicate` changes
-  this.$watch (predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
+  // prepare to allow forced updates
+  let update_, watch_predicate = predicate;
+  // install tmpl functions
+  if (add_functions)
+    for (const key in tmpl)
+      {
+	if (tmpl[key] == observable_force_update)
+	  {
+	    if (!update_)
+	      {
+		const updater = Vue.observable ({ c: 1 });
+		update_ = function () { updater.c += 1; }; // force observable update
+		// update monitoring getters once `predicate` or `updater` changes
+		watch_predicate = function () {
+		  // all reactive accesses are tracked from within a $watch predicate, so…
+		  const c = updater.c; // always invoke reactive getter from predicate
+		  const p = predicate.call (this); // always invoke custom predicate
+		  return c && p;
+		};
+	      }
+	    odata[key] = update_;      // add method to force updates
+	  }
+	else if (tmpl[key] instanceof Function)
+	  odata[key] = tmpl[key];
+      }
+  // create watch, triggering the getters if predicate turns true
+  this.$watch (watch_predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
   return odata;
 }
 
