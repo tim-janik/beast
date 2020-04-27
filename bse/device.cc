@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "device.hh"
+#include "processor.hh"
 #include "internal.hh"
 
 namespace Bse {
@@ -67,6 +68,27 @@ DeviceImpl::create_module (const String &module_id)
   modules_.push_back (modulep);
   notify ("modules");
   return modules_.back();
+}
+
+// == AspDeviceImpl ==
+class AspDeviceImpl : public DeviceImpl {
+  AudioSignal::ProcessorP procp_;
+public:
+  explicit AspDeviceImpl (const String &uri, AudioSignal::ProcessorP procp) :
+    DeviceImpl (uri), procp_ (procp)
+  {
+    assert_return (procp != nullptr);
+  }
+};
+
+DeviceImplP
+DeviceImpl::create_device (const String &uri)
+{
+  DeviceImplP devicep;
+  AudioSignal::ProcessorP procp = AudioSignal::Processor::registry_create (uri);
+  if (procp)
+    devicep = FriendAllocator<AspDeviceImpl>::make_shared (uri, procp);
+  return devicep;
 }
 
 } // Bse

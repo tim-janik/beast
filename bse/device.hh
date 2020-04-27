@@ -14,8 +14,8 @@ protected:
   virtual               ~DeviceImpl        ();
   virtual void           xml_serialize     (SerializationNode &xs) override;
   virtual void           xml_reflink       (SerializationNode &xs) override;
-public:
   explicit               DeviceImpl        (const String &uuiduri);
+public:
   virtual ModuleSeq      list_modules      () override;
   virtual ModuleIfaceP   create_module     (const String &module_id) override;
   virtual ModuleTypeInfo module_type_info  (const String &module_id) override { return ModuleImpl::module_type_info (module_id); }
@@ -24,8 +24,10 @@ public:
   virtual DeviceInfo     device_info       () override  { return device_info (device_uri()); }
   static DeviceInfo      device_info       (const String &uuiduri);
   static StringSeq       list_device_types ();
+  using DeviceImplP = std::shared_ptr<DeviceImpl>;
+  static DeviceImplP     create_device     (const String &uri);
 };
-using DeviceImplP = std::shared_ptr<DeviceImpl>;
+using DeviceImplP = DeviceImpl::DeviceImplP;
 
 } // Bse
 
