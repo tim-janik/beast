@@ -1625,7 +1625,7 @@ function hotkey_handler (event) {
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
       event.preventDefault();
-      debug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
+      // debug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
       Util.keyboard_click (document.activeElement);
       return true;
     }
@@ -1636,7 +1636,7 @@ function hotkey_handler (event) {
       {
 	const callback = array[i][1];
 	event.preventDefault();
-	debug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
+	// debug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
 	callback.call (null, event);
 	return true;
       }
@@ -1646,7 +1646,7 @@ function hotkey_handler (event) {
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
 	event.preventDefault();
-	debug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
+	// debug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
 	return true;
       }
