@@ -1,11 +1,22 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "devicecrawler.hh"
+#include "processor.hh"
 #include "path.hh"
 
 #include <filesystem>
 namespace Fs = std::filesystem;
 
 namespace Bse {
+
+ResourceCrawlerImpl::~ResourceCrawlerImpl ()
+{}
+
+ResourceCrawlerImplP
+ResourceCrawlerImpl::instance_p()
+{
+  static ResourceCrawlerImplP singleton = FriendAllocator<ResourceCrawlerImpl>::make_shared ();
+  return singleton;
+}
 
 static ResourceEntry
 device_entry (ResourceType type, const String &uri, const String &name, const String &hints = "")
@@ -65,17 +76,28 @@ ResourceCrawlerImpl::list_files (ResourceType file_type, ResourceOrigin file_ori
       // case DeviceOrigin::FAVORITES:	        break;
     case ResourceOrigin::NONE:                  break;
     };
-  return eseq.empty() ? ResourceList() : eseq;
+  return eseq;
 }
 
-ResourceCrawlerImpl::~ResourceCrawlerImpl ()
-{}
-
-ResourceCrawlerImplP
-ResourceCrawlerImpl::instance_p()
+ResourceList
+ResourceCrawlerImpl::list_devices (ResourceType rtype)
 {
-  static ResourceCrawlerImplP singleton = FriendAllocator<ResourceCrawlerImpl>::make_shared ();
-  return singleton;
+  ResourceList eseq;
+  if (rtype == ResourceType::AUDIO_DEVICE)
+    {
+      for (const auto &e : AudioSignal::Processor::registry_list())
+        {
+          ResourceEntry r;
+          r.type = ResourceType::AUDIO_DEVICE;
+          r.uri = e.uri;
+          r.label = e.label;
+          r.category = e.category;
+          r.blurb = e.blurb;
+          // r.hints = "";
+          eseq.push_back (r);
+        }
+    }
+  return eseq;
 }
 
 } // Bse

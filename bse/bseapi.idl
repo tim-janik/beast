@@ -1364,12 +1364,13 @@ record ResourceEntry {
   String       label;       ///< Preferred user interface name.
   String       category;    ///< Category of resource, often used for logical grouping.
   String       blurb;       ///< Short description for a resource.
-  String       hints;       ///< Colon separated unspecified extensions.
+  String       hints;       ///< Colon separated `key=value` pairs.
   ResourceList entries;     ///< Subentry list for nested resources.
 };
 
 interface ResourceCrawler : Object {
-  ResourceList list_files (ResourceType file_type, ResourceOrigin file_origin);
+  ResourceList list_files   (ResourceType file_type, ResourceOrigin file_origin); ///< List WAVE / SOUNDFONT files.
+  ResourceList list_devices (ResourceType rtype);       ///< List AUDIO_DEVICE resources.
 };
 
 /// Driver information for PCM and MIDI handling.
