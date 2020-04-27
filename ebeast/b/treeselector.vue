@@ -71,12 +71,12 @@ const tree_data = {
 
 export default {
   name: 'b-treeselector',
+  props: {
+    tree: { default: () => Object.freeze (tree_data) },
+  },
   data: function() {
     // create_data().then (r => this.tree = r);
     return {};
-  },
-  props: {
-    tree: { default: () => Object.freeze (tree_data) },
   },
   methods: {
     dummy (method, e) {
