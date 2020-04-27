@@ -1390,6 +1390,23 @@ TrackImpl::create_device (const String &uuiduri)
   return nullptr;
 }
 
+DeviceIfaceP
+TrackImpl::create_device_before (const String &uuiduri, DeviceIface &sibling)
+{
+  DeviceImplP devicep = FriendAllocator<DeviceImpl>::make_shared (uuiduri);
+  if (devicep)
+    {
+      size_t i;
+      for (i = 0; i < devices_.size(); i++)
+        if (devices_[i].get() == &sibling)
+          break;
+      devices_.insert (devices_.begin() + i, devicep);
+      notify ("devices");
+      return devices_.back();
+    }
+  return nullptr;
+}
+
 DeviceSeq
 TrackImpl::list_devices ()
 {

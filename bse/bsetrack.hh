@@ -117,6 +117,7 @@ public:
   virtual void         n_voices          (int val) override;
   virtual DeviceInfoSeq  list_device_types () override;
   virtual DeviceIfaceP   create_device     (const String &uuiduri) override;
+  virtual DeviceIfaceP   create_device_before (const String &uuiduri, DeviceIface &sibling) override;
   virtual DeviceSeq      list_devices      () override;
 };
 using TrackImplP = std::shared_ptr<TrackImpl>;

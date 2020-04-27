@@ -995,9 +995,10 @@ interface Track : ContextMerger {
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
 
   // create devices
-  DeviceInfoSeq  list_device_types ();                 ///< List registered Device types with their unique uri.
-  Device         create_device     (String uuiduri);   ///< Create a new device, see list_device_types().
-  DeviceSeq      list_devices      ();                 ///< List devices in order of processing.
+  DeviceInfoSeq list_device_types ();                 ///< List registered Device types with their unique uri.
+  DeviceSeq     list_devices      ();                 ///< List devices in order of processing.
+  Device        create_device     (String uuiduri);   ///< Create a new device, see list_device_types().
+  Device create_device_before (String uuiduri, Device sibling); ///< Create device, before sibling.
 
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
