@@ -285,6 +285,7 @@ export default {
       this.shield = undefined;
     },
     clicked (uri) {
+      debug ("contextmenu: click:", uri);
       this.$emit ('click', uri);
       this.close();
     },
