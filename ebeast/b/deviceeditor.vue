@@ -22,7 +22,7 @@
 
 <template>
   <b-hflex class="b-deviceeditor" style="width: 100%; height: 100%" @contextmenu.stop="menuopen" >
-    <span class="b-deviceeditor-sw" > {{ device_type + ' #' + device.$id }} </span>
+    <span class="b-deviceeditor-sw" > {{ device_info.uri + ' #' + device.$id }} </span>
     <b-vflex v-for="module in modules" :key="module.$id"
 	     class="b-deviceeditor-entry" center style="margin: 5px" >
       <span > Module {{ module.$id }} </span>
@@ -40,8 +40,8 @@ function observable_device_data () {
   const data = {
     modules:	{ default: [],  	notify: n => this.device.on ("notify:modules", n),
 		  getter: async c => Object.freeze (await this.device.list_modules()), },
-    device_type: { default: "",		notify: n => this.device.on ("notify:device_type", n),
-		  getter: async c => Object.freeze (await this.device.get_device_type()), },
+    device_info: { default: "",		notify: n => this.device.on ("notify:device_info", n),
+		  getter: async c => Object.freeze (await this.device.device_info()), },
   };
   return this.observable_from_getters (data, () => this.device);
 }
