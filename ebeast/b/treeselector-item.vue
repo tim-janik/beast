@@ -66,8 +66,9 @@
 	  v-for="entry in entries"
           :entries="entry.entries"
           :label="entry.label"
+          :uri="entry.uri"
           :disabled="entry.disabled"
-          :key="entry.label"
+	  :key="entry.label + ';' + entry.uri"
       ></b-treeselector-item>
     </ul>
   </li>
@@ -76,7 +77,10 @@
 <script>
 export default {
   name: 'b-treeselector-item',
-  props: [ 'label', 'entries' ],
+  props: { label: 	{ default: '' },
+	   uri:		{ default: '' },
+	   entries:	{ default: [] },
+  },
   data: function() { return { is_active: false, }; },
   inject: { menudata: { from: 'b-contextmenu.menudata',
 			default: { showicons: true, showaccels: true, checkeduris: {},
