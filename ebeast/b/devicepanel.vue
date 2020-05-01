@@ -57,8 +57,8 @@ list_audio_device_types();
 
 function observable_device_data () {
   const data = {
-    devices:	{ default: [],  	notify: n => this.track.on ("notify:devices", n),
-		  getter: async c => Object.freeze (await this.track.list_devices()), },
+    devices:	{ default: [],  	notify: async n => (await this.devcon()).on ("notify:devices", n),
+		  getter: async c => Object.freeze (await (await this.devcon()).list_devices()), },
     devicetypes: { getter: async c => await list_audio_device_types(), },
   };
   return this.observable_from_getters (data, () => this.track);
@@ -71,18 +71,29 @@ export default {
   },
   data() { return observable_device_data.call (this); },
   methods: {
+    async devcon() {
+      if (!this.track)
+	this.devcon_ = null;
+      else if (!this.devcon_)
+	{
+	  const devcon = await this.track.device_container(); // concurrency point
+	  if (!this.devcon_)
+	    this.devcon_ = devcon;
+	}
+      return this.devcon_;
+    },
     menuactivation (uri) {
       const popup_options = this.$refs.cmenu.popup_options;
       // close popup to remove focus guards
       this.$refs.cmenu.close();
       if (uri == 'EBeast:add-device' || uri == 'EBeast:delete-device')
 	debug ("devicepanel.vue:", uri);
-      if (!uri.startsWith ('EBeast:')) // assuming b-treeselector.devicetypes
+      if (this.devcon_ && !uri.startsWith ('EBeast:')) // assuming b-treeselector.devicetypes
 	{
 	  if (popup_options.device_sibling)
-	    this.track.create_device_before (uri, popup_options.device_sibling);
+	    this.devcon_.create_device_before (uri, popup_options.device_sibling);
 	  else
-	    this.track.create_device (uri);
+	    this.devcon_.create_device (uri);
 	}
     },
     menucheck (uri, component) {
