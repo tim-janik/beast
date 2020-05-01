@@ -1696,6 +1696,32 @@ class FallbackResizeObserver {
 /// Work around FireFox 68 having ResizeObserver disabled
 export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
+/** Assign `map[key] = cleaner`, while awaiting and calling any previously existing cleanup function */
+export function assign_async_cleanup (map, key, cleaner) {
+  const oldcleaner = map[key];
+  if (oldcleaner === cleaner)
+    return;
+  // turn each cleaner Function into a unique Function object for `===` comparisons
+  map[key] = cleaner instanceof Function ? (() => cleaner()) : cleaner;
+  if (cleaner instanceof Promise)
+    {
+      // asynchronously await and assign cleaner function
+      (async () => {
+	let cleanupfunc = await cleaner;
+	if (cleanupfunc)
+	  console.assert (cleanupfunc instanceof Function);
+	else
+	  cleanupfunc = undefined;
+	if (map[key] === cleaner) // resolve promise
+	  map[key] = () => cleanupfunc();
+	else if (cleanupfunc)
+	  cleanupfunc(); // promise has been discarded, invoke cleanup
+      }) ();
+    }
+  if (oldcleaner && !(oldcleaner instanceof Promise))
+    oldcleaner();
+}
+
 /** Method to be added to a `vue_observable_from_getters()` template to force updates. */
 export function observable_force_update () {
   // This method works as a tag for vue_observable_from_getters()
@@ -1725,45 +1751,31 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       else if (!(tmpl[key] instanceof Object))
 	continue;
       const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
+      const assign_getter_cleanup = (c) => assign_async_cleanup (getter_cleanups, key, c);
       const getter = async () => {
-	let newcleaner = undefined;
-	const result = async_getter ? await async_getter (c => newcleaner = c) : default_value;
-	if (getter_cleanups[key])
-	  {
-	    const cleaner = getter_cleanups[key];
-	    getter_cleanups[key] = undefined;
-	    cleaner();
-	  }
-	if (!equals_recursively (odata[key], result))
-	  odata[key] = result;
-	if (newcleaner)
-	  getter_cleanups[key] = newcleaner;
+	const had_cleanup = !!getter_cleanups[key];
+	const result = !async_getter ? default_value :
+		       await async_getter (assign_getter_cleanup);
+	if (had_cleanup || getter_cleanups[key])
+	  odata[key] = result; // always reassign if cleanups are involved
+	else if (!equals_recursively (odata[key], result))
+	  odata[key] = result; // compare to reduce Vue updates
       };
       const getter_and_reconnect = (reset) => {
-	const oldcleanup = notify_cleanups[key];
-	if (async_notify && reset)
-	  notify_cleanups[key] = undefined;
-	else if (async_notify)
+	if (reset)
 	  {
-	    const notifycleanup = async_notify (getter);
-	    if (notifycleanup)
-	      console.assert (notifycleanup instanceof Function);
-	    notify_cleanups[key] = notifycleanup;
-	  }
-	if (!reset)
-	  getter ();
-	else
-	  {
+	    if (async_notify)
+	      assign_async_cleanup (notify_cleanups, key, undefined);
 	    if (getter_cleanups[key])
-	      {
-		const cleaner = getter_cleanups[key];
-		getter_cleanups[key] = undefined;
-		cleaner();
-	      }
+	      assign_async_cleanup (getter_cleanups, key, undefined);
 	    odata[key] = default_value;
 	  }
-	if (oldcleanup)
-	  oldcleanup();
+	else
+	  {
+	    if (async_notify)
+	      assign_async_cleanup (notify_cleanups, key, async_notify (getter));
+	    getter ();
+	  }
       };
       monitoring_getters.push (getter_and_reconnect);
       tmpl[key] = default_value;
@@ -1771,15 +1783,13 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   odata = Vue.observable (tmpl);
   const run_monitoring_getters = (reset) => monitoring_getters.forEach (f => f (reset));
   // cleanup notifiers on `destroyed`
-  const run_notify_cleanups = () => {
+  const run_cleanups = () => {
     for (const key in notify_cleanups)
-      if (notify_cleanups[key])
-	notify_cleanups[key] ();
+      assign_async_cleanup (notify_cleanups, key, undefined);
     for (const key in getter_cleanups)
-      if (getter_cleanups[key])
-	getter_cleanups[key] ();
+      assign_async_cleanup (getter_cleanups, key, undefined);
   };
-  this.$once ('hook:destroyed', run_notify_cleanups);
+  this.$once ('hook:destroyed', run_cleanups);
   // prepare to allow forced updates
   let update_, watch_predicate = predicate;
   // install tmpl functions
