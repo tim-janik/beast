@@ -1,17 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
 
-
-/* --- typedefs & structures --- */
-typedef struct
-{
-  uint             n_values;	/* bse_engine_block_size() * 2 (stereo) */
-  float          *buffer;
-  float          *bound;
-  Bse::PcmDriver *driver;
-  BsePcmWriter   *pcm_writer;
-  bool            pcm_input_checked;
-} BsePCMModuleData;
 enum
 {
   BSE_PCM_MODULE_JSTREAM_LEFT,
@@ -25,8 +14,27 @@ enum
   BSE_PCM_MODULE_N_OSTREAMS
 };
 
+// == BsePCMModuleData ==
+struct BsePCMModuleData {
+  uint            n_values = 0;	/* bse_engine_block_size() * 2 (stereo) */
+  float          *const buffer = nullptr;
+  float          *const bound = nullptr;
+  Bse::PcmDriver *driver = nullptr;
+  BsePcmWriter   *pcm_writer = nullptr;
+  bool            pcm_input_checked = false;
+  explicit BsePCMModuleData (uint nv);
+  ~BsePCMModuleData();
+};
 
-/* --- functions --- */
+BsePCMModuleData::BsePCMModuleData (uint nv) :
+  n_values (nv), buffer (new float[n_values] ()), bound (buffer + n_values)
+{}
+
+BsePCMModuleData::~BsePCMModuleData()
+{
+  delete[] buffer;
+}
+
 static gboolean
 bse_pcm_module_poll (gpointer       data,
 		     guint          n_values,
@@ -88,9 +96,7 @@ bse_pcm_module_data_free (gpointer        data,
 			  const BseModuleClass *klass)
 {
   BsePCMModuleData *mdata = (BsePCMModuleData*) data;
-
-  g_free (mdata->buffer);
-  g_free (mdata);
+  delete mdata;
 }
 
 static BseModule*
@@ -106,20 +112,15 @@ bse_pcm_omodule_insert (Bse::PcmDriver *pcm_driver, BsePcmWriter *writer, BseTra
     bse_pcm_module_data_free,	/* free */
     Bse::ModuleFlag::CHEAP,	/* cost */
   };
-  BsePCMModuleData *mdata;
-  BseModule *module;
 
   assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (pcm_driver->writable(), NULL);
   assert_return (trans != NULL, NULL);
 
-  mdata = g_new0 (BsePCMModuleData, 1);
-  mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
-  mdata->buffer = g_new0 (gfloat, mdata->n_values);
-  mdata->bound = mdata->buffer + mdata->n_values;
+  BsePCMModuleData *mdata = new BsePCMModuleData (bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS);
   mdata->driver = pcm_driver;
   mdata->pcm_writer = writer;
-  module = bse_module_new (&pcm_omodule_class, mdata);
+  BseModule *module = bse_module_new (&pcm_omodule_class, mdata);
 
   bse_trans_add (trans,
 		 bse_job_integrate (module));
@@ -207,19 +208,14 @@ bse_pcm_imodule_insert (Bse::PcmDriver *pcm_driver, BseTrans *trans)
     bse_pcm_module_data_free,	/* free */
     Bse::ModuleFlag::EXPENSIVE,		/* cost */
   };
-  BsePCMModuleData *mdata;
-  BseModule *module;
 
   assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (trans != NULL, NULL);
 
-  mdata = g_new0 (BsePCMModuleData, 1);
-  mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
-  mdata->buffer = g_new0 (gfloat, mdata->n_values);
-  mdata->bound = mdata->buffer + mdata->n_values;
+  BsePCMModuleData *mdata = new BsePCMModuleData (bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS);
   mdata->driver = pcm_driver;
   mdata->pcm_writer = NULL;
-  module = bse_module_new (&pcm_imodule_class, mdata);
+  BseModule *module = bse_module_new (&pcm_imodule_class, mdata);
 
   bse_trans_add (trans,
 		 bse_job_integrate (module));
