@@ -5,7 +5,7 @@
 #include <bse/bseenginenode.hh>
 
 /* --- constants --- */
-#define BSE_STREAM_MAX_VALUES                   (1024 /* power of 2 and <= 16384 */)
+#define BSE_STREAM_MAX_VALUES                   (256 /* power of 2 and <= 16384 */)
 #define BSE_MODULE_N_OSTREAMS(module)           ((module)->n_ostreams)
 #define BSE_MODULE_N_ISTREAMS(module)           ((module)->n_istreams)
 #define BSE_MODULE_N_JSTREAMS(module)           ((module)->n_jstreams)

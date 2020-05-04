@@ -1288,7 +1288,7 @@ bse_engine_constrain (guint            latency_ms,
    */
   guint block_size = latency_ms * sample_freq / 1000 / (1 + block_jitter);
   /* constrain block size */
-  block_size = CLAMP (block_size, 8, MIN (BSE_STREAM_MAX_VALUES / 2, sample_freq / (2 * 3)));
+  block_size = CLAMP (block_size, 8, MIN (BSE_STREAM_MAX_VALUES, sample_freq / (2 * 3)));
   /* adjust block_size */
   if (0) /* shrink block size to a 2^n boundary */
     {
