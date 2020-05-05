@@ -24,6 +24,14 @@ docs/all: $(docs/man1.files)
 docs/man5.files	::= $>/doc/bse.5
 docs/all: $(docs/man5.files)
 
+# == docs ==
+docs: docs/all $>/doc/bse-api.pdf $>/doc/beast-manual.pdf
+	@! echo " $(MAKECMDGOALS) " | fgrep -q ' docs ' || \
+	  ls -al \
+		$>/doc/bse-api.pdf \
+		$>/doc/beast-manual.pdf \
+		$(docs/doc.files) $(docs/man1.files) $(docs/man5.files)
+
 # == pandoc flags ==
 docs/html_flags       ::= --html-q-tags --section-divs --email-obfuscation=references --toc --toc-depth=6
 docs/pandoc-nosmart     = $(if $(HAVE_PANDOC1),,-smart)
@@ -153,7 +161,8 @@ docs/clean: FORCE
 	rm -f -r $(docs/cleandirs)
 
 # == docs/doxy/ ==
-$>/doc/bse-api.pdf: docs/refman.patch $>/bse/bseapi_interfaces.hh docs/Makefile.mk $(wildcard bse/*.[hc][hc])	| $>/doc/
+$>/doc/bse-api.pdf: $(wildcard bse/*.[hc][hc]) # docs/Makefile.mk
+$>/doc/bse-api.pdf: docs/refman.patch $>/bse/bseapi_interfaces.hh	| $>/doc/
 	$(QGEN)
 	@$(eval docs/month_date != $(docs/version_month))
 	@: # clean builddir
