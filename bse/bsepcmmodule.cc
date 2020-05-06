@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
+#include "processor.hh"
 
 enum
 {
@@ -13,6 +14,7 @@ enum
   BSE_PCM_MODULE_OSTREAM_RIGHT,
   BSE_PCM_MODULE_N_OSTREAMS
 };
+static constexpr const auto MAIN_OBUS = Bse::AudioSignal::OBusId (1);
 
 // == BsePCMModuleData ==
 struct BsePCMModuleData {
@@ -22,6 +24,7 @@ struct BsePCMModuleData {
   Bse::PcmDriver *driver = nullptr;
   BsePcmWriter   *pcm_writer = nullptr;
   bool            pcm_input_checked = false;
+  std::vector<Bse::AudioSignal::ProcessorP> procs;
   explicit BsePCMModuleData (uint nv);
   ~BsePCMModuleData();
 };
@@ -33,6 +36,34 @@ BsePCMModuleData::BsePCMModuleData (uint nv) :
 BsePCMModuleData::~BsePCMModuleData()
 {
   delete[] buffer;
+}
+
+static void
+bse_pcm_module_add_proc (BseModule *module, Bse::AudioSignal::ProcessorP procp)
+{
+  assert_return (procp != nullptr);
+  assert_return (procp->n_obuses() >= 1);
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  auto padd = [procp, mdata] () { // keeps ProcessorP alive until lambda destruction in UserThread
+    mdata->procs.push_back (procp);
+  };
+  BseTrans *trans = bse_trans_open ();
+  bse_trans_add (trans, bse_job_access (module, padd));
+  bse_trans_commit (trans);
+}
+
+static void
+bse_pcm_module_del_proc (BseModule *module, Bse::AudioSignal::ProcessorP procp)
+{
+  assert_return (procp != nullptr);
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  auto pdel = [procp, mdata] () { // keeps ProcessorP alive until lambda destruction in UserThread
+    const bool audiosignal_processor_deleted = Bse::vector_erase_element (mdata->procs, procp);
+    assert_return (audiosignal_processor_deleted == true);
+  };
+  BseTrans *trans = bse_trans_open ();
+  bse_trans_add (trans, bse_job_access (module, pdel));
+  bse_trans_commit (trans);
 }
 
 static gboolean
@@ -59,6 +90,13 @@ bse_pcm_omodule_process (BseModule *module,
 
   assert_return (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
 
+  for (auto p : mdata->procs)
+    {
+      auto chain = dynamic_cast<Bse::AudioSignal::Chain*> (&*p);
+      if (chain)
+        chain->render_frames (n_values);
+    }
+
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
   else
@@ -71,6 +109,13 @@ bse_pcm_omodule_process (BseModule *module,
       d = mdata->buffer;
       do { *d += *src++; d += 2; } while (d < b);
     }
+  for (auto p : mdata->procs)
+    if (p->n_ochannels (MAIN_OBUS) >= 1)
+      {
+        const float *src = p->ofloats (MAIN_OBUS, 0);
+        d = mdata->buffer;
+        do { *d += *src++; d += 2; } while (d < b);
+      }
 
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_RIGHT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_RIGHT, 0);
@@ -84,6 +129,13 @@ bse_pcm_omodule_process (BseModule *module,
       d = mdata->buffer + 1;
       do { *d += *src++; d += 2; } while (d < b);
     }
+  for (auto p : mdata->procs)
+    if (p->n_ochannels (MAIN_OBUS) >= 2)
+      {
+        const float *src = p->ofloats (MAIN_OBUS, 1);
+        d = mdata->buffer + 1;
+        do { *d += *src++; d += 2; } while (d < b);
+      }
 
   mdata->driver->pcm_write (mdata->n_values, mdata->buffer);
   if (mdata->pcm_writer)
