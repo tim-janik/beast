@@ -73,6 +73,8 @@ public:
   Error               open_pcm_driver       (uint mix_freq, uint latency, uint *block_size);
   void                require_pcm_input     ();
   void                close_pcm_driver      ();
+  void                add_pcm_output_processor (AudioSignal::ProcessorP procp);
+  void                del_pcm_output_processor (AudioSignal::ProcessorP procp);
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;

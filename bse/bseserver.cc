@@ -1381,6 +1381,22 @@ ServerImpl::test_counter_set (int v)
   tc_ = v;
 }
 
+void
+ServerImpl::add_pcm_output_processor (AudioSignal::ProcessorP procp)
+{
+  BseServer *self = this->as<BseServer*>();
+  assert_return (procp != nullptr);
+  bse_pcm_module_add_proc (self->pcm_omodule, procp);
+}
+
+void
+ServerImpl::del_pcm_output_processor (AudioSignal::ProcessorP procp)
+{
+  BseServer *self = this->as<BseServer*>();
+  assert_return (procp != nullptr);
+  bse_pcm_module_del_proc (self->pcm_omodule, procp);
+}
+
 } // Bse
 
 // == Allocator Tests ==
