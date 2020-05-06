@@ -141,6 +141,12 @@ class ServerImpl;
 class DeviceCrawlerImpl;
 typedef std::shared_ptr<DeviceCrawlerImpl> DeviceCrawlerImplP;
 
+namespace AudioSignal {
+struct RenderSetup;
+class Processor;
+using ProcessorP = std::shared_ptr<Processor>;
+} // AudioSignal
+
 } // Bse
 
 #endif /* __BSE_DEFS_H__ */
