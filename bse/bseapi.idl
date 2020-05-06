@@ -986,6 +986,16 @@ interface Device : Object {
 };
 sequence DeviceSeq { Device devices; };
 
+/// Interface for the management of multiple sub devices.
+interface DeviceContainer : Device {
+  DeviceInfoSeq list_device_types ();           ///< List registered Device types with their unique uri.
+  DeviceSeq     list_devices      ();           ///< List devices in order of processing, notified via "devices".
+  // create devices
+  Device create_device        (String uuiduri); ///< Create a new device, see list_device_types().
+  Device create_device_before (String uuiduri, Device sibling); ///< Create device, before sibling.
+  bool   remove_device        (Device containee); ///< Remove a directly contained device.
+};
+
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
@@ -993,13 +1003,6 @@ interface Track : ContextMerger {
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
   void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
-
-  // create devices
-  DeviceInfoSeq list_device_types ();                 ///< List registered Device types with their unique uri.
-  DeviceSeq     list_devices      ();                 ///< List devices in order of processing.
-  Device        create_device     (String uuiduri);   ///< Create a new device, see list_device_types().
-  Device create_device_before (String uuiduri, Device sibling); ///< Create device, before sibling.
-
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
   Part         get_part (int32 tick);           ///< Get the part starting at a specific tick position.
@@ -1008,6 +1011,7 @@ interface Track : ContextMerger {
   /// Get the output module of a track.
   /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
   Source       get_output_source ();
+  DeviceContainer device_container ();          ///< Retrieve the Device chain container of the Track.
 
   group _("Adjustments") {
     bool  muted = Bool (_("Muted"), _("Mute this track by ignoring it in the sequencer."), STANDARD SKIP_DEFAULT, false);
