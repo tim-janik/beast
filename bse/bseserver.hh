@@ -61,6 +61,7 @@ protected:
   virtual            ~ServerImpl            ();
 public:
   void                enginechange          (bool active);
+  void                commit_job            (const std::function<void()> &lambda);
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
   size_t              shared_block_offset   (const void *mem) const;
