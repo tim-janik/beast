@@ -7,7 +7,7 @@ Object.assign (CONFIG, require ('./package.json').config);
 
 let win;
 let bse_proc; // assigned spawn.child
-let verbose = false, verbose_binary = false;
+let verbose = false, verbose_binary = false, withgdb = false;
 
 // Load Electron module for BrowserWindow, etc
 const Electron = require ('electron');
@@ -72,7 +72,7 @@ function create_window ()
 
 // Start BeastSoundEngine in private mode
 function create_beast_sound_engine (datacb, errorcb) {
-  const { spawn } = require ('child_process');
+  const { spawn, spawnSync } = require ('child_process');
   let args = [ '--embed', '3' ];
   if (verbose)
     args.push ('--verbose');
@@ -95,6 +95,11 @@ function create_beast_sound_engine (datacb, errorcb) {
     }
   const beastsoundengine = __dirname + '/../lib/BeastSoundEngine-' + CONFIG['version'] + '-rt';
   const bse_proc = spawn (beastsoundengine, args, { stdio: [ 'pipe', 'inherit', 'inherit', 'pipe' ] });
+  if (withgdb)
+    {
+      console.log ('DEBUGGING:\n  gdb --pid', bse_proc.pid, '#', beastsoundengine);
+      spawnSync ('/usr/bin/sleep', [ 3 ]);
+    }
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
     {
@@ -148,12 +153,13 @@ function pop_arg (args) {
 function print_help () {
   const lines = [
     `Usage: ${Eapp.getName()} [OPTIONS] [projectfiles...]`,
-    `Options:`,
-    `--help        Print command line option help`,
-    `--version     Print version information`,
-    `--norc        Skip reading of ~/.config/beast/bserc.xml`,
-    `-p DRIVER     Set the default PCM driver (for --norc)`,
-    `-m DRIVER     Set the default MIDI driver (for --norc)`,
+    'Options:',
+    '--help        Print command line option help',
+    '--version     Print version information',
+    '--gdb         Print command to debug BSE',
+    '--norc        Skip reading of ~/.config/beast/bserc.xml',
+    '-p DRIVER     Set the default PCM driver (for --norc)',
+    '-m DRIVER     Set the default MIDI driver (for --norc)',
   ];
   console.log (lines.join ('\n'));
 }
@@ -182,6 +188,9 @@ function print_help () {
 	break;
       case '--binary':
 	verbose_binary = true;
+	break;
+      case '--gdb':
+	withgdb = true;
 	break;
       case '-p':
 	CONFIG.p = args.length ? pop_arg (args) : '';
