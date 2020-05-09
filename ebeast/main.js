@@ -103,8 +103,26 @@ function create_beast_sound_engine (datacb, errorcb) {
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)
     {
-      bse_proc.stdio[3].once ('end', () => errorcb());
-      bse_proc.stdio[3].once ('error', (err) => errorcb());
+      const prefix = beastsoundengine.split ('/').pop() + ':';
+      bse_proc.on ('exit', async (code, sig) => {
+	const reason = sig || bse_proc.signalCode || code || bse_proc.exitCode;
+	await new Promise (r => setTimeout (() => r(), 17)); // first allow normal Exit e.g. due to X11 SIGTERM
+	console.error (prefix, 'exited:', reason);
+	errorcb();
+      });
+      bse_proc.stdio[3].once ('end', async () => {
+	await new Promise (r => setTimeout (() => r(), 35)); // allow 'exit' handler to run first
+	console.error (prefix, 'connection closed');
+	errorcb();
+      });
+      bse_proc.stdio[3].once ('error', (err) => {
+	console.error (prefix + ' ' + err);
+	errorcb();
+      });
+      bse_proc.once ('error', (err) => {
+	console.error (prefix + ' ' + err);
+	errorcb();
+      });
     }
   return bse_proc;
 }
@@ -201,12 +219,14 @@ function print_help () {
       case '--norc':
 	CONFIG.norc = true;
 	break;
+      case '--inspect':
+	break; // nodejs debugging
       case '--uiscript':
 	CONFIG.uiscript = args.length ? pop_arg (args) : '';
 	break;
       default:
 	if (/^-/.test (arg)) {
-	  console.err ('Unknown option: ' + arg);
+	  console.error ('Unknown option: ' + arg);
 	  print_help();
 	  main_exit (5);
 	}
@@ -223,10 +243,13 @@ async function startup_components() {
   win.on ('closed', () => win = null);
   // TODO: when this BrowserWindow is close, also force closing of the beast-manual or other related (child) windows
   let win_ready = new Promise (resolve => win.once ('ready-to-show', () => resolve ()));
-  let embedding_info = new Promise (resolve => bse_proc = create_beast_sound_engine (msg => resolve (msg), () => main_exit (3)));
+  let embedding_info = new Promise (resolve => bse_proc = create_beast_sound_engine (msg => resolve (msg), () => main_exit (-1)));
   const auth = JSON.parse (await embedding_info); // yields JSON: { "url": "http://127.0.0.1:<PORT>/index.html?subprotocol=<STRING>" }
   if (!auth.url)
-    main_exit (2);
+    {
+      console.error ('Failed to launch BeastSoundEngine');
+      main_exit (-1);
+    }
   win.loadURL (auth.url);
   await win_ready;
   win.show();
@@ -245,6 +268,8 @@ function main_exit (exitcode) {
     }
   if (bse_proc)
     bse_proc.kill();
+  if (exitcode < 0)
+    process.abort();
   Eapp.exit (exitcode ? exitcode : 0);
 }
 
@@ -258,7 +283,7 @@ Eapp.once ('window-all-closed', () => {
 process.on ('uncaughtException', function (err) {
   console.error (process.argv[0] + ": uncaughtException (" + (new Date).toUTCString() + '):');
   console.error (err);
-  main_exit (7);
+  main_exit (-1);
 });
 
 /* Note, Electron hijacks SIGINT, SIGHUP, SIGTERM to trigger app.quit()
