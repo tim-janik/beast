@@ -16,6 +16,7 @@ module.exports = {
     "assert": false,
     "Electron": false,
     "$log": false,
+    "debug": false,
     "Vue": false,
     "Bse": false,
     "Shell": false,
@@ -51,6 +52,7 @@ module.exports = {
     'vue/prop-name-casing': 'off',
     'vue/name-property-casing': 'off',
     'vue/require-default-prop': 'off',
+    'vue/require-prop-types': 'off',
     'vue/require-prop-type-constructor': 'warn',
     "quotes": [ "off", "single" ]
   },

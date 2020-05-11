@@ -214,16 +214,33 @@ export function clamp (x, min, max) {
 }
 
 /** Register all Vue components, needed before instantiating the Vue root component */
-export function vue_register (vcexport, cssfile) {
-  if (vcexport.name)
-    Vue.component (vcexport.name, vcexport);
-  if (cssfile)
+export async function vue_load_bundles (filelist) {
+  // hook up CSS files *before* importing modules that use the styles
+  for (const fname of filelist)
     {
+      if (!fname.endsWith ('.css'))
+	continue;
       const link = document.createElement ('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
-      link.href = cssfile;
+      link.href = fname;
       document.head.appendChild (link);
+      continue;
+    }
+  // load all non-CSS files as modules
+  const modules = [];
+  for (const fname of filelist)
+    {
+      if (fname.endsWith ('.css'))
+	continue;
+      modules.push (import (fname));
+    }
+  // register all Vue components
+  for (const mod of modules)
+    {
+      const vcexport = await mod;
+      if (vcexport.default && vcexport.default.name)
+	Vue.component (vcexport.default.name, vcexport.default);
     }
 }
 
@@ -831,54 +848,10 @@ class FocusGuard {
     return false; // not interfering
   }
   keydown_handler (event) {
-    const up = event.keyCode == KeyCode.UP;
-    const down = event.keyCode == KeyCode.DOWN;
-    const home = event.keyCode == KeyCode.HOME;
-    const end = event.keyCode == KeyCode.END;
-    if (this.focus_root_list.length == 0 || !this.updown_focus ||
-	!(up || down || home || end) ||
-	is_nav_input (document.activeElement) ||
-	(document.activeElement.tagName == "INPUT" &&
-	 !is_button_input (document.activeElement)))
+    if (document.activeElement == document.body) // no focus
+      return keydown_move_focus (event);
+    else
       return false; // not interfering
-    const root = this.focus_root_list[0][0];
-    const focuslist = list_focusables (root);
-    if (!focuslist)
-      return false; // not interfering
-    let idx = focuslist.indexOf (document.activeElement);
-    if (idx < 0 && (up || down))
-      { // re-focus last element if possible
-	idx = focuslist.indexOf (this.last_focus);
-	if (idx >= 0)
-	  {
-	    focuslist[idx].focus();
-	    event.preventDefault();
-	    return true;
-	  }
-      }
-    let next; // position to move new focus to
-    if (idx < 0)
-      next = (down || home) ? 0 : focuslist.length - 1;
-    else if (home || end)
-      next = home ? 0 : focuslist.length - 1;
-    else // up || down
-      {
-	next = idx + (up ? -1 : +1);
-	if (this.updown_cycling)
-	  {
-	    if (next < 0)
-	      next += focuslist.length;
-	    else if (next >= focuslist.length)
-	      next -= focuslist.length;
-	  }
-      }
-    if (next >= 0 && next < focuslist.length)
-      {
-	focuslist[next].focus();
-	event.preventDefault();
-	return true;
-      }
-    return false;
   }
 }
 const the_focus_guard = new FocusGuard();
@@ -891,6 +864,78 @@ export function push_focus_root (element) {
 /** Remove an `element` previously installed via push_focus_root() */
 export function remove_focus_root (element) {
   the_focus_guard.remove_focus_root (element);
+}
+
+/** Move focus on UP/DOWN/HOME/END `keydown` events */
+export function keydown_move_focus (event) {
+  let dir;
+  if (event.keyCode == KeyCode.UP)
+    dir = -1;
+  else if (event.keyCode == KeyCode.DOWN)
+    dir = +1;
+  else if (event.keyCode == KeyCode.HOME)
+    dir = -99999;
+  else if (event.keyCode == KeyCode.END)
+    dir = +99999;
+  return move_focus (dir);
+}
+
+/** Move focus to prev or next focus widget */
+export function move_focus (dir = 0) {
+  const home = dir < -1;
+  const up = dir == -1;
+  const down = dir == +1;
+  const end = dir > +1;
+  const updown_focus = the_focus_guard.updown_focus;
+  const updown_cycling = the_focus_guard.updown_cycling;
+  const last_focus = the_focus_guard.last_focus;
+  if (!(home || up || down || end))
+    return false; // nothing to move
+
+  if (the_focus_guard.focus_root_list.length == 0 || !updown_focus ||
+      !(up || down || home || end) ||
+      is_nav_input (document.activeElement) ||
+      (document.activeElement.tagName == "INPUT" &&
+       !is_button_input (document.activeElement)))
+    return false; // not interfering
+  const root = the_focus_guard.focus_root_list[0][0];
+  const focuslist = list_focusables (root);
+  if (!focuslist)
+    return false; // not interfering
+  let idx = focuslist.indexOf (document.activeElement);
+  if (idx < 0 && (up || down))
+    { // re-focus last element if possible
+      idx = focuslist.indexOf (last_focus);
+      if (idx >= 0)
+	{
+	  focuslist[idx].focus();
+	  event.preventDefault();
+	  return true;
+	}
+    }
+  let next; // position to move new focus to
+  if (idx < 0)
+    next = (down || home) ? 0 : focuslist.length - 1;
+  else if (home || end)
+    next = home ? 0 : focuslist.length - 1;
+  else // up || down
+    {
+      next = idx + (up ? -1 : +1);
+      if (updown_cycling)
+	{
+	  if (next < 0)
+	    next += focuslist.length;
+	  else if (next >= focuslist.length)
+	    next -= focuslist.length;
+	}
+    }
+  if (next >= 0 && next < focuslist.length)
+    {
+      focuslist[next].focus();
+      event.preventDefault();
+      return true;
+    }
+  return false;
 }
 
 /** Installing a modal shield prevents mouse and key events for all elements */
@@ -1031,7 +1076,8 @@ export function swallow_event (type, timeout = 0) {
 }
 
 /** Determine position for a popup */
-export function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined }) {
+export function popup_position (element, opts = { origin: undefined, x: undefined, y: undefined,
+						  xscale: 0, yscale: 0, }) {
   const p = 1; // padding;
   // Ignore window.innerWidth & window.innerHeight, these include space for scrollbars
   // Viewport size, https://developer.mozilla.org/en-US/docs/Web/CSS/Viewport_concepts
@@ -1040,6 +1086,10 @@ export function popup_position (element, opts = { origin: undefined, x: undefine
   const sx = window.pageXOffset, sy = window.pageYOffset;
   // Element area, relative to the viewport.
   const r = element.getBoundingClientRect();
+  if (opts.xscale > 0)
+    r.width *= opts.xscale;
+  if (opts.yscale > 0)
+    r.height *= opts.yscale;
   // Position element without an origin element
   if (!opts.origin || !opts.origin.getBoundingClientRect)
     {
@@ -1564,19 +1614,18 @@ export function match_key_event (event, keyname)
 const hotkey_list = [];
 
 function hotkey_handler (event) {
-  const log = console.log ? console.log : () => 0;
   // give precedence to navigatable element with focus
   if (is_nav_input (document.activeElement) ||
       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement)))
     {
-      log ("IGNORE-NAV: " + event.code + ' (' + document.activeElement.tagName + ')');
+      // debug ("hotkey_handler: ignore-nav: " + event.code + ' (' + document.activeElement.tagName + ')');
       return false;
     }
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
       event.preventDefault();
-      log ("KEYBOARD_CLICK: " + ' (' + document.activeElement.tagName + ')');
+      // debug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
       Util.keyboard_click (document.activeElement);
       return true;
     }
@@ -1587,7 +1636,7 @@ function hotkey_handler (event) {
       {
 	const callback = array[i][1];
 	event.preventDefault();
-	log ("HOTKEY-HANDLER: '" + array[i][0] + "'", callback.name);
+	// debug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
 	callback.call (null, event);
 	return true;
       }
@@ -1597,12 +1646,11 @@ function hotkey_handler (event) {
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
 	event.preventDefault();
-	log ("HOTKEY: '" + el.getAttribute ('data-hotkey') + "'", el);
+	// debug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
 	return true;
       }
-  log ('KEYDOWN: ' + event.code + ' ' + event.which + ' ' + event.charCode +
-       ' (' + document.activeElement.tagName + ')');
+  // debug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
@@ -1648,6 +1696,37 @@ class FallbackResizeObserver {
 /// Work around FireFox 68 having ResizeObserver disabled
 export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
+/** Assign `map[key] = cleaner`, while awaiting and calling any previously existing cleanup function */
+export function assign_async_cleanup (map, key, cleaner) {
+  const oldcleaner = map[key];
+  if (oldcleaner === cleaner)
+    return;
+  // turn each cleaner Function into a unique Function object for `===` comparisons
+  map[key] = cleaner instanceof Function ? (() => cleaner()) : cleaner;
+  if (cleaner instanceof Promise)
+    {
+      // asynchronously await and assign cleaner function
+      (async () => {
+	let cleanupfunc = await cleaner;
+	if (cleanupfunc)
+	  console.assert (cleanupfunc instanceof Function);
+	else
+	  cleanupfunc = undefined;
+	if (map[key] === cleaner) // resolve promise
+	  map[key] = () => cleanupfunc();
+	else if (cleanupfunc)
+	  cleanupfunc(); // promise has been discarded, invoke cleanup
+      }) ();
+    }
+  if (oldcleaner && !(oldcleaner instanceof Promise))
+    oldcleaner();
+}
+
+/** Method to be added to a `vue_observable_from_getters()` template to force updates. */
+export function observable_force_update () {
+  // This method works as a tag for vue_observable_from_getters()
+}
+
 /** Create an observable binding for the fields in `tmpl`.
  * Once the expression `predicate` changes and becomes true-ish, the `getter` of each field in `tmpl` is
  * called, resolved and assigned to the corresponding field in the observable binding returned from this function.
@@ -1660,49 +1739,43 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   const monitoring_getters = [];
   const getter_cleanups = {};
   const notify_cleanups = {};
+  let add_functions = false;
   let odata; // Vue.observable
   for (const key in tmpl)
     {
+      if (tmpl[key] instanceof Function)
+	{
+	  add_functions = true;
+	  continue;
+	}
+      else if (!(tmpl[key] instanceof Object))
+	continue;
       const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
+      const assign_getter_cleanup = (c) => assign_async_cleanup (getter_cleanups, key, c);
       const getter = async () => {
-	let newcleaner = undefined;
-	const result = async_getter ? await async_getter (c => newcleaner = c) : default_value;
-	if (getter_cleanups[key])
-	  {
-	    const cleaner = getter_cleanups[key];
-	    getter_cleanups[key] = undefined;
-	    cleaner();
-	  }
-	if (!equals_recursively (odata[key], result))
-	  odata[key] = result;
-	if (newcleaner)
-	  getter_cleanups[key] = newcleaner;
+	const had_cleanup = !!getter_cleanups[key];
+	const result = !async_getter ? default_value :
+		       await async_getter (assign_getter_cleanup);
+	if (had_cleanup || getter_cleanups[key])
+	  odata[key] = result; // always reassign if cleanups are involved
+	else if (!equals_recursively (odata[key], result))
+	  odata[key] = result; // compare to reduce Vue updates
       };
       const getter_and_reconnect = (reset) => {
-	const oldcleanup = notify_cleanups[key];
-	if (async_notify && reset)
-	  notify_cleanups[key] = undefined;
-	else if (async_notify)
+	if (reset)
 	  {
-	    const notifycleanup = async_notify (getter);
-	    if (notifycleanup)
-	      console.assert (notifycleanup instanceof Function);
-	    notify_cleanups[key] = notifycleanup;
-	  }
-	if (!reset)
-	  getter ();
-	else
-	  {
+	    if (async_notify)
+	      assign_async_cleanup (notify_cleanups, key, undefined);
 	    if (getter_cleanups[key])
-	      {
-		const cleaner = getter_cleanups[key];
-		getter_cleanups[key] = undefined;
-		cleaner();
-	      }
+	      assign_async_cleanup (getter_cleanups, key, undefined);
 	    odata[key] = default_value;
 	  }
-	if (oldcleanup)
-	  oldcleanup();
+	else
+	  {
+	    if (async_notify)
+	      assign_async_cleanup (notify_cleanups, key, async_notify (getter));
+	    getter ();
+	  }
       };
       monitoring_getters.push (getter_and_reconnect);
       tmpl[key] = default_value;
@@ -1710,17 +1783,40 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   odata = Vue.observable (tmpl);
   const run_monitoring_getters = (reset) => monitoring_getters.forEach (f => f (reset));
   // cleanup notifiers on `destroyed`
-  const run_notify_cleanups = () => {
+  const run_cleanups = () => {
     for (const key in notify_cleanups)
-      if (notify_cleanups[key])
-	notify_cleanups[key] ();
+      assign_async_cleanup (notify_cleanups, key, undefined);
     for (const key in getter_cleanups)
-      if (getter_cleanups[key])
-	getter_cleanups[key] ();
+      assign_async_cleanup (getter_cleanups, key, undefined);
   };
-  this.$once ('hook:destroyed', run_notify_cleanups);
-  // update monitoring getters once `predicate` changes
-  this.$watch (predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
+  this.$once ('hook:destroyed', run_cleanups);
+  // prepare to allow forced updates
+  let update_, watch_predicate = predicate;
+  // install tmpl functions
+  if (add_functions)
+    for (const key in tmpl)
+      {
+	if (tmpl[key] == observable_force_update)
+	  {
+	    if (!update_)
+	      {
+		const updater = Vue.observable ({ c: 1 });
+		update_ = function () { updater.c += 1; }; // force observable update
+		// update monitoring getters once `predicate` or `updater` changes
+		watch_predicate = function () {
+		  // all reactive accesses are tracked from within a $watch predicate, so…
+		  const c = updater.c; // always invoke reactive getter from predicate
+		  const p = predicate.call (this); // always invoke custom predicate
+		  return c && p;
+		};
+	      }
+	    odata[key] = update_;      // add method to force updates
+	  }
+	else if (tmpl[key] instanceof Function)
+	  odata[key] = tmpl[key];
+      }
+  // create watch, triggering the getters if predicate turns true
+  this.$watch (watch_predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
   return odata;
 }
 

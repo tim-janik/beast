@@ -1,23 +1,29 @@
 <!DOCTYPE html> <!-- GNU LGPL v2.1+: http://www.gnu.org/licenses/lgpl.html -->
 <html><head>
-
   <meta charset="utf-8">
-  <link rel="preload" as="script" href="./vue.esm.browser.js" crossorigin>
-  <link rel="preload" as="script" href="./vue-runtime-helpers.mjs" crossorigin>
-  <link rel="preload" as="script" href="./utilities.js" crossorigin>
-  <link rel="preload" as="script" href="./jsbse.js" crossorigin>
-  <link rel="preload" as="script" href="./bundle.imports.js" crossorigin>
+
+  <title>Beast - Music Synthesizer and Composer</title>
+
+  <!-- Preload resources -->
   <link rel="stylesheet" href="assets/stylesheets.css">
   <link rel="stylesheet" href="assets/material-icons.css">
   <link rel="stylesheet" href="assets/forkawesome-webfont.css">
-  <title>Beast - Music Synthesizer and Composer</title>
+  <link rel="preload" href="assets/Inter-Medium.woff2"        as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/material-icons.woff2"      as="font" type="font/woff2" crossorigin>
+  <link rel="modulepreload" href="./jsbse.js">
+  <link rel="modulepreload" href="./vue.esm.browser.js">
+  <link rel="modulepreload" href="./vue-runtime-helpers.mjs">
+  <link rel="modulepreload" href="./utilities.js">
+  <link rel="modulepreload" href="./bundle.imports.js">
+  <!-- Avoid preloading conditional module "./menus.js" -->
 
+  <!-- Include ebeast/ configuration record -->
   <script type="application/json" id="-html-head-package_json"> <!--@-html-head-package_json@--> </script>
 
   <!-- Early setup of .CONFIG and .Electron globals -->
   <script>
     'use strict';
-
     if (window)
       {
 	// Global configuration
@@ -42,58 +48,15 @@
 	      }
 	  }
 	Object.defineProperty (window, 'CONFIG', { value: CONFIG });
+	Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
       }
   </script>
-
-  <!-- BSE bindings, Jsonipc based -->
-  <script type="module" src="./jsbse.js"></script>
-  <script type="module">
-    import * as Bse from './jsbse.js';
-    Object.defineProperty (globalThis, 'Bse', { value: Bse });
-  </script>
-
-  <!-- Load and configure Vue, needed by all subsequent modules -->
-  <script type="module" src="./vue.esm.browser.js"></script>
-  <script type="module">
-    import Vue from './vue.esm.browser.js';
-    Object.assign (Vue.config, { productionTip: false, devtools: false, silent: !CONFIG.debug, performance: true });
-    Object.defineProperty (globalThis, 'Vue', { value: Vue });
-  </script>
-
-  <!-- Bundles need vue-runtime-helpers, see rollup.config.js -->
-  <script type="module" src="./vue-runtime-helpers.mjs"></script>
-  <script type="module">
-    import * as VueRuntimeHelpers from './vue-runtime-helpers.mjs';
-    Object.defineProperty (globalThis, 'vue-runtime-helpers', { value: VueRuntimeHelpers });
-  </script>
-
-  <!-- The bundled Vue components use Util -->
-  <script type="module" src="./utilities.js"></script>
-  <script type="module">
-    import * as Util from './utilities.js'; // depends on Vue
-    window.Util = Util;
-    window.EQ = Util.equals_recursively;
-    Vue.prototype.EQ = window.EQ;
-    Vue.prototype.observable_from_getters = Util.vue_observable_from_getters;
-    for (let directivename in Util.vue_directives) // register all utility directives
-    Vue.directive (directivename, Util.vue_directives[directivename]);
-    Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
-    Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
-  </script>
-
-  <!-- Load bundled Vue components, self registering -->
-  <script type="module" src="./bundle.imports.js"></script>
 
   <!-- End of static index.html -->
 </head>
 <body style="min-width: 320px; min-height: 320px">
 
-  <script>
-    // Helpers for browser specific CSS (needs body to exists)
-    document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
-    document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
-  </script>
-
+  <!-- Load and bootup status display -->
   <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
 				    padding: 1em; background: #222f; color: #8f8; width: 40em; height: 100%; ">
     <p>
@@ -104,115 +67,167 @@
     </p>
   </div>
 
+  <!-- Main application mountpoint -->
   <div id="vue-mountpoint" class="b-root" style="display: flex; width: 100%; height: 100%">
-
     <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
-
   </div>
 
-  <script type="module">
-  // Load modules asynchronously
-  const loadstatus = document.querySelector ("#body-load-status .load-status");
-  loadstatus.innerText += "Loading Javascript modules...\n";
-  loadstatus.innerText += "Loaded Bse...\n";
-  loadstatus.innerText += "Loaded Vue.js...\n";
-  loadstatus.innerText += "Loaded Vue Runtime Helpers...\n";
-  // Vue.config
-  Vue.config.productionTip = false;
-  Vue.config.devtools = false; // prevent warning about VUEJS_DEVTOOLS missing
-  Vue.config.silent = !CONFIG.debug;
-  Vue.config.performance = true;
-  // allow $log() and console shortcuts, inside Vue component handlers
-  window.$log = console.log.bind (console);
-  Vue.prototype.$log = window.$log;
-  Vue.prototype.console = console;
-  Vue.prototype.CONFIG = CONFIG;
-  Vue.options.inheritAttrs = false; // Add non-props attributes to $attrs (default in Vue-3)
+  <!-- Speed-up, asynchronously pre-import modules wihtout side-effects or dependencies -->
+  <script type="module" src="./jsbse.js"></script>
+  <script type="module" src="./vue-runtime-helpers.mjs"></script>
 
-  loadstatus.innerText += "Loaded Util...\n";
-
-  // Start at onload and fetch remaining resources
-  async function onload_start_app() {
-    // onload
-    loadstatus.innerText += "Loaded Window...\n";
-    // Bse.server
-    loadstatus.innerText += "Connecting to Bse.server...\n";
+  <!-- Bootup and Vue mounting -->
+  <script>
+  'use strict';
+  // Use dynamic import() calls to control module loading side-effects
+  (async () => {
+    // Allow async onload synchronization
+    const onload = new Promise (resolve => window.addEventListener ("load", resolve, { once: true }));
+    // Allow $log() as console shortcuts and loadstatus display
+    if (!window.$log) {
+      window.$log = (...textargs) => {
+	console.log (...textargs);
+	if (window.$log.loadstatus)
+	  window.$log.loadstatus.innerText += Array (...textargs).join (' ') + '\n';
+      };
+      window.$log.loadstatus = document.querySelector ("#body-load-status .load-status");
+      $log ("Executing "+'<'+"body/"+'> scripts...');
+    }
+    // Prepare to dismiss startup messages
+    const remove_load_status = async (ms = 450) => {
+      const bodyloadstatus = document.querySelector ("#body-load-status");
+      if (bodyloadstatus)
+	{
+	  await new Promise (r => setTimeout (() => r(), ms));
+	  bodyloadstatus.parentElement.removeChild (bodyloadstatus);
+	  window.$log.loadstatus = null; // end bootup logging
+	}
+    };
+    // Add helpers for browser specific CSS (needs document.body to exists)
+    document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
+    document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
+    $log ("Enable "+'<'+"html/"+'>'+" UA attributes:",
+	  document.body.parentElement.hasAttribute ('gecko') ? 'gecko' : '',
+	  document.body.parentElement.hasAttribute ('chrome') ? 'chrome' : '');
+    // Import BSE bindings, Jsonipc based
+    $log ("Importing Bse...");
+    Object.defineProperty (globalThis, 'Bse', {
+      value: await import ('./jsbse.js') });
+    $log ("Connecting to Bse.server...");
     await Bse.server['$promise'];
     console.assert (Bse.server['$id'] > 0);
-    loadstatus.innerText += "Retrieved Bse.server...\n";
+    $log ("Retrieved Bse.server...");
+    // Import and configure Vue
+    $log ("Importing Vue...");
+    Object.defineProperty (globalThis, 'Vue', {
+      value: (await import ('./vue.esm.browser.js')).default });
+    Object.assign (Vue.config, {
+      productionTip: false,
+      devtools: false,	// prevent warning about VUEJS_DEVTOOLS missing
+      silent: !CONFIG.debug,
+      performance: true,
+    });
+    Object.assign (Vue.options, {
+      inheritAttrs: false, // Add non-props attributes to $attrs (default in Vue-3)
+    });
+    // Bundles need 'vue-runtime-helpers', see rollup.config.js
+    $log ("Importing vue-runtime-helpers...");
+    Object.defineProperty (globalThis, 'vue-runtime-helpers', {
+      value: await import ('./vue-runtime-helpers.mjs') });
+    // Import Util, depends on Vue
+    $log ("Importing Util...");
+    Object.defineProperty (globalThis, 'Util', {
+      value: await import ('./utilities.js') });
+    Object.defineProperty (globalThis, 'EQ', {
+      value: Util.equals_recursively });
+    // Setup Vue utilities and shortcuts inside Vue component handlers
+    for (let directivename in Util.vue_directives) // register all utility directives
+      Vue.directive (directivename, Util.vue_directives[directivename]);
+    Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
+    Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
+    Object.assign (Vue.prototype, {
+      CONFIG: CONFIG,
+      console: console,
+      $log: console.log.bind (console),
+      debug: debug,
+      EQ: Util.equals_recursively,
+      Util: Util,
+      observable_from_getters: Util.vue_observable_from_getters,
+    });
     // _() - add translation indicator
+    $log ("Configure i18n...");
     window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
     Vue.prototype._ = window._;
-    // Beast Web Components, bundled via b/bundle.js
-    await import ('./bundle.imports.js'); // depends on Vue
-    loadstatus.innerText += "Loaded Component Bundle...\n";
-    // Fonts - wait for fonts before Vue components are mounted and compute sizes
-    await document.fonts.ready;
-    loadstatus.innerText += "Loaded Fonts...\n";
-    // Shell will inject itself into all Vue components, make it global
-    Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
-    // Mount Vue components, this creates b-projectshell as Vue.Shell
-    const vue_root = new Vue ({
-      el:   '#vue-mountpoint',
-      data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
-    });
-    console.assert (vue_root); // Vue.$root
-    loadstatus.innerText += "Mounted Vue...\n";
-    // Load external BSE plugins
-    await Bse.server.load_ladspa();
-    loadstatus.innerText += "Loaded LADSPA plugins...\n";
     // Menu bar for Electron
     if (window.Electron)
       {
 	const menus = await import ('./menus.js');
 	await menus.setup_app_menu();
-	loadstatus.innerText += "Loaded Menus...\n";
+	$log ("Loaded Menus...");
       }
     else
-      loadstatus.innerText += "Skipped Menus...\n";
+      $log ("Skipped Menus...");
+    // Beast Web Components, bundled via b/bundle.js and self registering
+    $log ("Importing component bundles...");
+    const bundle_files = await import ('./bundle.imports.js'); // depends on Vue
+    await Util.vue_load_bundles (bundle_files.default);
+    // Fonts - wait for fonts before Vue components are mounted and compute sizes
+    await document.fonts.ready;
+    $log ("Loaded Fonts...");
+    // Onload - wait until all resources have been loaded
+    await onload;
+    $log ("Loaded DOM...");
+    // Shell will inject itself into all Vue components, make it global
+    Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
+    // Mount Vue components, this creates b-projectshell as Vue.Shell
+    $log ("Mounting Vue...");
+    const vue_root = new Vue ({
+      el:   '#vue-mountpoint',
+      data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
+    });
+    console.assert (vue_root); // Vue.$root
+    // Load external BSE plugins
+    $log ("Loading LADSPA plugins...");
+    await Bse.server.load_ladspa();
     // UI-Script
-    const run_uiscript = async function () {
-      if (!window.CONFIG.uiscript)
-	return;
-      window.uiscript = await import (window.CONFIG.uiscript);
-      try {
-	await window.uiscript.run();
-      } catch (e) {
-	console.error (e.stack ? e.stack : e.message ? e.message : e, '\n',
-		       'UIScript failed, aborting...');
-	Electron.app.exit (123);
-      }
-    };
-    // Load command line files
-    const load_files = async () => {
-      for (let arg of window.CONFIG.files)
-	{
-	  const error = await Shell.load_project (arg);
-	  if (error != Bse.Error.NONE)
-	    console.error ('Failed to load:', arg + ":", error);
-	}
-    };
-    // Dismiss startup messages
-    const bodyloadstatus = document.querySelector ("#body-load-status");
     if (window.CONFIG.uiscript)
       {
-	loadstatus.innerText += "Loading '" + window.CONFIG.uiscript + "'...";
-	await new Promise (r => setTimeout (() => r(), 450));
-	bodyloadstatus.parentElement.removeChild (bodyloadstatus);
-	await run_uiscript();
-	await load_files();
+	$log ("Loading '" + window.CONFIG.uiscript + "'...");
+	window.uiscript = await import (window.CONFIG.uiscript);
+	await remove_load_status (17 * 2);
+	try {
+	  await window.uiscript.run();
+	} catch (e) {
+	  console.error (e.stack ? e.stack : e.message ? e.message : e, '\n',
+			 'UIScript failed, aborting...');
+	  Electron.app.exit (123);
+	}
       }
-    else
+    // Load command line files
+    if (window.CONFIG.files.length)
       {
-	await new Promise (r => setTimeout (() => r(), 450));
-	bodyloadstatus.parentElement.removeChild (bodyloadstatus);
-	await load_files();
+	$log ("Loading", window.CONFIG.files.length, "command line files...");
+	for (let arg of window.CONFIG.files)
+	  {
+	    const error = await Shell.load_project (arg);
+	    if (error != Bse.Error.NONE)
+	      console.error ('Failed to load:', arg + ":", error);
+	  }
       }
-    // Cleanup stale dirs
-    setTimeout (() => Bse.server.purge_stale_cachedirs(), 1000);
-  }
-  window.addEventListener ("load", onload_start_app, { once: true }); // window.onload includes async scripts
-  //window.addEventListener ("load", () => setTimeout (()=> Electron.app.exit (19), 500));
+    // Clear temporary files if *not* in script mode
+    if (!window.CONFIG.uiscript)
+      {
+	const ms = 2000;
+	$log ("Will clean Bse cachedirs in", ms + "ms...");
+	setTimeout (async () => {
+	  await Bse.server.purge_stale_cachedirs();
+	  $log ("Cleaned Bse cachedirs...");
+	}, ms);
+      }
+    // Dismiss startup messages
+    $log ("Finished bootup.\n");
+    await remove_load_status ();
+  }) ();
   </script>
 
 </body>

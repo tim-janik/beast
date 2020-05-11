@@ -4,12 +4,12 @@
   # B-MENUITEM
   A menuitem element to be used as a descendant of a [B-CONTEXTMENU](#b-contextmenu).
   The menuitem can be activated via keyboard focus or mouse click and will notify
-  its B-CONTEXTMENU about the click and its `role`, unless the `@click.prevent`
+  its B-CONTEXTMENU about the click and its `uri`, unless the `@click.prevent`
   modifier is used.
-  If no `role` is specified, the B-CONTEXTMENU will still be notified to be closed,
+  If no `uri` is specified, the B-CONTEXTMENU will still be notified to be closed,
   unless `$event.preventDefault()` is called.
   ## Props:
-  *role*
+  *uri*
   : Descriptor for this menuitem that is passed on to its B-CONTEXTMENU `onclick`.
   *disabled*
   : Boolean flag indicating disabled state.
@@ -27,7 +27,7 @@
   @import 'mixins.scss';
   body button.b-menuitem { //* since menus are often embedded, this needs high specificity */
     display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap;
-    margin: 0; padding: 5px 1em; text-align: left;
+    margin: 0; padding: $b-menu-vpad $b-menu-hpad; text-align: left;
     //* button-reset */
     background: transparent; cursor: pointer; user-select: none; outline: none;
     border: 1px solid transparent;
@@ -66,7 +66,8 @@
   <button class="b-menuitem"
 	  :disabled="isdisabled()"
 	  @mouseenter="focus"
-	  @click="clicked" >
+	  @keydown="Util.keydown_move_focus"
+	  @click="onclick" >
     <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
   </button>
@@ -76,35 +77,18 @@
 const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-menuitem',
-  props: { 'role': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
+  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { 'showicons': true, 'showaccels': true, checkedroles: {} }, },
+			default: { showicons: true, showaccels: true, checkeduris: {},
+				   isdisabled: () => false, onclick: () => 0, }, },
   },
   methods: {
-    clicked (event) {
-      this.$emit ('click', event, this.role);
-      if (!event.defaultPrevented)
-	{
-	  if (this.role && this.menudata.clicked)
-	    this.menudata.clicked (this.role);
-	  else if (this.menudata.close)
-	    this.menudata.close();
-	}
-      event.stopPropagation();
-      event.preventDefault(); // avoid submit, etc
-    },
-    isdisabled() {
-      if (this.role && undefined !== this.menudata.checkedroles[this.role])
-	return !this.menudata.checkedroles[this.role];
-      if (this.disabled == "" || !!this.disabled ||
-	  this.$attrs['this.disabled'] == "" || !!this.$attrs['this.disabled'])
-	return true;
-      return false;
-    },
     focus() {
       if (this.$el && !this.isdisabled())
 	this.$el.focus();
     },
+    onclick (event) 	{ return this.menudata.onclick.call (this, event); },
+    isdisabled ()	{ return this.menudata.isdisabled.call (this); },
   },
 };
 </script>

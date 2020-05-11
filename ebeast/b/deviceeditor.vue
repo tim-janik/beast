@@ -22,15 +22,15 @@
 
 <template>
   <b-hflex class="b-deviceeditor" style="width: 100%; height: 100%" @contextmenu.stop="menuopen" >
-    <span class="b-deviceeditor-sw" > {{ device_type + ' #' + device.$id }} </span>
+    <span class="b-deviceeditor-sw" > {{ device_info.uri + ' #' + device.$id }} </span>
     <b-vflex v-for="module in modules" :key="module.$id"
 	     class="b-deviceeditor-entry" center style="margin: 5px" >
       <span > Module {{ module.$id }} </span>
     </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
-      <b-menuitem fa="plus-circle"      role="add-module" >      Add Module		</b-menuitem>
-      <b-menuitem fa="times-circle"     role="delete-module" >   Delete Module		</b-menuitem>
+      <b-menuitem fa="plus-circle"      uri="add-module" >      Add Module		</b-menuitem>
+      <b-menuitem fa="times-circle"     uri="delete-module" >   Delete Module		</b-menuitem>
     </b-contextmenu>
   </b-hflex>
 </template>
@@ -40,8 +40,8 @@ function observable_device_data () {
   const data = {
     modules:	{ default: [],  	notify: n => this.device.on ("notify:modules", n),
 		  getter: async c => Object.freeze (await this.device.list_modules()), },
-    device_type: { default: "",		notify: n => this.device.on ("notify:device_type", n),
-		  getter: async c => Object.freeze (await this.device.get_device_type()), },
+    device_info: { default: "",		notify: n => this.device.on ("notify:device_info", n),
+		  getter: async c => Object.freeze (await this.device.device_info()), },
   };
   return this.observable_from_getters (data, () => this.device);
 }
@@ -53,17 +53,17 @@ export default {
   },
   data() { return observable_device_data.call (this); },
   methods: {
-    menuactivation (role) {
+    menuactivation (uri) {
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      if (role == 'add-module')
+      if (uri == 'add-module')
 	this.device.create_module ('Dummy');
     },
-    menucheck (role, component) {
+    menucheck (uri, component) {
       console.log ("deviceeditor.vue", this.device);
       if (!this.device)
 	return false;
-      switch (role)
+      switch (uri)
       {
 	case 'add-module':   return true;
       }

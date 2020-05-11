@@ -142,11 +142,13 @@ $>/app/package.json: $(ebeast/targets.vuebundles.js) $(ebeast/targets.vuebundles
 # == $>/app/bundle.imports.js ==
 $>/app/bundle.imports.js: $(wildcard ebeast/b/*.vue) | $>/app/
 	$(QGEN)
-	$Q cd ebeast \
+	$Q cd ebeast && ( : \
+	  && printf "export default [\n" \
 	  && for f in b/*.vue ; do \
-	       v="$${f//[^[:alnum:]]/_}" && b="$${f%.vue}.bundle" \
-	       && printf "%-64s Util.vue_register ($$v, './$$b.css');\n" "import $$v from './$$b.js';" ; \
-	     done > $(abspath $@)
+	       b="$${f%.vue}.bundle" \
+	       && printf "  %-40s %s,\n" "'./$$b.js'," "'./$$b.css'" ; \
+	     done \
+	  && printf "];\n" ) > $(abspath $@)
 $>/app/package.json: $>/app/bundle.imports.js
 
 # == $>/ebeast/b.*.lint ==

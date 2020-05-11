@@ -90,46 +90,46 @@
 
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Track </b-menutitle>
-      <b-menuitem fa="plus-circle"      role="add-track" >      Add Track		</b-menuitem>
-      <b-menuitem fa="i-cursor"         role="rename-track" >   Rename Track		</b-menuitem>
-      <b-menuitem fa="toggle-down"	role="bounce-track">	Bounce Track		</b-menuitem>
-      <b-menuitem mi="visibility_off"   role="track-details"
+      <b-menuitem fa="plus-circle"      uri="add-track" >      Add Track		</b-menuitem>
+      <b-menuitem fa="i-cursor"         uri="rename-track" >   Rename Track		</b-menuitem>
+      <b-menuitem fa="toggle-down"	uri="bounce-track">	Bounce Track		</b-menuitem>
+      <b-menuitem mi="visibility_off"   uri="track-details"
 		  @click.prevent="menuedit ('track-details')" > Show / Hide Track Details </b-menuitem>
       <b-menuseparator style="margin: 7px" />
       <b-menurow>
-	<!-- <b-menuitem fa="clone"            role="clone-track" >    Dupl.			</b-menuitem> -->
-	<b-menuitem fa="times-circle"     role="delete-track" >   Delete		</b-menuitem>
-	<b-menuitem fa="scissors"         role="cut-track" >      Cut			</b-menuitem>
-	<b-menuitem fa="files-o"          role="copy-track" >     Copy			</b-menuitem>
-	<b-menuitem fa="clipboard"        role="paste-track" >    Paste			</b-menuitem>
+	<!-- <b-menuitem fa="clone"            uri="clone-track" >    Dupl.			</b-menuitem> -->
+	<b-menuitem fa="times-circle"     uri="delete-track" >   Delete		</b-menuitem>
+	<b-menuitem fa="scissors"         uri="cut-track" >      Cut			</b-menuitem>
+	<b-menuitem fa="files-o"          uri="copy-track" >     Copy			</b-menuitem>
+	<b-menuitem fa="clipboard"        uri="paste-track" >    Paste			</b-menuitem>
       </b-menurow>
       <b-menuseparator style="margin: 7px" />
       <b-menutitle> Playback </b-menutitle>
-      <b-menuitem uc="Ｍ"               role="mute-track" >     Mute Track		</b-menuitem>
-      <b-menuitem uc="Ｓ"               role="solo-track" >     Solo Track		</b-menuitem>
+      <b-menuitem uc="Ｍ"               uri="mute-track" >     Mute Track		</b-menuitem>
+      <b-menuitem uc="Ｓ"               uri="solo-track" >     Solo Track		</b-menuitem>
       <b-menuseparator style="margin: 7px" />
       <b-menutitle> MIDI Channel </b-menutitle>
-      <b-menuitem   role="mc-0"  :uc="mcc( 0)" > Internal Channel </b-menuitem>
+      <b-menuitem   uri="mc-0"  :uc="mcc( 0)" > Internal Channel </b-menuitem>
       <b-menurow noturn>
-	<b-menuitem role="mc-1"  :uc="mcc(1)"  >  1 </b-menuitem>
-	<b-menuitem role="mc-2"  :uc="mcc(2)"  >  2 </b-menuitem>
-	<b-menuitem role="mc-3"  :uc="mcc(3)"  >  3 </b-menuitem>
-	<b-menuitem role="mc-4"  :uc="mcc(4)"  >  4 </b-menuitem>
+	<b-menuitem uri="mc-1"  :uc="mcc(1)"  >  1 </b-menuitem>
+	<b-menuitem uri="mc-2"  :uc="mcc(2)"  >  2 </b-menuitem>
+	<b-menuitem uri="mc-3"  :uc="mcc(3)"  >  3 </b-menuitem>
+	<b-menuitem uri="mc-4"  :uc="mcc(4)"  >  4 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-5"  :uc="mcc(5)"  >  5 </b-menuitem>
-	<b-menuitem role="mc-6"  :uc="mcc(6)"  >  6 </b-menuitem>
-	<b-menuitem role="mc-7"  :uc="mcc(7)"  >  7 </b-menuitem>
-	<b-menuitem role="mc-8"  :uc="mcc(8)"  >  8 </b-menuitem>
+	<b-menuitem uri="mc-5"  :uc="mcc(5)"  >  5 </b-menuitem>
+	<b-menuitem uri="mc-6"  :uc="mcc(6)"  >  6 </b-menuitem>
+	<b-menuitem uri="mc-7"  :uc="mcc(7)"  >  7 </b-menuitem>
+	<b-menuitem uri="mc-8"  :uc="mcc(8)"  >  8 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-9"  :uc="mcc(9)"  >  9 </b-menuitem>
-	<b-menuitem role="mc-10" :uc="mcc(10)" > 10 </b-menuitem>
-	<b-menuitem role="mc-11" :uc="mcc(11)" > 11 </b-menuitem>
-	<b-menuitem role="mc-12" :uc="mcc(12)" > 12 </b-menuitem>
+	<b-menuitem uri="mc-9"  :uc="mcc(9)"  >  9 </b-menuitem>
+	<b-menuitem uri="mc-10" :uc="mcc(10)" > 10 </b-menuitem>
+	<b-menuitem uri="mc-11" :uc="mcc(11)" > 11 </b-menuitem>
+	<b-menuitem uri="mc-12" :uc="mcc(12)" > 12 </b-menuitem>
       </b-menurow> <b-menurow noturn>
-	<b-menuitem role="mc-13" :uc="mcc(13)" > 13 </b-menuitem>
-	<b-menuitem role="mc-14" :uc="mcc(14)" > 14 </b-menuitem>
-	<b-menuitem role="mc-15" :uc="mcc(15)" > 15 </b-menuitem>
-	<b-menuitem role="mc-16" :uc="mcc(16)" > 16 </b-menuitem>
+	<b-menuitem uri="mc-13" :uc="mcc(13)" > 13 </b-menuitem>
+	<b-menuitem uri="mc-14" :uc="mcc(14)" > 14 </b-menuitem>
+	<b-menuitem uri="mc-15" :uc="mcc(15)" > 15 </b-menuitem>
+	<b-menuitem uri="mc-16" :uc="mcc(16)" > 16 </b-menuitem>
       </b-menurow>
     </b-contextmenu>
 
@@ -217,28 +217,28 @@ export default {
       else
 	return ' ';
     },
-    async menuactivation (role) {
-      console.log ("menuactivation:", role);
+    async menuactivation (uri) {
+      debug ("menuactivation:", uri);
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      if (role == 'add-track')
+      if (uri == 'add-track')
 	{
 	  const track = await Shell.song.create_track ('Track');
 	  if (track)
 	    Shell.current_track = track;
 	}
-      if (role == 'delete-track')
+      if (uri == 'delete-track')
 	Shell.song.remove_track (this.track);
-      if (role == 'rename-track')
+      if (uri == 'rename-track')
 	this.nameedit_ = 1;
-      if (role.startsWith ('mc-'))
+      if (uri.startsWith ('mc-'))
 	{
-	  const ch = parseInt (role.substr (3));
+	  const ch = parseInt (uri.substr (3));
 	  this.track.midi_channel (ch);
 	}
     },
-    menuedit (role) {
-      console.log ("menuedit", role, "(preventDefault)");
+    menuedit (uri) {
+      debug ("menuedit", uri, "(preventDefault)");
     },
     click0 (event) {
       if (event.button == 0 && this.track)
@@ -248,14 +248,14 @@ export default {
       Shell.current_track = this.track;
       this.$refs.cmenu.popup (event, { checker: this.menucheck.bind (this) });
     },
-    async menucheck (role, component) {
-      switch (role)
+    async menucheck (uri, component) {
+      switch (uri)
       {
 	case 'add-track':    return true;
 	case 'delete-track': return true;
 	case 'rename-track': return true;
       }
-      if (role.startsWith ('mc-'))
+      if (uri.startsWith ('mc-'))
 	return true;
       return false;
     },

@@ -12,9 +12,13 @@
   </div>
   ```
   ## Props:
+  *xscale*
+  : Consider a wider area than the context menu width for popup positioning.
+  *yscale*
+  : Consider a taller area than the context menu height for popup positioning.
   ## Events:
-  *click (role)*
-  : Event signaling activation of a submenu item, the `role` of the submenu is provided as argument.
+  *click (uri)*
+  : Event signaling activation of a submenu item, the `uri` of the submenu is provided as argument.
   ## Methods:
   *popup (event, { origin, tieclass })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
@@ -63,17 +67,42 @@
 </template>
 
 <script>
+const menuitem_onclick = function (event) {
+  this.$emit ('click', event, this.uri);
+  if (!event.defaultPrevented)
+    {
+      if (this.uri && this.menudata.clicked)
+	this.menudata.clicked (this.uri);
+      else if (this.menudata.close)
+	this.menudata.close();
+    }
+  event.stopPropagation();
+  event.preventDefault(); // avoid submit, etc
+};
+
+const menuitem_isdisabled = function () {
+  if (this.uri && undefined !== this.menudata.checkeduris[this.uri])
+    return !this.menudata.checkeduris[this.uri];
+  if (this.disabled == "" || !!this.disabled ||
+      (this.$attrs && (this.$attrs['disabled'] == "" || !!this.$attrs['disabled'])))
+    return true;
+  return false;
+};
+
 export default {
   name: 'b-contextmenu',
-  props: { 'notransitions': { default: false }, },
+  props: { notransitions: { default: false },
+	   xscale: { default: 1, },
+	   yscale: { default: 1, }, },
   computed: {
     cmenu_class() { return this.notransitions !== false ? 'b-contextmenu-notransitions' : ''; },
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
-	       resize_observer: undefined, checkedroles: {},
-	       showicons: true, showaccels: true, popup_options: {}, },
+	       resize_observer: undefined, checkeduris: {},
+	       showicons: true, showaccels: true, popup_options: {},
+	       onclick: menuitem_onclick, isdisabled: menuitem_isdisabled, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
-			    [ 'checkedroles', 'showicons', 'showaccels', 'clicked', 'close' ]),
+			    [ 'checkeduris', 'showicons', 'showaccels', 'clicked', 'close', 'onclick', 'isdisabled' ]),
   methods: {
     dom_update () {
       if (!this.resize_observer)
@@ -133,8 +162,8 @@ export default {
 	  // can take dozens of resize_observer/popup_position frame iterations
 	  area_el.style.left = '0px';
 	  area_el.style.top = '0px';
-	  const p = Util.popup_position (menu_el, { x: this.doc_x,
-						    y: this.doc_y,
+	  const p = Util.popup_position (menu_el, { x: this.doc_x, xscale: this.xscale,
+						    y: this.doc_y, yscale: this.yscale,
 						    origin: this.popup_options.origin?.$el || this.popup_options.origin });
 	  area_el.style.left = p.x + "px";
 	  area_el.style.top = p.y + "px";
@@ -147,16 +176,16 @@ export default {
 	if (component instanceof Element &&
 	    component.__vue__)
 	  component = component.__vue__;
-	if (component.$options && component.$options.propsData && component.$options.propsData.role)
+	if (component.$options && component.$options.propsData && component.$options.propsData.uri)
 	  {
 	    let async_check = async () => {
-	      let result = this.popup_options.checker.call (null, component.$options.propsData.role, component);
+	      let result = this.popup_options.checker.call (null, component.$options.propsData.uri, component);
 	      result = await result;
 	      if ('boolean' !== typeof result)
 		result = undefined;
-	      if (result != this.checkedroles[component.$options.propsData.role])
+	      if (result != this.checkeduris[component.$options.propsData.uri])
 		{
-		  this.$set (this.checkedroles, component.$options.propsData.role, result); // Vue reactivity
+		  this.$set (this.checkeduris, component.$options.propsData.uri, result); // Vue reactivity
 		  component.$forceUpdate();
 		}
 	    };
@@ -255,8 +284,9 @@ export default {
 	this.shield.destroy (false);
       this.shield = undefined;
     },
-    clicked (role) {
-      this.$emit ('click', role);
+    clicked (uri) {
+      debug ("contextmenu: click:", uri);
+      this.$emit ('click', uri);
       this.close();
     },
   },
