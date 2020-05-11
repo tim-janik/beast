@@ -115,10 +115,9 @@ public:
   virtual void         midi_channel      (int val) override;
   virtual int          n_voices          () const override;
   virtual void         n_voices          (int val) override;
+  virtual DeviceInfoSeq  list_device_types () override;
+  virtual DeviceIfaceP   create_device     (const String &uuiduri) override;
   virtual DeviceSeq      list_devices      () override;
-  virtual DeviceIfaceP   create_device     (const String &device_id) override;
-  virtual DeviceTypeInfo device_type_info  (const String &device_id) override { return DeviceImpl::device_type_info (device_id); }
-  virtual StringSeq      list_device_types () override                        { return DeviceImpl::list_device_types (); }
 };
 using TrackImplP = std::shared_ptr<TrackImpl>;
 

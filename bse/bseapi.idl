@@ -961,11 +961,16 @@ interface Module : Object {
 sequence ModuleSeq { Module modules; };
 
 /// Info for device types.
-record DeviceTypeInfo {
-  String id;
-  String label;
-  String category;
+record DeviceInfo {
+  String uri;          ///< Unique identifier for de-/serialization.
+  String name;         ///< Preferred user interface name.
+  String category;     ///< Category to allow grouping for processors of similar function.
+  String description;  ///< Elaborate description for help dialogs.
+  String website_url;  ///< Website of/about this Processor.
+  String creator_name; ///< Name of the creator.
+  String creator_url;  ///< Internet contact of the creator.
 };
+sequence DeviceInfoSeq { DeviceInfo info; };
 
 /// Interface for the encapsulation of audio processors.
 interface Device : Object {
@@ -976,8 +981,8 @@ interface Device : Object {
   StringSeq      list_module_types ();                 ///< List known module types.
 
   // device type determination
-  String         get_device_type  ();                           ///< Retrieve type of device to be created.
-  DeviceTypeInfo device_type_info ();                           ///< Describe this device type.
+  String         device_uri       ();                  ///< Retrieve unique identifier for the device type.
+  DeviceInfo     device_info      ();                  ///< Describe this device type.
 };
 sequence DeviceSeq { Device devices; };
 
@@ -990,10 +995,9 @@ interface Track : ContextMerger {
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
 
   // create devices
+  DeviceInfoSeq  list_device_types ();                 ///< List registered Device types with their unique uri.
+  Device         create_device     (String uuiduri);   ///< Create a new device, see list_device_types().
   DeviceSeq      list_devices      ();                 ///< List devices in order of processing.
-  Device         create_device     (String device_id); ///< Create a new device with `device_type`.
-  DeviceTypeInfo device_type_info  (String device_id); ///< Describe `device_type`.
-  StringSeq      list_device_types ();                 ///< List known device types.
 
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.

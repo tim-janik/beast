@@ -19,6 +19,7 @@
 #include "bsesoundfont.hh"
 #include "bsepart.hh"
 #include "bsecxxplugin.hh"
+#include "processor.hh"
 #include "bse/internal.hh"
 #include <string.h>
 
@@ -1354,14 +1355,39 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
   bse_bus_or_track_set_outputs (self, newoutputs);
 }
 
-DeviceIfaceP
-TrackImpl::create_device (const String &device_id)
+DeviceInfoSeq
+TrackImpl::list_device_types ()
 {
-  DeviceImplP devicep = FriendAllocator<DeviceImpl>::make_shared (device_id);
-  assert_return (devicep, nullptr);
-  devices_.push_back (devicep);
-  notify ("devices");
-  return devices_.back();
+  using namespace AudioSignal;
+  DeviceInfoSeq iseq;
+  const auto rlist = Processor::registry_list();
+  iseq.reserve (rlist.size());
+  for (const auto &entry : rlist)
+    {
+      DeviceInfo info;
+      info.uri          = entry.uri;
+      info.name         = entry.label;
+      info.category     = entry.category;
+      info.description  = entry.description;
+      info.website_url  = entry.website_url;
+      info.creator_name = entry.creator_name;
+      info.creator_url  = entry.creator_url;
+      iseq.push_back (info);
+    }
+  return iseq;
+}
+
+DeviceIfaceP
+TrackImpl::create_device (const String &uuiduri)
+{
+  DeviceImplP devicep = FriendAllocator<DeviceImpl>::make_shared (uuiduri);
+  if (devicep)
+    {
+      devices_.push_back (devicep);
+      notify ("devices");
+      return devices_.back();
+    }
+  return nullptr;
 }
 
 DeviceSeq

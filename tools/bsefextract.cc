@@ -56,7 +56,7 @@ namespace { // Anon
 FExtractOptions options;
 } // Anon
 
-class AudioSignal
+class FeAudioSignal
 {
   vector<float>   m_samples;
   GslDataHandle	 *m_data_handle;
@@ -96,7 +96,7 @@ class AudioSignal
   }
 
 public:
-  AudioSignal (GslDataHandle *data_handle) :
+  FeAudioSignal (GslDataHandle *data_handle) :
     m_data_handle (data_handle)
   {
     m_n_channels = gsl_data_handle_n_channels (data_handle);
@@ -256,7 +256,7 @@ struct Feature
   {
   }
 
-  virtual void compute (const AudioSignal &signal) = 0;
+  virtual void compute (const FeAudioSignal &signal) = 0;
   virtual void print_results() const = 0;
   virtual ~Feature()
   {
@@ -272,7 +272,7 @@ struct StartTimeFeature : public Feature
     start_time = -1;
   }
   void
-  compute (const AudioSignal &signal)
+  compute (const FeAudioSignal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -297,7 +297,7 @@ struct EndTimeFeature : public Feature
   {
     end_time = -1;
   }
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -414,7 +414,7 @@ struct SpectrumFeature : public Feature
   }
 
   void
-  compute (const AudioSignal &signal)
+  compute (const FeAudioSignal &signal)
   {
     if (spectrum.size()) /* don't compute the same feature twice */
       return;
@@ -490,7 +490,7 @@ struct AvgSpectrumFeature : public Feature
   {
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     /*
      * dependancy: we need the spectrum to compute the average spectrum
@@ -519,7 +519,7 @@ struct AvgEnergyFeature : public Feature
     avg_energy = 0;
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     GslLong avg_energy_count = 0;
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
@@ -554,7 +554,7 @@ struct MinMaxPeakFeature : public Feature
     max_peak = 0;
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -580,7 +580,7 @@ struct DCOffsetFeature : public Feature
     dc_offset = 0;
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     double dc_offset_div = 0.0;
 
@@ -608,7 +608,7 @@ struct RawSignalFeature : public Feature
   {
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       raw_signal.push_back (signal[l]);
@@ -688,7 +688,7 @@ struct ComplexSignalFeature : public Feature
       }
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     if (complex_signal.size()) /* already finished? */
       return;
@@ -750,7 +750,7 @@ struct BaseFreqFeature : public Feature
   }
 
   void
-  compute (const AudioSignal &signal)
+  compute (const FeAudioSignal &signal)
   {
     if (freq.size()) /* already finished? */
       return;
@@ -850,7 +850,7 @@ struct BaseFreqFeature : public Feature
   }
 
   void
-  compute_smear_and_wobble (const AudioSignal &signal)
+  compute_smear_and_wobble (const FeAudioSignal &signal)
   {
     const int window_size = int (signal.mix_freq() / base_freq + 0.5);
     const int window_step = max (window_size / 3, 30);
@@ -913,7 +913,7 @@ struct BaseFreqSmear : public Feature
   {
   }
 
-  void compute (const AudioSignal& signal)
+  void compute (const FeAudioSignal& signal)
   {
     /*
      * dependancy: we need the base frequency feature to compute the base frequency smear
@@ -937,7 +937,7 @@ struct BaseFreqWobble : public Feature
   {
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     /*
      * dependancy: we need the base frequency feature to compute the base frequency smear
@@ -969,7 +969,7 @@ struct VolumeFeature : public Feature
     volume_wobble = 0;
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     if (vol.size()) /* already finished? */
       return;
@@ -996,7 +996,7 @@ struct VolumeFeature : public Feature
     compute_smear_and_wobble (signal);
   }
 
-  void compute_smear_and_wobble (const AudioSignal &signal)
+  void compute_smear_and_wobble (const FeAudioSignal &signal)
   {
     const double window_size_ms = 30; /* window size in milliseconds */
     const int window_size = int (signal.mix_freq() * window_size_ms / 1000.0 + 0.5);
@@ -1055,7 +1055,7 @@ struct VolumeSmear : public Feature
   {
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     // dependancy: we need the volume feature to compute the volume smear
     volume_feature->compute (signal);
@@ -1078,7 +1078,7 @@ struct VolumeWobble : public Feature
   {
   }
 
-  void compute (const AudioSignal &signal)
+  void compute (const FeAudioSignal &signal)
   {
     // dependancy: we need the volume feature to compute the volume wobble
     volume_feature->compute (signal);
@@ -1126,7 +1126,7 @@ struct TimingSlices
   }
 
   void
-  compute (const AudioSignal& signal)
+  compute (const FeAudioSignal& signal)
   {
     if (slices.size()) /* don't compute the same feature twice */
       return;
@@ -1212,7 +1212,7 @@ struct AttackTimes : public Feature
   }
 
   void
-  compute (const AudioSignal &signal)
+  compute (const FeAudioSignal &signal)
   {
     timing_slices->compute (signal);
 
@@ -1241,7 +1241,7 @@ struct ReleaseTimes : public Feature
   }
 
   void
-  compute (const AudioSignal &signal)
+  compute (const FeAudioSignal &signal)
   {
     timing_slices->compute (signal);
 
@@ -1447,7 +1447,7 @@ fextract_run (const ArgParser &ap)
     }
 
   /* extract features */
-  AudioSignal signal (dhandle);
+  FeAudioSignal signal (dhandle);
 
   if (options.channel >= signal.n_channels())
     {

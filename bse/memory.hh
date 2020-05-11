@@ -202,7 +202,9 @@ public:
 namespace std {
 template<>
 struct hash<::Bse::CString> {
-  size_t operator() (const ::Bse::CString &cs) const
+  /// Hash value, equal to the std::hash<> value of the corresponding std::string.
+  size_t
+  operator() (const ::Bse::CString &cs) const
   {
     return ::std::hash<::std::string>{} (cs.string());
   }

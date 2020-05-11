@@ -64,6 +64,7 @@ public:
   void                enginechange          (bool active);
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
+  size_t              shared_block_offset   (const void *mem) const;
   void                set_ipc_handler       (IpcHandler *ipch);
   IpcHandler*         get_ipc_handler       ();
   Error               open_midi_driver      ();

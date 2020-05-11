@@ -4,8 +4,8 @@
 
 namespace Bse {
 
-DeviceImpl::DeviceImpl (const String &device_type) :
-  device_type_ (device_type)
+DeviceImpl::DeviceImpl (const String &uuiduri) :
+  device_uri_ (uuiduri)
 {}
 
 DeviceImpl::~DeviceImpl ()
@@ -16,7 +16,7 @@ DeviceImpl::xml_serialize (SerializationNode &xs)
 {
   if (xs.in_save())
     {
-      String dtype = device_type_;
+      String dtype = device_uri_;
       xs["type"] & dtype; // used by TrackImpl.create_device()
     }
 
@@ -34,11 +34,11 @@ DeviceImpl::xml_reflink (SerializationNode &xs)
   ObjectImpl::xml_reflink (xs); // always chain to parent's method
 }
 
-DeviceTypeInfo
-DeviceImpl::device_type_info (const String &device_id)
+DeviceInfo
+DeviceImpl::device_info (const String &uuiduri)
 {
-  DeviceTypeInfo info;
-  info.id = device_id;
+  DeviceInfo info;
+  info.uri = uuiduri; // TODO: fill other fields
   return info;
 }
 
@@ -46,7 +46,7 @@ StringSeq
 DeviceImpl::list_device_types ()
 {
   StringSeq seq;
-  seq.push_back ("Dummy");
+  seq.push_back ("Dummy"); // TODO: find other types
   return seq;
 }
 
