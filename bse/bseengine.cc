@@ -1240,80 +1240,8 @@ slave (gpointer data)
 }
 /* --- setup & trigger --- */
 static bool     bse_engine_initialized = false;
-uint		bse_engine_exvar_sample_freq = 8000;
-uint		bse_engine_exvar_block_size = 4096;
-uint		bse_engine_exvar_control_mask = 4096 - 1;
-
-/**
- * @param latency_ms	calculation latency in milli seconds
- * @param sample_freq	mixing frequency
- * @param control_freq	frequency at which to check control values or 0
- * @param block_size_p	location of number of values to process block wise
- * @param control_raster_p	location of number of values to skip between control values
- *
- * Calculate a suitable block size and control raster for a
- * @a sample_freq at a specific @a latency_ms (the latency should be > 0).
- * The @a control_freq if specified should me much smaller than the
- * @a sample_freq. It determines how often control values are to be
- * checked when calculating blocks of sample values.
- * The block size determines the amount by which the global tick
- * stamp (see Bse::TickStamp::current()) is updated everytime the whole
- * module network completed processing block size values.
- * This function is MT-safe and may be called prior to engine initialization.
- */
-void
-bse_engine_constrain (guint            latency_ms,
-                      guint            sample_freq,
-                      guint            control_freq,
-                      guint           *block_size_p,
-                      guint           *control_raster_p)
-{
-  assert_return (sample_freq >= 100);
-
-  /* depending on how stable the overall system (cpu, kernel scheduler, etc.)
-   * behaves, calculating a single block may take longer than expected,
-   * block_jitter is meant to compensate for that. for an expected worst case
-   * block calculation scenario, lasting 1.5 * block-playback-time, we choose
-   * a suitable upper bound of 2 as ratio for block-calculation-time per
-   * block-playback-time. if heavier jitter is to be expected, this value
-   * should be increased (short of increasing overall latency, that is).
-   */
-  const guint block_jitter = 2; 
-  /* constrain latency to avoid overflow */
-  latency_ms = CLAMP (latency_ms, 1, 10000);
-  /* derive block size from latency and sample frequency. for a perfect
-   * capture->calc->playback setup, the playback time of a single block may
-   * at most last latency/2 time. in practice, we need extra padding blocks,
-   * which are accounted for by block_jitter.
-   */
-  guint block_size = latency_ms * sample_freq / 1000 / (1 + block_jitter);
-  /* constrain block size */
-  block_size = CLAMP (block_size, 8, MIN (BSE_STREAM_MAX_VALUES, sample_freq / (2 * 3)));
-  /* adjust block_size */
-  if (0) /* shrink block size to a 2^n boundary */
-    {
-      guint tmp = sfi_alloc_upper_power2 (block_size);
-      block_size = block_size < tmp ? tmp >> 1 : tmp;
-    }
-  else /* align block_size to 4 */
-    block_size &= ~3;
-  /* constrain control_freq */
-  control_freq = MIN (control_freq, sample_freq);
-  if (!control_freq)
-    control_freq = (sample_freq + block_size - 1) / block_size;
-  /* calc control stepping */
-  guint control_raster = (sample_freq + control_freq - 1) / control_freq;
-  /* control_raster > block_size doesn't make much sense */
-  control_raster = CLAMP (control_raster, 1, block_size);
-  /* shrink control_raster to a 2^n boundary */
-  guint tmp = sfi_alloc_upper_power2 (control_raster);
-  control_raster = control_raster < tmp ? tmp >> 1 : tmp;
-  /* return values */
-  if (block_size_p)
-    *block_size_p = block_size;
-  if (control_raster_p)
-    *control_raster_p = control_raster;
-}
+const uint      bse_engine_exvar_block_size = 256;
+const uint      bse_engine_exvar_sample_freq = 48000;
 
 /**
  * @param latency_ms	calculation latency in milli seconds
@@ -1338,7 +1266,6 @@ bse_engine_configure (guint            latency_ms,
   BseJob *job;
   assert_return (bse_engine_initialized == TRUE, FALSE);
 
-  bse_engine_constrain (latency_ms, sample_freq, control_freq, &block_size, &control_raster);
   /* optimize */
   if (0 && block_size == bse_engine_block_size() && control_raster == bse_engine_control_raster())
     return TRUE;
@@ -1370,9 +1297,6 @@ bse_engine_configure (guint            latency_ms,
       bse_engine_user_thread_collect();
       _engine_recycle_const_values (TRUE);
       /* adjust parameters */
-      bse_engine_exvar_block_size = block_size;
-      bse_engine_exvar_sample_freq = sample_freq;
-      bse_engine_exvar_control_mask = control_raster - 1;
       /* fixup timer */
       Bse::TickStamp::_set_leap (bse_engine_block_size());
       Bse::TickStamp::_increment(); // ensure stamp validity (>0 and systime mark)

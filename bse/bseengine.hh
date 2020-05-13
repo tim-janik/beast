@@ -168,11 +168,6 @@ void       bse_transact                 (BseJob               *job,
 float*     bse_engine_const_values      (float value);
 
 /* --- initialization & main loop --- */
-void       bse_engine_constrain         (guint                 latency_ms,
-                                         guint                 sample_freq,
-                                         guint                 control_freq,
-                                         guint                *block_size_p,
-                                         guint                *control_raster_p);
 void       bse_engine_init              ();
 void       bse_engine_shutdown          ();
 gboolean   bse_engine_configure         (guint                 latency_ms,
@@ -189,10 +184,9 @@ void       bse_engine_add_user_callback       (gpointer      data,
                                                BseFreeFunc   free_func);        /* UserThread */
 void       bse_engine_wait_on_trans           (void);
 guint64    bse_engine_tick_stamp_from_systime (guint64       systime);
-#define    bse_engine_block_size()            (0 + (const uint) bse_engine_exvar_block_size)
-#define    bse_engine_sample_freq()           (0 + (const uint) bse_engine_exvar_sample_freq)
-#define    bse_engine_control_raster()        (1 + (const uint) bse_engine_exvar_control_mask)
-#define    bse_engine_control_mask()          (0 + (const uint) bse_engine_exvar_control_mask)
+#define    bse_engine_block_size()            (0 + bse_engine_exvar_block_size)
+#define    bse_engine_sample_freq()           (0 + bse_engine_exvar_sample_freq)
+#define    bse_engine_control_raster()        (32) // legacy value
 #define    BSE_CONTROL_CHECK(index)           ((bse_engine_control_mask() & (index)) == 0)
 
 /* --- thread handling --- */
@@ -209,8 +203,7 @@ gboolean    bse_engine_check                  (const BseEngineLoop *loop);
 void        bse_engine_dispatch               (void);
 
 /*< private >*/
-extern uint bse_engine_exvar_block_size;
-extern uint bse_engine_exvar_sample_freq;
-extern uint bse_engine_exvar_control_mask;
+extern const uint bse_engine_exvar_block_size;
+extern const uint bse_engine_exvar_sample_freq;
 
 #endif /* __BSE_ENGINE_H__ */
