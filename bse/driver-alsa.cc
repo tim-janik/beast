@@ -311,7 +311,10 @@ public:
   virtual Error
   open (IODir iodir, const PcmDriverConfig &config) override
   {
-    return open (devid_, iodir, config);
+    Error error = open (devid_, iodir, config);
+    if (error != Error::NONE && strncmp ("hw:", devid_.c_str(), 3) == 0)
+      error = open ("plug" + devid_, iodir, config);
+    return error;
   }
   Error
   open (const String &alsadev, IODir iodir, const PcmDriverConfig &config)
