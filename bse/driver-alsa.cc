@@ -8,11 +8,44 @@
 
 #define ADEBUG(...)             Bse::debug ("alsa", __VA_ARGS__)
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
+#define return_error(reason, ERRMEMB) do {      \
+  ADEBUG ("PCM: %s: %s: %s",                    \
+    alsadev_, reason,                           \
+    bse_error_blurb (Bse::Error::ERRMEMB));     \
+  return Bse::Error::ERRMEMB;                   \
+  } while (0)
+
+/* Notes on the ALSA API:
+ * - Increase buffer_size to minimize dropouts.
+ * - Decrease buffer_size to minimize latency.
+ * - The start threshold specifies that the device starts if that many frames become available for playback.
+ * - The stop threshold specifies that the device stops if that many frames become available for write.
+ *   Contrary to the ALSA documentation, stop_threshold=boundary fails to keep the device running on
+ *   underruns (on 64bit, on 32bit libasound it used to work), but LONG_MAX or 2*buffer_size will do.
+ * - For all practical purposes, snd_pcm_sw_params_get_boundary() represents "+Infinity" in the ALSA API.
+ *   It's normally the largest multiple of the buffer size that fits LONG_MAX, but may be broken on 64bit.
+ * - The avail_min specifies the application wakeup point if that many (free) frames become available,
+ *   many cards only support powers of 2.
+ * - The "sub unit direction" indicates rounding direction, ALSA refuses to set exact values (dir=0)
+ *   if the underlying device has a fractional offset (for e.g. period size). This usually happens when
+ *   the plughw device is used for remixing, e.g. 256 * 44100/48000 = 235.2.
+ * - Due to fractional period sizes, the effective buffer size can differ from n_periods * period_size,
+ *   so the desired buffer size is best set via set_period_size_near + set_periods_near.
+ * - With silence_threshold=period_size and silence_size=period_size, an extra 0-value filled period
+ *   is inserted while the last period is played. This causes clicks early but can reduce the risk of
+ *   future underruns.
+ * Driver implementation:
+ * - During high load, we need 1 period playing while rendering the next period.
+ * - Due to jitter, we might be late writing the next period, so we're better off with one extra period.
+ * - If we're very fast generating periods, we ideally have enough buffer space to write without blocking.
+ * Thus, we need 1 playing period, 1 extra period, 1 unfilled period, i.e. 3 periods of buffer size and
+ * we need avail_min to match the period size.
+ */
 
 #if __has_include(<alsa/asoundlib.h>)
 #include <alsa/asoundlib.h>
 
-// for non-little endian, SND_PCM_FORMAT_S16_LE ans other places will need fixups
+// for non-little endian, SND_PCM_FORMAT_S16_LE and other places will need fixups
 static_assert (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__, "endianess unimplemented");
 
 namespace Bse {
@@ -78,10 +111,10 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           name = cxfree (snd_device_name_get_hint (*hint, "NAME"));           // full ALSA device name
           desc = cxfree (snd_device_name_get_hint (*hint, "DESC"));           // card_name + pcm_name + alsa.conf-description
           ioid = cxfree (snd_device_name_get_hint (*hint, "IOID"), "Duplex"); // one of: "Duplex", "Input", "Output"
-          seen_plughw = seen_plughw || 0; // FIXME: strncmp (name.c_str(), "plughw:", 7) == 0;
+          seen_plughw = seen_plughw || strncmp (name.c_str(), "plughw:", 7) == 0;
           if (name == "pulse")
             {
-              ADEBUG ("HINT: %s (%s) - %s", name, ioid, substitute_string ("\n", " ", desc));
+              ADEBUG ("DISCOVER: %s - %s - %s", name, ioid, substitute_string ("\n", " ", desc));
               Driver::Entry entry;
               entry.devid = name;
               entry.device_name = desc;
@@ -114,7 +147,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
       const String card_name = chars2string (snd_ctl_card_info_get_name (cinfo));
       const String card_longname = chars2string (snd_ctl_card_info_get_longname (cinfo));
       const String card_mixername = chars2string (snd_ctl_card_info_get_mixername (cinfo));
-      ADEBUG ("CARD: %s - %s - %s [%s] - %s", card_id, card_driver, card_name, card_mixername, card_longname);
+      // ADEBUG ("DISCOVER: CARD: %s - %s - %s [%s] - %s", card_id, card_driver, card_name, card_mixername, card_longname);
       // discover PCM hardware
       snd_pcm_info_t *wpi = !need_pcm ? nullptr : alsa_alloca0 (snd_pcm_info);
       snd_pcm_info_t *rpi = !need_pcm ? nullptr : alsa_alloca0 (snd_pcm_info);
@@ -147,7 +180,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
             rdevs = string_format ("%u*capture", total_capture_subdevices);
           const String joiner = !wdevs.empty() && !rdevs.empty() ? " + " : "";
           Driver::Entry entry;
-          entry.devid = string_format ("%s:CARD=%s,DEV=%u", seen_plughw ? "plughw" : "hw", card_id, dindex);
+          entry.devid = string_format ("hw:CARD=%s,DEV=%u", card_id, dindex);
           const bool is_usb = string_startswith (chars2string (snd_pcm_info_get_id (writable ? wpi : rpi)), "USB Audio");
           entry.device_name = chars2string (snd_pcm_info_get_name (writable ? wpi : rpi));
           entry.device_name += " - " + card_name;
@@ -165,6 +198,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           entry.modem = pcmclass == SND_PCM_CLASS_MODEM;
           entry.priority = (is_usb ? Driver::ALSA_USB : Driver::ALSA) + Driver::WCARD * cindex + Driver::WDEV * dindex;
           entries.push_back (entry);
+          ADEBUG ("DISCOVER: PCM: %s - %s", entry.devid, entry.device_name);
         }
       // discover MIDI hardware
       snd_rawmidi_info_t *minfo = !need_midi ? nullptr : alsa_alloca0 (snd_rawmidi_info);
@@ -213,6 +247,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
               entry.writeonly = !readable;
               entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
               entries.push_back (entry);
+              ADEBUG ("DISCOVER: MIDI: %s - %s", entry.devid, entry.device_name);
             }
         }
       snd_ctl_close (chandle);
@@ -229,6 +264,7 @@ class AlsaPcmDriver : public PcmDriver {
   uint          period_size_ = 0;       // count in frames
   int16        *period_buffer_ = nullptr;
   uint          read_write_count_ = 0;
+  String        alsadev_;
 public:
   explicit      AlsaPcmDriver (const String &devid) : PcmDriver (devid) {}
   static PcmDriverP
@@ -270,12 +306,19 @@ public:
     delete[] period_buffer_;
     period_buffer_ = nullptr;
     flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+    alsadev_ = "";
   }
   virtual Error
   open (IODir iodir, const PcmDriverConfig &config) override
   {
+    return open (devid_, iodir, config);
+  }
+  Error
+  open (const String &alsadev, IODir iodir, const PcmDriverConfig &config)
+  {
     assert_return (!opened(), Error::INTERNAL);
     int aerror = 0;
+    alsadev_ = alsadev;
     // setup request
     const bool require_readable = iodir == READONLY || iodir == READWRITE;
     const bool require_writable = iodir == WRITEONLY || iodir == READWRITE;
@@ -285,9 +328,9 @@ public:
     // try open
     snd_lib_error_set_handler (silent_error_handler);
     if (!aerror && require_readable)
-      aerror = snd_pcm_open (&read_handle_, devid_.c_str(), SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
+      aerror = snd_pcm_open (&read_handle_, alsadev_.c_str(), SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
     if (!aerror && require_writable)
-      aerror = snd_pcm_open (&write_handle_, devid_.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+      aerror = snd_pcm_open (&write_handle_, alsadev_.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
     snd_lib_error_set_handler (NULL);
     // try setup
     const uint period_size = config.block_length;
@@ -304,8 +347,8 @@ public:
         const bool linked = snd_pcm_link (read_handle_, write_handle_) == 0;
         if (rh_freq != wh_freq || rh_n_periods != wh_n_periods || rh_period_size != wh_period_size || !linked)
           error = Error::DEVICES_MISMATCH;
-        ADEBUG ("PCM: %s: %s: %f==%f && %d==%d && %d==%d && linked==%d", devid_,
-                error != 0 ? "MISMATCH" : "LINKED", rh_freq, wh_freq, rh_n_periods, wh_n_periods, rh_period_size, wh_period_size, linked);
+        ADEBUG ("PCM: %s: %s: %f==%f && %d*%d==%d*%d && linked==%d", alsadev_,
+                error != 0 ? "MISMATCH" : "LINKED", rh_freq, wh_freq, rh_n_periods, rh_period_size, wh_n_periods, wh_period_size, linked);
       }
     mix_freq_ = read_handle_ ? rh_freq : wh_freq;
     n_periods_ = read_handle_ ? rh_n_periods : wh_n_periods;
@@ -327,7 +370,9 @@ public:
           snd_pcm_close (write_handle_);
         write_handle_ = nullptr;
       }
-    ADEBUG ("PCM: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    ADEBUG ("PCM: %s: opening readable=%d writable=%d: %s", alsadev_, readable(), writable(), bse_error_blurb (error));
+    if (error != 0)
+      alsadev_ = "";
     return error;
   }
   Error
@@ -335,63 +380,71 @@ public:
   {
     // turn on blocking behaviour since we may end up in read() with an unfilled buffer
     if (snd_pcm_nonblock (phandle, 0) < 0)
-      return Error::FILE_OPEN_FAILED;
+      return_error ("snd_pcm_nonblock", FILE_OPEN_FAILED);
     // setup hardware configuration
     snd_pcm_hw_params_t *hparams = alsa_alloca0 (snd_pcm_hw_params);
     if (snd_pcm_hw_params_any (phandle, hparams) < 0)
-      return Error::FILE_OPEN_FAILED;
+      return_error ("snd_pcm_hw_params_any", FILE_OPEN_FAILED);
     if (snd_pcm_hw_params_set_channels (phandle, hparams, n_channels_) < 0)
-      return Error::DEVICE_CHANNELS;
+      return_error ("snd_pcm_hw_params_set_channels", DEVICE_CHANNELS);
     if (snd_pcm_hw_params_set_access (phandle, hparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0)
-      return Error::DEVICE_FORMAT;
+      return_error ("snd_pcm_hw_params_set_access", DEVICE_FORMAT);
     if (snd_pcm_hw_params_set_format (phandle, hparams, SND_PCM_FORMAT_S16_LE) < 0)
-      return Error::DEVICE_FORMAT;
+      return_error ("snd_pcm_hw_params_set_format", DEVICE_FORMAT);
     uint rate = *mix_freq;
     if (snd_pcm_hw_params_set_rate (phandle, hparams, rate, 0) < 0 || rate != *mix_freq)
-      return Error::DEVICE_FREQUENCY;
-    snd_pcm_uframes_t period_size = *period_sizep;
-    if (snd_pcm_hw_params_set_period_size (phandle, hparams, period_size, 0) < 0)
-      return Error::DEVICE_LATENCY;
-    uint buffer_time_us = latency_ms * 1000;
-    if (snd_pcm_hw_params_set_buffer_time_near (phandle, hparams, &buffer_time_us, NULL) < 0)
-      return Error::DEVICE_LATENCY;
+      return_error ("snd_pcm_hw_params_set_rate", DEVICE_FREQUENCY);
+    ADEBUG ("PCM: %s: rate: %d", alsadev_, rate);
+    int dir = 0;
+    snd_pcm_uframes_t period_min = 0, period_max = 0, period_size = *period_sizep;
+    if (snd_pcm_hw_params_get_period_size_min (hparams, &period_min, nullptr) < 0 ||
+        snd_pcm_hw_params_get_period_size_max (hparams, &period_max, nullptr) < 0 ||
+        snd_pcm_hw_params_set_period_size_near (phandle, hparams, &period_size, &dir) < 0)
+      return_error ("snd_pcm_hw_params_set_period_size_near", DEVICE_LATENCY);
+    ADEBUG ("PCM: %s: period_size: %d (dir=%+d, min=%d max=%d)", alsadev_,
+            period_size, dir, period_min, period_max);
+    uint nperiods = 3;
+    if (snd_pcm_hw_params_set_periods_near (phandle, hparams, &nperiods, nullptr) < 0)
+      return_error ("snd_pcm_hw_params_set_periods", DEVICE_LATENCY);
+    ADEBUG ("PCM: %s: n_periods: %d", alsadev_, nperiods);
     if (snd_pcm_hw_params (phandle, hparams) < 0)
-      return Error::FILE_OPEN_FAILED;
+      return_error ("snd_pcm_hw_params", FILE_OPEN_FAILED);
     // verify hardware settings
-    uint nperiods = 0;
-    if (snd_pcm_hw_params_get_periods (hparams, &nperiods, NULL) < 0 || nperiods < 2)
-      return Error::DEVICE_BUFFER;
-    snd_pcm_uframes_t buffer_size = 0;
-    if (snd_pcm_hw_params_get_buffer_size (hparams, &buffer_size) < 0 || buffer_size != nperiods * period_size)
-      return Error::DEVICE_BUFFER;
+    snd_pcm_uframes_t buffer_size_min = 0, buffer_size_max = 0, buffer_size = 0;
+    if (snd_pcm_hw_params_get_buffer_size_min (hparams, &buffer_size_min) < 0 ||
+        snd_pcm_hw_params_get_buffer_size_max (hparams, &buffer_size_max) < 0 ||
+        snd_pcm_hw_params_get_buffer_size (hparams, &buffer_size) < 0)
+      return_error ("snd_pcm_hw_params_get_buffer_size", DEVICE_BUFFER);
+    ADEBUG ("PCM: %s: buffer_size: %d (min=%d, max=%d)", alsadev_, buffer_size, buffer_size_min, buffer_size_max);
     // setup software configuration
     snd_pcm_sw_params_t *sparams = alsa_alloca0 (snd_pcm_sw_params);
     if (snd_pcm_sw_params_current (phandle, sparams) < 0)
-      return Error::FILE_OPEN_FAILED;
+      return_error ("snd_pcm_sw_params_current", FILE_OPEN_FAILED);
     if (snd_pcm_sw_params_set_start_threshold (phandle, sparams, (buffer_size / period_size) * period_size) < 0)
-      return Error::DEVICE_BUFFER;
-    if (snd_pcm_sw_params_set_avail_min (phandle, sparams, period_size) < 0)
-      return Error::DEVICE_LATENCY;
-    snd_pcm_uframes_t boundary = 0;
-    if (snd_pcm_sw_params_get_boundary (sparams, &boundary) < 0)
-      return Error::FILE_OPEN_FAILED;
-    bool stop_on_xrun = false;          // ignore XRUN
-    uint threshold = stop_on_xrun ? buffer_size : MIN (buffer_size * 2, boundary);
-    // constrain boundary for stop_threshold, to work around 64bit alsa lib setting boundary to 0x5000000000000000
-    if (snd_pcm_sw_params_set_stop_threshold (phandle, sparams, threshold) < 0)
-      return Error::DEVICE_BUFFER;
-    if (snd_pcm_sw_params_set_silence_threshold (phandle, sparams, 0) < 0 ||
-        snd_pcm_sw_params_set_silence_size (phandle, sparams, boundary) < 0)    // play silence on XRUN
-      return Error::DEVICE_BUFFER;
-    // if (snd_pcm_sw_params_set_xfer_align (phandle, sparams, 1) < 0) return Error::DEVICE_BUFFER;
+      return_error ("snd_pcm_sw_params_set_start_threshold", DEVICE_BUFFER);
+    snd_pcm_uframes_t availmin = 0;
+    if (snd_pcm_sw_params_set_avail_min (phandle, sparams, period_size) < 0 ||
+        snd_pcm_sw_params_get_avail_min (sparams, &availmin) < 0)
+      return_error ("snd_pcm_sw_params_set_avail_min", DEVICE_LATENCY);
+    ADEBUG ("PCM: %s: avail_min: %d", alsadev_, availmin);
+    if (snd_pcm_sw_params_set_stop_threshold (phandle, sparams, LONG_MAX) < 0) // keep going on underruns
+      return_error ("snd_pcm_sw_params_set_stop_threshold", DEVICE_BUFFER);
+    snd_pcm_uframes_t stopthreshold = 0;
+    if (snd_pcm_sw_params_get_stop_threshold (sparams, &stopthreshold) < 0)
+      return_error ("snd_pcm_sw_params_get_stop_threshold", DEVICE_BUFFER);
+    ADEBUG ("PCM: %s: stop_threshold: %d", alsadev_, stopthreshold);
+    if (snd_pcm_sw_params_set_silence_threshold (phandle, sparams, 0) < 0)   // avoid early dropouts
+      return_error ("snd_pcm_sw_params_set_silence_threshold", DEVICE_BUFFER);
+    if (snd_pcm_sw_params_set_silence_size (phandle, sparams, LONG_MAX) < 0) // silence past frames
+      return_error ("snd_pcm_sw_params_set_silence_size", DEVICE_BUFFER);
     if (snd_pcm_sw_params (phandle, sparams) < 0)
-      return Error::FILE_OPEN_FAILED;
+      return_error ("snd_pcm_sw_params", FILE_OPEN_FAILED);
     // return values
     *mix_freq = rate;
     *n_periodsp = nperiods;
     *period_sizep = period_size;
-    ADEBUG ("PCM: %s: setup r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
-            devid_, phandle == read_handle_, phandle == write_handle_,
+    ADEBUG ("PCM: %s: OPEN: r=%d w=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+            alsadev_, phandle == read_handle_, phandle == write_handle_,
             n_channels_, *mix_freq, *n_periodsp, *period_sizep,
             nperiods * period_size, buffer_size);
     // snd_pcm_dump (phandle, snd_output);
@@ -402,7 +455,7 @@ public:
   {
     snd_lib_error_set_handler (silent_error_handler);
     ADEBUG ("PCM: %s: retriggering device (r=%s w=%s)...",
-            devid_, !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
+            alsadev_, !read_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (read_handle_)),
             !write_handle_ ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (write_handle_)));
     snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_);
     // first, clear io buffers
@@ -501,7 +554,7 @@ public:
         ssize_t n_frames = snd_pcm_readi (read_handle_, period_buffer_, n_left);
         if (n_frames < 0) // errors during read, could be underrun (-EPIPE)
           {
-            ADEBUG ("PCM: %s: read() error: %s", devid_, snd_strerror (n_frames));
+            ADEBUG ("PCM: %s: read() error: %s", alsadev_, snd_strerror (n_frames));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (read_handle_);     // force retrigger
             snd_lib_error_set_handler (NULL);
@@ -542,7 +595,7 @@ public:
         n = snd_pcm_writei (write_handle_, period_buffer_, n_left);
         if (n < 0)                      // errors during write, could be overrun (-EPIPE)
           {
-            ADEBUG ("PCM: %s: write() error: %s", devid_, snd_strerror (n));
+            ADEBUG ("PCM: %s: write() error: %s", alsadev_, snd_strerror (n));
             snd_lib_error_set_handler (silent_error_handler);
             snd_pcm_prepare (write_handle_);    // force retrigger
             snd_lib_error_set_handler (NULL);
