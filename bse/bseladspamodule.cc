@@ -384,7 +384,7 @@ ladspa_module_process (BseModule *module,
 {
   LadspaData *ldata = (LadspaData*) module->user_data;
   BseLadspaInfo *bli = ldata->bli;
-  uint i, nis = 0, nos = 0, bsize = bse_engine_block_size ();
+  uint i, nis = 0, nos = 0;
   /* connect audio ports and copy audio buffers */
   for (i = 0; i < bli->n_aports; i++)
     if (bli->aports[i].output)
@@ -394,7 +394,7 @@ ladspa_module_process (BseModule *module,
       }
     else
       {
-	float *ibuffer = ldata->ibuffers + nis * bsize;
+	float *ibuffer = ldata->ibuffers + nis * BSE_ENGINE_MAX_BLOCK_SIZE;
 	const float *srcbuf = BSE_MODULE_IBUFFER (module, nis);
 	uint j;
 	if (bli->aports[i].rate_relative)
@@ -476,11 +476,11 @@ ladspa_derived_context_create (BseSource *source,
   /* initialize control ports */
   bse_block_copy_float (LADSPA_CVALUES_COUNT (bli), ldata->cvalues, self->cvalues);
   /* allocate input audio buffers */
-  ldata->ibuffers = g_new (float, klass->gsl_class->n_istreams * bse_engine_block_size ());
+  ldata->ibuffers = g_new (float, klass->gsl_class->n_istreams * BSE_ENGINE_MAX_BLOCK_SIZE);
   /* connect input audio ports */
   for (i = 0, nis = 0; i < bli->n_aports; i++)
     if (bli->aports[i].input)
-      bli->connect_port (ldata->handle, bli->aports[i].port_index, ldata->ibuffers + nis++ * bse_engine_block_size ());
+      bli->connect_port (ldata->handle, bli->aports[i].port_index, ldata->ibuffers + nis++ * BSE_ENGINE_MAX_BLOCK_SIZE);
 
   module = bse_module_new (klass->gsl_class, ldata);
   bse_trans_add (trans, bse_job_integrate (module));

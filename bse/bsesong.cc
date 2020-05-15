@@ -1061,7 +1061,7 @@ SongImpl::synthesize_note (TrackIface &track_iface, int duration, int note, int 
     {
       double semitone_factor = bse_transpose_factor (self->musical_tuning, CLAMP (note, SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE);
       double freq = BSE_KAMMER_FREQUENCY * semitone_factor * bse_cent_tune_fast (fine_tune);
-      SfiTime tstamp = Bse::TickStamp::current() + bse_engine_block_size () * 2;
+      SfiTime tstamp = Bse::TickStamp::current() + BSE_ENGINE_MAX_BLOCK_SIZE * 2;
       BseMidiEvent *eon, *eoff;
       eon  = bse_midi_event_note_on (track->midi_channel_SL, tstamp, freq, velocity);
       eoff = bse_midi_event_note_off (track->midi_channel_SL, tstamp + duration, freq);

@@ -286,7 +286,7 @@ bse_server_open_devices (BseServer *self)
   /* lock playback/capture/latency settings */
   Bse::global_config->lock();
   /* calculate block_size for pcm setup */
-  const uint block_size = bse_engine_block_size();
+  const uint block_size = BSE_ENGINE_MAX_BLOCK_SIZE;
   const uint latency = Bse::global_config->synth_latency;
   const uint mix_freq = bse_engine_sample_freq();
   /* try opening devices */

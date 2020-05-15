@@ -223,7 +223,7 @@ public:
     Module (monitor_module_class),
     char8_ (mfields)
   {
-    fblock_ = (float*) fast_mem_alloc (BSE_STREAM_MAX_VALUES * sizeof (float));
+    fblock_ = (float*) fast_mem_alloc (BSE_ENGINE_MAX_BLOCK_SIZE * sizeof (float));
     assert_return (fblock_ != nullptr);
   }
   virtual ~MonitorModule()

@@ -169,7 +169,7 @@ bse_pcm_omodule_insert (Bse::PcmDriver *pcm_driver, BsePcmWriter *writer, BseTra
   assert_return (pcm_driver->writable(), NULL);
   assert_return (trans != NULL, NULL);
 
-  BsePCMModuleData *mdata = new BsePCMModuleData (bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS);
+  BsePCMModuleData *mdata = new BsePCMModuleData (BSE_ENGINE_MAX_BLOCK_SIZE * BSE_PCM_MODULE_N_JSTREAMS);
   mdata->driver = pcm_driver;
   mdata->pcm_writer = writer;
   BseModule *module = bse_module_new (&pcm_omodule_class, mdata);
@@ -264,7 +264,7 @@ bse_pcm_imodule_insert (Bse::PcmDriver *pcm_driver, BseTrans *trans)
   assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (trans != NULL, NULL);
 
-  BsePCMModuleData *mdata = new BsePCMModuleData (bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS);
+  BsePCMModuleData *mdata = new BsePCMModuleData (BSE_ENGINE_MAX_BLOCK_SIZE * BSE_PCM_MODULE_N_OSTREAMS);
   mdata->driver = pcm_driver;
   mdata->pcm_writer = NULL;
   BseModule *module = bse_module_new (&pcm_imodule_class, mdata);

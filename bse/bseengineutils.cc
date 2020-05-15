@@ -24,13 +24,13 @@ _engine_alloc_ostreams (guint n)
 {
   if (n)
     {
-      guint i = sizeof (BseOStream) * n + sizeof (gfloat) * bse_engine_block_size () * n;
+      uint i = sizeof (BseOStream) * n + sizeof (gfloat) * BSE_ENGINE_MAX_BLOCK_SIZE * n;
       BseOStream *streams = (BseOStream*) g_malloc0 (i);
       float *buffers = (float*) (streams + n);
       for (i = 0; i < n; i++)
 	{
 	  streams[i].values = buffers;
-	  buffers += bse_engine_block_size ();
+	  buffers += BSE_ENGINE_MAX_BLOCK_SIZE;
 	}
       return streams;
     }
@@ -608,7 +608,7 @@ _engine_mnl_node_changed (Bse::Module *node)
 typedef std::unordered_map<float, const float*> FloatBlockMap;
 static std::mutex    engine_const_value_mutex;
 static FloatBlockMap engine_const_value_map;
-static const float   engine_const_values_0[BSE_STREAM_MAX_VALUES + 16] = { 0 }; // 0.0...
+static const float   engine_const_values_0[BSE_ENGINE_MAX_BLOCK_SIZE + 16] = { 0 }; // 0.0...
 
 float*
 bse_engine_const_values (float value)
@@ -619,17 +619,17 @@ bse_engine_const_values (float value)
   const float *&block = engine_const_value_map[value];
   if (block == NULL)
     {
-      float *value_block = new float[BSE_STREAM_MAX_VALUES + 16];
-      bse_block_fill_float (BSE_STREAM_MAX_VALUES + 16, value_block, value);
+      float *value_block = new float[BSE_ENGINE_MAX_BLOCK_SIZE + 16];
+      bse_block_fill_float (BSE_ENGINE_MAX_BLOCK_SIZE + 16, value_block, value);
       block = value_block;
     }
   return const_cast<float*> (block);
 }
 
 float*
-bse_engine_const_zeros (uint smaller_than_BSE_STREAM_MAX_VALUES)
+bse_engine_const_zeros (uint smaller_than_MAX_BLOCK_SIZE)
 {
-  assert_return (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES, NULL);
+  assert_return (smaller_than_MAX_BLOCK_SIZE <= BSE_ENGINE_MAX_BLOCK_SIZE, NULL);
   return const_cast<float*> (engine_const_values_0);
 }
 

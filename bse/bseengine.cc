@@ -1239,9 +1239,19 @@ slave (gpointer data)
   Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 /* --- setup & trigger --- */
-static bool     bse_engine_initialized = false;
-const uint      bse_engine_exvar_block_size = 256;
-const uint      bse_engine_exvar_sample_freq = 48000;
+static bool bse_engine_initialized = false;
+const uint  bse_engine_exvar_sample_freq = 48000;
+uint        bse_engine_exvar_block_size = BSE_ENGINE_MAX_BLOCK_SIZE;
+
+/// Adjust the block size used per render iteration.
+void
+bse_engine_update_block_size (uint new_block_size)
+{
+  assert_return (new_block_size <= BSE_ENGINE_MAX_BLOCK_SIZE);
+  assert_return (new_block_size >= 16);
+  assert_return ((new_block_size & (16 - 1)) == 0); // check multiple of 16 for SIMD
+  bse_engine_exvar_block_size = new_block_size;
+}
 
 /**
  * @param latency_ms	calculation latency in milli seconds
