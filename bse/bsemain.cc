@@ -488,7 +488,7 @@ GlobalConfig::defaults ()
   Configuration config;
   // static defaults
   config.pcm_driver = bse_main_args->pcm_driver;
-  config.synth_latency = 50;
+  config.synth_latency = 22;
   config.synth_mixing_freq = 48000;
   config.synth_control_freq = 1000;
   config.midi_driver = bse_main_args->midi_driver;

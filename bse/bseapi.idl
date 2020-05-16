@@ -1287,7 +1287,7 @@ record Configuration {
     String pcm_driver        = String (_("PCM Driver"), _("Driver and device to be used for PCM input and output"), STANDARD);
     int32 synth_latency      = Range (_("Latency [ms]"),
                                       _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
-                                      STANDARD, 1, 2000, 5);
+                                      STANDARD, 0, 3000, 5);
     int32 synth_mixing_freq  = Range (_("Synth Mixing Frequency"),
                                       _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
                                       STANDARD, 8000, 192000, 0);
