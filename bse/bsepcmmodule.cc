@@ -20,7 +20,7 @@ static_assert (Bse::AudioSignal::MAX_RENDER_BLOCK_SIZE == BSE_ENGINE_MAX_BLOCK_S
 
 // == BsePCMModuleData ==
 struct BsePCMModuleData {
-  uint            n_values = 0;	/* bse_engine_block_size() * 2 (stereo) */
+  const uint      max_values = 0; // BSE_ENGINE_MAX_BLOCK_SIZE * 2 (stereo)
   float          *const buffer = nullptr;
   float          *const bound = nullptr;
   Bse::PcmDriver *driver = nullptr;
@@ -32,7 +32,7 @@ struct BsePCMModuleData {
 };
 
 BsePCMModuleData::BsePCMModuleData (uint nv) :
-  n_values (nv), buffer (new float[n_values] ()), bound (buffer + n_values)
+  max_values (nv), buffer (new float[max_values] ()), bound (buffer + max_values)
 {}
 
 BsePCMModuleData::~BsePCMModuleData()
@@ -90,7 +90,7 @@ bse_pcm_omodule_process (BseModule *module,
   const gfloat *src;
   guint i;
 
-  assert_return (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
+  assert_return (n_values <= mdata->max_values / BSE_PCM_MODULE_N_JSTREAMS);
 
   for (auto p : mdata->procs)
     {
@@ -139,9 +139,9 @@ bse_pcm_omodule_process (BseModule *module,
         do { *d += *src++; d += 2; } while (d < b);
       }
 
-  mdata->driver->pcm_write (mdata->n_values, mdata->buffer);
+  mdata->driver->pcm_write (n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer);
   if (mdata->pcm_writer)
-    bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer,
+    bse_pcm_writer_write (mdata->pcm_writer, n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer,
                           bse_module_tick_stamp (module));
 }
 
@@ -228,18 +228,18 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
   gsize l;
 
-  assert_return (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
+  assert_return (n_values <= mdata->max_values / BSE_PCM_MODULE_N_OSTREAMS);
 
   if (mdata->driver->readable())
     {
-      l = mdata->driver->pcm_read (mdata->n_values, mdata->buffer);
-      assert_return (l == mdata->n_values);
+      l = mdata->driver->pcm_read (n_values * BSE_PCM_MODULE_N_OSTREAMS, mdata->buffer);
+      assert_return (l == n_values * BSE_PCM_MODULE_N_OSTREAMS);
     }
   else
-    memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
+    memset (mdata->buffer, 0, mdata->max_values * sizeof (float));
 
   /* due to suspend/resume, we may be called with partial read requests */
-  const gfloat *s = mdata->buffer + mdata->n_values - (n_values * BSE_PCM_MODULE_N_OSTREAMS);
+  const gfloat *s = mdata->buffer + mdata->max_values - (n_values * BSE_PCM_MODULE_N_OSTREAMS);
   const gfloat *b = mdata->bound;
   do
     {
