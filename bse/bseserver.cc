@@ -286,9 +286,9 @@ bse_server_open_devices (BseServer *self)
   /* lock playback/capture/latency settings */
   Bse::global_config->lock();
   /* calculate block_size for pcm setup */
-  const uint block_size = BSE_ENGINE_MAX_BLOCK_SIZE;
   const uint latency = Bse::global_config->synth_latency;
   const uint mix_freq = bse_engine_sample_freq();
+  uint block_size = BSE_ENGINE_MAX_BLOCK_SIZE;
   /* try opening devices */
   if (error == 0)
     error = impl->open_pcm_driver (mix_freq, latency, &block_size);
@@ -1397,9 +1397,11 @@ ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint *block_size)
   config.n_channels = 2;
   config.mix_freq = mix_freq;
   config.latency_ms = latency;
-  config.block_length = block_size;
+  config.block_length = *block_size;
   pcm_driver_ = PcmDriver::open (get_config().pcm_driver, Driver::READWRITE, Driver::WRITEONLY, config, &error);
-  if (!pcm_driver_)
+  if (pcm_driver_)
+    *block_size = pcm_driver_->block_length();
+  else // !pcm_driver_
     {
       UserMessage umsg;
       umsg.utype = Bse::UserMessageType::ERROR;
