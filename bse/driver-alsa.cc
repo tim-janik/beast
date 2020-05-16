@@ -259,6 +259,7 @@ class AlsaPcmDriver : public PcmDriver {
   snd_pcm_t    *read_handle_ = nullptr;
   snd_pcm_t    *write_handle_ = nullptr;
   uint          mix_freq_ = 0;
+  uint          block_size_ = 0;
   uint          n_channels_ = 0;
   uint          n_periods_ = 0;
   uint          period_size_ = 0;       // count in frames
@@ -285,6 +286,11 @@ public:
   pcm_frequency () const override
   {
     return mix_freq_;
+  }
+  virtual uint
+  block_length () const override
+  {
+    return block_size_;
   }
   virtual void
   close () override
@@ -354,6 +360,7 @@ public:
                 error != 0 ? "MISMATCH" : "LINKED", rh_freq, wh_freq, rh_n_periods, rh_period_size, wh_n_periods, wh_period_size, linked);
       }
     mix_freq_ = read_handle_ ? rh_freq : wh_freq;
+    block_size_ = read_handle_ ? rh_period_size : wh_period_size;
     n_periods_ = read_handle_ ? rh_n_periods : wh_n_periods;
     period_size_ = read_handle_ ? rh_period_size : wh_period_size;
     if (error == 0 && snd_pcm_prepare (read_handle_ ? read_handle_ : write_handle_) < 0)
@@ -399,14 +406,15 @@ public:
       return_error ("snd_pcm_hw_params_set_rate", DEVICE_FREQUENCY);
     ADEBUG ("PCM: %s: rate: %d", alsadev_, rate);
     int dir = 0;
-    snd_pcm_uframes_t period_min = 0, period_max = 0, period_size = *period_sizep;
-    if (snd_pcm_hw_params_get_period_size_min (hparams, &period_min, nullptr) < 0 ||
-        snd_pcm_hw_params_get_period_size_max (hparams, &period_max, nullptr) < 0 ||
-        snd_pcm_hw_params_set_period_size_near (phandle, hparams, &period_size, &dir) < 0)
+    snd_pcm_uframes_t period_min = 32, period_max = 65536;
+    snd_pcm_hw_params_get_period_size_min (hparams, &period_min, nullptr);
+    snd_pcm_hw_params_get_period_size_max (hparams, &period_max, nullptr);
+    snd_pcm_uframes_t period_size = CLAMP (*period_sizep, period_min, period_max);
+    if (snd_pcm_hw_params_set_period_size_near (phandle, hparams, &period_size, &dir) < 0)
       return_error ("snd_pcm_hw_params_set_period_size_near", DEVICE_LATENCY);
     ADEBUG ("PCM: %s: period_size: %d (dir=%+d, min=%d max=%d)", alsadev_,
             period_size, dir, period_min, period_max);
-    uint nperiods = 3;
+    uint nperiods = CLAMP (latency_ms / (1000 * period_size / rate), 2, 1024);
     if (snd_pcm_hw_params_set_periods_near (phandle, hparams, &nperiods, nullptr) < 0)
       return_error ("snd_pcm_hw_params_set_periods", DEVICE_LATENCY);
     ADEBUG ("PCM: %s: n_periods: %d", alsadev_, nperiods);

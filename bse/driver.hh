@@ -72,6 +72,7 @@ public:
   virtual bool       pcm_check_io    (long *timeoutp) = 0;
   virtual void       pcm_latency     (uint *rlatency, uint *wlatency) const = 0;
   virtual float      pcm_frequency   () const = 0;
+  virtual uint       block_length    () const = 0;
   virtual size_t     pcm_read        (size_t n, float *values) = 0;
   virtual void       pcm_write       (size_t n, const float *values) = 0;
   static EntryVec    list_drivers    ();

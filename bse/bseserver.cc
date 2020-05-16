@@ -291,7 +291,9 @@ bse_server_open_devices (BseServer *self)
   const uint mix_freq = bse_engine_sample_freq();
   /* try opening devices */
   if (error == 0)
-    error = impl->open_pcm_driver (mix_freq, latency, block_size);
+    error = impl->open_pcm_driver (mix_freq, latency, &block_size);
+  if (error == 0)
+    bse_engine_update_block_size (block_size);
   if (error == 0)
     error = impl->open_midi_driver();
   if (error == 0)
@@ -1387,7 +1389,7 @@ ServerImpl::close_pcm_driver()
 }
 
 Bse::Error
-ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint block_size)
+ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint *block_size)
 {
   assert_return (pcm_driver_ == nullptr, Error::INTERNAL);
   Error error = Error::UNKNOWN;

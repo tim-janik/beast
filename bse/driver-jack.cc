@@ -588,6 +588,11 @@ public:
   {
     return mix_freq_;
   }
+  virtual uint
+  block_length () const override
+  {
+    return block_length_;
+  }
   virtual void
   close () override
   {
