@@ -5,7 +5,7 @@
 #include <bse/bseenginenode.hh>
 
 /* --- constants --- */
-#define BSE_ENGINE_MAX_BLOCK_SIZE               (256 /* power of 2 and <= 16384 */)
+#define BSE_ENGINE_MAX_BLOCK_SIZE               (128)
 #define BSE_MODULE_N_OSTREAMS(module)           ((module)->n_ostreams)
 #define BSE_MODULE_N_ISTREAMS(module)           ((module)->n_istreams)
 #define BSE_MODULE_N_JSTREAMS(module)           ((module)->n_jstreams)

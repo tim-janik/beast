@@ -16,6 +16,8 @@ enum
 };
 static constexpr const auto MAIN_OBUS = Bse::AudioSignal::OBusId (1);
 
+static_assert (Bse::AudioSignal::MAX_RENDER_BLOCK_SIZE == BSE_ENGINE_MAX_BLOCK_SIZE);
+
 // == BsePCMModuleData ==
 struct BsePCMModuleData {
   uint            n_values = 0;	/* bse_engine_block_size() * 2 (stereo) */
