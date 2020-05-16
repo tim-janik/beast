@@ -401,23 +401,32 @@ public:
       return_error ("snd_pcm_hw_params_set_access", DEVICE_FORMAT);
     if (snd_pcm_hw_params_set_format (phandle, hparams, SND_PCM_FORMAT_S16_LE) < 0)
       return_error ("snd_pcm_hw_params_set_format", DEVICE_FORMAT);
+    // sample_rate
     uint rate = *mix_freq;
     if (snd_pcm_hw_params_set_rate (phandle, hparams, rate, 0) < 0 || rate != *mix_freq)
       return_error ("snd_pcm_hw_params_set_rate", DEVICE_FREQUENCY);
     ADEBUG ("PCM: %s: rate: %d", alsadev_, rate);
-    int dir = 0;
-    snd_pcm_uframes_t period_min = 32, period_max = 65536;
+    // fragment size
+    snd_pcm_uframes_t period_min = 2, period_max = 1048576;
     snd_pcm_hw_params_get_period_size_min (hparams, &period_min, nullptr);
     snd_pcm_hw_params_get_period_size_max (hparams, &period_max, nullptr);
-    snd_pcm_uframes_t period_size = CLAMP (*period_sizep, period_min, period_max);
+    const snd_pcm_uframes_t latency_frames = rate * latency_ms / 1000; // full IO latency in frames
+    snd_pcm_uframes_t period_size = 32; // smaller sizes are infeasible with most hw
+    while (period_size + 16 <= latency_frames / 3)
+      period_size += 16; // maximize period_size as long as 3 fit the latency
+    period_size = CLAMP (period_size, period_min, period_max);
+    period_size = MIN (period_size, *period_sizep); // MAX_BLOCK_SIZE constraint
+    int dir = 0;
     if (snd_pcm_hw_params_set_period_size_near (phandle, hparams, &period_size, &dir) < 0)
       return_error ("snd_pcm_hw_params_set_period_size_near", DEVICE_LATENCY);
     ADEBUG ("PCM: %s: period_size: %d (dir=%+d, min=%d max=%d)", alsadev_,
             period_size, dir, period_min, period_max);
-    uint nperiods = CLAMP (latency_ms / (1000 * period_size / rate), 2, 1024);
+    // fragment count
+    const uint want_nperiods = latency_ms == 0 ? 2 : CLAMP (latency_frames / period_size, 2, 1023) + 1;
+    uint nperiods = want_nperiods;
     if (snd_pcm_hw_params_set_periods_near (phandle, hparams, &nperiods, nullptr) < 0)
       return_error ("snd_pcm_hw_params_set_periods", DEVICE_LATENCY);
-    ADEBUG ("PCM: %s: n_periods: %d", alsadev_, nperiods);
+    ADEBUG ("PCM: %s: n_periods: %d (requested: %d)", alsadev_, nperiods, want_nperiods);
     if (snd_pcm_hw_params (phandle, hparams) < 0)
       return_error ("snd_pcm_hw_params", FILE_OPEN_FAILED);
     // verify hardware settings
