@@ -30,8 +30,8 @@ class SerializationField {
  public:
   explicit                         SerializationField (SerializationNode &xs, const String &attrib);
   template<typename T,
-           typename E = void> void operator& (T &value);        ///< Serialization operator
-  template<typename T> void        operator& (std::vector<T> &vec);
+           typename E = void> bool operator& (T &value);        ///< Serialization operator
+  template<typename T> bool        operator& (std::vector<T> &vec);
   void                             operator& (Reflink &reflink);
   /*auto cast*/                    operator std::string ();
   SerializationField&              node      ();       ///< Force storage into child node (not attribute)
@@ -104,7 +104,7 @@ public:
   template<typename T>
   explicit Reflink  (T *&objptr);
   void     save_xml (SerializationNode &xs, const String &attrib);
-  void     load_xml (SerializationNode &xs, const String &attrib);
+  bool     load_xml (SerializationNode &xs, const String &attrib);
 };
 
 /// Template to specialize XML attribute conversion for various data types.
@@ -112,7 +112,7 @@ template<typename T, typename = void>
 struct DataConverter {
   static_assert (!sizeof (T), "type serialization unimplemented");
   // void save_xml (SerializationField &field, const T&);
-  // T    load_xml (SerializationField &field);
+  // bool load_xml (SerializationField &field, T&);
 };
 
 /// Helper for deferred xml_reflink() calls
@@ -122,29 +122,40 @@ struct SerializationNode::QueuedArgs {
 };
 
 // == Implementation details ==
-template<typename T, typename> void
+template<typename T, typename> bool
 SerializationField::operator& (T &value)
 {
   if (xs_.in_save())
-    DataConverter<T>::save_xml (*this, value);
+    {
+      DataConverter<T>::save_xml (*this, value);
+      return true;
+    }
   if (xs_.loading (attrib_))
-    value = DataConverter<T>::load_xml (*this);
+    return DataConverter<T>::load_xml (*this, value);
+  return false;
 }
 
-template<> inline void
+template<> inline bool
 SerializationField::operator& (String &value)
 {
   if (xs_.in_save())
-    xs_.save_string (attrib_, value, as_node());
+    {
+      xs_.save_string (attrib_, value, as_node());
+      return true;
+    }
   if (xs_.in_load())
     {
       String temp;
       if (xs_.load_string (attrib_, temp, as_node()))
-        value = temp;
+        {
+          value = temp;
+          return true;
+        }
     }
+  return false;
 }
 
-template<typename T> void
+template<typename T> bool
 SerializationField::operator& (std::vector<T> &vec)
 {
   const String item = "item";
@@ -153,6 +164,7 @@ SerializationField::operator& (std::vector<T> &vec)
       SerializationNode xv = xs_.create_child (attrib_);
       for (auto &el : vec)
         xv[item].node() & el;           // force node, because XML has no repeating attributes
+      return true;
     }
   if (SerializationNode xv = xs_.first_child (attrib_)) // true only for in_load()
     {
@@ -166,7 +178,9 @@ SerializationField::operator& (std::vector<T> &vec)
             }
           xv.rotate_children();                 // perform *exactly* n_children rotations
         }                                       // to preserve original order
+      return true;
     }
+  return false;
 }
 
 // Reflink
@@ -258,12 +272,16 @@ struct DataConverter<T, typename ::std::enable_if<
                           std::is_integral<T>::value || std::is_floating_point<T>::value,
                           void>::type>
 {
-  static T
-  load_xml (SerializationField &field)
+  static bool
+  load_xml (SerializationField &field, T &v)
   {
     String str;
-    field & str;
-    return string_to_type<T> (str);
+    if (field & str)
+      {
+        v = string_to_type<T> (str);
+        return true;
+      }
+    return false;
   }
   static void
   save_xml (SerializationField &field, T i)
@@ -286,12 +304,16 @@ struct DataConverter<T, typename ::std::enable_if<
 // Aida::enum_* convertibles
 template<typename Enum>
 struct DataConverterAidaEnum {
-  static Enum
-  load_xml (SerializationField &field)
+  static bool
+  load_xml (SerializationField &field, Enum &v)
   {
     String valuename;
-    field & valuename;
-    return Aida::enum_value_from_string<Enum> (valuename);
+    if (field & valuename)
+      {
+        v = Aida::enum_value_from_string<Enum> (valuename);
+        return true;
+      }
+    return false;
   }
   static void
   save_xml (SerializationField &field, Enum val)
@@ -305,16 +327,20 @@ template<> struct DataConverter<Bse::Error> : DataConverterAidaEnum<Bse::Error> 
 // Aida::__visit__ records
 template<typename Record>
 struct DataConverterAidaVisitRecord {
-  static Record
-  load_xml (SerializationField &field)
+  static bool
+  load_xml (SerializationField &field, Record &r)
   {
-    Record rec;
     if (SerializationNode xr = field.serialization_node().first_child (field.attribute()))
-      rec.__visit__ ([&xr] (auto &v, const char *n)
-                     {
-                       xr[n] & v;
-                     });
-    return rec;
+      {
+        bool fany = false;
+        r.__visit__ ([&xr,&fany] (auto &v, const char *n)
+        {
+          if (xr[n] & v)
+            fany = true;
+        });
+        return fany;
+      }
+    return false;
   }
   static void
   save_xml (SerializationField &field, Record &rec)

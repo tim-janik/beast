@@ -473,10 +473,11 @@ Reflink::save_xml (SerializationNode &xs, const String &attrib)
   xs[attrib] & id;
 }
 
-void
+bool
 Reflink::load_xml (SerializationNode &xs, const String &attrib)
 {
   assign_ (xs, attrib);
+  return true;
 }
 
 } // Xms
