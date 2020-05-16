@@ -40,6 +40,9 @@ bool    			string_has_int           (const String &string);
 int64   			string_to_int            (const String &string, size_t *consumed = NULL, uint base = 10);
 String  			string_from_int          (int64 value);
 String  			string_from_float        (float value);
+long double  			string_to_long_double    (const String &string);
+long double  			string_to_long_double    (const char *dblstring, const char **endptr);
+String                          string_from_long_double  (long double value);
 double  			string_to_double         (const String &string);
 double  			string_to_double         (const char *dblstring, const char **endptr);
 String                          string_from_double       (double value);
@@ -97,6 +100,8 @@ template<typename Type> String  string_from_type         (Type          value)
 { static_assert (!sizeof (Type), "string_from_type<>: unsupported Type");  __builtin_unreachable(); }
 
 // specialisations for templated string conversions
+template<> inline long double   string_to_type<long double>   (const String &string) { return string_to_long_double (string); }
+template<> inline String        string_from_type<long double> (long double    value) { return string_from_long_double (value); }
 template<> inline double        string_to_type<double>   (const String &string) { return string_to_double (string); }
 template<> inline String        string_from_type<double> (double         value) { return string_from_double (value); }
 template<> inline float         string_to_type<float>    (const String &string) { return string_to_float (string); }
