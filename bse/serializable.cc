@@ -456,13 +456,17 @@ SerializationField::operator std::string ()
   return result;
 }
 
-void
-SerializationField::operator& (Reflink &reflink)
+bool
+SerializationField::serialize (Reflink &reflink, const StringVector &typedata, const std::string &fieldname)
 {
   if (xs_.in_save())
-    reflink.save_xml (xs_, attrib_);
+    {
+      reflink.save_xml (xs_, attrib_);
+      return true;
+    }
   if (xs_.in_load())
-    reflink.load_xml (xs_, attrib_);
+    return reflink.load_xml (xs_, attrib_);
+  return false;
 }
 
 // Reflink
