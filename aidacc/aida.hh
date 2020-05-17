@@ -163,6 +163,22 @@ Has___visit__ : std::false_type {};
 template<class T> struct
 Has___visit__<T, void_t< decltype (std::declval<T&>().__visit__ (HasHelper::visitor_lambda)) > > : std::true_type {};
 
+/// Has___typedata__<T> - Check if `T` provides a `__typedata__()` method.
+template<class, class = void> struct
+Has___typedata__ : std::false_type {};
+template<class T> struct
+Has___typedata__<T, void_t< decltype (std::declval<T&>().__typedata__()) > > : std::true_type {};
+
+/// Retrieve `__typedata__()` result from an instance or an empty fallback.
+template<typename T> const StringVector&
+typedata_from_type (const T &o)
+{
+  if constexpr (Has___typedata__<T>::value)
+    return o.__typedata__();
+  static const StringVector fallback;
+  return fallback;
+}
+
 /// Provide the member typedef type which is the element_type of the shared_ptr type @a T.
 template<typename T> struct RemoveSharedPtr                                             { typedef T type; };
 template<typename T> struct RemoveSharedPtr<::std::shared_ptr<T>>                       { typedef T type; };
