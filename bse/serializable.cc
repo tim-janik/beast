@@ -480,5 +480,56 @@ Reflink::load_xml (SerializationNode &xs, const String &attrib)
   return true;
 }
 
+// == Helpers ==
+bool
+typedata_is_loadable (const StringVector &typedata, const std::string &field)
+{
+  return_unless (!typedata.empty() && !field.empty(), true); // avoid constraining unknown fields
+  const String hints = Aida::aux_vector_find (typedata, field, "hints", "S:w");
+  const bool storage = string_option_check (hints, "S");
+  const bool writable = string_option_check (hints, "w");
+  return storage && writable;
+}
+
+bool
+typedata_is_storable (const StringVector &typedata, const std::string &field)
+{
+  return_unless (!typedata.empty() && !field.empty(), true); // avoid constraining unknown fields
+  const String hints = Aida::aux_vector_find (typedata, field, "hints", "S:r");
+  const bool storage = string_option_check (hints, "S");
+  const bool readable = string_option_check (hints, "r");
+  return storage && readable;
+}
+
+bool
+typedata_find_minimum (const StringVector &typedata, const std::string &field, long double *limit)
+{
+  if (typedata.empty() || field.empty()) // avoid constraining unknown fields
+    return false;
+  const String str = Aida::aux_vector_find (typedata, field, "min", "");
+  if (!str.empty())
+    {
+      if (limit)
+        *limit = string_to_type<long double> (str);
+      return true;
+    }
+  return false;
+}
+
+bool
+typedata_find_maximum (const StringVector &typedata, const std::string &field, long double *limit)
+{
+  if (typedata.empty() || field.empty()) // avoid constraining unknown fields
+    return false;
+  const String str = Aida::aux_vector_find (typedata, field, "max", "");
+  if (!str.empty())
+    {
+      if (limit)
+        *limit = string_to_type<long double> (str);
+      return true;
+    }
+  return false;
+}
+
 } // Xms
 } // Bse

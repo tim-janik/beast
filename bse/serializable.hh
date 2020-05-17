@@ -13,6 +13,15 @@ namespace Xms {
 class Reflink;
 class SerializationNode;
 
+/// Check for the writable and storage flags in the hints field of typedata.
+bool typedata_is_loadable  (const StringVector &typedata, const std::string &field);
+/// Check for the readable and storage flags in the hints field of typedata.
+bool typedata_is_storable  (const StringVector &typedata, const std::string &field);
+/// Find the minimum value for field of typedata.
+bool typedata_find_minimum (const StringVector &typedata, const std::string &field, long double *limit);
+/// Find the maximum value for field of typedata.
+bool typedata_find_maximum (const StringVector &typedata, const std::string &field, long double *limit);
+
 /// Interface for serializable objects with Reflink support.
 class SerializableInterface {
   friend SerializationNode;
