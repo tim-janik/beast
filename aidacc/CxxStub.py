@@ -270,7 +270,7 @@ class Generator:
       # s += '  "%sname=%s\\0"\n' % (prefix, fieldname)
       s += '  "%stype=%s\\0"\n' % (prefix, self.type_identifier (tp))
     if not fieldname and tp.storage == Decls.SEQUENCE:
-      s += '  "%sfields=%s\\0"\n' % (prefix, tp.elements[0])
+      s += '  "%sfields=%s\\0"\n' % (prefix, "0")
     if not fieldname and tp.storage == Decls.RECORD:
       s += '  "%sfields=' % prefix
       s += ';'.join (fid for (fid, ftp) in tp.fields)
@@ -294,7 +294,7 @@ class Generator:
           #blurb = blurb[-1] == ')' and re.sub ('[A-Z]*_\(', '', blurb[:-1]) or blurb # strip i18n function wrapper
           s += '  "%s.blurb=" %s "\\0"\n' % (ident, blurb)
     if not fieldname and tp.storage == Decls.SEQUENCE:
-      s += self.generate_aux_data_string (tp.elements[1], tp.elements[0], prefix + tp.elements[0] + '.')
+      s += self.generate_aux_data_string (tp.elements[1], tp.elements[0], prefix + "0" + '.')
     if not fieldname and tp.storage == Decls.RECORD:
       for fid, ftp in tp.fields:
         s += self.generate_aux_data_string (ftp, fid, prefix + fid + '.')
