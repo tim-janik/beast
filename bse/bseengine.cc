@@ -1255,36 +1255,32 @@ bse_engine_update_block_size (uint new_block_size)
 
 /**
  * @param latency_ms	calculation latency in milli seconds
- * @param sample_freq	mixing frequency
- * @param control_freq	frequency at which to check control values or 0
  * @return      	whether reconfiguration was successful
  *
  * Reconfigure engine parameters. This function may only be called
  * after engine initialization and can only succeed if no modules
  * are currently integrated.
  */
-gboolean
-bse_engine_configure (guint            latency_ms,
-                      guint            sample_freq,
-                      guint            control_freq)
+bool
+bse_engine_configure()
 {
   static std::condition_variable sync_cond;
   static std::mutex sync_mutex;
   static bool sync_lock = false;
-  guint block_size, control_raster, success = FALSE;
+  uint block_size, control_raster, success = false;
   BseTrans *trans;
   BseJob *job;
-  assert_return (bse_engine_initialized == TRUE, FALSE);
+  assert_return (bse_engine_initialized == TRUE, false);
 
   /* optimize */
   if (0 && block_size == bse_engine_block_size() && control_raster == bse_engine_control_raster())
-    return TRUE;
+    return true;
 
   /* pseudo-sync first */
   bse_engine_wait_on_trans();
   /* paranoia checks */
   if (_engine_mnl_head() || sync_lock)
-    return FALSE;
+    return false;
 
   /* block master */
   {
@@ -1347,7 +1343,7 @@ bse_engine_init()
   /* setup threading */
   Bse::MasterThread::start (bse_main_wakeup);
   /* first configure */
-  bse_engine_configure (50, 44100, 50);
+  bse_engine_configure();
   (void) slave; // FIXME: start slave ("DSP #2")
 }
 

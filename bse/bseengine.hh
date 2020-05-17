@@ -170,9 +170,7 @@ float*     bse_engine_const_values      (float value);
 /* --- initialization & main loop --- */
 void       bse_engine_init              ();
 void       bse_engine_shutdown          ();
-gboolean   bse_engine_configure         (guint                 latency_ms,
-                                         guint                 sample_freq,
-                                         guint                 control_freq);
+bool       bse_engine_configure         ();
 
 /* --- miscellaneous --- */
 float*     bse_engine_const_zeros	      (uint smaller_than_MAX_BLOCK_SIZE);

@@ -1289,12 +1289,9 @@ record Configuration {
                                       _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
                                       STANDARD, 0, 3000, 5);
     int32 synth_mixing_freq  = Range (_("Synth Mixing Frequency"),
-                                      _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
-                                      STANDARD, 8000, 192000, 0);
+                                      _("Unused, synthesis mixing frequency is always 48000 Hz"), "r", 48000, 48000);
     int32 synth_control_freq = Range (_("Synth Control Frequency"),
-                                      _("Frequency at which control values are evaluated, "
-                                        "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
-                                      STANDARD, 1, 192000, 0);
+                                      _("Unused frequency setting"), "r", 1500, 1500);
   };
   group _("MIDI") {
     String midi_driver     = String (_("MIDI Driver"), _("Driver and device to be used for MIDI input and output"), STANDARD);

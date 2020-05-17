@@ -724,7 +724,7 @@ engine_init (BseServer *server,
       if (current_priority <= -2 && mytid)
         setpriority (PRIO_PROCESS, mytid, current_priority + 1);
     }
-  bse_engine_configure (Bse::global_config->synth_latency, mix_freq, Bse::global_config->synth_control_freq);
+  bse_engine_configure();
 
   g_source_attach (server->engine_source, bse_main_context);
 }
