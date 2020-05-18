@@ -5,6 +5,7 @@
 #include <bse/gslfilter.hh>
 #include <bse/testing.hh>
 #include "bse/internal.hh"
+#include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -101,7 +102,7 @@ check_arg (uint         argc,
     return false;
 
   usage();
-  exit (1);
+  _exit (1);
 }
 
 namespace { // Anon
@@ -122,13 +123,13 @@ Options::parse (int   *argc_p,
           strcmp (argv[i], "-h") == 0)
         {
           usage();
-          exit (0);
+          _exit (0);
         }
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
           printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
-          exit (0);
+          _exit (0);
         }
       else if (check_arg (argc, argv, &i, "--dump-gnuplot-data"))
 	{

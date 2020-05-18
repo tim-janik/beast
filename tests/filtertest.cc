@@ -6,6 +6,7 @@
 #include <bse/bsemain.hh>
 #include <bse/gslfilter.hh> // FIXME
 #include <bse/bseglobals.hh> // FIXME
+#include <unistd.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -202,7 +203,7 @@ exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
                               double                     stopband_edge2 = NAN)
 {
   noexit_dump_iir_filter_gnuplot (fireq, fdes, fname, passband_ripple_db, passband_edge, passband_edge2, stopband_db, stopband_edge, stopband_edge2);
-  exit (0);
+  _exit (0);
 }
 
 static double

@@ -5,6 +5,7 @@
 #include <bse/bse.hh>
 #include <bse/bsemain.hh>
 #include "bse/internal.hh"
+#include <unistd.h>
 #include <stdlib.h>
 
 /* --- loop handle: reference code --- */
@@ -162,14 +163,14 @@ check_loop (GslDataHandle *src_handle,
   if (error != 0)
     {
       Bse::fatal_error ("loop_handle open failed: %s", bse_error_blurb (error));
-      exit (1);
+      _exit (1);
     }
 
   error = gsl_data_handle_open (loop_handle_reference);
   if (error != 0)
     {
       Bse::fatal_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
-      exit (1);
+      _exit (1);
     }
 
   GslLong i;
@@ -181,7 +182,7 @@ check_loop (GslDataHandle *src_handle,
       if (a != b)
 	{
 	  Bse::fatal_error ("bad read in loop<%lld,%lld> position %lld: a = %f, b = %f", loop_start, loop_end, i, a, b);
-	  exit (1);
+	  _exit (1);
 	}
     }
   gsl_data_handle_close (loop_handle);

@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "bse/bcore.hh"
+#include <unistd.h>
 
 struct IpcSharedMem {
   static const int64   MAGIC = 0x4253457465737473;        // BSEtests
@@ -19,5 +20,5 @@ template<class ...Args> BSE_NORETURN void
 die (const char *format, const Args &...args)
 {
   Bse::printerr ("%s\n", Bse::string_format (format, args...));
-  exit (99);
+  _exit (99);
 }

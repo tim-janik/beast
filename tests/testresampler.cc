@@ -7,6 +7,7 @@
 #include <bse/gslfft.hh>
 #include "bse/internal.hh"
 #include "testresampler.hh"
+#include <unistd.h>
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
@@ -169,7 +170,7 @@ check_arg (uint         argc,
     return false;
 
   usage();
-  exit (1);
+  _exit (1);
 }
 
 void
@@ -196,13 +197,13 @@ Options::parse (int   *argc_p,
           strcmp (argv[i], "-h") == 0)
         {
           usage();
-          exit (0);
+          _exit (0);
         }
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
           printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
-          exit (0);
+          _exit (0);
         }
       else if (check_arg (argc, argv, &i, "--block-size", &opt_arg))
 	{
@@ -231,7 +232,7 @@ Options::parse (int   *argc_p,
             case 24: precision = Resampler2::Precision (p);
 	      break;
 	    default: printerr ("testresampler: unsupported precision: %d\n", p);
-		     exit (1);
+		     _exit (1);
 	    }
 	}
       else if (check_arg (argc, argv, &i, "--precision-linear"))
@@ -258,7 +259,7 @@ Options::parse (int   *argc_p,
 	  if (freq_inc < 1)
 	    {
 	      printerr ("testresampler: invalid frequency scanning specification\n");
-	      exit (1);
+	      _exit (1);
 	    }
 	  g_free (oa);
 	}
@@ -703,7 +704,7 @@ standalone (int argc, char **argv)
       else
 	{
 	  printerr ("testresampler: unknown mode command: '%s'\n", command.c_str());
-	  exit (1);
+	  _exit (1);
 	}
     }
   else if (argc == 1)
@@ -714,7 +715,7 @@ standalone (int argc, char **argv)
   else
     {
       printerr ("testresampler: too many arguments\n");
-      exit (1);
+      _exit (1);
     }
 
   int result = perform_test();
