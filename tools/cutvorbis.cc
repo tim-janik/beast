@@ -86,7 +86,7 @@ main (int   argc,
       printerr ("  -s <cutpoint>  cut the Ogg/Vorbis stream at sample <cutpoint>\n");
       printerr ("  -k <cutpoint>  same as -s, but cut at vorbis packet boundary\n");
       printerr ("  -p <cutpoint>  same as -s, but cut at ogg page boundary\n");
-      exit (1);
+      _exit (1);
     }
   ifile = argv[1];
   ofile = argv[2];
@@ -100,13 +100,13 @@ main (int   argc,
   if (ifd < 0)
     {
       printerr ("Error: failed to open \"%s\": %s\n", ifile, g_strerror (errno));
-      exit (1);
+      _exit (1);
     }
   ofd = open (ofile, O_CREAT | O_TRUNC | O_WRONLY, 0666);
   if (ofd < 0)
     {
       printerr ("Error: failed to open \"%s\": %s\n", ofile, g_strerror (errno));
-      exit (1);
+      _exit (1);
     }
 
   while (!gsl_vorbis_cutter_ogg_eos (cutter))
@@ -122,7 +122,7 @@ main (int   argc,
           if (!errno && j == 0)
             errstr = "End of File";
           printerr ("Error: failed to read from \"%s\": %s\n", ifile, errstr);
-          exit (1);
+          _exit (1);
         }
       gsl_vorbis_cutter_write_ogg (cutter, j, buffer);
       n = gsl_vorbis_cutter_read_ogg (cutter, blength, buffer);
@@ -132,7 +132,7 @@ main (int   argc,
       if (j < 0)
         {
           printerr ("Error: failed to write to \"%s\": %s\n", ofile, g_strerror (errno));
-          exit (1);
+          _exit (1);
         }
     }
 
@@ -140,7 +140,7 @@ main (int   argc,
   if (close (ofd) < 0)
     {
       printerr ("Error: failed to flush \"%s\": %s\n", ofile, g_strerror (errno));
-      exit (1);
+      _exit (1);
     }
   printout ("done\n");
 

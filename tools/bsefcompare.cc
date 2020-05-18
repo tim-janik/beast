@@ -7,6 +7,7 @@
 #include <bse/gslfft.hh>
 #include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -508,7 +509,7 @@ FeatureValueFile::parse (const string& filename)
     {
       printerr ("%s: failed to open input file \"%s\": %s\n",
                 options.program_name, filename, strerror (errno));
-      exit (1);
+      _exit (1);
     }
   g_scanner_input_file (scanner, fd);
   scanner->input_name = this->filename.c_str();
@@ -529,7 +530,7 @@ FeatureValueFile::parse (const string& filename)
   if (expected_token != G_TOKEN_NONE)
     {
       g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
-      exit (1);
+      _exit (1);
     }
 }
 
@@ -576,7 +577,7 @@ fcompare_run (const ArgParser &ap)
       printerr ("%s: failed to compare files\n", options.program_name);
       printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
       printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
-      exit (5);
+      _exit (5);
     }
 
   vector<double> similarity;
@@ -592,7 +593,7 @@ fcompare_run (const ArgParser &ap)
 	              f1->name.c_str(), f1->printable_type().c_str(), file1.filename.c_str());
 	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f2->name.c_str(), f2->printable_type().c_str(), file2.filename.c_str());
-	  exit (4);
+	  _exit (4);
 	}
       similarity.push_back (s);
     }
@@ -648,7 +649,7 @@ fcompare_run (const ArgParser &ap)
   else
     {
       printout ("  FAIL     %s\n", options.program_name);
-      exit (1);
+      _exit (1);
     }
   return ""; // no error
 }

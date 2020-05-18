@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-
+#include <unistd.h>
 #include <map>
 #include <string>
 #include <vector>
@@ -112,7 +112,7 @@ public:
         if (r < 0)
           {
             printerr ("error reading sample data\n");
-            exit (1);
+            _exit (1);
           }
         have_samples += r;
       }
@@ -800,7 +800,7 @@ struct BaseFreqFeature : public Feature
 	  }
 	printf ("%f %f\n", i, vol / s);
       }
-    exit (1);
+    _exit (1);
 #endif
 
     for (vector< std::complex<double> >::const_iterator si = complex_signal_feature->complex_signal.begin();
@@ -1283,7 +1283,7 @@ FExtractOptions::validate_percent (const string &option, double value)
       printerr ("%s: invalid argument `%f' for `%s'\n\n", program_name, value, option.c_str());
       printerr ("Valid arguments are percent values (between 0 and 100).\n");
       printerr ("Try `%s --help' for more information.\n", program_name);
-      exit (1);
+      _exit (1);
     }
 }
 
@@ -1295,7 +1295,7 @@ FExtractOptions::validate_int (const string &option, int value, int vmin, int vm
       printerr ("%s: invalid argument `%d' for `%s'\n\n", program_name, value, option.c_str());
       printerr ("Valid arguments are between %d and %d.\n", vmin, vmax);
       printerr ("Try `%s --help' for more information.\n", program_name);
-      exit (1);
+      _exit (1);
     }
 }
 
@@ -1396,7 +1396,7 @@ FExtractOptions::assign_options (const ArgParser &ap)
       if (!output_file)
         {
           printerr ("%s: failed to open '%s' for writing: %s\n", program_name, outputfile, strerror (errno));
-          exit (3);
+          _exit (3);
         }
     }
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
@@ -1422,28 +1422,28 @@ fextract_run (const ArgParser &ap)
   if (!wave_file_info)
     {
       printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
-      exit (1);
+      _exit (1);
     }
 
   BseWaveDsc *waveDsc = bse_wave_dsc_load (wave_file_info, 0, FALSE, &error);
   if (!waveDsc)
     {
       printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
-      exit (1);
+      _exit (1);
     }
 
   GslDataHandle *dhandle = bse_wave_handle_create (waveDsc, 0, &error);
   if (!dhandle)
     {
       printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
-      exit (1);
+      _exit (1);
     }
 
   error = gsl_data_handle_open (dhandle);
   if (error != 0)
     {
       printerr ("%s: failed to open the input file %s: %s\n", options.program_name, audiofile, bse_error_blurb (error));
-      exit (1);
+      _exit (1);
     }
 
   /* extract features */
@@ -1453,7 +1453,7 @@ fextract_run (const ArgParser &ap)
     {
       printerr ("%s: bad channel %d, input file %s has %d channels\n",
                 options.program_name, options.channel, audiofile, signal.n_channels());
-      exit (1);
+      _exit (1);
     }
 
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
