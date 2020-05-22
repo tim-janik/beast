@@ -1281,8 +1281,8 @@ interface Project : Container {
 interface PcmWriter : Item {
 };
 
-// == Bse Configuration ==
-record Configuration {
+// == Bse Preferences ==
+record Preferences {
   group _("Synthesis Settings") {
     String pcm_driver        = String (_("PCM Driver"), _("Driver and device to be used for PCM input and output"), STANDARD);
     int32 synth_latency      = Range (_("Latency [ms]"),
@@ -1438,14 +1438,14 @@ interface Server : Container {
   SampleFileInfo sample_file_info  (String file_name); ///< Load sample file info from file.
   void           broadcast_shm_fragments (ShmFragmentSeq plan,
                                           int32 interval_ms);   ///< Broadcast shared memory fragments to the current Jsonipc connection.
-  SharedMemory   get_shared_memory       ();                    ///< Retrieve global SharedMemory information.
-  Configuration  get_config_defaults     ();                    ///< Retrieve Bse::Configuration setting defaults.
-  void           set_config    (Configuration configuration);   ///< Assign updated Bse::Configuration settings.
-  Configuration  get_config    ();                              ///< Retrieve Bse::Configuration settings.
-  bool           locked_config ();      ///< Returns whether `Configuration` is in use and locked against modifications.
+  SharedMemory   get_shared_memory ();                  ///< Retrieve global SharedMemory information.
+  Preferences    get_default_prefs ();                  ///< Retrieve Bse::Preferences setting defaults.
+  void           set_prefs         (Preferences prefs); ///< Assign updated Bse::Preferences settings.
+  Preferences    get_prefs         ();                  ///< Retrieve Bse::Preferences settings.
+  bool           locked_prefs      ();  ///< Returns whether `Preferences` is in use and locked against modifications.
   DriverEntrySeq list_pcm_drivers  ();  ///< List available drivers for PCM input/output handling.
   DriverEntrySeq list_midi_drivers ();  ///< List available drivers for MIDI input/output handling.
-  ResourceCrawler resource_crawler();   ///< Retrieve interface for listing resources.
+  ResourceCrawler resource_crawler ();  ///< Retrieve interface for listing resources.
 
   // properties
   group "Misc" {

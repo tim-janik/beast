@@ -1064,26 +1064,26 @@ ServerImpl::sample_file_info (const String &filename)
   return info;
 }
 
-Configuration
-ServerImpl::get_config_defaults ()
+Preferences
+ServerImpl::get_default_prefs ()
 {
   return global_config->defaults();
 }
 
-Configuration
-ServerImpl::get_config ()
+Preferences
+ServerImpl::get_prefs ()
 {
   return *global_config;
 }
 
 void
-ServerImpl::set_config (const Configuration &configuration)
+ServerImpl::set_prefs (const Preferences &preferences)
 {
-  global_config->assign (configuration);
+  global_config->assign (preferences);
 }
 
 bool
-ServerImpl::locked_config()
+ServerImpl::locked_prefs()
 {
   return global_config->locked();
 }
@@ -1362,7 +1362,7 @@ ServerImpl::open_midi_driver()
 {
   assert_return (midi_driver_ == nullptr, Error::INTERNAL);
   Error error = Error::UNKNOWN;
-  midi_driver_ = MidiDriver::open (get_config().midi_driver, Driver::READONLY, &error);
+  midi_driver_ = MidiDriver::open (get_prefs().midi_driver, Driver::READONLY, &error);
   if (!midi_driver_)
     {
       UserMessage umsg;
@@ -1398,7 +1398,7 @@ ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint *block_size)
   config.mix_freq = mix_freq;
   config.latency_ms = latency;
   config.block_length = *block_size;
-  pcm_driver_ = PcmDriver::open (get_config().pcm_driver, Driver::READWRITE, Driver::WRITEONLY, config, &error);
+  pcm_driver_ = PcmDriver::open (get_prefs().pcm_driver, Driver::READWRITE, Driver::WRITEONLY, config, &error);
   if (pcm_driver_)
     *block_size = pcm_driver_->block_length();
   else // !pcm_driver_

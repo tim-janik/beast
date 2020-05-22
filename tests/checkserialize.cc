@@ -9,7 +9,7 @@ using namespace Bse;
 
 // test_serializable_configuration
 struct SerializableConfiguration : public virtual Xms::SerializableInterface {
-  Configuration config_;
+  Preferences config_;
 protected:
   void
   xml_serialize (Xms::SerializationNode &xs) override
@@ -18,7 +18,7 @@ protected:
   }
 public:
   SerializableConfiguration() = default;
-  Configuration& config() { return config_; }
+  Preferences& config() { return config_; }
   bool operator== (const SerializableConfiguration &o) { return config_ == o.config_; }
   bool operator!= (const SerializableConfiguration &o) { return !operator== (o); }
 };
@@ -88,7 +88,7 @@ class FrobnicatorImpl : public FrobnicatorBase {
   Bse::Error                error_ = Bse::Error (0);
   std::vector<Xms::SerializableInterface*> children_;
 public:
-  std::vector<Bse::Configuration> configs_;
+  std::vector<Bse::Preferences> configs_;
   FrobnicatorImpl              *link_ = nullptr;
 protected:
   void         xml_serialize (Xms::SerializationNode &xs) override;

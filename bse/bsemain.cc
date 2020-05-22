@@ -477,39 +477,39 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 namespace Bse {
 
 // == Bse::GlobalConfig ==
-static Configuration global_config_rcsettings;
+static Preferences   global_config_rcsettings;
 static bool          global_config_dirty = false;
 static size_t        global_config_stamp = 1;
 static std::atomic<size_t> global_config_lockcount { 0 };
 
-Configuration
+Preferences
 GlobalConfig::defaults ()
 {
-  Configuration config;
+  Preferences prefs;
   // static defaults
-  config.pcm_driver = bse_main_args->pcm_driver;
-  config.synth_latency = 22;
-  config.synth_mixing_freq = 48000;
-  config.synth_control_freq = 1500;
-  config.midi_driver = bse_main_args->midi_driver;
-  config.invert_sustain = false;
-  config.license_default = "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
+  prefs.pcm_driver = bse_main_args->pcm_driver;
+  prefs.synth_latency = 22;
+  prefs.synth_mixing_freq = 48000;
+  prefs.synth_control_freq = 1500;
+  prefs.midi_driver = bse_main_args->midi_driver;
+  prefs.invert_sustain = false;
+  prefs.license_default = "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
   // dynamic defaults
   const String default_user_path = Path::join (Path::user_home(), "Beast");
-  config.effect_path     = default_user_path + "/Effects";
-  config.instrument_path = default_user_path + "/Instruments";
-  config.plugin_path     = default_user_path + "/Plugins";
-  config.sample_path     = default_user_path + "/Samples";
+  prefs.effect_path     = default_user_path + "/Effects";
+  prefs.instrument_path = default_user_path + "/Instruments";
+  prefs.plugin_path     = default_user_path + "/Plugins";
+  prefs.sample_path     = default_user_path + "/Samples";
   const char *user = g_get_user_name();
   if (user)
     {
       const char *name = g_get_real_name();
       if (name && name[0] && strcmp (user, name) != 0)
-        config.author_default = name;
+        prefs.author_default = name;
       else
-        config.author_default = user;
+        prefs.author_default = user;
     }
-  return config;
+  return prefs;
 }
 
 static String
@@ -519,8 +519,8 @@ global_config_beastrc()
 }
 
 struct BseRc : public virtual Xms::SerializableInterface {
-  Configuration config;
-  String        config_tag = "Configuration";
+  Preferences config;
+  String      config_tag = "Configuration";
   void
   xml_serialize (Xms::SerializationNode &xs) override
   {
@@ -528,18 +528,18 @@ struct BseRc : public virtual Xms::SerializableInterface {
   }
 };
 
-static const Configuration&
+static const Preferences&
 global_config_load ()
 {
   static bool loaded_once = false;
   if (!loaded_once)
     {
-      Configuration config = GlobalConfig::defaults();
+      Preferences config = GlobalConfig::defaults();
       // load from rcfile
       const String xmltext = Path::stringread (global_config_beastrc());
       if (!xmltext.empty())
         {
-          Configuration tmp = config;
+          Preferences tmp = config;
           Xms::SerializationNode xs;
           if (Bse::Error::NONE == xs.parse_xml ("", xmltext)) // "BseRc" but allow "configuration"
             {
@@ -566,12 +566,12 @@ global_config_load ()
 }
 
 void
-GlobalConfig::assign (const Configuration &configuration)
+GlobalConfig::assign (const Preferences &preferences)
 {
-  if (global_config_rcsettings == configuration ||
+  if (global_config_rcsettings == preferences ||
       GlobalConfig::locked ())
     return;
-  global_config_rcsettings = configuration;
+  global_config_rcsettings = preferences;
   global_config_stamp++;
   if (!global_config_dirty)
     {
@@ -616,7 +616,7 @@ GlobalConfig::locked ()
 const GlobalConfig*
 GlobalConfigPtr::operator-> () const
 {
-  const Configuration &config = global_config_load();
+  const Preferences &config = global_config_load();
   return static_cast<const GlobalConfig*> (&config);
 }
 

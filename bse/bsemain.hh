@@ -13,9 +13,9 @@ void bse_main_wakeup    ();
 namespace Bse {
 
 // == Bse Configuration ==
-struct GlobalConfig : Configuration {
-  static Configuration defaults ();
-  static void          assign   (const Configuration &configuration);
+struct GlobalConfig : Preferences {
+  static Preferences   defaults ();
+  static void          assign   (const Preferences &preferences);
   static void          flush    ();
   static void          lock     ();
   static void          unlock   ();
