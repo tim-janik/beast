@@ -111,6 +111,9 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      boundary = block->end;
 	    }
 
+          static_assert (WAVE_OSC_LOOK_BEYOND >= 4); // allow x[-4..+4], requires WaveChunk padding
+          static_assert (WAVE_OSC_LOOK_BEYOND <= BSE_WAVE_CHUNK_PADDING);
+
 	  x = wosc->x;
 	  d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	  d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;

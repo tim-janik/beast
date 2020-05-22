@@ -14,6 +14,8 @@
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)
 #define	SIGNAL_LEVEL_INVAL	(-2.0)	/* trigger level-changed checks */
 
+#define WAVE_OSC_LOOK_BEYOND    4       // look behind/ahead needed
+
 /* --- prototype --- */
 static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 						 gfloat          play_freq);
@@ -322,12 +324,14 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   wosc->last_mod_level = 0;
   gsl_wave_osc_set_filter (wosc, base_freq, TRUE);
 }
+
 void
 gsl_wave_osc_config (GslWaveOscData   *wosc,
 		     GslWaveOscConfig *config)
 {
   assert_return (wosc != NULL);
   assert_return (config != NULL);
+  assert_return (config->channel < BSE_WAVE_CHUNK_MAX_CHANNELS); // determines WaveChunk padding requirements
   if (wosc->config.wchunk_data != config->wchunk_data ||
       wosc->config.lookup_wchunk != config->lookup_wchunk ||
       wosc->config.channel != config->channel)
@@ -372,7 +376,7 @@ gsl_wave_osc_init (GslWaveOscData *wosc)
 {
   assert_return (wosc != NULL);
 
-  assert_return (GSL_WAVE_OSC_FILTER_ORDER <= BSE_CONFIG (wave_chunk_padding));
+  assert_return (GSL_WAVE_OSC_FILTER_ORDER <= BSE_WAVE_CHUNK_PADDING);
 
   memset (wosc, 0, sizeof (GslWaveOscData));
   wosc->mix_freq = bse_engine_sample_freq ();
