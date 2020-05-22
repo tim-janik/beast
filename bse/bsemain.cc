@@ -476,14 +476,14 @@ init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::Stri
 
 namespace Bse {
 
-// == Bse::GlobalConfig ==
-static Preferences   global_config_rcsettings;
-static bool          global_config_dirty = false;
-static size_t        global_config_stamp = 1;
-static std::atomic<size_t> global_config_lockcount { 0 };
+// == Bse::GlobalPreferences ==
+static Preferences   global_prefs_rcsettings;
+static bool          global_prefs_dirty = false;
+static size_t        global_prefs_stamp = 1;
+static std::atomic<size_t> global_prefs_lockcount { 0 };
 
 Preferences
-GlobalConfig::defaults ()
+GlobalPreferences::defaults ()
 {
   Preferences prefs;
   // static defaults
@@ -513,7 +513,7 @@ GlobalConfig::defaults ()
 }
 
 static String
-global_config_beastrc()
+global_prefs_beastrc()
 {
   return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "bserc.xml") : argv_bse_rcfile;
 }
@@ -529,14 +529,14 @@ struct BseRc : public virtual Xms::SerializableInterface {
 };
 
 static const Preferences&
-global_config_load ()
+global_prefs_load ()
 {
   static bool loaded_once = false;
   if (!loaded_once)
     {
-      Preferences config = GlobalConfig::defaults();
+      Preferences config = GlobalPreferences::defaults();
       // load from rcfile
-      const String xmltext = Path::stringread (global_config_beastrc());
+      const String xmltext = Path::stringread (global_prefs_beastrc());
       if (!xmltext.empty())
         {
           Preferences tmp = config;
@@ -559,65 +559,65 @@ global_config_load ()
             }
         }
       loaded_once = true;
-      global_config_rcsettings = config;
-      global_config_stamp++;
+      global_prefs_rcsettings = config;
+      global_prefs_stamp++;
     }
-  return global_config_rcsettings;
+  return global_prefs_rcsettings;
 }
 
 void
-GlobalConfig::assign (const Preferences &preferences)
+GlobalPreferences::assign (const Preferences &preferences)
 {
-  if (global_config_rcsettings == preferences ||
-      GlobalConfig::locked ())
+  if (global_prefs_rcsettings == preferences ||
+      GlobalPreferences::locked ())
     return;
-  global_config_rcsettings = preferences;
-  global_config_stamp++;
-  if (!global_config_dirty)
+  global_prefs_rcsettings = preferences;
+  global_prefs_stamp++;
+  if (!global_prefs_dirty)
     {
-      exec_timeout (GlobalConfig::flush, 500);
-      global_config_dirty = true;
+      exec_timeout (GlobalPreferences::flush, 500);
+      global_prefs_dirty = true;
     }
 }
 
 void
-GlobalConfig::flush ()
+GlobalPreferences::flush ()
 {
-  if (global_config_dirty)
+  if (global_prefs_dirty)
     {
       BseRc rc;
-      rc.config = global_config_rcsettings;
+      rc.config = global_prefs_rcsettings;
       Xms::SerializationNode xs;
       xs.save (rc);
-      Path::stringwrite (global_config_beastrc(), xs.write_xml ("BseRc"), true);
-      global_config_dirty = false;
+      Path::stringwrite (global_prefs_beastrc(), xs.write_xml ("BseRc"), true);
+      global_prefs_dirty = false;
     }
 }
 
 void
-GlobalConfig::lock ()
+GlobalPreferences::lock ()
 {
-  global_config_lockcount += 1;
+  global_prefs_lockcount += 1;
 }
 
 void
-GlobalConfig::unlock ()
+GlobalPreferences::unlock ()
 {
-  assert_return (global_config_lockcount > 0);
-  global_config_lockcount -= 1;
+  assert_return (global_prefs_lockcount > 0);
+  global_prefs_lockcount -= 1;
 }
 
 bool
-GlobalConfig::locked ()
+GlobalPreferences::locked ()
 {
-  return global_config_lockcount > 0;
+  return global_prefs_lockcount > 0;
 }
 
-const GlobalConfig*
-GlobalConfigPtr::operator-> () const
+const GlobalPreferences*
+GlobalPreferencesPtr::operator-> () const
 {
-  const Preferences &config = global_config_load();
-  return static_cast<const GlobalConfig*> (&config);
+  const Preferences &config = global_prefs_load();
+  return static_cast<const GlobalPreferences*> (&config);
 }
 
 // == loaders ==

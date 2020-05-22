@@ -13,7 +13,7 @@ void bse_main_wakeup    ();
 namespace Bse {
 
 // == Bse Configuration ==
-struct GlobalConfig : Preferences {
+struct GlobalPreferences : Preferences {
   static Preferences   defaults ();
   static void          assign   (const Preferences &preferences);
   static void          flush    ();
@@ -21,11 +21,11 @@ struct GlobalConfig : Preferences {
   static void          unlock   ();
   static bool          locked   ();
 };
-struct GlobalConfigPtr {
-  const GlobalConfig* operator-> () const;
-  const GlobalConfig& operator*  () const { return *operator->(); }
+struct GlobalPreferencesPtr {
+  const GlobalPreferences* operator-> () const;
+  const GlobalPreferences& operator*  () const { return *operator->(); }
 };
-inline GlobalConfigPtr global_config;
+inline GlobalPreferencesPtr global_prefs;
 
 bool* register_driver_loader (const char *staticwhat, Error (*loader) ());
 

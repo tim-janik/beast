@@ -2043,7 +2043,7 @@ process_midi_control_L (BseMidiReceiver *self,
       MidiChannel *mchannel;
     case 64:			/* Damper Pedal Switch (Sustain) */
       mchannel = self->peek_channel (channel);
-      if (mchannel && (uint (Bse::global_config->invert_sustain) ^ (value < 0.5)))
+      if (mchannel && (uint (Bse::global_prefs->invert_sustain) ^ (value < 0.5)))
 	mchannel->kill_notes (tick_stamp, TRUE, trans);
       break;
     case 98:			/* Non-Registered Parameter MSB */
@@ -2132,7 +2132,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
           if (mchannel)
             {
               bool sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
-                                    (uint (Bse::global_config->invert_sustain) ^
+                                    (uint (Bse::global_prefs->invert_sustain) ^
                                      (self->get_control (event->channel, Bse::MidiSignal::CONTROL_64) >= 0.5));
               mchannel->adjust_note (event->delta_time,
                                      event->data.note.frequency, event->status,

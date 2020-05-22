@@ -267,7 +267,7 @@ bse_wave_load_wave_file (BseWave      *self,
       if (bse_main_args->override_sample_path)
 	sample_path = bse_main_args->override_sample_path;
       else
-	sample_path = Bse::Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_config->sample_path);
+	sample_path = Bse::Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_prefs->sample_path);
       files = sfi_file_crawler_list_files (sample_path.c_str(), file_name, G_FILE_TEST_IS_REGULAR);
 
       for (walk = files; walk; walk = sfi_ring_walk (files, walk))

@@ -170,7 +170,7 @@ test_serializable_hierarchy()
     dynamic_cast<FrobnicatorBase*> (&midi)->flags_ = 0x02020202;
     project.link_ = dynamic_cast<FrobnicatorImpl*> (&project.create_track ("Audio"));
     project.link_->populate (false);
-    project.link_->configs_.push_back (*Bse::global_config);
+    project.link_->configs_.push_back (*Bse::global_prefs);
     FrobnicatorSpecial *master = dynamic_cast<FrobnicatorSpecial*> (&project.create_track ("Master"));
     master->max_ = -9e-309;
     master->flags_ = 0xeaeaeaea;

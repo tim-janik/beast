@@ -179,8 +179,8 @@ SuperImpl::SuperImpl (BseObject *bobj) :
   ContainerImpl (bobj)
 {
   // default-fill fields
-  author_  = Bse::global_config->author_default;
-  license_ = Bse::global_config->license_default;
+  author_  = Bse::global_prefs->author_default;
+  license_ = Bse::global_prefs->license_default;
 }
 
 SuperImpl::~SuperImpl ()

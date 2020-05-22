@@ -284,9 +284,9 @@ bse_server_open_devices (BseServer *self)
       return Bse::Error::NONE;
     }
   /* lock playback/capture/latency settings */
-  Bse::global_config->lock();
+  Bse::global_prefs->lock();
   /* calculate block_size for pcm setup */
-  const uint latency = Bse::global_config->synth_latency;
+  const uint latency = Bse::global_prefs->synth_latency;
   const uint mix_freq = bse_engine_sample_freq();
   uint block_size = BSE_ENGINE_MAX_BLOCK_SIZE;
   /* try opening devices */
@@ -334,7 +334,7 @@ bse_server_open_devices (BseServer *self)
       impl->close_pcm_driver();
       impl->close_midi_driver();
     }
-  Bse::global_config->unlock();
+  Bse::global_prefs->unlock();
   return error;
 }
 
@@ -710,7 +710,7 @@ engine_init (BseServer *server,
 
   assert_return (server->engine_source == NULL);
 
-  Bse::global_config->lock();
+  Bse::global_prefs->lock();
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
   g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
 
@@ -737,7 +737,7 @@ engine_shutdown (BseServer *server)
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
   bse_engine_user_thread_collect ();
-  Bse::global_config->unlock();
+  Bse::global_prefs->unlock();
 }
 
 
@@ -851,25 +851,25 @@ ServerImpl::get_ladspa_path ()
 String
 ServerImpl::get_plugin_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::PLUGINDIR), Bse::global_config->plugin_path);
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::PLUGINDIR), Bse::global_prefs->plugin_path);
 }
 
 String
 ServerImpl::get_instrument_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::INSTRUMENTDIR), Bse::global_config->instrument_path);
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::INSTRUMENTDIR), Bse::global_prefs->instrument_path);
 }
 
 String
 ServerImpl::get_sample_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_config->sample_path);
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_prefs->sample_path);
 }
 
 String
 ServerImpl::get_effect_path ()
 {
-  return Path::searchpath_join (Bse::runpath (Bse::RPath::EFFECTDIR), Bse::global_config->effect_path);
+  return Path::searchpath_join (Bse::runpath (Bse::RPath::EFFECTDIR), Bse::global_prefs->effect_path);
 }
 
 String
@@ -887,14 +887,14 @@ ServerImpl::get_version ()
 String
 ServerImpl::get_custom_effect_dir ()
 {
-  StringVector strings = string_split (Bse::global_config->effect_path, G_SEARCHPATH_SEPARATOR_S);
+  StringVector strings = string_split (Bse::global_prefs->effect_path, G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
 }
 
 String
 ServerImpl::get_custom_instrument_dir ()
 {
-  StringVector strings = string_split (Bse::global_config->instrument_path, G_SEARCHPATH_SEPARATOR_S);
+  StringVector strings = string_split (Bse::global_prefs->instrument_path, G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
 }
 
@@ -1067,25 +1067,25 @@ ServerImpl::sample_file_info (const String &filename)
 Preferences
 ServerImpl::get_default_prefs ()
 {
-  return global_config->defaults();
+  return global_prefs->defaults();
 }
 
 Preferences
 ServerImpl::get_prefs ()
 {
-  return *global_config;
+  return *global_prefs;
 }
 
 void
 ServerImpl::set_prefs (const Preferences &preferences)
 {
-  global_config->assign (preferences);
+  global_prefs->assign (preferences);
 }
 
 bool
 ServerImpl::locked_prefs()
 {
-  return global_config->locked();
+  return global_prefs->locked();
 }
 
 NoteDescription
