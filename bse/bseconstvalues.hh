@@ -80,4 +80,9 @@
 #define	BSE_RATING_FALLBACK		(1)
 #define	BSE_RATING_NO_AUTO		(-1)
 
+#define BSE_WAVE_CHUNK_MAX_CHANNELS     (8)
+#define BSE_WAVE_CHUNK_PADDING          (8)
+#define BSE_DCACHE_BLOCK_SIZE           (4096)
+#define BSE_DCACHE_CACHE_MEMORY         (64 * 1024 * 1024)
+
 #endif /* __BSE_CONST_VALUES_H__ */
