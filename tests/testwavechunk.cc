@@ -352,7 +352,7 @@ multi_channel_tests()
   for (pingpong = 0; pingpong != 2; pingpong++)
     {
       int channels;
-      for (channels = 1; channels <= 32; channels++)
+      for (channels = 1; channels <= BSE_WAVE_CHUNK_MAX_CHANNELS; channels++)
         {
           bool skip = false;
           if (pingpong && (channels > 1))   // FIXME: ping pong multichannel loops are broken
