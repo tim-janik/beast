@@ -418,8 +418,10 @@ cstring_to_bool (const char *string, bool fallback)
         p++;
     }
   // handle numbers
-  if (p[0] >= '0' && p[0] <= '9')
-    return 0 != string_to_uint (p);
+  if (p[0] == '0')
+    return false;
+  if (p[0] >= '1' && p[0] <= '9')
+    return true;
   // handle special words
   if (strncasecmp (p, "ON", 2) == 0)
     return 1;
