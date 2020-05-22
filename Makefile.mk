@@ -327,3 +327,4 @@ TAGS:
 	$Q etags --no-members $$(cat .TAGS.tmp2)
 	$Q rm .TAGS.tmp .TAGS.tmp2
 .PHONY: TAGS
+CLEANFILES += TAGS
