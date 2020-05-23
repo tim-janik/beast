@@ -54,7 +54,7 @@ class Noise : public NoiseBase {
     config (Properties *properties)
     {
       noise_data = properties->noise_data;
-      allow_randomization = bse_main_args->allow_randomization;
+      allow_randomization = config_bool ("allow-randomization");
     }
     void
     reset()

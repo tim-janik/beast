@@ -441,8 +441,8 @@ aiff_load_wave_dsc (void            *data,
   dsc->wdsc.n_chunks = 1;
   dsc->wdsc.chunks = (BseWaveChunkDsc*) g_malloc0 (sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
   dsc->wdsc.chunks[0].mix_freq = afile->mix_freq;
-  dsc->wdsc.chunks[0].osc_freq = bse_temp_freq (BSE_CONFIG (kammer_freq),
-                                                afile->instrument.base_note - BSE_CONFIG (midi_kammer_note));
+  dsc->wdsc.chunks[0].osc_freq = bse_temp_freq (BSE_KAMMER_FREQUENCY,
+                                                afile->instrument.base_note - BSE_KAMMER_NOTE);
   if (afile->instrument.sustain_loop_mode > 0 && afile->instrument.sustain_loop_mode <= 2 &&
       afile->instrument.sustain_begin_id && afile->instrument.sustain_end_id)
     {

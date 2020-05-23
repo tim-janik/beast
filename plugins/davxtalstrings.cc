@@ -362,7 +362,7 @@ xmod_trigger (XtalStringsModule *xmod,
 
   /* Add static to displacements. */
   DavRand rand;
-  dav_rand_setup (&rand, bse_main_args->allow_randomization);
+  dav_rand_setup (&rand, Bse::config_bool ("allow-randomization"));
   for (i = 0; i < xmod->size; i++)
     xmod->string[i] = (xmod->string[i] * (1.0F - xmod->tparams.metallic_factor) +
 		       (dav_rand_bool (&rand) ? -1.0F : 1.0F) * xmod->tparams.metallic_factor);

@@ -268,8 +268,8 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
       case BSEWAVE_TOKEN_MIDI_NOTE:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->osc_freq = bse_temp_freq (BSE_CONFIG (kammer_freq),
-					 ((int) scanner->value.v_int64) - BSE_CONFIG (midi_kammer_note));
+	chunk->osc_freq = bse_temp_freq (BSE_KAMMER_FREQUENCY,
+					 ((int) scanner->value.v_int64) - BSE_KAMMER_NOTE);
         chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "midi-note", scanner->value.v_int64);
 	break;
       case BSEWAVE_TOKEN_OSC_FREQ:

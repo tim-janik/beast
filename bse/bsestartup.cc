@@ -26,17 +26,82 @@ init_needed ()
   return _bse_initialized() == false;
 }
 
-/// Retrieve a handle for the Bse::Server instance managing the Bse thread.
-#if 0 // FIXME
-ServerHandle
-init_server_instance () // bse.hh
+/// Extract BSE specific arguments from `argc, argv` and set `args` accordingly.
+void
+init_args (StringVector &args, int *argc, char **argv)
 {
-  ServerH server;
-  server = BSE_SERVER.__handle__();
-  return server;
+  const uint cargc = *argc;
+  /* this function is called before the main BSE thread is started,
+   * so we can't use any BSE functions yet.
+   */
+  uint i;
+  for (i = 1; i < cargc; i++)
+    {
+      if (strcmp (argv[i], "--g-fatal-warnings") == 0)
+        {
+          args.push_back ("fatal-warnings=1");
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-pcm-driver", argv[i]) == 0 && i + 1 < cargc)
+	{
+          argv[i++] = NULL;
+          args.push_back ("pcm-driver=" + std::string (argv[i]));
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-midi-driver", argv[i]) == 0 && i + 1 < cargc)
+	{
+          argv[i++] = NULL;
+          args.push_back ("midi-driver=" + std::string (argv[i]));
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-override-plugin-globs", argv[i]) == 0 && i + 1 < cargc)
+	{
+          argv[i++] = NULL;
+          args.push_back ("override-plugin-globs=" + std::string (argv[i]));
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-override-sample-path", argv[i]) == 0 && i + 1 < cargc)
+	{
+	  argv[i++] = NULL;
+          args.push_back ("override-sample-path=" + std::string (argv[i]));
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < cargc)
+	{
+          argv[i++] = NULL;
+          args.push_back ("rcfile=" + std::string (argv[i]));
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-disable-randomization", argv[i]) == 0)
+	{
+          args.push_back ("allow-randomization=0");
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-enable-randomization", argv[i]) == 0)
+	{
+          args.push_back ("allow-randomization=1");
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-jobs", argv[i]) == 0)
+	{
+          argv[i++] = NULL;
+          args.push_back ("jobs=" + std::string (argv[i]));
+	  argv[i] = NULL;
+	}
+    }
+
+  if (*argc > 1)
+    {
+      uint e = 1;
+      for (i = 1; i < cargc; i++)
+        if (argv[i])
+          {
+            argv[e++] = argv[i];
+            if (i >= e)
+              argv[i] = NULL;
+          }
+      *argc = e;
+    }
 }
-#endif
 
 } // Bse
-
-// #include "bse/bseapi_handles.cc"        // build IDL client interface

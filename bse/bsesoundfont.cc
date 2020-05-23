@@ -89,12 +89,10 @@ use_searchpath (std::string file_name)
     return file_name;
 
   /* resolve relative path using search dir */
-  std::string sample_path;
   std::string found_file;
   SfiRing *files, *walk;
-  if (bse_main_args->override_sample_path)
-    sample_path = bse_main_args->override_sample_path;
-  else
+  std::string sample_path = Bse::config_string ("override-sample-path");
+  if (sample_path.empty())
     sample_path = Bse::Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_prefs->sample_path);
   files = sfi_file_crawler_list_files (sample_path.c_str(), file_name.c_str(), G_FILE_TEST_IS_REGULAR);
 

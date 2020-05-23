@@ -12,7 +12,7 @@ void bse_main_wakeup    ();
 
 namespace Bse {
 
-// == Bse Configuration ==
+// == Bse::GlobalPreferences ==
 struct GlobalPreferences : Preferences {
   static Preferences   defaults ();
   static void          assign   (const Preferences &preferences);
@@ -26,6 +26,12 @@ struct GlobalPreferencesPtr {
   const GlobalPreferences& operator*  () const { return *operator->(); }
 };
 inline GlobalPreferencesPtr global_prefs;
+
+// == Bse Configuration ==
+void            config_init         (StringVector &args);
+String          config_string       (const String &key, const String &fallback = "");
+bool            config_bool         (const String &key, bool fallback = false);
+int64           config_int          (const String &key, int64 fallback = 0);
 
 bool* register_driver_loader (const char *staticwhat, Error (*loader) ());
 
@@ -67,36 +73,8 @@ extern JobQueue jobs;
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
-#define	BSE_DBG_EXT     			(bse_main_args->debug_extensions != FALSE)
-#define	BSE_CONFIG(field)			(bse_main_args->field)
-
-/* --- argc/argv overide settings --- */
-struct BseMainArgs {
-  const char           *pcm_driver;
-  const char           *midi_driver;
-  const char           *override_plugin_globs;
-  const char 	       *override_sample_path;
-  uint   	        n_processors;
-  /* # values to pad around wave chunk blocks per channel */
-  uint   	        wave_chunk_padding;
-  uint   	        wave_chunk_big_pad;
-  /* data (file) cache block size (aligned to power of 2) */
-  uint   	        dcache_block_size;
-  /* amount of bytes to spare for memory cache */
-  uint   	        dcache_cache_memory;
-  uint   	        midi_kammer_note;
-  /* kammer frequency, normally 440Hz, historically 435Hz */
-  double 	        kammer_freq;
-  bool                  stand_alone;            ///< Initialization argument "stand-alone" - no rcfiles, etc.
-  bool                  allow_randomization;	///< Initialization argument "allow-randomization" - enables non-deterministic behavior
-  bool                  force_fpu;		///< Initialization argument "force-fpu" - avoid vectorized optimizations
-  bool		        load_drivers;   	///< Load Audio/MIDI drivers at bootup
-  bool                  debug_extensions;       ///< Initialization argument "debug-extensions" - enable debugging extensions
-  bool                  dump_driver_list;
-};
 
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
-extern BseMainArgs     *bse_main_args;
 
 #endif /* __BSE_MAIN_H__ */
