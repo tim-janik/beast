@@ -65,8 +65,11 @@ initialize_with_args (const char *app_name, const Bse::StringVector &args)
   if (!g_get_prgname() && app_name)
     g_set_prgname (app_name);
 
-  // initialize SFI
-  sfi_init();
+  // initialize SFI components
+  _sfi_init_values ();
+  _sfi_init_params ();
+  _sfi_init_time ();
+  _sfi_init_file_crawler ();
 
   // SIGPIPE init: needs to be done before any child thread is created
   init_sigpipe();
