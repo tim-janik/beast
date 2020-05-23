@@ -217,7 +217,8 @@ define conftest_buildtest.c
 extern "C"
 int main (int argc, char *argv[])
 {
-  Bse::init_async (&argc, argv, "bse-app-test");
+  Bse::StringVector args = Bse::init_args (&argc, argv);
+  Bse::init_async ("bse-app-test", args);
   return 0;
 }
 endef

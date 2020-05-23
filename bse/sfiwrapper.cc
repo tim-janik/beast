@@ -7,7 +7,7 @@
 
 /* --- initialization --- */
 void
-sfi_init (int *argcp, char **argv, const Bse::StringVector &args)
+sfi_init (const Bse::StringVector &args)
 {
   static bool initialized = false;
   if (initialized)

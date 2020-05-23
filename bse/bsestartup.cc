@@ -14,9 +14,9 @@ namespace Bse {
  * from @a argc / @a argv.
  */
 void
-init_async (int *argc, char **argv, const char *app_name, const StringVector &args)
+init_async (const char *app_name, const StringVector &args)
 {
-  _bse_init_async (argc, argv, app_name, args);
+  _bse_init_async (app_name, args);
 }
 
 /// Check wether init_async() still needs to be called.
@@ -27,13 +27,18 @@ init_needed ()
 }
 
 /// Extract BSE specific arguments from `argc, argv` and set `args` accordingly.
-void
-init_args (StringVector &args, int *argc, char **argv)
+StringVector
+init_args (int *argc, char **argv)
 {
+  StringVector args;
   const uint cargc = *argc;
   /* this function is called before the main BSE thread is started,
    * so we can't use any BSE functions yet.
    */
+  if (*argc && argv[0])
+    args.push_back ("exe=" + std::string (argv[0]));
+  else
+    args.push_back ("exe=" + executable_name());
   uint i;
   for (i = 1; i < cargc; i++)
     {
@@ -102,6 +107,7 @@ init_args (StringVector &args, int *argc, char **argv)
           }
       *argc = e;
     }
+  return args;
 }
 
 } // Bse

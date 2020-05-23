@@ -5,9 +5,9 @@
 #include <bse/bseenums.hh>
 
 // == BSE Initialization ==
-void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
+void _bse_init_async	(const char *app_name, const Bse::StringVector &args);
 bool _bse_initialized	();
-int  bse_init_and_test 	(int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args = Bse::StringVector());
+int  bse_init_and_test 	(const Bse::StringVector &args, const std::function<int()> &bsetester);
 void bse_main_wakeup    ();
 
 namespace Bse {
@@ -28,7 +28,6 @@ struct GlobalPreferencesPtr {
 inline GlobalPreferencesPtr global_prefs;
 
 // == Bse Configuration ==
-void            config_init         (StringVector &args);
 String          config_string       (const String &key, const String &fallback = "");
 bool            config_bool         (const String &key, bool fallback = false);
 int64           config_int          (const String &key, int64 fallback = 0);

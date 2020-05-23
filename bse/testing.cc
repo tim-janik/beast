@@ -26,12 +26,12 @@ namespace Test {
  * See also #$BSE_DEBUG.
  */
 void
-init (int *argcp, char **argv, const StringVector &args)
+init ()
 {
   Bse::set_debug_flags (Bse::DebugFlags::FATAL_WARNINGS);
   unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
   g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  sfi_init (argcp, argv, Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));
+  sfi_init (Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));
 }
 
 Timer::Timer (double deadline_in_secs) :

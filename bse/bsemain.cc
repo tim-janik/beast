@@ -24,6 +24,7 @@ using namespace Bse;
 /* --- prototypes --- */
 namespace Bse {
 static void     run_registered_driver_loaders();
+static void     config_init (const StringVector &args);
 } // Bse
 
 /* --- variables --- */
@@ -53,25 +54,25 @@ init_sigpipe()
 }
 
 static void
-initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+initialize_with_args (const char *app_name, const Bse::StringVector &args)
 {
   assert_return (_bse_initialized() == false);
   assert_return (bse_main_context == NULL);
 
-  // setup GLib's prgname for error messages
-  if (argc && argv && *argc && !g_get_prgname ())
-    g_set_prgname (*argv);
-
   // argument handling
-  StringVector cfg_args = args;
-  init_args (cfg_args, argc, argv);
-  config_init (cfg_args);
+  config_init (args);
+
+  // setup GLib's prgname for error messages
+  if (auto exe = config_string ("exe"); !exe.empty() && !g_get_prgname())
+    g_set_prgname (exe.c_str());
+  if (!g_get_prgname() && app_name)
+    g_set_prgname (app_name);
 
   // initialize SFI
   if (initialized_for_unit_testing > 0)
-    Bse::Test::init (argc, argv);
+    Bse::Test::init();
   else
-    sfi_init (argc, argv);
+    sfi_init();
 
   // SIGPIPE init: needs to be done before any child thread is created
   init_sigpipe();
@@ -187,10 +188,9 @@ reap_main_loop_thread ()
 }
 
 void
-_bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+_bse_init_async (const char *app_name, const Bse::StringVector &args)
 {
-  assert_return (argc && argv);
-  initialize_with_argv (argc, argv, app_name, args);
+  initialize_with_args (app_name, args);
 
   // start main BSE thread
   if (std::atexit (reap_main_loop_thread) != 0)
@@ -242,12 +242,12 @@ bse_main_enqueue (const std::function<void()> &func)
 }
 
 int
-bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args)
+bse_init_and_test (const Bse::StringVector &args, const std::function<int()> &bsetester)
 {
   // initialize
   assert_return (initialized_for_unit_testing < 0, -128);
   initialized_for_unit_testing = 1;
-  _bse_init_async (argc, argv, NULL, args);
+  _bse_init_async (NULL, args);
   // run tests
   Aida::ScopedSemaphore sem;
   int retval = -128;
@@ -344,8 +344,8 @@ init_apply_args (const StringVector &args, StringMap &gconfig)
 static StringMap *volatile global_config = nullptr;
 
 /// Apply configuration upon BSE initialization.
-void
-config_init (StringVector &args)
+static void
+config_init (const StringVector &args)
 {
   assert_return (global_config == nullptr);
   // convert

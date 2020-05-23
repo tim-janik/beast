@@ -8,8 +8,8 @@
 namespace Bse {
 
 // == BSE Initialization ==
-void            init_args           (StringVector &args, int *argc, char **argv);
-void		init_async	    (int *argc, char **argv, const char *app_name, const StringVector &args = StringVector());
+StringVector    init_args           (int *argc, char **argv);
+void		init_async	    (const char *app_name, const StringVector &args = StringVector());
 bool		init_needed	    ();
 void		objects_debug_leaks ();
 
