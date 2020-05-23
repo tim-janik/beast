@@ -73,7 +73,6 @@ struct TestEntry {
 using TestEntries = std::vector<TestEntry>;
 TestEntries list_tests ();
 int         run_test   (const std::string &test_identifier);
-void        init       ();
 
 // === test maintenance ===
 int     run             ();     ///< Run all registered tests.

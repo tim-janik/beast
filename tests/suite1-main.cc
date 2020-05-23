@@ -193,7 +193,7 @@ main (int argc, char *argv[])
       return test_resampler (argc, argv);
     }
   // run tests
-  return bse_init_and_test (args, [&]() { return test_main (argc, argv); });
+  return Bse::init_and_test (args, [&]() { return test_main (argc, argv); });
 }
 
 static int

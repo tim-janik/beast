@@ -7,7 +7,6 @@
 // == BSE Initialization ==
 void _bse_init_async	(const char *app_name, const Bse::StringVector &args);
 bool _bse_initialized	();
-int  bse_init_and_test 	(const Bse::StringVector &args, const std::function<int()> &bsetester);
 void bse_main_wakeup    ();
 
 namespace Bse {

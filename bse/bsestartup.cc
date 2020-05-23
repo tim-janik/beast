@@ -3,6 +3,8 @@
 #include "bsemain.hh"
 #include "bse/internal.hh"
 #include "bse/bseserver.hh"
+#include "bseblockutils.hh" /* bse_block_impl_name() */
+#include "testing.hh"
 #include <bse/bse.hh>
 
 namespace Bse {
@@ -17,6 +19,27 @@ void
 init_async (const char *app_name, const StringVector &args)
 {
   _bse_init_async (app_name, args);
+}
+
+/// Initialize BSE and run `bsetester()` in the BSE thread.
+/// During unit test mode, all warnings are fatal, see also #$BSE_DEBUG.
+int
+init_and_test (const Bse::StringVector &args, const std::function<int()> &bsetester)
+{
+  // initialize
+  StringVector testargs = args;
+  testargs.push_back ("fatal-warnings=1");
+  init_async (NULL, testargs);
+  // unit testing message
+  StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
+  String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
+  // run tests
+  int retval = -128;
+  Bse::jobs += [&bsetester, &retval] () {
+    retval = bsetester();
+  };
+  return retval;
 }
 
 /// Check wether init_async() still needs to be called.

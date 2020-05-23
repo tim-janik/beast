@@ -20,20 +20,6 @@ namespace Bse {
  */
 namespace Test {
 
-/** Initialize the Bse core for a test program.
- * Initializes Bse to execute unit tests by calling parse_settings_and_args()
- * with args "autonomous=1" and "testing=1" and setting the application name.
- * See also #$BSE_DEBUG.
- */
-void
-init ()
-{
-  Bse::set_debug_flags (Bse::DebugFlags::FATAL_WARNINGS);
-  unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
-  g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  sfi_init (Bse::cstrings_to_vector (":autonomous:testing:fatal-warnings:", NULL));
-}
-
 Timer::Timer (double deadline_in_secs) :
   deadline_ (deadline_in_secs), test_duration_ (0), n_reps_ (0)
 {}

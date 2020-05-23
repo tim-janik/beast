@@ -90,5 +90,5 @@ main (int argc, char *argv[])
 {
   Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
   Bse::StringVector args = Bse::init_args (&argc, argv);
-  return bse_init_and_test (args, [&]() { return test_main (argc, argv); });
+  return Bse::init_and_test (args, [&]() { return test_main (argc, argv); });
 }

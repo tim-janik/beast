@@ -10,14 +10,12 @@
 #include "driver.hh"
 #include "gsldatacache.hh"
 #include "bseengine.hh"
-#include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "serializable.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <bse/testing.hh>
 
 using namespace Bse;
 
@@ -31,7 +29,6 @@ static void     config_init (const StringVector &args);
 static volatile int bse_initialization_stage = 0;
 
 // == BSE Initialization ==
-static int initialized_for_unit_testing = -1;
 static std::thread async_bse_thread;
 
 bool
@@ -69,10 +66,7 @@ initialize_with_args (const char *app_name, const Bse::StringVector &args)
     g_set_prgname (app_name);
 
   // initialize SFI
-  if (initialized_for_unit_testing > 0)
-    Bse::Test::init();
-  else
-    sfi_init();
+  sfi_init();
 
   // SIGPIPE init: needs to be done before any child thread is created
   init_sigpipe();
@@ -143,14 +137,6 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   // start other threads
   struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
   Internal::_init_threaded();
-
-  // unit testing message
-  if (initialized_for_unit_testing > 0)
-    {
-      StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
-      String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-      TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
-    }
 
   // complete initialization
   bse_initialization_stage++;   // = 2
@@ -241,25 +227,6 @@ bse_main_enqueue (const std::function<void()> &func)
   g_source_unref (source);
 }
 
-int
-bse_init_and_test (const Bse::StringVector &args, const std::function<int()> &bsetester)
-{
-  // initialize
-  assert_return (initialized_for_unit_testing < 0, -128);
-  initialized_for_unit_testing = 1;
-  _bse_init_async (NULL, args);
-  // run tests
-  Aida::ScopedSemaphore sem;
-  int retval = -128;
-  std::function<void()> wrapper = [&sem, &bsetester, &retval] () {
-    retval = bsetester();
-    sem.post();
-  };
-  bse_main_enqueue (wrapper);
-  sem.wait();
-  return retval;
-}
-
 namespace Bse {
 void
 JobQueue::call_remote (const std::function<void()> &job)
@@ -308,20 +275,22 @@ kv_split (const String &kvpair, String *valuep = nullptr)
   return "";
 }
 
+static StringMap *volatile global_config = nullptr;
+
+/// Apply configuration upon BSE initialization.
 static void
-init_apply_args (const StringVector &args, StringMap &gconfig)
+config_init (const StringVector &args)
 {
-  String value;
+  assert_return (global_config == nullptr);
+  // map args to config_*()
+  StringMap gconfig;
   for (const auto &kv : args)
     {
-      if (kv == "--")
+      String value;
+      if (kv == "--") // should not occour
         break;
-      else if (kv_split (kv, &value) == "fatal-warnings" && string_to_bool (value))
-        {
-	  GLogLevelFlags fatal_mask = GLogLevelFlags (g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK)));
-	  fatal_mask = GLogLevelFlags (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-	  g_log_set_always_fatal (fatal_mask);
-        }
+      else if (kv_split (kv, &value) == "fatal-warnings")
+        gconfig["fatal-warnings"] = value;
       else if (kv_split (kv, &value) == "pcm-driver")
         gconfig["pcm-driver"] = value;
       else if (kv_split (kv, &value) == "midi-driver")
@@ -339,26 +308,21 @@ init_apply_args (const StringVector &args, StringMap &gconfig)
       else if (kv_split (kv, &value) == "jobs")
         gconfig["jobs"] = string_from_int (string_to_int (value));
     }
-}
-
-static StringMap *volatile global_config = nullptr;
-
-/// Apply configuration upon BSE initialization.
-static void
-config_init (const StringVector &args)
-{
-  assert_return (global_config == nullptr);
-  // convert
-  StringMap strmap;
-  init_apply_args (args, strmap);
+  // apply config
+  if (string_to_bool (gconfig["fatal-warnings"]))
+    {
+      Bse::set_debug_flags (Bse::DebugFlags::FATAL_WARNINGS);
+      unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
+      g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+    }
   // sanitize settings
-  if (string_to_int (strmap["jobs"]) <= 0)
-    strmap["jobs"] = string_from_int (get_n_processors());
-  if (const String r = strmap["allow-randomization"]; r.empty())
-    strmap["allow-randomization"] = "1";
+  if (string_to_int (gconfig["jobs"]) <= 0)
+    gconfig["jobs"] = string_from_int (get_n_processors());
+  if (const String r = gconfig["allow-randomization"]; r.empty())
+    gconfig["allow-randomization"] = "1";
   // assign
   assert_return (global_config == nullptr);
-  global_config = new StringMap (strmap);
+  global_config = new StringMap (gconfig);
 }
 
 /// Retrive BSE configuration setting as string.
