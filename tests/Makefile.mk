@@ -6,7 +6,7 @@ ALL_TARGETS      += tests/all
 tests/rpath..libbse ::= ../lib
 
 # == tests/ files ==
-tests/suite1.sources		::= $(strip	\
+tests/suite.sources		::= $(strip	\
 	tests/basics.cc				\
 	tests/aida-types.cc			\
 	tests/benchmarks.cc			\
@@ -22,17 +22,17 @@ tests/suite1.sources		::= $(strip	\
 	tests/resamplehandle.cc			\
 	tests/subnormals-aux.cc			\
 	tests/subnormals.cc			\
-	tests/suite1-main.cc			\
-	tests/suite1-randomhash.cc		\
+	tests/suite-main.cc			\
+	tests/suite-randomhash.cc		\
 	tests/testfft.cc			\
 	tests/testresampler.cc			\
 	tests/testresamplerq.cc			\
 	tests/testwavechunk.cc			\
 )
 
-# == suite1 defs ==
-tests/suite1			::= $>/tests/suite1
-tests/suite1.objects		::= $(call BUILDDIR_O, $(tests/suite1.sources))
+# == suite defs ==
+tests/suite			::= $>/tests/suite
+tests/suite.objects		::= $(call BUILDDIR_O, $(tests/suite.sources))
 
 # == explore.idl ==
 tests/explore.idl.outputs	::= $>/tests/explore_interfaces.hh $>/tests/explore_interfaces.cc
@@ -40,19 +40,19 @@ tests/explore.idl.outputs	::= $>/tests/explore_interfaces.hh $>/tests/explore_in
 # == subdirs ==
 include tests/audio/Makefile.mk
 
-# == suite1 rules ==
-$(tests/suite1.objects):	$(bse/libbse.deps) | $>/tests/
-$(tests/suite1.objects):	EXTRA_INCLUDES ::= -I$> -Iexternal -I$>/tests $(GLIB_CFLAGS)
+# == suite rules ==
+$(tests/suite.objects):	$(bse/libbse.deps) | $>/tests/
+$(tests/suite.objects):	EXTRA_INCLUDES ::= -I$> -Iexternal -I$>/tests $(GLIB_CFLAGS)
 $(call BUILD_PROGRAM, \
-	$(tests/suite1), \
-	$(tests/suite1.objects), \
+	$(tests/suite), \
+	$(tests/suite.objects), \
 	$(lib/libbse.so), \
 	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
 	$(tests/rpath..libbse))
-tests/all: $(tests/suite1)
+tests/all: $(tests/suite)
 
 # == explore.idl rules ==
-$(tests/suite1.objects):	$(tests/explore.idl.outputs)
+$(tests/suite.objects):	$(tests/explore.idl.outputs)
 $(call MULTIOUTPUT, $(tests/explore.idl.outputs)): tests/explore.idl $(aidacc/aidacc)	| $>/tests/
 	$(QECHO) GEN $(tests/explore.idl.outputs) # aidacc generates %_interfaces.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
 	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ -o $>/tests/ $<
@@ -102,21 +102,21 @@ check-loading: \
 CHECK_TARGETS += check-loading
 
 # == run unit tests ==
-check-suite: $(tests/suite1) FORCE
+check-suite: $(tests/suite) FORCE
 	$(QGEN)
-	$Q $(tests/suite1) $(if $(PARALLEL_MAKE), -j )
+	$Q $(tests/suite) $(if $(PARALLEL_MAKE), -j )
 CHECK_TARGETS += check-suite
 
 # == AIDA benchmark ==
-tests/aida-benchmark: $(tests/suite1) FORCE
+tests/aida-benchmark: $(tests/suite) FORCE
 	$(QGEN)
-	$Q $(tests/suite1) --aida-bench
+	$Q $(tests/suite) --aida-bench
 check-bench: tests/aida-benchmark
 
 # == run unit tests ==
-tests/suite-benchmark: $(tests/suite1) FORCE
+tests/suite-benchmark: $(tests/suite) FORCE
 	$(QGEN)
-	$Q $(tests/suite1) --bench $(if $(PARALLEL_MAKE), -j )
+	$Q $(tests/suite) --bench $(if $(PARALLEL_MAKE), -j )
 check-bench: tests/suite-benchmark
 
 # == tests/clean ==
