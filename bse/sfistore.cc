@@ -720,9 +720,9 @@ using namespace Bse;
   TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
 
-BSE_INTEGRITY_TEST (test_scanner64);
+BSE_INTEGRITY_TEST (bse_test_scanner64);
 static void
-test_scanner64 (void)
+bse_test_scanner64 (void)
 {
   GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
   scanner->config->numbers_2_int = FALSE;

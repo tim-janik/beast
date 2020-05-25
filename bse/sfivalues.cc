@@ -1051,23 +1051,23 @@ test_typed_serialization (SerialTest test_type)
   sfi_rec_unref (rec);
 }
 
-BSE_INTEGRITY_TEST (test_param_serialization);
+BSE_INTEGRITY_TEST (bse_test_param_serialization);
 static void
-test_param_serialization()
+bse_test_param_serialization()
 {
   test_typed_serialization (SERIAL_TEST_PARAM);
 }
 
-BSE_INTEGRITY_TEST (test_typed_serialization);
+BSE_INTEGRITY_TEST (bse_test_typed_serialization);
 static void
-test_typed_serialization ()
+bse_test_typed_serialization ()
 {
   test_typed_serialization (SERIAL_TEST_TYPED);
 }
 
-BSE_INTEGRITY_TEST (test_pspec_serialization);
+BSE_INTEGRITY_TEST (bse_test_pspec_serialization);
 static void
-test_pspec_serialization ()
+bse_test_pspec_serialization ()
 {
   test_typed_serialization (SERIAL_TEST_PSPEC);
 }

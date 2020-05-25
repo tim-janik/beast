@@ -11,9 +11,9 @@
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_type_renames);
+BSE_INTEGRITY_TEST (bse_test_type_renames);
 static void
-test_type_renames (void)
+bse_test_type_renames (void)
 {
   gchar *str;
   str = g_type_name_to_cname ("PrefixTypeName");

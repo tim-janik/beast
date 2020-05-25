@@ -97,13 +97,6 @@ void   diag_printout        (const ::std::string &message);
 void   diag_printerr        (const ::std::string &message);
 void   diag_abort_hook      (const std::function<void (const ::std::string&)> &hook);
 
-// == Integrity Tests ==
-/// Execute @a stmt when libbse is started wit internal integrity checks enabled.
-#define BSE_INTEGRITY_CHECK(stmt)       do { if (::Bse::IntegrityCheck::checks_enabled()) { stmt; } } while (0)
-/// Register @a func as integrity test to run when libbse is started wit internal integrity checks.
-#define BSE_INTEGRITY_TEST(func)        static void func() __attribute__ ((__cold__, __unused__)); \
-  static ::Bse::IntegrityCheck::Test BSE_CPP_PASTE2 (__bse__integrity_check__test_line, __LINE__) (__FILE__, __LINE__, #func, func)
-
 // == Small Utilities ==
 /// Erase element @a value from std::vector @a v if it is present.
 template<class V> bool
@@ -262,22 +255,6 @@ compare_greater (const Value &v1, const Value &v2)
 {
   return (v1 < v2) | -(v2 < v1);
 }
-
-// == Implementation Details ==
-struct IntegrityCheck {
-  static BSE_WEAK   const  bool         enabled;
-  static BSE_CONST  inline bool         checks_enabled () { return BSE_UNLIKELY (enabled); }
-  typedef void                        (*TestFunc) ();
-  class Test {
-    static BSE_WEAK void                register_test (const char*, int, const char*, TestFunc);
-  public:
-    inline                              Test (const char *file, int line, const char *func, TestFunc test)
-    {
-      if (BSE_UNLIKELY (checks_enabled()))
-        register_test (file, line, func, test);
-    }
-  };
-};
 
 namespace Internal {
 extern bool debug_enabled_flag;

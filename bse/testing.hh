@@ -62,6 +62,7 @@ enum Kind {
   SLOW          = 1,
   BENCH         = 2,
   BROKEN        = 4,
+  INTEGRITY     = 8,
 };
 struct TestEntry {
   std::string ident;

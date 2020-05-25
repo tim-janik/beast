@@ -584,12 +584,13 @@ static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 
 // == Testing ==
 #include "testing.hh"
+
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_feature_toggles);
+BSE_INTEGRITY_TEST (bse_test_feature_toggles);
 static void
-test_feature_toggles()
+bse_test_feature_toggles()
 {
   String r;
   r = feature_toggle_find ("a:b", "a"); TCMP (r, ==, "1");

@@ -15,6 +15,8 @@ sfi_url_show (const char *url)
 
 // == Testing ==
 #include "testing.hh"
+#include "internal.hh"
+
 namespace { // Anon
 using namespace Bse;
 using namespace Sfi;
