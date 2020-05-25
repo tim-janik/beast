@@ -341,13 +341,6 @@ ifneq ('','$(BSE_JACK_LIBS)')
   bse/all: $(lib/libbsejack.so)
 endif
 
-# == integrity defs ==
-bse/integrity		   ::= $>/bse/integrity
-bse/integrity.sources	   ::= bse/integrity.cc
-bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
-bse/integrity.objects.FLAGS  = -O0	# compile fast
-bse/all: $(bse/integrity)
-
 # == BeastSoundEngine defs ==
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
@@ -571,16 +564,6 @@ $(call BUILD_PROGRAM, \
 	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(BSEDEPS_LIBS), \
 	../lib)
 $(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
-
-# == integrity rules ==
-$(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
-$(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(call BUILD_TEST, \
-	$(bse/integrity), \
-	$(bse/integrity.objects), \
-	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
-	../lib)
 
 # == bse-check-assertions ==
 $>/bse/t279-assertions-test: FORCE	$(bse/integrity)
