@@ -381,7 +381,7 @@ debug_key_enabled (const ::std::string &conditional)
 
 bool Internal::debug_enabled_flag = true;
 
-static uint64 global_debug_flags = 0;
+static uint64 global_debug_flags = uint64 (DebugFlags::BACKTRACE);
 
 void
 set_debug_flags (DebugFlags flags)
@@ -406,6 +406,12 @@ debug_key_value (const char *conditional)
     const ssize_t nq = flags.rfind (":no-sigquit-on-abort:");
     if (sq >= 0 && nq <= sq)
       global_debug_flags = global_debug_flags | Bse::DebugFlags::SIGQUIT_ON_ABORT;
+    const ssize_t wb = flags.rfind (":backtrace:");
+    const ssize_t nb = flags.rfind (":no-backtrace:");
+    if (wb > nb)
+      global_debug_flags |= uint64 (Bse::DebugFlags::BACKTRACE);
+    if (nb > wb)
+      global_debug_flags &= ~uint64 (Bse::DebugFlags::BACKTRACE);
     return flags;
   } ();
   // find key in colon-separated debug flags
@@ -485,6 +491,8 @@ diag_debug_message (const char *file, int line, const char *func, const char *co
 
 #ifndef NDEBUG
 #define PRINT_BACKTRACE(file, line, func)                          do { \
+  if (0 == (Bse::global_debug_flags & Bse::DebugFlags::BACKTRACE))      \
+    break;                                                              \
   using namespace AnsiColors;                                           \
   const std::string col = color (FG_YELLOW /*, BOLD*/), reset = color (RESET); \
   BacktraceCommand btrace;                                              \

@@ -50,6 +50,7 @@ bool                                feature_check        (const char *feature);
 enum class DebugFlags {
   FATAL_WARNINGS = 1,
   SIGQUIT_ON_ABORT = 2,
+  BACKTRACE = 4,
 };
 AIDA_DEFINE_FLAGS_ARITHMETIC (DebugFlags);
 
