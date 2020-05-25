@@ -565,18 +565,6 @@ $(call BUILD_PROGRAM, \
 	../lib)
 $(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
 
-# == bse-check-assertions ==
-$>/bse/t279-assertions-test: FORCE	$(bse/integrity)
-	$(QECHO) RUN $@
-	$Q $(bse/integrity) --return_unless1 || $(QDIE) --return_unless1 failed
-	$Q $(bse/integrity) --assert_return1 || $(QDIE) --assert_return1 failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --return_unless0) $(QSTDERR) ; test "$$?" -eq 7 || $(QDIE) --return_unless0 failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return0) $(QSTDERR) ; test "$$?"  != 0 || $(QDIE) --assert_return0 failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return_unreached) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return_unreached failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
-	@echo "  PASS    " $@
-bse/check: $>/bse/t279-assertions-test
-
 # == bse/clean ==
 bse/clean: FORCE
 	rm -f -r $(bse/cleandirs)
