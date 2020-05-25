@@ -201,7 +201,41 @@ main (int argc, char *argv[])
       return test_resampler (argc, argv);
     }
   // run tests
-  return Bse::init_and_test (args, [&]() { return test_main (argc, argv); });
+  return Bse::init_and_test (args, [&]() {
+    // check-assertions
+    if (argc >= 2 && String ("--assert_return1") == argv[1])
+      {
+        assert_return (1, 0);
+        return 0;
+      }
+    else if (argc >= 2 && String ("--assert_return0") == argv[1])
+      {
+        assert_return (0, 0);
+        return 0;
+      }
+    else if (argc >= 2 && String ("--assert_return_unreached") == argv[1])
+      {
+        assert_return_unreached (0);
+        return 0;
+      }
+    else if (argc >= 2 && String ("--fatal_error") == argv[1])
+      {
+        Bse::fatal_error ("got argument --fatal_error");
+        return 0;
+      }
+    else if (argc >= 2 && String ("--return_unless0") == argv[1])
+      {
+        return_unless (0, 7);
+        return 0;
+      }
+    else if (argc >= 2 && String ("--return_unless1") == argv[1])
+      {
+        return_unless (1, 8);
+        return 0;
+      }
+    // run tests
+    return test_main (argc, argv);
+  });
 }
 
 static int

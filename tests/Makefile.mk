@@ -107,6 +107,19 @@ check-suite: $(tests/suite) FORCE
 	$Q $(tests/suite) $(if $(PARALLEL_MAKE), -j )
 CHECK_TARGETS += check-suite
 
+# == bse-check-assertions ==
+tests/suite-nobt ::= BSE_DEBUG=no-backtrace $(tests/suite)
+check-assertions: $(tests/suite) FORCE
+	$(QGEN)
+	$Q $(tests/suite-nobt) --return_unless1 || $(QDIE) --return_unless1 failed
+	$Q $(tests/suite-nobt) --assert_return1 || $(QDIE) --assert_return1 failed
+	$Q (trap ':' SIGTRAP && $(tests/suite-nobt) --return_unless0) $(QSTDERR) ; test "$$?" -eq 7 || $(QDIE) --return_unless0 failed
+	$Q (trap ':' SIGTRAP && $(tests/suite-nobt) --assert_return0) $(QSTDERR) ; test "$$?"  != 0 || $(QDIE) --assert_return0 failed
+	$Q (trap ':' SIGTRAP && $(tests/suite-nobt) --assert_return_unreached) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return_unreached failed
+	$Q (trap ':' SIGTRAP && $(tests/suite-nobt) --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
+	@echo "  PASS    " $@
+CHECK_TARGETS += check-assertions
+
 # == AIDA benchmark ==
 tests/aida-benchmark: $(tests/suite) FORCE
 	$(QGEN)
