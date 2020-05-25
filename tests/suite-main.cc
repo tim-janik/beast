@@ -5,6 +5,7 @@
 #include <bse/bseserver.hh>
 #include "ipc.hh"
 #include "testresampler.hh"
+#include "bse/internal.hh" // for Bse::Test::IntegrityCheck integration
 
 #define DEBUG(...)              do { break; Bse::printerr (__VA_ARGS__); } while (0)
 
@@ -98,10 +99,15 @@ bench_aida()
             calls, fastest, slowest, err * 100);
 }
 
+// Override weak symbol to enable integrity tests
+namespace Bse::Test {
+/* NOT __weak__: */ const bool IntegrityCheck::enable_testing = true; // see internal.hh
+} // Bse::Test
+
 static int
 test_main (int argc, char *argv[])
 {
-  Bse::StringVector test_names;
+  // Parse args
   Bse::Test::TestEntries test_entries;
   int64 jobs = 0;
   int jobfd = -1;
@@ -136,15 +142,14 @@ test_main (int argc, char *argv[])
             return 7;
           }
         else
-          {
-            test_names.push_back (argv[i]);
-            test_entries.push_back (Bse::Test::TestEntry (argv[i]));
-          }
+          test_entries.push_back (Bse::Test::TestEntry (argv[i]));
       }
 
+  // Process test list fetched via IPC
   if (jobfd != -1)
     return jobclient (jobfd);
 
+  // Fallback to run *all* tests
   if (test_entries.size() == 0)
     test_entries = Bse::Test::list_tests();
 
@@ -153,13 +158,15 @@ test_main (int argc, char *argv[])
     {
       Bse::StringVector tests;
       for (const Bse::Test::TestEntry &entry : test_entries)
-        if (0 == (entry.flags & ~testflags))
+        if (0 == (entry.flags & ~testflags) ||
+            (testflags == 0 && (entry.flags & Bse::Test::INTEGRITY)))
           tests.push_back (entry.ident);
       serverstatus = jobserver (argv[0], tests);
     }
   else
     for (Bse::Test::TestEntry entry : test_entries)
-      if (0 == (entry.flags & ~testflags))
+      if (0 == (entry.flags & ~testflags) ||
+          (testflags == 0 && (entry.flags & Bse::Test::INTEGRITY)))
         {
           const int result = Bse::Test::run_test (entry.ident);
           if (result < 0)
@@ -180,6 +187,7 @@ main (int argc, char *argv[])
   Bse::StringVector args = Bse::init_args (&argc, argv);
   args.push_back ("stand-alone=1");
   Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
+  assert_return (Bse::Test::IntegrityCheck::enable_testing == true, -1);
   // special case aida-bench
   if (argc >= 2 && argv[1] && std::string ("--aida-bench") == argv[1])
     {
