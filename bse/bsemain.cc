@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
 #include "bsestartup.hh"
+#include "path.hh"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
 #include "bseplugin.hh"

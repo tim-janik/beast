@@ -149,7 +149,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/sfitypes.hh			\
 	bse/sfiustore.hh		\
 	bse/sfivalues.hh		\
-	bse/sfiwrapper.hh		\
 	bse/sndfiles.hh			\
 	bse/strings.hh			\
 	bse/testing.hh			\
@@ -293,7 +292,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/sfitypes.cc			\
 	bse/sfiustore.cc		\
 	bse/sfivalues.cc		\
-	bse/sfiwrapper.cc		\
 	bse/sndfiles.cc			\
 	bse/strings.cc			\
 	bse/testing.cc			\

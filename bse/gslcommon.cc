@@ -1,7 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gslcommon.hh"
 #include "gsldatacache.hh"
-#include "bse/internal.hh"
+#include "path.hh"
+#include "internal.hh"
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <string.h>

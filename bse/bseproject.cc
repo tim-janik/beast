@@ -19,7 +19,8 @@
 #include "bsepcmwriter.hh"
 #include "bsemidifile.hh"
 #include "bsesoundfontrepo.hh"
-#include "bse/internal.hh"
+#include "path.hh"
+#include "internal.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>

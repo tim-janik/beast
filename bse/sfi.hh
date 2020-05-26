@@ -2,9 +2,6 @@
 #ifndef __SFI_H__
 #define __SFI_H__
 
-
-#include <bse/sfiwrapper.hh>    // Introduces bcore.hh
-
 /* no bin-compat: #include <bse/sficomwire.hh> */
 #include <bse/sfifilecrawler.hh>
 #include <bse/sfimemory.hh>

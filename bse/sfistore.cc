@@ -3,7 +3,8 @@
 #include "sfiprimitives.hh"
 #include "sfiserial.hh"
 #include "sfiparams.hh"
-#include "bse/internal.hh"
+#include "path.hh"
+#include "internal.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

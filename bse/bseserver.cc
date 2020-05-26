@@ -11,7 +11,8 @@
 #include "bseladspa.hh"
 #include "devicecrawler.hh"
 #include "storage.hh"
-#include "bse/internal.hh"
+#include "path.hh"
+#include "internal.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
