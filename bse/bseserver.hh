@@ -13,7 +13,6 @@
 #define BSE_SERVER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SERVER, BseServerClass))
 
 struct BseServer : BseContainer {
-  GSource	  *engine_source;
   GSList	  *children;
   gchar		  *wave_file;
   double           wave_seconds;

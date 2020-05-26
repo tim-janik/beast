@@ -296,6 +296,7 @@ public:
   close () override
   {
     assert_return (opened());
+    ADEBUG ("PCM: %s: CLOSE: r=%d w=%d", alsadev_, !!read_handle_, !!write_handle_);
     if (read_handle_)
       {
         snd_pcm_drop (read_handle_);

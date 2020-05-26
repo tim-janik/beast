@@ -200,8 +200,8 @@ main (int argc, char *argv[])
       Bse::init_async (argv[0], args);
       return test_resampler (argc, argv);
     }
-  // run tests
-  return Bse::init_and_test (args, [&]() {
+  // initialize BSE and continue in BSE thread
+  const int status = Bse::init_and_test (args, [&]() {
     // check-assertions
     if (argc >= 2 && String ("--assert_return1") == argv[1])
       {
@@ -236,6 +236,10 @@ main (int argc, char *argv[])
     // run tests
     return test_main (argc, argv);
   });
+  // clean shutdown
+  if (status == 0)
+    Bse::shutdown_async();
+  return status;
 }
 
 static int

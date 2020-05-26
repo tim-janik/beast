@@ -13,8 +13,6 @@
 #include "storage.hh"
 #include "path.hh"
 #include "internal.hh"
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -55,9 +53,7 @@ static void	iowatch_add			(BseServer	   *server,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
 static void	main_thread_source_setup	(BseServer	   *self);
-static void	engine_init			(BseServer	   *server,
-						 gfloat		    mix_freq);
-static void	engine_shutdown			(BseServer	   *server);
+
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 
@@ -108,10 +104,7 @@ bse_server_init (BseServer *self)
   assert_return (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
   self->set_flag (BSE_ITEM_FLAG_SINGLETON);
 
-  self->engine_source = NULL;
   self->dev_use_count = 0;
-  self->pcm_imodule = NULL;
-  self->pcm_omodule = NULL;
   self->pcm_writer = NULL;
 
   /* keep the server singleton alive */
@@ -119,6 +112,12 @@ bse_server_init (BseServer *self)
 
   /* start dispatching main thread stuff */
   main_thread_source_setup (self);
+
+  // install PCM IO modules
+  BseTrans *trans = bse_trans_open ();
+  self->pcm_imodule = bse_pcm_imodule_insert (trans);
+  self->pcm_omodule = bse_pcm_omodule_insert (trans);
+  bse_trans_commit (trans);
 }
 
 static void
@@ -278,6 +277,7 @@ bse_server_open_devices (BseServer *self)
   auto impl = self->as<Bse::ServerImpl*>();
   Bse::Error error = Bse::Error::NONE;
   assert_return (BSE_IS_SERVER (self), Bse::Error::INTERNAL);
+  assert_return (self->pcm_imodule && self->pcm_omodule, Bse::Error::INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
     {
@@ -299,9 +299,9 @@ bse_server_open_devices (BseServer *self)
     error = impl->open_midi_driver();
   if (error == 0)
     {
+      Bse::global_prefs->lock();
       BseTrans *trans = bse_trans_open ();
-      engine_init (self, impl->pcm_driver()->pcm_frequency());
-      self->pcm_imodule = bse_pcm_imodule_insert (impl->pcm_driver().get(), trans);
+      bse_trans_add (trans, bse_pcm_imodule_change_driver (self->pcm_imodule, impl->pcm_driver().get()));
       if (self->wave_file)
 	{
 	  Bse::Error error;
@@ -325,7 +325,7 @@ bse_server_open_devices (BseServer *self)
 	      self->pcm_writer = NULL;
 	    }
 	}
-      self->pcm_omodule = bse_pcm_omodule_insert (impl->pcm_driver().get(), self->pcm_writer, trans);
+      bse_trans_add (trans, bse_pcm_omodule_change_driver (self->pcm_omodule, impl->pcm_driver().get(), self->pcm_writer));
       bse_trans_commit (trans);
       self->dev_use_count++;
       ServerImpl::instance().enginechange (true);
@@ -351,7 +351,15 @@ bse_server_shutdown (BseServer *self)
     }
   while (self->dev_use_count)
     bse_server_close_devices (self);
-  bse_engine_shutdown();
+
+  // uninstall PCM IO modules
+  assert_return (self->pcm_imodule && self->pcm_omodule);
+  BseTrans *trans = bse_trans_open ();
+  bse_pcm_imodule_remove (self->pcm_imodule, trans);
+  self->pcm_imodule = NULL;
+  bse_pcm_omodule_remove (self->pcm_omodule, trans);
+  self->pcm_omodule = NULL;
+  bse_trans_commit (trans);
 }
 
 void
@@ -365,10 +373,8 @@ bse_server_close_devices (BseServer *self)
   if (!self->dev_use_count)
     {
       BseTrans *trans = bse_trans_open ();
-      bse_pcm_imodule_remove (self->pcm_imodule, trans);
-      self->pcm_imodule = NULL;
-      bse_pcm_omodule_remove (self->pcm_omodule, trans);
-      self->pcm_omodule = NULL;
+      bse_trans_add (trans, bse_pcm_imodule_change_driver (self->pcm_imodule, nullptr));
+      bse_trans_add (trans, bse_pcm_omodule_change_driver (self->pcm_omodule, nullptr, nullptr));
       bse_trans_commit (trans);
       /* wait until transaction has been processed */
       bse_engine_wait_on_trans ();
@@ -381,7 +387,7 @@ bse_server_close_devices (BseServer *self)
 	}
       impl->close_pcm_driver();
       impl->close_midi_driver();
-      engine_shutdown (self);
+      Bse::global_prefs->unlock();
       ServerImpl::instance().enginechange (false);
     }
 }
@@ -627,120 +633,6 @@ iowatch_remove (BseServer *server,
     }
   return FALSE;
 }
-
-
-/* --- GSL engine main loop --- */
-typedef struct {
-  GSource       source;
-  guint         n_fds;
-  GPollFD       fds[BSE_ENGINE_MAX_POLLFDS];
-  BseEngineLoop loop;
-} PSource;
-
-static gboolean
-engine_prepare (GSource *source,
-		gint    *timeout_p)
-{
-  PSource *psource = (PSource*) source;
-  gboolean need_dispatch;
-
-  BSE_THREADS_ENTER ();
-  need_dispatch = bse_engine_prepare (&psource->loop);
-  if (psource->loop.fds_changed)
-    {
-      guint i;
-
-      for (i = 0; i < psource->n_fds; i++)
-	g_source_remove_poll (source, psource->fds + i);
-      psource->n_fds = psource->loop.n_fds;
-      for (i = 0; i < psource->n_fds; i++)
-	{
-	  GPollFD *pfd = psource->fds + i;
-
-	  pfd->fd = psource->loop.fds[i].fd;
-	  pfd->events = psource->loop.fds[i].events;
-	  g_source_add_poll (source, pfd);
-	}
-    }
-  *timeout_p = psource->loop.timeout;
-  BSE_THREADS_LEAVE ();
-
-  return need_dispatch;
-}
-
-static gboolean
-engine_check (GSource *source)
-{
-  PSource *psource = (PSource*) source;
-  gboolean need_dispatch;
-  guint i;
-
-  BSE_THREADS_ENTER ();
-  for (i = 0; i < psource->n_fds; i++)
-    psource->loop.fds[i].revents = psource->fds[i].revents;
-  psource->loop.revents_filled = TRUE;
-  need_dispatch = bse_engine_check (&psource->loop);
-  BSE_THREADS_LEAVE ();
-
-  return need_dispatch;
-}
-
-static gboolean
-engine_dispatch (GSource    *source,
-		 GSourceFunc callback,
-		 gpointer    user_data)
-{
-  BSE_THREADS_ENTER ();
-  bse_engine_dispatch ();
-  BSE_THREADS_LEAVE ();
-
-  return TRUE;
-}
-
-static void
-engine_init (BseServer *server,
-	     gfloat	mix_freq)
-{
-  static GSourceFuncs engine_gsource_funcs = {
-    engine_prepare,
-    engine_check,
-    engine_dispatch,
-    NULL
-  };
-  static gboolean engine_is_initialized = FALSE;
-
-  assert_return (server->engine_source == NULL);
-
-  Bse::global_prefs->lock();
-  server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
-  g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
-
-  if (!engine_is_initialized)
-    {
-      engine_is_initialized = true;
-      bse_engine_init();
-      // lower priority compared to engine if our priority range permits
-      const int mytid = Bse::this_thread_gettid();
-      int current_priority = getpriority (PRIO_PROCESS, mytid);
-      if (current_priority <= -2 && mytid)
-        setpriority (PRIO_PROCESS, mytid, current_priority + 1);
-    }
-  bse_engine_configure();
-
-  g_source_attach (server->engine_source, bse_main_context);
-}
-
-static void
-engine_shutdown (BseServer *server)
-{
-  assert_return (server->engine_source != NULL);
-
-  g_source_destroy (server->engine_source);
-  server->engine_source = NULL;
-  bse_engine_user_thread_collect ();
-  Bse::global_prefs->unlock();
-}
-
 
 namespace Bse {
 

@@ -16,6 +16,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <unistd.h>
 
 using namespace Bse;
@@ -28,6 +30,61 @@ static void     config_init (const StringVector &args);
 
 /* --- variables --- */
 static volatile int bse_initialization_stage = 0;
+
+// == BSE Engine GSource ==
+typedef struct {
+  GSource       source;
+  guint         n_fds;
+  GPollFD       fds[BSE_ENGINE_MAX_POLLFDS];
+  BseEngineLoop loop;
+} EngineGSource;
+
+static gboolean
+engine_prepare (GSource *source, gint *timeout_p)
+{
+  EngineGSource *psource = (EngineGSource*) source;
+  BSE_THREADS_ENTER ();
+  bool need_dispatch = bse_engine_prepare (&psource->loop);
+  if (psource->loop.fds_changed)
+    {
+      for (uint i = 0; i < psource->n_fds; i++)
+	g_source_remove_poll (source, psource->fds + i);
+      psource->n_fds = psource->loop.n_fds;
+      for (uint i = 0; i < psource->n_fds; i++)
+	{
+	  GPollFD *pfd = psource->fds + i;
+	  pfd->fd = psource->loop.fds[i].fd;
+	  pfd->events = psource->loop.fds[i].events;
+	  g_source_add_poll (source, pfd);
+	}
+    }
+  *timeout_p = psource->loop.timeout;
+  BSE_THREADS_LEAVE ();
+  return need_dispatch;
+}
+
+static gboolean
+engine_check (GSource *source)
+{
+  EngineGSource *psource = (EngineGSource*) source;
+  BSE_THREADS_ENTER ();
+  for (uint i = 0; i < psource->n_fds; i++)
+    psource->loop.fds[i].revents = psource->fds[i].revents;
+  psource->loop.revents_filled = TRUE;
+  const bool need_dispatch = bse_engine_check (&psource->loop);
+  BSE_THREADS_LEAVE ();
+  return need_dispatch;
+}
+
+static gboolean
+engine_dispatch (GSource *source, GSourceFunc callback, void *user_data)
+{
+  BSE_THREADS_ENTER ();
+  // invokes bse_engine_user_thread_collect();
+  bse_engine_dispatch ();
+  BSE_THREADS_LEAVE ();
+  return true;
+}
 
 // == BSE Initialization ==
 static std::thread async_bse_thread;
@@ -108,6 +165,22 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   // initialize C wrappers around C++ generated types
   _bse_init_c_wrappers ();
 
+  // start engine threads, hook bse_engine_user_thread_collect() into thread loop
+  bse_engine_init();
+  bse_engine_configure();
+  static GSourceFuncs engine_gsource_funcs = { engine_prepare, engine_check, engine_dispatch, nullptr };
+  GSource *engine_source = g_source_new (&engine_gsource_funcs, sizeof (EngineGSource));
+  g_source_set_priority (engine_source, BSE_PRIORITY_HIGH);
+  g_source_attach (engine_source, bse_main_context);
+
+  // lower thread priority compared to engine if our priority range permits
+  {
+    const int mytid = Bse::this_thread_gettid();
+    int current_priority = getpriority (PRIO_PROCESS, mytid);
+    if (current_priority <= -2 && mytid)
+      setpriority (PRIO_PROCESS, mytid, current_priority + 1);
+  }
+
   // make sure the server object is alive
   bse_server_get ();
 
@@ -157,6 +230,13 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
 
   // close devices and shutdown engine threads
   bse_server_shutdown (bse_server_get());
+
+  // shutodwn Engine threads and perform final engine GC
+  bse_engine_shutdown();
+  g_source_destroy (engine_source);
+  engine_source = nullptr;
+  bse_engine_user_thread_collect ();
+
   // process pending cleanups if needed, but avoid endless loops
   for (size_t i = 0; i < 1000; i++)
     if (g_main_context_pending (bse_main_context))
@@ -168,13 +248,21 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
-static void
-reap_main_loop_thread ()
+static bool
+_bse_shutdown_all ()
 {
-  assert_return (main_loop_thread_running == true);
+  assert_return (main_loop_thread_running == true, false);
   main_loop_thread_running = false;
   bse_main_wakeup();
   async_bse_thread.join();
+  return true;
+}
+
+void
+_bse_shutdown_once ()
+{
+  static bool once = _bse_shutdown_all();
+  (void) once;
 }
 
 void
@@ -183,7 +271,7 @@ _bse_init_async (const char *app_name, const Bse::StringVector &args)
   initialize_with_args (app_name, args);
 
   // start main BSE thread
-  if (std::atexit (reap_main_loop_thread) != 0)
+  if (std::atexit (_bse_shutdown_once) != 0)
     Bse::warning ("BSE: failed to install main thread reaper");
   auto *init_queue = new Bse::AsyncBlockingQueue<int>();
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue);

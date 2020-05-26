@@ -23,7 +23,7 @@ struct BsePCMModuleData {
   const uint      max_values = 0; // BSE_ENGINE_MAX_BLOCK_SIZE * 2 (stereo)
   float          *const buffer = nullptr;
   float          *const bound = nullptr;
-  Bse::PcmDriver *driver = nullptr;
+  Bse::PcmDriver *pcm_driver = nullptr;
   BsePcmWriter   *pcm_writer = nullptr;
   bool            pcm_input_checked = false;
   std::vector<Bse::AudioSignal::ProcessorP> procs;
@@ -77,7 +77,7 @@ bse_pcm_module_poll (gpointer       data,
 		     gboolean       revents_filled)
 {
   BsePCMModuleData *mdata = (BsePCMModuleData*) data;
-  return mdata->driver->pcm_check_io (timeout_p);
+  return mdata->pcm_driver ? mdata->pcm_driver->pcm_check_io (timeout_p) : false;
 }
 
 static void
@@ -139,7 +139,8 @@ bse_pcm_omodule_process (BseModule *module,
         do { *d += *src++; d += 2; } while (d < b);
       }
 
-  mdata->driver->pcm_write (n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer);
+  if (mdata->pcm_driver)
+    mdata->pcm_driver->pcm_write (n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer);
   if (mdata->pcm_writer)
     bse_pcm_writer_write (mdata->pcm_writer, n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer,
                           bse_module_tick_stamp (module));
@@ -150,11 +151,25 @@ bse_pcm_module_data_free (gpointer        data,
 			  const BseModuleClass *klass)
 {
   BsePCMModuleData *mdata = (BsePCMModuleData*) data;
+  assert_return (!mdata->pcm_driver && !mdata->pcm_writer);
   delete mdata;
 }
 
+static BseJob*
+bse_pcm_omodule_change_driver (BseModule *module, Bse::PcmDriver *pcm_driver, BsePcmWriter *writer)
+{
+  if (pcm_driver)
+    assert_return (pcm_driver->writable() && pcm_driver->pcm_frequency(), NULL);
+  auto setter = [module, pcm_driver, writer] () {
+    BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+    mdata->pcm_driver = pcm_driver;
+    mdata->pcm_writer = writer;
+  };
+  return bse_job_access (module, setter);
+}
+
 static BseModule*
-bse_pcm_omodule_insert (Bse::PcmDriver *pcm_driver, BsePcmWriter *writer, BseTrans *trans)
+bse_pcm_omodule_insert (BseTrans *trans)
 {
   static const BseModuleClass pcm_omodule_class = {
     0,				/* n_istreams */
@@ -167,13 +182,9 @@ bse_pcm_omodule_insert (Bse::PcmDriver *pcm_driver, BsePcmWriter *writer, BseTra
     Bse::ModuleFlag::CHEAP,	/* cost */
   };
 
-  assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
-  assert_return (pcm_driver->writable(), NULL);
   assert_return (trans != NULL, NULL);
 
   BsePCMModuleData *mdata = new BsePCMModuleData (BSE_ENGINE_MAX_BLOCK_SIZE * BSE_PCM_MODULE_N_JSTREAMS);
-  mdata->driver = pcm_driver;
-  mdata->pcm_writer = writer;
   BseModule *module = bse_module_new (&pcm_omodule_class, mdata);
 
   bse_trans_add (trans,
@@ -230,9 +241,9 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 
   assert_return (n_values <= mdata->max_values / BSE_PCM_MODULE_N_OSTREAMS);
 
-  if (mdata->driver->readable())
+  if (mdata->pcm_driver && mdata->pcm_driver->readable())
     {
-      l = mdata->driver->pcm_read (n_values * BSE_PCM_MODULE_N_OSTREAMS, mdata->buffer);
+      l = mdata->pcm_driver->pcm_read (n_values * BSE_PCM_MODULE_N_OSTREAMS, mdata->buffer);
       assert_return (l == n_values * BSE_PCM_MODULE_N_OSTREAMS);
     }
   else
@@ -249,8 +260,20 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
   while (s < b);
 }
 
+static BseJob*
+bse_pcm_imodule_change_driver (BseModule *module, Bse::PcmDriver *pcm_driver)
+{
+  if (pcm_driver)
+    assert_return (pcm_driver->pcm_frequency(), NULL);
+  auto setter = [module, pcm_driver] () {
+    BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+    mdata->pcm_driver = pcm_driver;
+  };
+  return bse_job_access (module, setter);
+}
+
 static BseModule*
-bse_pcm_imodule_insert (Bse::PcmDriver *pcm_driver, BseTrans *trans)
+bse_pcm_imodule_insert (BseTrans *trans)
 {
   static const BseModuleClass pcm_imodule_class = {
     0,				/* n_istreams */
@@ -263,12 +286,9 @@ bse_pcm_imodule_insert (Bse::PcmDriver *pcm_driver, BseTrans *trans)
     Bse::ModuleFlag::EXPENSIVE,		/* cost */
   };
 
-  assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (trans != NULL, NULL);
 
   BsePCMModuleData *mdata = new BsePCMModuleData (BSE_ENGINE_MAX_BLOCK_SIZE * BSE_PCM_MODULE_N_OSTREAMS);
-  mdata->driver = pcm_driver;
-  mdata->pcm_writer = NULL;
   BseModule *module = bse_module_new (&pcm_imodule_class, mdata);
 
   bse_trans_add (trans,

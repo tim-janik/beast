@@ -1217,27 +1217,7 @@ bse_module_new_virtual (guint       n_iostreams,
   module = bse_module_new (&vclass->klass, user_data);
   return module;
 }
-/* --- initialization --- */
-static void
-slave (gpointer data)
-{
-  Bse::TaskRegistry::add ("DSP Slave", Bse::this_thread_getpid(), Bse::this_thread_gettid());
-  gboolean run = TRUE;
-  while (run)
-    {
-      BseTrans *trans = bse_trans_open ();
-      gchar *str = g_strdup_format ("SLAVE(%p): idle", g_thread_self ());
-      bse_trans_add (trans, bse_job_debug (str));
-      g_free (str);
-      bse_trans_add (trans, bse_job_debug ("string2"));
-      bse_trans_commit (trans);
-      trans = bse_trans_open ();
-      bse_trans_add (trans, bse_job_debug ("trans2"));
-      bse_trans_commit (trans);
-      g_usleep (1000*500);
-    }
-  Bse::TaskRegistry::remove (Bse::this_thread_gettid());
-}
+
 /* --- setup & trigger --- */
 static bool bse_engine_initialized = false;
 const uint  bse_engine_exvar_sample_freq = 48000;
@@ -1344,7 +1324,6 @@ bse_engine_init()
   Bse::MasterThread::start (bse_main_wakeup);
   /* first configure */
   bse_engine_configure();
-  (void) slave; // FIXME: start slave ("DSP #2")
 }
 
 gboolean
