@@ -328,9 +328,6 @@ debug_message (const char *file, int line, const char *func, const char *cond, c
     }
 }
 
-// == External Helpers ==
-bool url_show (const char *url); ///< Display @a url via a suitable WWW user agent.
-
 // == Assertions ==
 /// Return from the current function if @a cond is unmet and issue an assertion warning.
 #define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (#cond); return __VA_ARGS__; } while (0)

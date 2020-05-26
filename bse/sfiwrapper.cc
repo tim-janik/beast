@@ -5,14 +5,6 @@
 #include <bse/testing.hh>
 #include <errno.h>
 
-/* --- url handling --- */
-void
-sfi_url_show (const char *url)
-{
-  if (!Bse::url_show (url))
-    Bse::warning ("Failed to start browser for URL: %s", url);
-}
-
 // == Testing ==
 #include "testing.hh"
 #include "internal.hh"
