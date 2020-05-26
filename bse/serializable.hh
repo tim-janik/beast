@@ -46,9 +46,9 @@ class SerializationField {
   template<typename T> bool        serialize (std::vector<T> &vec, const StringVector&, const std::string&);
   bool                             serialize (Reflink&, const StringVector&, const std::string&);
   /*auto cast*/                    operator std::string ();
-  SerializationField&              node      ();       ///< Force storage into child node (not attribute)
+  SerializationField               node      ();       ///< Force storage into child node (not attribute)
   bool                             as_node   () const; ///< Retrive node() flag
-  SerializationField&              hex       ();       ///< Hint for unsigned storage as hexadecimal
+  SerializationField               hex       ();       ///< Hint for unsigned storage as hexadecimal
   bool                             as_hex    () const; ///< Retrive hex() flag
   String                           attribute () const; ///< Associated attribute (or child node) name for serialization
   SerializationNode&      serialization_node ();       ///< Associated storage node for serialization
@@ -123,8 +123,8 @@ public:
 template<typename T, typename = void>
 struct DataConverter {
   static_assert (!sizeof (T), "type serialization unimplemented");
-  // bool save_xml (SerializationField &field, const T&, const StringVector&, const std::string&);
-  // bool load_xml (SerializationField &field, T&, const StringVector&, const std::string&);
+  // bool save_xml (SerializationField field, const T&, const StringVector&, const std::string&);
+  // bool load_xml (SerializationField field, T&, const StringVector&, const std::string&);
 };
 
 /// Helper for deferred xml_reflink() calls
@@ -174,7 +174,7 @@ SerializationField::serialize (std::vector<T> &vec, const StringVector &typedata
       SerializationNode xv = xs_.create_child (attrib_);
       for (auto &el : vec)
         {
-          auto &field = xv[item].node(); // force node, because XML has no repeating attributes
+          auto field = xv[item].node(); // force node, because XML has no repeating attributes
           field.serialize (el, vec_typedata, "0");
         }
       return true;
@@ -288,7 +288,7 @@ struct DataConverter<T, typename ::std::enable_if<
                           void>::type>
 {
   static bool
-  load_xml (SerializationField &field, T &v, const StringVector &typedata, const std::string &fieldname)
+  load_xml (SerializationField field, T &v, const StringVector &typedata, const std::string &fieldname)
   {
     String str;
     if (field.serialize (str, typedata, fieldname))
@@ -309,7 +309,7 @@ struct DataConverter<T, typename ::std::enable_if<
     return false;
   }
   static bool
-  save_xml (SerializationField &field, T i, const StringVector &typedata, const std::string &fieldname)
+  save_xml (SerializationField field, T i, const StringVector &typedata, const std::string &fieldname)
   {
     String str;
     if (std::is_same<bool, T>::value)
@@ -330,7 +330,7 @@ struct DataConverter<T, typename ::std::enable_if<
 template<typename Enum>
 struct DataConverterAidaEnum {
   static bool
-  load_xml (SerializationField &field, Enum &v, const StringVector &typedata, const std::string &fieldname)
+  load_xml (SerializationField field, Enum &v, const StringVector &typedata, const std::string &fieldname)
   {
     String valuename;
     if (field.serialize (valuename, typedata, fieldname))
@@ -341,7 +341,7 @@ struct DataConverterAidaEnum {
     return false;
   }
   static bool
-  save_xml (SerializationField &field, Enum val, const StringVector &typedata, const std::string &fieldname)
+  save_xml (SerializationField field, Enum val, const StringVector &typedata, const std::string &fieldname)
   {
     String valuename = Aida::enum_value_to_string (val);
     return field.serialize (valuename, typedata, fieldname);
@@ -353,7 +353,7 @@ template<> struct DataConverter<Bse::Error> : DataConverterAidaEnum<Bse::Error> 
 template<typename Record>
 struct DataConverterAidaVisitRecord {
   static bool
-  load_xml (SerializationField &field, Record &r, const StringVector &typedata, const std::string &fieldname)
+  load_xml (SerializationField field, Record &r, const StringVector &typedata, const std::string &fieldname)
   {
     if (!typedata_is_loadable (typedata, fieldname))
       return false;
@@ -371,7 +371,7 @@ struct DataConverterAidaVisitRecord {
     return false;
   }
   static bool
-  save_xml (SerializationField &field, Record &rec, const StringVector &typedata, const std::string &fieldname)
+  save_xml (SerializationField field, Record &rec, const StringVector &typedata, const std::string &fieldname)
   {
     if (!typedata_is_storable (typedata, fieldname))
       return false;

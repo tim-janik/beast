@@ -410,11 +410,12 @@ SerializationField::SerializationField (SerializationNode &xs, const String &att
   xs_ (xs), attrib_ (attrib)
 {}
 
-SerializationField&
+SerializationField
 SerializationField::node ()
 {
-  force_node_ = true;
-  return *this;
+  SerializationField clone (*this);
+  clone.force_node_ = true;
+  return clone;
 }
 
 bool
@@ -423,11 +424,12 @@ SerializationField::as_node () const
   return force_node_;
 }
 
-SerializationField&
+SerializationField
 SerializationField::hex ()
 {
-  hex_ = true;
-  return *this;
+  SerializationField clone (*this);
+  clone.hex_ = true;
+  return clone;
 }
 
 bool

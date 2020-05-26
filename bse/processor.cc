@@ -365,7 +365,7 @@ Processor::assign_iobufs ()
   if (ochannel_count > 0)
     {
       fbuffers_ = (FloatBuffer*) fast_mem_alloc (ochannel_count * sizeof (FloatBuffer));
-      for (size_t i = 0; i < ochannel_count; i++)
+      for (ssize_t i = 0; i < ochannel_count; i++)
         new (fbuffers_ + i) FloatBuffer();
     }
   else
@@ -1201,9 +1201,9 @@ Processor::registry_init()
   while (processor_registry_hooks)
     {
       std::unique_lock wlock (processor_registry_mutex);
-      ProcessorRegistryHook *node = nullptr;
+      ProcessorRegistryHook *node = nullptr, *nullnode = nullptr;
       // pop_all
-      while (!std::atomic_compare_exchange_strong (&processor_registry_hooks, &node, nullptr))
+      while (!std::atomic_compare_exchange_strong (&processor_registry_hooks, &node, nullnode))
         ; // when failing, compare_exchange automatically does *&arg2 = *&arg1
       // register all
       while (node)
