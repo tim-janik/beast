@@ -695,10 +695,11 @@ SfiRing*
 bse_plugin_path_list_files (gboolean include_drivers, gboolean include_plugins)
 {
   SfiRing *files = NULL;
-  if (bse_main_args->override_plugin_globs)
+  const String override_plugin_globs = Bse::config_string ("override-plugin-globs");
+  if (!override_plugin_globs.empty())
     {
       /* expect filename globs */
-      files = sfi_file_crawler_list_files (bse_main_args->override_plugin_globs, NULL, G_FILE_TEST_IS_REGULAR);
+      files = sfi_file_crawler_list_files (override_plugin_globs.c_str(), NULL, G_FILE_TEST_IS_REGULAR);
       files = sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL);
     }
   else
@@ -713,9 +714,9 @@ bse_plugin_path_list_files (gboolean include_drivers, gboolean include_plugins)
           SfiRing *ring = sfi_file_crawler_list_files (Bse::runpath (Bse::RPath::PLUGINDIR).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
-      if (include_plugins && !Bse::global_config->plugin_path.empty() && Bse::global_config->plugin_path[0])
+      if (include_plugins && !Bse::global_prefs->plugin_path.empty() && Bse::global_prefs->plugin_path[0])
         {
-          SfiRing *ring = sfi_file_crawler_list_files (Bse::global_config->plugin_path.c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          SfiRing *ring = sfi_file_crawler_list_files (Bse::global_prefs->plugin_path.c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           files = sfi_ring_concat (files, sfi_ring_sort (ring, (SfiCompareFunc) strcmp, NULL));
         }
     }

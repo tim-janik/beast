@@ -10,7 +10,7 @@
 /* --- macros --- */
 #define	PRINT_DEBUG_INFO		(0)
 #define	STATIC_ZERO_SIZE		(4096)
-#define	PBLOCK_SIZE(pad, n_channels)	(MAX (2 * (pad), (n_channels) * BSE_CONFIG (wave_chunk_big_pad)))
+#define	PBLOCK_SIZE(pad, n_channels)	(MAX (2 * (pad), (n_channels) * BSE_WAVE_CHUNK_PADDING))
 
 #define	PHASE_NORM(wchunk)		((GslWaveChunkMem*) (0))
 #define	PHASE_NORM_BACKWARD(wchunk)	((GslWaveChunkMem*) (+1))
@@ -684,7 +684,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
       wchunk->n_channels = gsl_data_handle_n_channels (wchunk->dcache->dhandle);
       wchunk->length = gsl_data_handle_n_values (wchunk->dcache->dhandle) / wchunk->n_channels;
       wchunk->length *= wchunk->n_channels;
-      wchunk->n_pad_values = BSE_CONFIG (wave_chunk_padding) * wchunk->n_channels;
+      wchunk->n_pad_values = BSE_WAVE_CHUNK_PADDING * wchunk->n_channels;
       wchunk->volume_adjust = gsl_data_handle_volume (wchunk->dcache->dhandle);
       wchunk->fine_tune_factor = bse_cent_tune (gsl_data_handle_fine_tune (wchunk->dcache->dhandle));
       gsl_data_cache_open (wchunk->dcache);

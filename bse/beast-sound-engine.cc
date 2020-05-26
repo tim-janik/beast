@@ -505,7 +505,8 @@ int
 main (int argc, char *argv[])
 {
   Bse::this_thread_set_name ("BeastSoundEngineMain");
-  Bse::init_async (&argc, argv, argv[0]); // Bse::cstrings_to_vector (NULL)
+  Bse::StringVector args = Bse::init_args (&argc, argv);
+  Bse::init_async (argv[0], args);
   IpcHandlerImpl ipchandlerimpl;
   Bse::ServerImpl::instance().set_ipc_handler (&ipchandlerimpl);
 

@@ -133,7 +133,7 @@ class Organ : public OrganBase {
     void
     reset()
     {
-      uint32 rfactor = bse_main_args->allow_randomization ? 1 : 0;
+      uint32 rfactor = config_bool ("allow-randomization") ? 1 : 0;
       uint32 mix_freq_256 = mix_freq() * 256;
       /* to make all notes sound a bit different, randomize the initial phase of
        * each harmonic (except if the user requested deterministic behaviour)

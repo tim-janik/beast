@@ -325,7 +325,7 @@ main (int   argc,
       note = CLAMP (note, 0, 128);
       printout ("midi2freq(%u) = %f\n",
                 note,
-                bse_temp_freq (BSE_CONFIG (kammer_freq), note - BSE_CONFIG (midi_kammer_note)));
+                bse_temp_freq (BSE_KAMMER_FREQUENCY, note - BSE_KAMMER_NOTE));
     }
   else if (strcmp (arg, "blp") == 0)
     {

@@ -543,7 +543,8 @@ bsetool_main (int argc_int, char *argv[])
 int
 main (int argc, char *argv[])
 {
-  Bse::init_async (&argc, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
+  Bse::StringVector args = Bse::init_args (&argc, argv);
+  Bse::init_async ("bsetool", args);
   const auto ret = Bse::jobs += [argc, argv] () {
     return bsetool_main (argc, argv);
   };

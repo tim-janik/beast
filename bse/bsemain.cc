@@ -10,49 +10,25 @@
 #include "driver.hh"
 #include "gsldatacache.hh"
 #include "bseengine.hh"
-#include "bseblockutils.hh" /* bse_block_impl_name() */
 #include "serializable.hh"
 #include "bse/internal.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <bse/testing.hh>
 
 using namespace Bse;
 
 /* --- prototypes --- */
-static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
 namespace Bse {
 static void     run_registered_driver_loaders();
+static void     config_init (const StringVector &args);
 } // Bse
 
 /* --- variables --- */
-/* from bse.hh */
-static volatile gboolean bse_initialization_stage = 0;
-static BseMainArgs       default_main_args = {
-  "auto",               // pcm_driver
-  "auto",               // midi_driver;
-  NULL,                 // override_plugin_globs
-  NULL,			// override_sample_path
-  1,                    // n_processors
-  64,                   // wave_chunk_padding
-  256,                  // wave_chunk_big_pad
-  4000,                 // dcache_block_size
-  10 * 1024 * 1024,     // dcache_cache_memory
-  BSE_KAMMER_NOTE,      // midi_kammer_note (69)
-  BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
-  false,                // stand_alone
-  true,                 // allow_randomization
-  false,                // force_fpu
-  true,                 // load_drivers
-  false,                // debug_extensions
-  false,                // dump_driver_list
-};
-BseMainArgs             *bse_main_args = NULL;
+static volatile int bse_initialization_stage = 0;
 
 // == BSE Initialization ==
-static int initialized_for_unit_testing = -1;
 static std::thread async_bse_thread;
 
 bool
@@ -75,24 +51,25 @@ init_sigpipe()
 }
 
 static void
-initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+initialize_with_args (const char *app_name, const Bse::StringVector &args)
 {
   assert_return (_bse_initialized() == false);
   assert_return (bse_main_context == NULL);
 
-  // setup GLib's prgname for error messages
-  if (argc && argv && *argc && !g_get_prgname ())
-    g_set_prgname (*argv);
-
   // argument handling
-  bse_main_args = &default_main_args;
-  init_parse_args (argc, argv, bse_main_args, args);
+  config_init (args);
 
-  // initialize SFI
-  if (initialized_for_unit_testing > 0)
-    Bse::Test::init (argc, argv);
-  else
-    sfi_init (argc, argv);
+  // setup GLib's prgname for error messages
+  if (auto exe = config_string ("exe"); !exe.empty() && !g_get_prgname())
+    g_set_prgname (exe.c_str());
+  if (!g_get_prgname() && app_name)
+    g_set_prgname (app_name);
+
+  // initialize SFI components
+  _sfi_init_values ();
+  _sfi_init_params ();
+  _sfi_init_time ();
+  _sfi_init_file_crawler ();
 
   // SIGPIPE init: needs to be done before any child thread is created
   init_sigpipe();
@@ -134,11 +111,10 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   bse_server_get ();
 
   // load drivers
-  if (bse_main_args->load_drivers)
-    run_registered_driver_loaders();
+  run_registered_driver_loaders();
 
   // dump device list
-  if (bse_main_args->dump_driver_list)
+  if (false) // dump_driver_list
     {
       Bse::Driver::EntryVec entries;
       printerr ("%s", _("\nAvailable PCM drivers:\n"));
@@ -164,14 +140,6 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   // start other threads
   struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
   Internal::_init_threaded();
-
-  // unit testing message
-  if (initialized_for_unit_testing > 0)
-    {
-      StringVector sv = Bse::string_split (Bse::cpu_info(), " ");
-      String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-      TNOTE ("Running on: %s+%s", machine.c_str(), bse_block_impl_name());
-    }
 
   // complete initialization
   bse_initialization_stage++;   // = 2
@@ -209,10 +177,9 @@ reap_main_loop_thread ()
 }
 
 void
-_bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+_bse_init_async (const char *app_name, const Bse::StringVector &args)
 {
-  assert_return (argc && argv);
-  initialize_with_argv (argc, argv, app_name, args);
+  initialize_with_args (app_name, args);
 
   // start main BSE thread
   if (std::atexit (reap_main_loop_thread) != 0)
@@ -263,25 +230,6 @@ bse_main_enqueue (const std::function<void()> &func)
   g_source_unref (source);
 }
 
-int
-bse_init_and_test (int *argc, char **argv, const std::function<int()> &bsetester, const Bse::StringVector &args)
-{
-  // initialize
-  assert_return (initialized_for_unit_testing < 0, -128);
-  initialized_for_unit_testing = 1;
-  _bse_init_async (argc, argv, NULL, args);
-  // run tests
-  Aida::ScopedSemaphore sem;
-  int retval = -128;
-  std::function<void()> wrapper = [&sem, &bsetester, &retval] () {
-    retval = bsetester();
-    sem.post();
-  };
-  bse_main_enqueue (wrapper);
-  sem.wait();
-  return retval;
-}
-
 namespace Bse {
 void
 JobQueue::call_remote (const std::function<void()> &job)
@@ -298,8 +246,6 @@ JobQueue jobs;
 } // Bse
 
 // == parse args ==
-static String argv_bse_rcfile;
-
 static guint
 get_n_processors (void)
 {
@@ -311,216 +257,157 @@ get_n_processors (void)
   return 1;
 }
 
-static bool
-parse_bool_option (const String &s, const char *arg, bool *boolp)
-{
-  const size_t length = strlen (arg);
-  if (s.size() > length && s[length] == '=' && strncmp (&s[0], arg, length) == 0)
-    {
-      *boolp = string_to_bool (s.substr (length + 1));
-      return true;
-    }
-  return false;
-}
-
-static bool
-parse_int_option (const String &s, const char *arg, int64 *ip)
-{
-  const size_t length = strlen (arg);
-  if (s.size() > length && s[length] == '=' && strncmp (&s[0], arg, length) == 0)
-    {
-      *ip = string_to_int (s.substr (length + 1));
-      return true;
-    }
-  return false;
-}
-
-static bool
-parse_float_option (const String &s, const char *arg, double *fp)
-{
-  const size_t length = strlen (arg);
-  if (s.size() > length && s[length] == '=' && strncmp (&s[0], arg, length) == 0)
-    {
-      *fp = string_to_float (s.substr (length + 1));
-      return true;
-    }
-  return false;
-}
-
-static void
-init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args)
-{
-  uint argc = *argc_p;
-  char **argv = argv_p;
-  /* this function is called before the main BSE thread is started,
-   * so we can't use any BSE functions yet.
-   */
-  uint i;
-  for (i = 1; i < argc; i++)
-    {
-      if (strcmp (argv[i], "--g-fatal-warnings") == 0)
-	{
-	  GLogLevelFlags fatal_mask = (GLogLevelFlags) g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
-	  fatal_mask = (GLogLevelFlags) (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-	  g_log_set_always_fatal (fatal_mask);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-driver-list", argv[i]) == 0)
-	{
-          margs->load_drivers = true;
-          margs->dump_driver_list = true;
-	  argv[i] = nullptr;
-	}
-      else if (strcmp ("--bse-pcm-driver", argv[i]) == 0)
-	{
-          if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->pcm_driver = argv[i];
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-midi-driver", argv[i]) == 0)
-	{
-          if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-              margs->midi_driver = argv[i];
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-override-plugin-globs", argv[i]) == 0 && i + 1 < argc)
-	{
-          argv[i++] = NULL;
-          margs->override_plugin_globs = argv[i];
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-override-sample-path", argv[i]) == 0 && i + 1 < argc)
-	{
-	  argv[i++] = NULL;
-	  margs->override_sample_path = argv[i];
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
-	{
-          argv[i++] = NULL;
-          argv_bse_rcfile = argv[i];
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-force-fpu", argv[i]) == 0)
-	{
-          margs->force_fpu = TRUE;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-disable-randomization", argv[i]) == 0)
-	{
-          margs->allow_randomization = FALSE;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-enable-randomization", argv[i]) == 0)
-	{
-          margs->allow_randomization = TRUE;
-	  argv[i] = NULL;
-	}
-    }
-
-  if (*argc_p > 1)
-    {
-      uint e = 1;
-      for (i = 1; i < argc; i++)
-        if (argv[i])
-          {
-            argv[e++] = argv[i];
-            if (i >= e)
-              argv[i] = NULL;
-          }
-      *argc_p = e;
-    }
-  for (auto arg : args)
-    {
-      bool b; double d; int64 i;
-      if      (parse_bool_option (arg, "stand-alone", &b))
-        margs->stand_alone |= b;
-      else if (parse_bool_option (arg, "allow-randomization", &b))
-        margs->allow_randomization |= b;
-      else if (parse_bool_option (arg, "force-fpu", &b))
-        margs->force_fpu |= b;
-      else if (parse_bool_option (arg, "load-drivers", &b))
-        margs->load_drivers = b;
-      else if (parse_bool_option (arg, "debug-extensions", &b))
-        margs->debug_extensions |= b;
-      else if (parse_int_option (arg, "wave-chunk-padding", &i))
-        margs->wave_chunk_padding = i;
-      else if (parse_int_option (arg, "wave-chunk-big-pad", &i))
-        margs->wave_chunk_big_pad = i;
-      else if (parse_int_option (arg, "dcache-cache-memory", &i))
-        margs->dcache_cache_memory = i;
-      else if (parse_int_option (arg, "dcache-block-size", &i))
-        margs->dcache_block_size = i;
-      else if (parse_int_option (arg, "midi-kammer-note", &i))
-        margs->midi_kammer_note = i;
-      else if (parse_float_option (arg, "kammer-freq", &d))
-        margs->kammer_freq = d;
-    }
-
-  /* constrain (user) config */
-  margs->wave_chunk_padding = MAX (1, margs->wave_chunk_padding);
-  margs->wave_chunk_big_pad = MAX (2 * margs->wave_chunk_padding, margs->wave_chunk_big_pad);
-  margs->dcache_block_size = MAX (2 * margs->wave_chunk_big_pad + sizeof (((GslDataCacheNode*) NULL)->data[0]), margs->dcache_block_size);
-  margs->dcache_block_size = sfi_alloc_upper_power2 (margs->dcache_block_size - 1);
-  /* margs->dcache_cache_memory = sfi_alloc_upper_power2 (margs->dcache_cache_memory); */
-
-  /* non-configurable config updates */
-  margs->n_processors = get_n_processors ();
-}
-
 namespace Bse {
 
-// == Bse::GlobalConfig ==
-static Configuration global_config_rcsettings;
-static bool          global_config_dirty = false;
-static size_t        global_config_stamp = 1;
-static std::atomic<size_t> global_config_lockcount { 0 };
+// == Bse Configuration ==
+using StringMap = std::unordered_map<String,String>;
 
-Configuration
-GlobalConfig::defaults ()
+static String
+kv_split (const String &kvpair, String *valuep = nullptr)
 {
-  Configuration config;
+  const char *const s = kvpair.c_str();
+  const char *const eq = strchr (s, '=');
+  if (eq)
+    {
+      if (valuep)
+        *valuep = eq + 1;
+      return std::string (s, eq - s);
+    }
+  if (valuep)
+    *valuep = "";
+  return "";
+}
+
+static StringMap *volatile global_config = nullptr;
+
+/// Apply configuration upon BSE initialization.
+static void
+config_init (const StringVector &args)
+{
+  assert_return (global_config == nullptr);
+  // map args to config_*()
+  StringMap gconfig;
+  for (const auto &kv : args)
+    {
+      String value;
+      if (kv == "--") // should not occour
+        break;
+      else if (kv_split (kv, &value) == "fatal-warnings")
+        gconfig["fatal-warnings"] = value;
+      else if (kv_split (kv, &value) == "pcm-driver")
+        gconfig["pcm-driver"] = value;
+      else if (kv_split (kv, &value) == "midi-driver")
+        gconfig["midi-driver"] = value;
+      else if (kv_split (kv, &value) == "override-plugin-globs")
+        gconfig["override-plugin-globs"] = value;
+      else if (kv_split (kv, &value) == "override-sample-path")
+        gconfig["override-sample-path"] = value;
+      else if (kv_split (kv, &value) == "rcfile")
+        gconfig["rcfile"] = value;
+      else if (kv_split (kv, &value) == "allow-randomization")
+        gconfig["allow-randomization"] = string_to_bool (value);
+      else if (kv_split (kv, &value) == "stand-alone")
+        gconfig["stand-alone"] = string_to_bool (value) ? "1" : "0";
+      else if (kv_split (kv, &value) == "jobs")
+        gconfig["jobs"] = string_from_int (string_to_int (value));
+    }
+  // apply config
+  if (string_to_bool (gconfig["fatal-warnings"]))
+    {
+      Bse::set_debug_flags (Bse::DebugFlags::FATAL_WARNINGS);
+      unsigned int flags = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
+      g_log_set_always_fatal (GLogLevelFlags (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+    }
+  // sanitize settings
+  if (string_to_int (gconfig["jobs"]) <= 0)
+    gconfig["jobs"] = string_from_int (get_n_processors());
+  if (const String r = gconfig["allow-randomization"]; r.empty())
+    gconfig["allow-randomization"] = "1";
+  // assign
+  assert_return (global_config == nullptr);
+  global_config = new StringMap (gconfig);
+}
+
+/// Retrive BSE configuration setting as string.
+String
+config_string (const String &key, const String &fallback)
+{
+  auto it = global_config->find (key);
+  if (it != global_config->end())
+    return it->second;
+  return fallback;
+}
+
+/// Retrive BSE configuration setting as boolean.
+bool
+config_bool (const String &key, bool fallback)
+{
+  auto it = global_config->find (key);
+  if (it != global_config->end())
+    return string_to_bool (it->second, fallback);
+  return fallback;
+}
+
+/// Retrive BSE configuration setting as integer.
+int64
+config_int (const String &key, int64 fallback)
+{
+  auto it = global_config->find (key);
+  if (it != global_config->end())
+    {
+      size_t consumed = 0;
+      const int64 i = string_to_int (it->second, &consumed);
+      return consumed ? i : fallback;
+    }
+  return fallback;
+}
+
+// == Bse::GlobalPreferences ==
+static Preferences   global_prefs_rcsettings;
+static bool          global_prefs_dirty = false;
+static size_t        global_prefs_stamp = 1;
+static std::atomic<size_t> global_prefs_lockcount { 0 };
+
+Preferences
+GlobalPreferences::defaults ()
+{
+  Preferences prefs;
   // static defaults
-  config.pcm_driver = bse_main_args->pcm_driver;
-  config.synth_latency = 22;
-  config.synth_mixing_freq = 48000;
-  config.synth_control_freq = 1500;
-  config.midi_driver = bse_main_args->midi_driver;
-  config.invert_sustain = false;
-  config.license_default = "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
+  prefs.pcm_driver = config_string ("pcm-driver", "auto");
+  prefs.synth_latency = 22;
+  prefs.synth_mixing_freq = 48000;
+  prefs.synth_control_freq = 1500;
+  prefs.midi_driver = config_string ("midi-driver", "auto");
+  prefs.invert_sustain = false;
+  prefs.license_default = "Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)";
   // dynamic defaults
   const String default_user_path = Path::join (Path::user_home(), "Beast");
-  config.effect_path     = default_user_path + "/Effects";
-  config.instrument_path = default_user_path + "/Instruments";
-  config.plugin_path     = default_user_path + "/Plugins";
-  config.sample_path     = default_user_path + "/Samples";
+  prefs.effect_path     = default_user_path + "/Effects";
+  prefs.instrument_path = default_user_path + "/Instruments";
+  prefs.plugin_path     = default_user_path + "/Plugins";
+  prefs.sample_path     = default_user_path + "/Samples";
   const char *user = g_get_user_name();
   if (user)
     {
       const char *name = g_get_real_name();
       if (name && name[0] && strcmp (user, name) != 0)
-        config.author_default = name;
+        prefs.author_default = name;
       else
-        config.author_default = user;
+        prefs.author_default = user;
     }
-  return config;
+  return prefs;
 }
 
 static String
-global_config_beastrc()
+global_prefs_beastrc()
 {
-  return argv_bse_rcfile.empty() ? Path::join (Path::config_home(), "beast", "bserc.xml") : argv_bse_rcfile;
+  const String defaultrc = Path::join (Path::config_home(), "beast", "bserc.xml");
+  return config_string ("rcfile", defaultrc);
 }
 
 struct BseRc : public virtual Xms::SerializableInterface {
-  Configuration config;
-  String        config_tag = "Configuration";
+  Preferences config;
+  String      config_tag = "Configuration";
   void
   xml_serialize (Xms::SerializationNode &xs) override
   {
@@ -528,18 +415,18 @@ struct BseRc : public virtual Xms::SerializableInterface {
   }
 };
 
-static const Configuration&
-global_config_load ()
+static const Preferences&
+global_prefs_load ()
 {
   static bool loaded_once = false;
   if (!loaded_once)
     {
-      Configuration config = GlobalConfig::defaults();
+      Preferences config = GlobalPreferences::defaults();
       // load from rcfile
-      const String xmltext = Path::stringread (global_config_beastrc());
+      const String xmltext = Path::stringread (global_prefs_beastrc());
       if (!xmltext.empty())
         {
-          Configuration tmp = config;
+          Preferences tmp = config;
           Xms::SerializationNode xs;
           if (Bse::Error::NONE == xs.parse_xml ("", xmltext)) // "BseRc" but allow "configuration"
             {
@@ -559,65 +446,65 @@ global_config_load ()
             }
         }
       loaded_once = true;
-      global_config_rcsettings = config;
-      global_config_stamp++;
+      global_prefs_rcsettings = config;
+      global_prefs_stamp++;
     }
-  return global_config_rcsettings;
+  return global_prefs_rcsettings;
 }
 
 void
-GlobalConfig::assign (const Configuration &configuration)
+GlobalPreferences::assign (const Preferences &preferences)
 {
-  if (global_config_rcsettings == configuration ||
-      GlobalConfig::locked ())
+  if (global_prefs_rcsettings == preferences ||
+      GlobalPreferences::locked ())
     return;
-  global_config_rcsettings = configuration;
-  global_config_stamp++;
-  if (!global_config_dirty)
+  global_prefs_rcsettings = preferences;
+  global_prefs_stamp++;
+  if (!global_prefs_dirty)
     {
-      exec_timeout (GlobalConfig::flush, 500);
-      global_config_dirty = true;
+      exec_timeout (GlobalPreferences::flush, 500);
+      global_prefs_dirty = true;
     }
 }
 
 void
-GlobalConfig::flush ()
+GlobalPreferences::flush ()
 {
-  if (global_config_dirty)
+  if (global_prefs_dirty)
     {
       BseRc rc;
-      rc.config = global_config_rcsettings;
+      rc.config = global_prefs_rcsettings;
       Xms::SerializationNode xs;
       xs.save (rc);
-      Path::stringwrite (global_config_beastrc(), xs.write_xml ("BseRc"), true);
-      global_config_dirty = false;
+      Path::stringwrite (global_prefs_beastrc(), xs.write_xml ("BseRc"), true);
+      global_prefs_dirty = false;
     }
 }
 
 void
-GlobalConfig::lock ()
+GlobalPreferences::lock ()
 {
-  global_config_lockcount += 1;
+  global_prefs_lockcount += 1;
 }
 
 void
-GlobalConfig::unlock ()
+GlobalPreferences::unlock ()
 {
-  assert_return (global_config_lockcount > 0);
-  global_config_lockcount -= 1;
+  assert_return (global_prefs_lockcount > 0);
+  global_prefs_lockcount -= 1;
 }
 
 bool
-GlobalConfig::locked ()
+GlobalPreferences::locked ()
 {
-  return global_config_lockcount > 0;
+  return global_prefs_lockcount > 0;
 }
 
-const GlobalConfig*
-GlobalConfigPtr::operator-> () const
+const GlobalPreferences*
+GlobalPreferencesPtr::operator-> () const
 {
-  const Configuration &config = global_config_load();
-  return static_cast<const GlobalConfig*> (&config);
+  const Preferences &config = global_prefs_load();
+  return static_cast<const GlobalPreferences*> (&config);
 }
 
 // == loaders ==

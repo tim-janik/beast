@@ -262,12 +262,10 @@ bse_wave_load_wave_file (BseWave      *self,
 
   if (!g_path_is_absolute (file_name))	  /* resolve relative path using search dir */
     {
-      std::string sample_path;
       SfiRing *files, *walk;
-      if (bse_main_args->override_sample_path)
-	sample_path = bse_main_args->override_sample_path;
-      else
-	sample_path = Bse::Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_config->sample_path);
+      std::string sample_path = Bse::config_string ("override-sample-path");
+      if (sample_path.empty())
+	sample_path = Bse::Path::searchpath_join (Bse::runpath (Bse::RPath::SAMPLEDIR), Bse::global_prefs->sample_path);
       files = sfi_file_crawler_list_files (sample_path.c_str(), file_name, G_FILE_TEST_IS_REGULAR);
 
       for (walk = files; walk; walk = sfi_ring_walk (files, walk))
@@ -639,7 +637,7 @@ bse_wave_restore_private (BseObject  *object,
               gsl_data_handle_unref (tmp_handle);
             }
 	  GslDataCache *dcache = gsl_data_cache_from_dhandle (parsed_wchunk.data_handle,
-                                                              BSE_CONFIG (wave_chunk_padding) * parsed_wchunk.wh_n_channels);
+                                                              BSE_WAVE_CHUNK_PADDING * parsed_wchunk.wh_n_channels);
           const gchar *ltype = bse_xinfos_get_value (parsed_wchunk.xinfos, "loop-type");
           GslWaveLoopType loop_type = ltype ? gsl_wave_loop_type_from_string (ltype) : GSL_WAVE_LOOP_NONE;
           SfiNum loop_start = bse_xinfos_get_num (parsed_wchunk.xinfos, "loop-start");

@@ -177,23 +177,23 @@ test_main (int argc, char *argv[])
 int
 main (int argc, char *argv[])
 {
-  const Bse::StringVector args = Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL);
-  // "wave-chunk-big-pad=2", "dcache-block-size=16"
+  Bse::StringVector args = Bse::init_args (&argc, argv);
+  args.push_back ("stand-alone=1");
   Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
   // special case aida-bench
   if (argc >= 2 && argv[1] && std::string ("--aida-bench") == argv[1])
     {
-      Bse::init_async (&argc, argv, argv[0], args);
+      Bse::init_async (argv[0], args);
       bench_aida();
       return 0;
     }
   if (argc >= 2 && argv[1] && std::string ("--resampler") == argv[1])
     {
-      Bse::init_async (&argc, argv, argv[0], args);
+      Bse::init_async (argv[0], args);
       return test_resampler (argc, argv);
     }
   // run tests
-  return bse_init_and_test (&argc, argv, [&]() { return test_main (argc, argv); }, args);
+  return Bse::init_and_test (args, [&]() { return test_main (argc, argv); });
 }
 
 static int

@@ -419,7 +419,7 @@ bse_object_lock (gpointer _object)
     {
       g_object_ref (object);
       // locking any object also freezes configuration
-      Bse::global_config->lock();
+      Bse::global_prefs->lock();
     }
 
   object->lock_count += 1;
@@ -438,7 +438,7 @@ bse_object_unlock (gpointer _object)
   if (!object->lock_count)
     {
       // tentatively also unfreeze global configuration
-      Bse::global_config->unlock();
+      Bse::global_prefs->unlock();
 
       if (BSE_OBJECT_GET_CLASS (object)->unlocked)
 	BSE_OBJECT_GET_CLASS (object)->unlocked (object);

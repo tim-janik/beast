@@ -1,6 +1,7 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include <bse/bsemain.hh>
 #include <bse/testing.hh>
+#include <bse/bsestartup.hh>
 #include "bse/internal.hh"
 
 using Bse::printerr;
@@ -88,5 +89,6 @@ int
 main (int argc, char *argv[])
 {
   Bse::set_debug_flags (Bse::DebugFlags::SIGQUIT_ON_ABORT);
-  return bse_init_and_test (&argc, argv, [&]() { return test_main (argc, argv); });
+  Bse::StringVector args = Bse::init_args (&argc, argv);
+  return Bse::init_and_test (args, [&]() { return test_main (argc, argv); });
 }

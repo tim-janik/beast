@@ -6,15 +6,6 @@
 #include <bse/path.hh>
 #include <mutex>
 
-/* --- initialization --- */
-typedef struct
-{
-  const char *value_name;       /* value list ends with value_name == NULL */
-  const char *value_string;
-  long double value_num;        /* valid if value_string == NULL */
-} SfiInitValue;
-void sfi_init (int *argcp, char **argv, const Bse::StringVector &args = Bse::StringVector());
-
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
 

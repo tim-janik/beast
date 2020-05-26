@@ -9,7 +9,7 @@ using namespace Bse;
 
 // test_serializable_configuration
 struct SerializableConfiguration : public virtual Xms::SerializableInterface {
-  Configuration config_;
+  Preferences config_;
 protected:
   void
   xml_serialize (Xms::SerializationNode &xs) override
@@ -18,7 +18,7 @@ protected:
   }
 public:
   SerializableConfiguration() = default;
-  Configuration& config() { return config_; }
+  Preferences& config() { return config_; }
   bool operator== (const SerializableConfiguration &o) { return config_ == o.config_; }
   bool operator!= (const SerializableConfiguration &o) { return !operator== (o); }
 };
@@ -88,7 +88,7 @@ class FrobnicatorImpl : public FrobnicatorBase {
   Bse::Error                error_ = Bse::Error (0);
   std::vector<Xms::SerializableInterface*> children_;
 public:
-  std::vector<Bse::Configuration> configs_;
+  std::vector<Bse::Preferences> configs_;
   FrobnicatorImpl              *link_ = nullptr;
 protected:
   void         xml_serialize (Xms::SerializationNode &xs) override;
@@ -170,7 +170,7 @@ test_serializable_hierarchy()
     dynamic_cast<FrobnicatorBase*> (&midi)->flags_ = 0x02020202;
     project.link_ = dynamic_cast<FrobnicatorImpl*> (&project.create_track ("Audio"));
     project.link_->populate (false);
-    project.link_->configs_.push_back (*Bse::global_config);
+    project.link_->configs_.push_back (*Bse::global_prefs);
     FrobnicatorSpecial *master = dynamic_cast<FrobnicatorSpecial*> (&project.create_track ("Master"));
     master->max_ = -9e-309;
     master->flags_ = 0xeaeaeaea;

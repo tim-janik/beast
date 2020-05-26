@@ -15,7 +15,7 @@
 /* --- macros --- */
 #define	NODEP_INDEX(dcache, node_p)	((node_p) - (dcache)->nodes)
 #define	UPPER_POWER2(n)			(sfi_alloc_upper_power2 (MAX (n, 4)))
-#define	CONFIG_NODE_SIZE()		(BSE_CONFIG (dcache_block_size))
+#define	CONFIG_NODE_SIZE()		(BSE_DCACHE_BLOCK_SIZE)
 #define	AGE_EPSILON			(3)	/* must be < resident set */
 #define	LOW_PERSISTENCY_RESIDENT_SET    (5)
 
@@ -64,6 +64,7 @@ GslDataCache*
 gsl_data_cache_new (GslDataHandle *dhandle,
 		    guint	   padding)
 {
+  padding = BSE_WAVE_CHUNK_MAX_CHANNELS * BSE_WAVE_CHUNK_PADDING;
   guint node_size = CONFIG_NODE_SIZE () / sizeof (GslDataType);
   GslDataCache *dcache;
   assert_return (dhandle != NULL, NULL);
@@ -481,7 +482,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
   if (check_cache)
     {
       guint node_size = CONFIG_NODE_SIZE ();
-      guint cache_mem = BSE_CONFIG (dcache_cache_memory);
+      guint cache_mem = BSE_DCACHE_CACHE_MEMORY;
       guint current_mem;
       global_dcache_spinlock.lock();
       global_dcache_n_aged_nodes++;

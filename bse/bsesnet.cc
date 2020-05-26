@@ -927,7 +927,7 @@ SNetImpl::can_create_source (const String &module_type)
   BseSNet *self = as<BseSNet*>();
   GType type = g_type_from_name (module_type.c_str());
   Error error = Error::NONE;
-  if (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT)
+  if (!BSE_SNET_USER_SYNTH (self) && 1 /*!BSE_DBG_EXT*/)
     error = Error::NOT_OWNER;
   else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
 	   g_type_is_a (type, BSE_TYPE_CONTAINER))
@@ -962,7 +962,7 @@ SNetImpl::remove_source (SourceIface &module)
   BseSNet *self = as<BseSNet*>();
   BseSource *child = module.as<BseSource*>();
   Bse::Error error = Bse::Error::NONE;
-  if (!BSE_IS_SOURCE (child) || child->parent != self || (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT))
+  if (!BSE_IS_SOURCE (child) || child->parent != self || (!BSE_SNET_USER_SYNTH (self) && 1 /*!BSE_DBG_EXT*/))
     return Error::PROC_PARAM_INVAL;
   BseUndoStack *ustack = bse_item_undo_open (self, string_format ("%s: %s", __func__, bse_object_debug_name (child)).c_str());
   bse_container_uncross_undoable (self, child);

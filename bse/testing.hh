@@ -7,9 +7,6 @@
 namespace Bse {
 namespace Test {
 
-void init (int *argcp, char **argv, const StringVector &args = StringVector());
-
-
 // Test Macros
 #define TSTART(...)             Bse::Test::test_output ('S', ::Bse::string_format (__VA_ARGS__))  ///< Print message once a test case starts.
 #define TDONE()                 Bse::Test::test_output ('D', "")                                  ///< Print message for test case end.

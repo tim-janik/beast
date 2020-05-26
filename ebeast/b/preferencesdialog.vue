@@ -48,7 +48,7 @@ function drivers2picklist (e) {
   return item;
 }
 async function fetch_current_config (addcleanup) {
-  const d = await Bse.server.get_config();
+  const d = await Bse.server.get_prefs();
   if (d.__typename__)
     {
       d.__typedata__ = await Bse.server.find_typedata (d.__typename__);
@@ -69,8 +69,8 @@ async function fetch_current_config (addcleanup) {
 }
 function component_data () {
   const data = {
-    defaults: { getter: async c => Object.freeze (await Bse.server.get_config_defaults()), },
-    locked:   { getter: async c => Bse.server.locked_config(), },
+    defaults: { getter: async c => Object.freeze (await Bse.server.get_default_prefs()), },
+    locked:   { getter: async c => Bse.server.locked_prefs(), },
     prefdata: { getter: fetch_current_config.bind (this),
 		notify: n => { this.prefrefresh = n; return () => this.prefrefresh = null; }, },
     pcmlist:  { getter: async c => Object.freeze (await Bse.server.list_pcm_drivers()),
@@ -121,9 +121,9 @@ export default {
       return "mi-not_interested";
     },
     async value_changed (po) {
-      const prefs = await Bse.server.get_config();
+      const prefs = await Bse.server.get_prefs();
       Util.assign_forin (prefs, po);
-      await Bse.server.set_config (prefs);
+      await Bse.server.set_prefs (prefs);
       if (this.prefrefresh)
 	this.prefrefresh();
     },
