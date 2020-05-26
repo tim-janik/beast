@@ -105,8 +105,6 @@ bse_server_init (BseServer *self)
   self->set_flag (BSE_ITEM_FLAG_SINGLETON);
 
   self->dev_use_count = 0;
-  self->pcm_imodule = NULL;
-  self->pcm_omodule = NULL;
   self->pcm_writer = NULL;
 
   /* keep the server singleton alive */
@@ -114,6 +112,12 @@ bse_server_init (BseServer *self)
 
   /* start dispatching main thread stuff */
   main_thread_source_setup (self);
+
+  // install PCM IO modules
+  BseTrans *trans = bse_trans_open ();
+  self->pcm_imodule = bse_pcm_imodule_insert (trans);
+  self->pcm_omodule = bse_pcm_omodule_insert (trans);
+  bse_trans_commit (trans);
 }
 
 static void
@@ -273,6 +277,7 @@ bse_server_open_devices (BseServer *self)
   auto impl = self->as<Bse::ServerImpl*>();
   Bse::Error error = Bse::Error::NONE;
   assert_return (BSE_IS_SERVER (self), Bse::Error::INTERNAL);
+  assert_return (self->pcm_imodule && self->pcm_omodule, Bse::Error::INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
     {
@@ -294,9 +299,8 @@ bse_server_open_devices (BseServer *self)
     error = impl->open_midi_driver();
   if (error == 0)
     {
-      BseTrans *trans = bse_trans_open ();
       Bse::global_prefs->lock();
-      self->pcm_imodule = bse_pcm_imodule_insert (trans);
+      BseTrans *trans = bse_trans_open ();
       bse_trans_add (trans, bse_pcm_imodule_change_driver (self->pcm_imodule, impl->pcm_driver().get()));
       if (self->wave_file)
 	{
@@ -321,7 +325,6 @@ bse_server_open_devices (BseServer *self)
 	      self->pcm_writer = NULL;
 	    }
 	}
-      self->pcm_omodule = bse_pcm_omodule_insert (trans);
       bse_trans_add (trans, bse_pcm_omodule_change_driver (self->pcm_omodule, impl->pcm_driver().get(), self->pcm_writer));
       bse_trans_commit (trans);
       self->dev_use_count++;
@@ -348,6 +351,15 @@ bse_server_shutdown (BseServer *self)
     }
   while (self->dev_use_count)
     bse_server_close_devices (self);
+
+  // uninstall PCM IO modules
+  assert_return (self->pcm_imodule && self->pcm_omodule);
+  BseTrans *trans = bse_trans_open ();
+  bse_pcm_imodule_remove (self->pcm_imodule, trans);
+  self->pcm_imodule = NULL;
+  bse_pcm_omodule_remove (self->pcm_omodule, trans);
+  self->pcm_omodule = NULL;
+  bse_trans_commit (trans);
 }
 
 void
@@ -362,11 +374,7 @@ bse_server_close_devices (BseServer *self)
     {
       BseTrans *trans = bse_trans_open ();
       bse_trans_add (trans, bse_pcm_imodule_change_driver (self->pcm_imodule, nullptr));
-      bse_pcm_imodule_remove (self->pcm_imodule, trans);
-      self->pcm_imodule = NULL;
       bse_trans_add (trans, bse_pcm_omodule_change_driver (self->pcm_omodule, nullptr, nullptr));
-      bse_pcm_omodule_remove (self->pcm_omodule, trans);
-      self->pcm_omodule = NULL;
       bse_trans_commit (trans);
       /* wait until transaction has been processed */
       bse_engine_wait_on_trans ();
