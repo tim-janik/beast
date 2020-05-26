@@ -296,7 +296,8 @@ bse_server_open_devices (BseServer *self)
     {
       BseTrans *trans = bse_trans_open ();
       Bse::global_prefs->lock();
-      self->pcm_imodule = bse_pcm_imodule_insert (impl->pcm_driver().get(), trans);
+      self->pcm_imodule = bse_pcm_imodule_insert (trans);
+      bse_trans_add (trans, bse_pcm_imodule_change_driver (self->pcm_imodule, impl->pcm_driver().get()));
       if (self->wave_file)
 	{
 	  Bse::Error error;
@@ -320,7 +321,8 @@ bse_server_open_devices (BseServer *self)
 	      self->pcm_writer = NULL;
 	    }
 	}
-      self->pcm_omodule = bse_pcm_omodule_insert (impl->pcm_driver().get(), self->pcm_writer, trans);
+      self->pcm_omodule = bse_pcm_omodule_insert (trans);
+      bse_trans_add (trans, bse_pcm_omodule_change_driver (self->pcm_omodule, impl->pcm_driver().get(), self->pcm_writer));
       bse_trans_commit (trans);
       self->dev_use_count++;
       ServerImpl::instance().enginechange (true);
@@ -359,8 +361,10 @@ bse_server_close_devices (BseServer *self)
   if (!self->dev_use_count)
     {
       BseTrans *trans = bse_trans_open ();
+      bse_trans_add (trans, bse_pcm_imodule_change_driver (self->pcm_imodule, nullptr));
       bse_pcm_imodule_remove (self->pcm_imodule, trans);
       self->pcm_imodule = NULL;
+      bse_trans_add (trans, bse_pcm_omodule_change_driver (self->pcm_omodule, nullptr, nullptr));
       bse_pcm_omodule_remove (self->pcm_omodule, trans);
       self->pcm_omodule = NULL;
       bse_trans_commit (trans);
