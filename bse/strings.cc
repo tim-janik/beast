@@ -540,6 +540,20 @@ current_locale_strtold (const char *nptr, char **endptr)
   return val_1;
 }
 
+/// Parse a long double from a string, trying locale specific characters and POSIX/C formatting.
+long double
+string_to_long_double (const String &string)
+{
+  return current_locale_strtold (string.c_str(), NULL);
+}
+
+/// Similar to string_to_long_double(const String&), but returns the first failing character position in @a endptr.
+long double
+string_to_long_double (const char *dblstring, const char **endptr)
+{
+  return current_locale_strtold (dblstring, (char**) endptr);
+}
+
 /// Parse a double from a string, trying locale specific characters and POSIX/C formatting.
 double
 string_to_double (const String &string)
@@ -574,6 +588,17 @@ string_from_double (double value)
   if (std::isinf (value))
     return std::signbit (value) ? "-Infinity" : "+Infinity";
   return string_format ("%.17g", value);
+}
+
+/// Convert a long double into a string, using the POSIX/C locale.
+String
+string_from_long_double (long double value)
+{
+  if (std::isnan (value))
+    return std::signbit (value) ? "-NaN" : "+NaN";
+  if (std::isinf (value))
+    return std::signbit (value) ? "-Infinity" : "+Infinity";
+  return string_format ("%.20g", value);
 }
 
 /// Parse a string into a list of doubles, expects ';' as delimiter.

@@ -1384,8 +1384,8 @@ XFooRecord::operator== (const XFooRecord &other) const
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooSequence_ = {
   "typename=MandatoryNamespace.XFooSequence\0"
   "type=SEQUENCE\0"
-  "fields=single_bool\0"
-  "single_bool.type=BOOL\0"
+  "fields=0\0"
+  "0.type=BOOL\0"
 };
 const Aida::StringVector&
 XFooSequence::__typedata__()
@@ -1396,8 +1396,8 @@ XFooSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_IntSequence_ = {
   "typename=MandatoryNamespace.IntSequence\0"
   "type=SEQUENCE\0"
-  "fields=numx\0"
-  "numx.type=INT32\0"
+  "fields=0\0"
+  "0.type=INT32\0"
 };
 const Aida::StringVector&
 IntSequence::__typedata__()
@@ -1408,8 +1408,8 @@ IntSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_FloatSequence_ = {
   "typename=MandatoryNamespace.FloatSequence\0"
   "type=SEQUENCE\0"
-  "fields=fractalvalue\0"
-  "fractalvalue.type=FLOAT64\0"
+  "fields=0\0"
+  "0.type=FLOAT64\0"
 };
 const Aida::StringVector&
 FloatSequence::__typedata__()
@@ -1420,8 +1420,8 @@ FloatSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_StringSequence_ = {
   "typename=MandatoryNamespace.StringSequence\0"
   "type=SEQUENCE\0"
-  "fields=blurb\0"
-  "blurb.type=STRING\0"
+  "fields=0\0"
+  "0.type=STRING\0"
 };
 const Aida::StringVector&
 StringSequence::__typedata__()
@@ -1432,8 +1432,8 @@ StringSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_ExtensiveEnumSequence_ = {
   "typename=MandatoryNamespace.ExtensiveEnumSequence\0"
   "type=SEQUENCE\0"
-  "fields=enum_elements\0"
-  "enum_elements.type=MandatoryNamespace.ExtensiveEnum\0"
+  "fields=0\0"
+  "0.type=MandatoryNamespace.ExtensiveEnum\0"
 };
 const Aida::StringVector&
 ExtensiveEnumSequence::__typedata__()
@@ -1444,8 +1444,8 @@ ExtensiveEnumSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_RecordSequence_ = {
   "typename=MandatoryNamespace.RecordSequence\0"
   "type=SEQUENCE\0"
-  "fields=repeatedfield\0"
-  "repeatedfield.type=MandatoryNamespace.XFooRecord\0"
+  "fields=0\0"
+  "0.type=MandatoryNamespace.XFooRecord\0"
 };
 const Aida::StringVector&
 RecordSequence::__typedata__()
@@ -1456,8 +1456,8 @@ RecordSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_SequenceSequence_ = {
   "typename=MandatoryNamespace.SequenceSequence\0"
   "type=SEQUENCE\0"
-  "fields=moreints\0"
-  "moreints.type=MandatoryNamespace.IntSequence\0"
+  "fields=0\0"
+  "0.type=MandatoryNamespace.IntSequence\0"
 };
 const Aida::StringVector&
 SequenceSequence::__typedata__()
@@ -1468,8 +1468,8 @@ SequenceSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_InterfaceSequence_ = {
   "typename=MandatoryNamespace.InterfaceSequence\0"
   "type=SEQUENCE\0"
-  "fields=iface1\0"
-  "iface1.type=MandatoryNamespace.FirstInterface\0"
+  "fields=0\0"
+  "0.type=MandatoryNamespace.FirstInterface\0"
 };
 const Aida::StringVector&
 InterfaceSequence::__typedata__()
@@ -1480,8 +1480,8 @@ InterfaceSequence::__typedata__()
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_AnySequence_ = {
   "typename=MandatoryNamespace.AnySequence\0"
   "type=SEQUENCE\0"
-  "fields=any_value\0"
-  "any_value.type=ANY\0"
+  "fields=0\0"
+  "0.type=ANY\0"
 };
 const Aida::StringVector&
 AnySequence::__typedata__()
@@ -1512,8 +1512,8 @@ NestedTypesRec::operator== (const NestedTypesRec &other) const
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_NestedTypesSeq_ = {
   "typename=MandatoryNamespace.NestedTypesSeq\0"
   "type=SEQUENCE\0"
-  "fields=ntr\0"
-  "ntr.type=MandatoryNamespace.NestedTypesRec\0"
+  "fields=0\0"
+  "0.type=MandatoryNamespace.NestedTypesRec\0"
 };
 const Aida::StringVector&
 NestedTypesSeq::__typedata__()
@@ -1782,8 +1782,8 @@ QuickRecord::operator== (const QuickRecord &other) const
 static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickSequence_ = {
   "typename=InterfaceTests.QuickSequence\0"
   "type=SEQUENCE\0"
-  "fields=somefloat\0"
-  "somefloat.type=FLOAT64\0"
+  "fields=0\0"
+  "0.type=FLOAT64\0"
 };
 const Aida::StringVector&
 QuickSequence::__typedata__()

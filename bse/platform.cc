@@ -903,6 +903,48 @@ TaskStatus::string ()
                    utime * 0.001, stime * 0.001, cutime * 0.001, cstime * 0.001);
 }
 
+// == TaskRegistry ==
+static std::mutex         task_registry_mutex_;
+static TaskRegistry::List task_registry_tasks_;
+
+void
+TaskRegistry::add (const std::string &name, int pid, int tid)
+{
+  Bse::TaskStatus task (pid, tid);
+  task.name = name;
+  task.update();
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
+  task_registry_tasks_.push_back (task);
+}
+
+bool
+TaskRegistry::remove (int tid)
+{
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
+  for (auto it = task_registry_tasks_.begin(); it != task_registry_tasks_.end(); it++)
+    if (it->task_id == tid)
+      {
+        task_registry_tasks_.erase (it);
+        return true;
+      }
+  return false;
+}
+
+void
+TaskRegistry::update ()
+{
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
+  for (auto &task : task_registry_tasks_)
+    task.update();
+}
+
+TaskRegistry::List
+TaskRegistry::list ()
+{
+  std::lock_guard<std::mutex> locker (task_registry_mutex_);
+  return task_registry_tasks_;
+}
+
 // == Thread Info ==
 ThreadId
 this_thread_self ()

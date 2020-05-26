@@ -70,7 +70,7 @@ public:
   Error               open_midi_driver      ();
   void                close_midi_driver     ();
   PcmDriverP          pcm_driver            () const { return pcm_driver_; }
-  Error               open_pcm_driver       (uint mix_freq, uint latency, uint block_size);
+  Error               open_pcm_driver       (uint mix_freq, uint latency, uint *block_size);
   void                require_pcm_input     ();
   void                close_pcm_driver      ();
   explicit                 ServerImpl       (BseObject*);

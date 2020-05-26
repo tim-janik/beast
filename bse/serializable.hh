@@ -13,6 +13,15 @@ namespace Xms {
 class Reflink;
 class SerializationNode;
 
+/// Check for the writable and storage flags in the hints field of typedata.
+bool typedata_is_loadable  (const StringVector &typedata, const std::string &field);
+/// Check for the readable and storage flags in the hints field of typedata.
+bool typedata_is_storable  (const StringVector &typedata, const std::string &field);
+/// Find the minimum value for field of typedata.
+bool typedata_find_minimum (const StringVector &typedata, const std::string &field, long double *limit);
+/// Find the maximum value for field of typedata.
+bool typedata_find_maximum (const StringVector &typedata, const std::string &field, long double *limit);
+
 /// Interface for serializable objects with Reflink support.
 class SerializableInterface {
   friend SerializationNode;
@@ -29,10 +38,13 @@ class SerializationField {
   bool           hex_ = false;
  public:
   explicit                         SerializationField (SerializationNode &xs, const String &attrib);
+  /// Serialization operator
+  template<typename T> bool        operator& (T &v) { return serialize (v, StringVector(), ""); }
+  /// Main serialization function.
   template<typename T,
-           typename E = void> void operator& (T &value);        ///< Serialization operator
-  template<typename T> void        operator& (std::vector<T> &vec);
-  void                             operator& (Reflink &reflink);
+           typename E = void> bool serialize (T&, const StringVector&, const std::string&);
+  template<typename T> bool        serialize (std::vector<T> &vec, const StringVector&, const std::string&);
+  bool                             serialize (Reflink&, const StringVector&, const std::string&);
   /*auto cast*/                    operator std::string ();
   SerializationField&              node      ();       ///< Force storage into child node (not attribute)
   bool                             as_node   () const; ///< Retrive node() flag
@@ -104,15 +116,15 @@ public:
   template<typename T>
   explicit Reflink  (T *&objptr);
   void     save_xml (SerializationNode &xs, const String &attrib);
-  void     load_xml (SerializationNode &xs, const String &attrib);
+  bool     load_xml (SerializationNode &xs, const String &attrib);
 };
 
 /// Template to specialize XML attribute conversion for various data types.
 template<typename T, typename = void>
 struct DataConverter {
   static_assert (!sizeof (T), "type serialization unimplemented");
-  // void save_xml (SerializationField &field, const T&);
-  // T    load_xml (SerializationField &field);
+  // bool save_xml (SerializationField &field, const T&, const StringVector&, const std::string&);
+  // bool load_xml (SerializationField &field, T&, const StringVector&, const std::string&);
 };
 
 /// Helper for deferred xml_reflink() calls
@@ -122,38 +134,53 @@ struct SerializationNode::QueuedArgs {
 };
 
 // == Implementation details ==
-template<typename T, typename> void
-SerializationField::operator& (T &value)
+template<typename T, typename> bool
+SerializationField::serialize (T &value, const StringVector &typedata, const std::string &fieldname)
 {
   if (xs_.in_save())
-    DataConverter<T>::save_xml (*this, value);
+    return DataConverter<T>::save_xml (*this, value, typedata, fieldname);
   if (xs_.loading (attrib_))
-    value = DataConverter<T>::load_xml (*this);
+    return DataConverter<T>::load_xml (*this, value, typedata, fieldname);
+  return false;
 }
 
-template<> inline void
-SerializationField::operator& (String &value)
+template<> inline bool
+SerializationField::serialize (String &value, const StringVector &typedata, const std::string &fieldname)
 {
-  if (xs_.in_save())
-    xs_.save_string (attrib_, value, as_node());
-  if (xs_.in_load())
+  if (xs_.in_save() && typedata_is_storable (typedata, fieldname))
+    {
+      xs_.save_string (attrib_, value, as_node());
+      return true;
+    }
+  if (xs_.in_load() && typedata_is_loadable (typedata, fieldname))
     {
       String temp;
       if (xs_.load_string (attrib_, temp, as_node()))
-        value = temp;
+        {
+          value = temp;
+          return true;
+        }
     }
+  return false;
 }
 
-template<typename T> void
-SerializationField::operator& (std::vector<T> &vec)
+template<typename T> bool
+SerializationField::serialize (std::vector<T> &vec, const StringVector &typedata, const std::string &fieldname)
 {
   const String item = "item";
-  if (xs_.in_save())
+  const auto &vec_typedata = Aida::typedata_from_type (vec);
+  if (xs_.in_save() && typedata_is_storable (typedata, fieldname))
     {
       SerializationNode xv = xs_.create_child (attrib_);
       for (auto &el : vec)
-        xv[item].node() & el;           // force node, because XML has no repeating attributes
+        {
+          auto &field = xv[item].node(); // force node, because XML has no repeating attributes
+          field.serialize (el, vec_typedata, "0");
+        }
+      return true;
     }
+  if (!xs_.in_load() || !typedata_is_loadable (typedata, fieldname))
+    return false;
   if (SerializationNode xv = xs_.first_child (attrib_)) // true only for in_load()
     {
       const size_t n_children = xv.count_children();
@@ -162,11 +189,13 @@ SerializationField::operator& (std::vector<T> &vec)
           if (xv.first_child_name() == item)
             {
               vec.resize (vec.size() + 1);
-              xv[item].node() & vec.back();
+              xv[item].node().serialize (vec.back(), vec_typedata, "0");
             }
           xv.rotate_children();                 // perform *exactly* n_children rotations
         }                                       // to preserve original order
+      return true;
     }
+  return false;
 }
 
 // Reflink
@@ -258,15 +287,29 @@ struct DataConverter<T, typename ::std::enable_if<
                           std::is_integral<T>::value || std::is_floating_point<T>::value,
                           void>::type>
 {
-  static T
-  load_xml (SerializationField &field)
+  static bool
+  load_xml (SerializationField &field, T &v, const StringVector &typedata, const std::string &fieldname)
   {
     String str;
-    field & str;
-    return string_to_type<T> (str);
+    if (field.serialize (str, typedata, fieldname))
+      {
+        T tmp = string_to_type<T> (str);
+        bool valid = true;
+        long double limit;
+        if (typedata_find_minimum (typedata, fieldname, &limit))
+          valid = valid && tmp >= limit;
+        if (typedata_find_maximum (typedata, fieldname, &limit))
+          valid = valid && tmp <= limit;
+        if (valid)
+          {
+            v = tmp;
+            return true;
+          }
+      }
+    return false;
   }
-  static void
-  save_xml (SerializationField &field, T i)
+  static bool
+  save_xml (SerializationField &field, T i, const StringVector &typedata, const std::string &fieldname)
   {
     String str;
     if (std::is_same<bool, T>::value)
@@ -279,25 +322,29 @@ struct DataConverter<T, typename ::std::enable_if<
       str = string_format ("0x%08x", i);
     else
       str = string_from_type<T> (i);
-    field & str;
+    return field.serialize (str, typedata, fieldname);
   }
 };
 
 // Aida::enum_* convertibles
 template<typename Enum>
 struct DataConverterAidaEnum {
-  static Enum
-  load_xml (SerializationField &field)
+  static bool
+  load_xml (SerializationField &field, Enum &v, const StringVector &typedata, const std::string &fieldname)
   {
     String valuename;
-    field & valuename;
-    return Aida::enum_value_from_string<Enum> (valuename);
+    if (field.serialize (valuename, typedata, fieldname))
+      {
+        v = Aida::enum_value_from_string<Enum> (valuename);
+        return true;
+      }
+    return false;
   }
-  static void
-  save_xml (SerializationField &field, Enum val)
+  static bool
+  save_xml (SerializationField &field, Enum val, const StringVector &typedata, const std::string &fieldname)
   {
     String valuename = Aida::enum_value_to_string (val);
-    field & valuename;
+    return field.serialize (valuename, typedata, fieldname);
   }
 };
 template<> struct DataConverter<Bse::Error> : DataConverterAidaEnum<Bse::Error> {};
@@ -305,25 +352,36 @@ template<> struct DataConverter<Bse::Error> : DataConverterAidaEnum<Bse::Error> 
 // Aida::__visit__ records
 template<typename Record>
 struct DataConverterAidaVisitRecord {
-  static Record
-  load_xml (SerializationField &field)
+  static bool
+  load_xml (SerializationField &field, Record &r, const StringVector &typedata, const std::string &fieldname)
   {
-    Record rec;
+    if (!typedata_is_loadable (typedata, fieldname))
+      return false;
     if (SerializationNode xr = field.serialization_node().first_child (field.attribute()))
-      rec.__visit__ ([&xr] (auto &v, const char *n)
-                     {
-                       xr[n] & v;
-                     });
-    return rec;
+      {
+        bool fany = false;
+        const auto &rec_typedata = Aida::typedata_from_type (r);
+        r.__visit__ ([&xr,&fany,&rec_typedata] (auto &v, const char *n)
+        {
+          if (xr[n].serialize (v, rec_typedata, n))
+            fany = true;
+        });
+        return fany;
+      }
+    return false;
   }
-  static void
-  save_xml (SerializationField &field, Record &rec)
+  static bool
+  save_xml (SerializationField &field, Record &rec, const StringVector &typedata, const std::string &fieldname)
   {
+    if (!typedata_is_storable (typedata, fieldname))
+      return false;
+    const auto &rec_typedata = Aida::typedata_from_type (rec);
     SerializationNode xr = field.serialization_node().create_child (field.attribute());
-    rec.__visit__ ([&xr] (auto &v, const char *n)
-                   {
-                     xr[n] & v;
-                   });
+    rec.__visit__ ([&xr,&rec_typedata] (auto &v, const char *n)
+    {
+      xr[n].serialize (v, rec_typedata, n);
+    });
+    return true;
   }
 };
 template<typename T>

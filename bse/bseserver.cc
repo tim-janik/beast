@@ -286,11 +286,14 @@ bse_server_open_devices (BseServer *self)
   /* lock playback/capture/latency settings */
   Bse::global_config->lock();
   /* calculate block_size for pcm setup */
-  guint block_size, latency = Bse::global_config->synth_latency, mix_freq = Bse::global_config->synth_mixing_freq;
-  bse_engine_constrain (latency, mix_freq, Bse::global_config->synth_control_freq, &block_size, NULL);
+  const uint latency = Bse::global_config->synth_latency;
+  const uint mix_freq = bse_engine_sample_freq();
+  uint block_size = BSE_ENGINE_MAX_BLOCK_SIZE;
   /* try opening devices */
   if (error == 0)
-    error = impl->open_pcm_driver (mix_freq, latency, block_size);
+    error = impl->open_pcm_driver (mix_freq, latency, &block_size);
+  if (error == 0)
+    bse_engine_update_block_size (block_size);
   if (error == 0)
     error = impl->open_midi_driver();
   if (error == 0)
@@ -721,7 +724,7 @@ engine_init (BseServer *server,
       if (current_priority <= -2 && mytid)
         setpriority (PRIO_PROCESS, mytid, current_priority + 1);
     }
-  bse_engine_configure (Bse::global_config->synth_latency, mix_freq, Bse::global_config->synth_control_freq);
+  bse_engine_configure();
 
   g_source_attach (server->engine_source, bse_main_context);
 }
@@ -1386,7 +1389,7 @@ ServerImpl::close_pcm_driver()
 }
 
 Bse::Error
-ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint block_size)
+ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint *block_size)
 {
   assert_return (pcm_driver_ == nullptr, Error::INTERNAL);
   Error error = Error::UNKNOWN;
@@ -1394,9 +1397,11 @@ ServerImpl::open_pcm_driver (uint mix_freq, uint latency, uint block_size)
   config.n_channels = 2;
   config.mix_freq = mix_freq;
   config.latency_ms = latency;
-  config.block_length = block_size;
+  config.block_length = *block_size;
   pcm_driver_ = PcmDriver::open (get_config().pcm_driver, Driver::READWRITE, Driver::WRITEONLY, config, &error);
-  if (!pcm_driver_)
+  if (pcm_driver_)
+    *block_size = pcm_driver_->block_length();
+  else // !pcm_driver_
     {
       UserMessage umsg;
       umsg.utype = Bse::UserMessageType::ERROR;

@@ -9,7 +9,7 @@ namespace Bse {
 namespace AudioSignal {
 
 /// Maximum number of sample frames to calculate in Processor::render().
-constexpr const uint MAX_RENDER_BLOCK_SIZE = 256;
+constexpr const uint MAX_RENDER_BLOCK_SIZE = 128;
 
 /// ID type for Processor parameters, the ID numbers are user assignable.
 enum class ParamId : uint32 {};

@@ -802,7 +802,7 @@ master_process_locked_node (Bse::Module *node,
 	      inode->unlock();
 	    }
 	  else
-	    node->istreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
+	    node->istreams[i].values = bse_engine_const_zeros (BSE_ENGINE_MAX_BLOCK_SIZE);
 	}
       /* ensure all jstream inputs have n_values available */
       for (j = 0; j < BSE_MODULE_N_JSTREAMS (node); j++)
@@ -830,7 +830,7 @@ master_process_locked_node (Bse::Module *node,
 	  /* suspended node processing behaviour */
 	  for (i = 0; i < BSE_MODULE_N_OSTREAMS (node); i++)
 	    if (node->ostreams[i].connected)
-	      node->ostreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
+	      node->ostreams[i].values = bse_engine_const_zeros (BSE_ENGINE_MAX_BLOCK_SIZE);
           node->needs_reset = TRUE;
 	}
       else

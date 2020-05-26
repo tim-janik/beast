@@ -207,6 +207,7 @@ MidiDriver::list_drivers ()
 class NullPcmDriver : public PcmDriver {
   uint          n_channels_ = 0;
   uint          mix_freq_ = 0;
+  uint          block_size_ = 0;
   uint          busy_us_ = 0;
   uint          sleep_us_ = 0;
 public:
@@ -221,6 +222,11 @@ public:
   pcm_frequency () const override
   {
     return mix_freq_;
+  }
+  virtual uint
+  block_length () const override
+  {
+    return block_size_;
   }
   virtual void
   close () override
@@ -240,6 +246,7 @@ public:
     flags_ |= Flags::WRITABLE * require_writable;
     n_channels_ = config.n_channels;
     mix_freq_ = config.mix_freq;
+    block_size_ = config.block_length;
     busy_us_ = 0;
     sleep_us_ = nosleep ? 0 : 10 * 1000;
     flags_ |= Flags::OPENED;

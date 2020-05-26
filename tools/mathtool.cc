@@ -644,7 +644,7 @@ usage (void)
   printout ("  fir <order> <freq1> <value1> ...          fir approximation\n");
   printout ("  scan blp <order> <freq> <epsilon>         scan butterworth lowpass filter\n");
   printout ("  poly | polyr | polyp                      polynom test (+roots or +poles)\n");
-  exit (1);
+  _exit (1);
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

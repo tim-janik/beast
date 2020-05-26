@@ -318,3 +318,12 @@ $>/ChangeLog: $(GITCOMMITDEPS)					| $>/
 	$Q mv $@.tmp $@
 	$Q test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 CLEANFILES += $>/ChangeLog
+
+# == TAGS ==
+TAGS:
+	$(QGEN)
+	$Q git ls-tree -r --name-only HEAD	> .TAGS.tmp
+	$Q grep -E '\.(cc|hh)$$' .TAGS.tmp	> .TAGS.tmp2
+	$Q etags --no-members $$(cat .TAGS.tmp2)
+	$Q rm .TAGS.tmp .TAGS.tmp2
+.PHONY: TAGS

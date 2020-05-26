@@ -409,7 +409,7 @@ Effect::block_size() const
 uint
 Effect::max_block_size() const
 {
-  return BSE_STREAM_MAX_VALUES;
+  return BSE_ENGINE_MAX_BLOCK_SIZE;
 }
 
 Bse::MusicalTuning

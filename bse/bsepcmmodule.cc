@@ -1,17 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
+#include "processor.hh"
 
-
-/* --- typedefs & structures --- */
-typedef struct
-{
-  uint             n_values;	/* bse_engine_block_size() * 2 (stereo) */
-  float          *buffer;
-  float          *bound;
-  Bse::PcmDriver *driver;
-  BsePcmWriter   *pcm_writer;
-  bool            pcm_input_checked;
-} BsePCMModuleData;
 enum
 {
   BSE_PCM_MODULE_JSTREAM_LEFT,
@@ -24,9 +14,60 @@ enum
   BSE_PCM_MODULE_OSTREAM_RIGHT,
   BSE_PCM_MODULE_N_OSTREAMS
 };
+static constexpr const auto MAIN_OBUS = Bse::AudioSignal::OBusId (1);
 
+static_assert (Bse::AudioSignal::MAX_RENDER_BLOCK_SIZE == BSE_ENGINE_MAX_BLOCK_SIZE);
 
-/* --- functions --- */
+// == BsePCMModuleData ==
+struct BsePCMModuleData {
+  const uint      max_values = 0; // BSE_ENGINE_MAX_BLOCK_SIZE * 2 (stereo)
+  float          *const buffer = nullptr;
+  float          *const bound = nullptr;
+  Bse::PcmDriver *driver = nullptr;
+  BsePcmWriter   *pcm_writer = nullptr;
+  bool            pcm_input_checked = false;
+  std::vector<Bse::AudioSignal::ProcessorP> procs;
+  explicit BsePCMModuleData (uint nv);
+  ~BsePCMModuleData();
+};
+
+BsePCMModuleData::BsePCMModuleData (uint nv) :
+  max_values (nv), buffer (new float[max_values] ()), bound (buffer + max_values)
+{}
+
+BsePCMModuleData::~BsePCMModuleData()
+{
+  delete[] buffer;
+}
+
+static void
+bse_pcm_module_add_proc (BseModule *module, Bse::AudioSignal::ProcessorP procp)
+{
+  assert_return (procp != nullptr);
+  assert_return (procp->n_obuses() >= 1);
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  auto padd = [procp, mdata] () { // keeps ProcessorP alive until lambda destruction in UserThread
+    mdata->procs.push_back (procp);
+  };
+  BseTrans *trans = bse_trans_open ();
+  bse_trans_add (trans, bse_job_access (module, padd));
+  bse_trans_commit (trans);
+}
+
+static void
+bse_pcm_module_del_proc (BseModule *module, Bse::AudioSignal::ProcessorP procp)
+{
+  assert_return (procp != nullptr);
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  auto pdel = [procp, mdata] () { // keeps ProcessorP alive until lambda destruction in UserThread
+    const bool audiosignal_processor_deleted = Bse::vector_erase_element (mdata->procs, procp);
+    assert_return (audiosignal_processor_deleted == true);
+  };
+  BseTrans *trans = bse_trans_open ();
+  bse_trans_add (trans, bse_job_access (module, pdel));
+  bse_trans_commit (trans);
+}
+
 static gboolean
 bse_pcm_module_poll (gpointer       data,
 		     guint          n_values,
@@ -49,7 +90,14 @@ bse_pcm_omodule_process (BseModule *module,
   const gfloat *src;
   guint i;
 
-  assert_return (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
+  assert_return (n_values <= mdata->max_values / BSE_PCM_MODULE_N_JSTREAMS);
+
+  for (auto p : mdata->procs)
+    {
+      auto chain = dynamic_cast<Bse::AudioSignal::Chain*> (&*p);
+      if (chain)
+        chain->render_frames (n_values);
+    }
 
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
@@ -63,6 +111,13 @@ bse_pcm_omodule_process (BseModule *module,
       d = mdata->buffer;
       do { *d += *src++; d += 2; } while (d < b);
     }
+  for (auto p : mdata->procs)
+    if (p->n_ochannels (MAIN_OBUS) >= 1)
+      {
+        const float *src = p->ofloats (MAIN_OBUS, 0);
+        d = mdata->buffer;
+        do { *d += *src++; d += 2; } while (d < b);
+      }
 
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_RIGHT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_RIGHT, 0);
@@ -76,10 +131,17 @@ bse_pcm_omodule_process (BseModule *module,
       d = mdata->buffer + 1;
       do { *d += *src++; d += 2; } while (d < b);
     }
+  for (auto p : mdata->procs)
+    if (p->n_ochannels (MAIN_OBUS) >= 2)
+      {
+        const float *src = p->ofloats (MAIN_OBUS, 1);
+        d = mdata->buffer + 1;
+        do { *d += *src++; d += 2; } while (d < b);
+      }
 
-  mdata->driver->pcm_write (mdata->n_values, mdata->buffer);
+  mdata->driver->pcm_write (n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer);
   if (mdata->pcm_writer)
-    bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer,
+    bse_pcm_writer_write (mdata->pcm_writer, n_values * BSE_PCM_MODULE_N_JSTREAMS, mdata->buffer,
                           bse_module_tick_stamp (module));
 }
 
@@ -88,9 +150,7 @@ bse_pcm_module_data_free (gpointer        data,
 			  const BseModuleClass *klass)
 {
   BsePCMModuleData *mdata = (BsePCMModuleData*) data;
-
-  g_free (mdata->buffer);
-  g_free (mdata);
+  delete mdata;
 }
 
 static BseModule*
@@ -106,20 +166,15 @@ bse_pcm_omodule_insert (Bse::PcmDriver *pcm_driver, BsePcmWriter *writer, BseTra
     bse_pcm_module_data_free,	/* free */
     Bse::ModuleFlag::CHEAP,	/* cost */
   };
-  BsePCMModuleData *mdata;
-  BseModule *module;
 
   assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (pcm_driver->writable(), NULL);
   assert_return (trans != NULL, NULL);
 
-  mdata = g_new0 (BsePCMModuleData, 1);
-  mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
-  mdata->buffer = g_new0 (gfloat, mdata->n_values);
-  mdata->bound = mdata->buffer + mdata->n_values;
+  BsePCMModuleData *mdata = new BsePCMModuleData (BSE_ENGINE_MAX_BLOCK_SIZE * BSE_PCM_MODULE_N_JSTREAMS);
   mdata->driver = pcm_driver;
   mdata->pcm_writer = writer;
-  module = bse_module_new (&pcm_omodule_class, mdata);
+  BseModule *module = bse_module_new (&pcm_omodule_class, mdata);
 
   bse_trans_add (trans,
 		 bse_job_integrate (module));
@@ -173,18 +228,18 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
   gsize l;
 
-  assert_return (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
+  assert_return (n_values <= mdata->max_values / BSE_PCM_MODULE_N_OSTREAMS);
 
   if (mdata->driver->readable())
     {
-      l = mdata->driver->pcm_read (mdata->n_values, mdata->buffer);
-      assert_return (l == mdata->n_values);
+      l = mdata->driver->pcm_read (n_values * BSE_PCM_MODULE_N_OSTREAMS, mdata->buffer);
+      assert_return (l == n_values * BSE_PCM_MODULE_N_OSTREAMS);
     }
   else
-    memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
+    memset (mdata->buffer, 0, mdata->max_values * sizeof (float));
 
   /* due to suspend/resume, we may be called with partial read requests */
-  const gfloat *s = mdata->buffer + mdata->n_values - (n_values * BSE_PCM_MODULE_N_OSTREAMS);
+  const gfloat *s = mdata->buffer + mdata->max_values - (n_values * BSE_PCM_MODULE_N_OSTREAMS);
   const gfloat *b = mdata->bound;
   do
     {
@@ -207,19 +262,14 @@ bse_pcm_imodule_insert (Bse::PcmDriver *pcm_driver, BseTrans *trans)
     bse_pcm_module_data_free,	/* free */
     Bse::ModuleFlag::EXPENSIVE,		/* cost */
   };
-  BsePCMModuleData *mdata;
-  BseModule *module;
 
   assert_return (pcm_driver && pcm_driver->pcm_frequency(), NULL);
   assert_return (trans != NULL, NULL);
 
-  mdata = g_new0 (BsePCMModuleData, 1);
-  mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
-  mdata->buffer = g_new0 (gfloat, mdata->n_values);
-  mdata->bound = mdata->buffer + mdata->n_values;
+  BsePCMModuleData *mdata = new BsePCMModuleData (BSE_ENGINE_MAX_BLOCK_SIZE * BSE_PCM_MODULE_N_OSTREAMS);
   mdata->driver = pcm_driver;
   mdata->pcm_writer = NULL;
-  module = bse_module_new (&pcm_imodule_class, mdata);
+  BseModule *module = bse_module_new (&pcm_imodule_class, mdata);
 
   bse_trans_add (trans,
 		 bse_job_integrate (module));
