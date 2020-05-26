@@ -679,6 +679,8 @@ main (int argc, char *argv[])
 
   websocket_server.run();
 
+  Bse::shutdown_async();
+
   return 0;
 }
 
