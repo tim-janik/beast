@@ -168,13 +168,21 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
   Bse::TaskRegistry::remove (Bse::this_thread_gettid());
 }
 
-static void
-reap_main_loop_thread ()
+static bool
+_bse_shutdown_all ()
 {
-  assert_return (main_loop_thread_running == true);
+  assert_return (main_loop_thread_running == true, false);
   main_loop_thread_running = false;
   bse_main_wakeup();
   async_bse_thread.join();
+  return true;
+}
+
+void
+_bse_shutdown_once ()
+{
+  static bool once = _bse_shutdown_all();
+  (void) once;
 }
 
 void
@@ -183,7 +191,7 @@ _bse_init_async (const char *app_name, const Bse::StringVector &args)
   initialize_with_args (app_name, args);
 
   // start main BSE thread
-  if (std::atexit (reap_main_loop_thread) != 0)
+  if (std::atexit (_bse_shutdown_once) != 0)
     Bse::warning ("BSE: failed to install main thread reaper");
   auto *init_queue = new Bse::AsyncBlockingQueue<int>();
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue);

@@ -133,4 +133,11 @@ init_args (int *argc, char **argv)
   return args;
 }
 
+/// Shutdown BSE and any asynchronous operations it spawned.
+void
+shutdown_async ()
+{
+  _bse_shutdown_once();
+}
+
 } // Bse

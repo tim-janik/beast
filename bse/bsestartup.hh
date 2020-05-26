@@ -11,6 +11,7 @@ namespace Bse {
 StringVector    init_args           (int *argc, char **argv);
 void		init_async	    (const char *app_name, const StringVector &args = StringVector());
 bool		init_needed	    ();
+void		shutdown_async	    ();
 void		objects_debug_leaks ();
 int             init_and_test       (const Bse::StringVector &args, const std::function<int()> &bsetester);
 
