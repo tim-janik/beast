@@ -105,99 +105,6 @@ feature_check (const char *feature)
   return bsefeature ? feature_toggle_bool (bsefeature, feature) : false;
 }
 
-// == External Helpers ==
-/**
- * Find a suitable WWW user agent (taking user configurations into account) and
- * start it to display @a url. Several user agents are tried before giving up.
- * @returns @a True if a user agent could be launched successfuly.
- */
-bool
-url_show (const char *url)
-{
-  static struct {
-    const char   *prg, *arg1, *prefix, *postfix;
-    bool          asyncronous; /* start asyncronously and check exit code to catch launch errors */
-    volatile bool disabled;
-  } www_browsers[] = {
-    /* program */               /* arg1 */      /* prefix+URL+postfix */
-    /* configurable, working browser launchers */
-    { "gnome-open",             NULL,           "", "", 0 }, /* opens in background, correct exit_code */
-    { "exo-open",               NULL,           "", "", 0 }, /* opens in background, correct exit_code */
-    /* non-configurable working browser launchers */
-    { "kfmclient",              "openURL",      "", "", 0 }, /* opens in background, correct exit_code */
-    { "gnome-moz-remote",       "--newwin",     "", "", 0 }, /* opens in background, correct exit_code */
-#if 0
-    /* broken/unpredictable browser launchers */
-    { "browser-config",         NULL,            "", "", 0 }, /* opens in background (+ sleep 5), broken exit_code (always 0) */
-    { "xdg-open",               NULL,            "", "", 0 }, /* opens in foreground (first browser) or background, correct exit_code */
-    { "sensible-browser",       NULL,            "", "", 0 }, /* opens in foreground (first browser) or background, correct exit_code */
-    { "htmlview",               NULL,            "", "", 0 }, /* opens in foreground (first browser) or background, correct exit_code */
-#endif
-    /* direct browser invocation */
-    { "x-www-browser",          NULL,           "", "", 1 }, /* opens in foreground, browser alias */
-    { "firefox",                NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "mozilla-firefox",        NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "mozilla",                NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "konqueror",              NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "opera",                  "-newwindow",   "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "galeon",                 NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "epiphany",               NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "amaya",                  NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-    { "dillo",                  NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
-  };
-  uint i;
-  for (i = 0; i < ARRAY_SIZE (www_browsers); i++)
-    if (!www_browsers[i].disabled)
-      {
-        char *args[128] = { 0, };
-        uint n = 0;
-        args[n++] = (char*) www_browsers[i].prg;
-        if (www_browsers[i].arg1)
-          args[n++] = (char*) www_browsers[i].arg1;
-        char *string = g_strconcat (www_browsers[i].prefix, url, www_browsers[i].postfix, NULL);
-        args[n] = string;
-        GError *error = NULL;
-        char fallback_error[64] = "Ok";
-        bool success;
-        if (!www_browsers[i].asyncronous) /* start syncronously and check exit code */
-          {
-            int exit_status = -1;
-            success = g_spawn_sync (NULL, /* cwd */
-                                    args,
-                                    NULL, /* envp */
-                                    G_SPAWN_SEARCH_PATH,
-                                    NULL, /* child_setup() */
-                                    NULL, /* user_data */
-                                    NULL, /* standard_output */
-                                    NULL, /* standard_error */
-                                    &exit_status,
-                                    &error);
-            success = success && !exit_status;
-            if (exit_status)
-              g_snprintf (fallback_error, sizeof (fallback_error), "exitcode: %u", exit_status);
-          }
-        else
-          success = g_spawn_async (NULL, /* cwd */
-                                   args,
-                                   NULL, /* envp */
-                                   G_SPAWN_SEARCH_PATH,
-                                   NULL, /* child_setup() */
-                                   NULL, /* user_data */
-                                   NULL, /* child_pid */
-                                   &error);
-        g_free (string);
-        Bse::debug ("URL", "show \"%s\": %s: %s", url, args[0], error ? error->message : fallback_error);
-        g_clear_error (&error);
-        if (success)
-          return true;
-        www_browsers[i].disabled = true;
-      }
-  /* reset all disabled states if no browser could be found */
-  for (i = 0; i < ARRAY_SIZE (www_browsers); i++)
-    www_browsers[i].disabled = false;
-  return false;
-}
-
 // == GDB Backtrace ==
 BacktraceCommand::BacktraceCommand()
 {}
@@ -381,7 +288,7 @@ debug_key_enabled (const ::std::string &conditional)
 
 bool Internal::debug_enabled_flag = true;
 
-static uint64 global_debug_flags = 0;
+static uint64 global_debug_flags = uint64 (DebugFlags::BACKTRACE);
 
 void
 set_debug_flags (DebugFlags flags)
@@ -406,6 +313,12 @@ debug_key_value (const char *conditional)
     const ssize_t nq = flags.rfind (":no-sigquit-on-abort:");
     if (sq >= 0 && nq <= sq)
       global_debug_flags = global_debug_flags | Bse::DebugFlags::SIGQUIT_ON_ABORT;
+    const ssize_t wb = flags.rfind (":backtrace:");
+    const ssize_t nb = flags.rfind (":no-backtrace:");
+    if (wb > nb)
+      global_debug_flags |= uint64 (Bse::DebugFlags::BACKTRACE);
+    if (nb > wb)
+      global_debug_flags &= ~uint64 (Bse::DebugFlags::BACKTRACE);
     return flags;
   } ();
   // find key in colon-separated debug flags
@@ -485,6 +398,8 @@ diag_debug_message (const char *file, int line, const char *func, const char *co
 
 #ifndef NDEBUG
 #define PRINT_BACKTRACE(file, line, func)                          do { \
+  if (0 == (Bse::global_debug_flags & Bse::DebugFlags::BACKTRACE))      \
+    break;                                                              \
   using namespace AnsiColors;                                           \
   const std::string col = color (FG_YELLOW /*, BOLD*/), reset = color (RESET); \
   BacktraceCommand btrace;                                              \
@@ -584,12 +499,13 @@ static EarlyStartup101 _early_startup_101 __attribute__ ((init_priority (101)));
 
 // == Testing ==
 #include "testing.hh"
+
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_feature_toggles);
+BSE_INTEGRITY_TEST (bse_test_feature_toggles);
 static void
-test_feature_toggles()
+bse_test_feature_toggles()
 {
   String r;
   r = feature_toggle_find ("a:b", "a"); TCMP (r, ==, "1");

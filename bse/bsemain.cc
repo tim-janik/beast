@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
 #include "bsestartup.hh"
+#include "path.hh"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
 #include "bseplugin.hh"
@@ -423,7 +424,8 @@ global_prefs_load ()
     {
       Preferences config = GlobalPreferences::defaults();
       // load from rcfile
-      const String xmltext = Path::stringread (global_prefs_beastrc());
+      const bool standalone = config_bool ("stand-alone");
+      const String xmltext = standalone ? "" : Path::stringread (global_prefs_beastrc());
       if (!xmltext.empty())
         {
           Preferences tmp = config;

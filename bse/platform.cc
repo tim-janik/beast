@@ -1015,9 +1015,9 @@ static EarlyStartup _early_startup __attribute__ ((init_priority (101)));
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_timestamps);
+BSE_INTEGRITY_TEST (bse_test_timestamps);
 static void
-test_timestamps()
+bse_test_timestamps()
 {
   const uint64 b1 = timestamp_benchmark();
   TASSERT (timestamp_startup() < timestamp_realtime());

@@ -7,7 +7,8 @@
 #include "bseserver.hh"
 #include "bseloader.hh"
 #include "bseeditablesample.hh"
-#include "bse/internal.hh"
+#include "path.hh"
+#include "internal.hh"
 #include <string.h>
 
 #define parse_or_return         bse_storage_scanner_parse_or_return

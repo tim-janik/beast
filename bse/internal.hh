@@ -47,4 +47,33 @@ using Bse::String;
 /// Create a Bse::StringVector, from a const char* C-style array.
 #define STRING_VECTOR_FROM_ARRAY(ConstCharArray)        BSE_STRING_VECTOR_FROM_ARRAY(ConstCharArray)
 
+/// Register `func` as integrity test to run when libbse is started with internal integrity checks.
+#define BSE_INTEGRITY_TEST(FUNC)        static void FUNC() __attribute__ ((__cold__, __unused__)); \
+  static ::Bse::Test::IntegrityCheck BSE_CPP_PASTE2 (__Bse__Test__IntegrityCheck__line, __LINE__) { #FUNC, FUNC }
+
+namespace Bse::Test {
+
+// == IntegrityCheck ==
+struct IntegrityCheck {
+  using TestFunc = void (*) ();
+  IntegrityCheck (const char *name, TestFunc func)
+  {
+    if (!__builtin_expect (enable_testing, 0))
+      return;   // minimize overhead for production code
+    func_ = func;
+    name_ = name;
+    next_ = first_;
+    first_ = this;
+  }
+  static void deferred_init(); // see testing.cc
+  static const bool enable_testing; // see weaksym.cc, suite-main.cc
+private:
+  const char *name_;
+  TestFunc func_;
+  IntegrityCheck *next_;
+  static IntegrityCheck *first_;    // see testing.cc
+};
+
+} // Bse::Test
+
 #endif  // __BSE_INTERNAL_HH__

@@ -3,6 +3,7 @@
 #include "internal.hh"
 #include "magic.hh"
 #include "minizip.h"
+#include "path.hh"
 #include <stdlib.h>     // mkdtemp
 #include <sys/stat.h>   // mkdir
 #include <unistd.h>     // rmdir

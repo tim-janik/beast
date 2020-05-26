@@ -742,12 +742,14 @@ CxxPasswd::CxxPasswd (std::string username) :
 
 // == Testing ==
 #include "testing.hh"
+#include "internal.hh"
+
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_paths);
+BSE_INTEGRITY_TEST (bse_test_paths);
 static void
-test_paths()
+bse_test_paths()
 {
   String p, s;
   // Path::join

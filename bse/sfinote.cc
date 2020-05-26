@@ -176,9 +176,9 @@ sfi_note_examine (gint      note,
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_notes);
+BSE_INTEGRITY_TEST (bse_test_notes);
 static void
-test_notes (void)
+bse_test_notes (void)
 {
   gchar *str, *error = NULL;
   guint i;

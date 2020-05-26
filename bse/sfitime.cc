@@ -655,9 +655,9 @@ sfi_time_from_string_err (const gchar *time_string,
 namespace { // Anon
 using namespace Bse;
 
-BSE_INTEGRITY_TEST (test_time);
+BSE_INTEGRITY_TEST (bse_test_time);
 static void
-test_time (void)
+bse_test_time (void)
 {
   SfiTime t;
   gchar *error = NULL;

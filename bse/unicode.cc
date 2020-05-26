@@ -177,6 +177,8 @@ string_from_unicode (const std::vector<uint32_t> &codepoints)
 
 // == Testing ==
 #include "testing.hh"
+#include "internal.hh"
+
 namespace { // Anon
 using namespace Bse;
 

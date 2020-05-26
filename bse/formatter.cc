@@ -508,7 +508,9 @@ ScopedPosixLocale::posix_locale ()
 } // Lib
 } // Bse
 
+// == Testing ==
 #include "testing.hh"
+#include "internal.hh"
 
 namespace { // Anon
 struct UncopyablePoint {

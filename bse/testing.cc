@@ -260,6 +260,7 @@ run (void)
 TestEntries
 list_tests ()
 {
+  IntegrityCheck::deferred_init(); // register INTEGRITY tests
   TestEntries entries;
   for (const TestChain *t = global_test_chain; t; t = t->next())
     {
@@ -268,22 +269,32 @@ list_tests ()
       entry.ident = t->name();
       entry.flags = t->flags();
     }
+  // sort tests by identifier
   std::stable_sort (entries.begin(), entries.end(), // cmp_lesser
                     [] (const TestEntry &a, const TestEntry &b) {
                       return a.ident < b.ident;
                     });
+  // check for duplicate test names
   std::string last;
   for (const auto &entry : entries)
     if (last == entry.ident)
       Bse::fatal_error ("duplicate test entry: %s", entry.ident);
     else
       last = entry.ident;
+  // sort tests by classification
+  std::stable_sort (entries.begin(), entries.end(), // cmp_lesser
+                    [] (const TestEntry &a, const TestEntry &b) {
+                      const bool aintegrity = a.flags & INTEGRITY;
+                      const bool bintegrity = b.flags & INTEGRITY;
+                      return aintegrity > bintegrity; // sort INTEGRITY tests first
+                    });
   return entries;
 }
 
 int
 run_test (const std::string &test_identifier)
 {
+  IntegrityCheck::deferred_init(); // register INTEGRITY tests
   for (const TestChain *t = global_test_chain; t; t = t->next())
     if (test_identifier == t->name())
       {
@@ -297,6 +308,26 @@ run_test (const std::string &test_identifier)
         return 1; // ran and passed
       }
   return -1; // none found
+}
+
+// == IntegrityCheck ==
+IntegrityCheck *IntegrityCheck::first_ = nullptr; // see internal.hh
+
+void
+IntegrityCheck::deferred_init() // see internal.hh
+{
+  static uint integritycheck_count = [] () {
+    uint c = 0;
+    for (IntegrityCheck *current = first_; current; current = current->next_)
+      {
+        auto *t = new Bse::Test::TestChain (current->func_, current->name_, Bse::Test::INTEGRITY);
+        (void) t; // leak integrity test entries
+        c += 1;
+      }
+    return c;
+  } ();
+  if (enable_testing)
+    assert_return (integritycheck_count > 0);
 }
 
 } } // Bse::Test

@@ -1,5 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "devicecrawler.hh"
+#include "path.hh"
 
 #include <filesystem>
 namespace Fs = std::filesystem;

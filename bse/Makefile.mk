@@ -149,7 +149,6 @@ bse/libbse.headers ::= $(strip		\
 	bse/sfitypes.hh			\
 	bse/sfiustore.hh		\
 	bse/sfivalues.hh		\
-	bse/sfiwrapper.hh		\
 	bse/sndfiles.hh			\
 	bse/strings.hh			\
 	bse/testing.hh			\
@@ -293,7 +292,6 @@ bse/libbse.sources ::= $(strip		\
 	bse/sfitypes.cc			\
 	bse/sfiustore.cc		\
 	bse/sfivalues.cc		\
-	bse/sfiwrapper.cc		\
 	bse/sndfiles.cc			\
 	bse/strings.cc			\
 	bse/testing.cc			\
@@ -340,13 +338,6 @@ bse/libbsejack.objects		::= $(call BUILDDIR_O, $(bse/libbsejack.sources))
 ifneq ('','$(BSE_JACK_LIBS)')
   bse/all: $(lib/libbsejack.so)
 endif
-
-# == integrity defs ==
-bse/integrity		   ::= $>/bse/integrity
-bse/integrity.sources	   ::= bse/integrity.cc
-bse/integrity.objects	   ::= $(call BUILDDIR_O, $(bse/integrity.sources))
-bse/integrity.objects.FLAGS  = -O0	# compile fast
-bse/all: $(bse/integrity)
 
 # == BeastSoundEngine defs ==
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
@@ -571,28 +562,6 @@ $(call BUILD_PROGRAM, \
 	-lbse-$(VERSION_MAJOR) $(BOOST_SYSTEM_LIBS) $(BSEDEPS_LIBS), \
 	../lib)
 $(call INSTALL_BIN_RULE, $(basename $(lib/BeastSoundEngine)), $(DESTDIR)$(pkglibdir)/lib, $(lib/BeastSoundEngine))
-
-# == integrity rules ==
-$(bse/integrity.objects):     $(bse/libbse.deps) | $>/bse/
-$(bse/integrity.objects):     EXTRA_INCLUDES ::= -I$> $(GLIB_CFLAGS)
-$(call BUILD_TEST, \
-	$(bse/integrity), \
-	$(bse/integrity.objects), \
-	$(lib/libbse.so), \
-	-lbse-$(VERSION_MAJOR) $(BSEDEPS_LIBS), \
-	../lib)
-
-# == bse-check-assertions ==
-$>/bse/t279-assertions-test: FORCE	$(bse/integrity)
-	$(QECHO) RUN $@
-	$Q $(bse/integrity) --return_unless1 || $(QDIE) --return_unless1 failed
-	$Q $(bse/integrity) --assert_return1 || $(QDIE) --assert_return1 failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --return_unless0) $(QSTDERR) ; test "$$?" -eq 7 || $(QDIE) --return_unless0 failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return0) $(QSTDERR) ; test "$$?"  != 0 || $(QDIE) --assert_return0 failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --assert_return_unreached) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --assert_return_unreached failed
-	$Q (trap ':' SIGTRAP && $(bse/integrity) --fatal_error) $(QSTDERR) ; test "$$?" != 0 || $(QDIE) --fatal_error failed
-	@echo "  PASS    " $@
-bse/check: $>/bse/t279-assertions-test
 
 # == bse/clean ==
 bse/clean: FORCE

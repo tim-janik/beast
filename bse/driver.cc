@@ -1,8 +1,9 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #include "driver.hh"
 #include "bsemain.hh"
-#include "internal.hh"
 #include "bsesequencer.hh"
+#include "path.hh"
+#include "internal.hh"
 
 #define DDEBUG(...)     Bse::debug ("driver", __VA_ARGS__)
 
