@@ -28,7 +28,7 @@
 #include <errno.h>
 
 #define PDEBUG(...)             Bse::debug ("project", __VA_ARGS__)
-#define FEATURE_XML_PROJECT     Bse::feature_check ("xml-project")
+#define FEATURE_XML_PROJECT     (1 /*Bse::feature_check ("xml-project")*/)
 
 typedef struct {
   GType    base_type;
