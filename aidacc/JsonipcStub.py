@@ -141,9 +141,9 @@ class Generator:
         s += '  Jsonipc::Class<%s> jsonipc__%s ("%sIface");\n' % (cxxclass, ident (cxxclass), jsclass)
         # inherit
         for tb in bases (tp):
-          b += '    .inherit<%s> ("%sIface")\n' % (get_cxxiface (tb), get_jsclass (tb))
+          b += '    .inherit<%s>()\n' % get_cxxiface (tb)
         if not tp.prerequisites: # no bases
-          b += '    .inherit<Aida::ImplicitBase> ("AidaImplicitBase")\n'
+          b += '    .inherit<Aida::ImplicitBase>()\n'
         # properties
         for fname, ftp in tp.fields:
           b += '    .set ("%s", ' % fname
@@ -167,7 +167,7 @@ class Generator:
         jsclass_ = 'Object_' if jsclass == 'Object' else jsclass # work around Javascript nameclash
         s += '  Jsonipc::Class<%s> jsonipc__%s ("%s");\n' % (cxximpl, ident (cxximpl), jsclass_)
         s += '  jsonipc__%s\n' % ident (cxximpl)
-        s += '    .inherit<%s> ("%sIface")\n' % (cxxiface, jsclass)
+        s += '    .inherit<%s>()\n' % cxxiface
         s += '  ;\n'
     if nblocktypes < 9e99:
       s += '#endif\n'
