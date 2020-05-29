@@ -57,11 +57,19 @@ list_audio_device_types();
 
 function observable_device_data () {
   const data = {
-    devices:	{ default: [],  	notify: async n => (await this.devcon()).on ("notify:devices", n),
-		  getter: async c => Object.freeze (await (await this.devcon()).list_devices()), },
-    devicetypes: { getter: async c => await list_audio_device_types(), },
+    devices:	  { default: [],	 notify: n => this.devcon_.on ("notify:devices", n),
+		    getter: async c => Object.freeze (await this.devcon_.list_devices()), },
+    devicetypes:  { getter: c => list_audio_device_types(), },
   };
-  return this.observable_from_getters (data, () => this.track);
+  const have_devcon = async () => {
+    if (this.last_track_ != this.track)
+      {
+	this.devcon_ = this.track ? await this.track.device_container() : null;
+	this.last_track_ = this.track;
+      }
+    return this.devcon_;
+  };
+  return this.observable_from_getters (data, have_devcon);
 }
 
 export default {
@@ -71,17 +79,6 @@ export default {
   },
   data() { return observable_device_data.call (this); },
   methods: {
-    async devcon() {
-      if (!this.track)
-	this.devcon_ = null;
-      else if (!this.devcon_)
-	{
-	  const devcon = await this.track.device_container(); // concurrency point
-	  if (!this.devcon_)
-	    this.devcon_ = devcon;
-	}
-      return this.devcon_;
-    },
     menuactivation (uri) {
       const popup_options = this.$refs.cmenu.popup_options;
       // close popup to remove focus guards
