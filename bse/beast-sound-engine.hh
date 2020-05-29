@@ -220,3 +220,4 @@ void    bse_jsonipc_stub1 ();
 void    bse_jsonipc_stub2 ();
 void    bse_jsonipc_stub3 ();
 void    bse_jsonipc_stub4 ();
+void    bse_jsonipc_stub_rest ();
