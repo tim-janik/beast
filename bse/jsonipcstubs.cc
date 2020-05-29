@@ -18,4 +18,7 @@ bse_jsonipc_stub_rest()
   using namespace Bse;
 
   // Add Jsonipc stubs that cannot be generated from IDL files
+
+  JsonipcClass< Bse::AspDeviceContainerImpl, DeviceContainerImpl > jc_AspDeviceContainerImpl;
+  JsonipcClass< Bse::AspDeviceImpl, DeviceImpl > jc_AspDeviceImpl;
 }

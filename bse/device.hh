@@ -3,6 +3,7 @@
 #define __BSE_DEVICE_HH__
 
 #include <bse/module.hh>
+#include <bse/processor.hh>
 
 namespace Bse {
 
@@ -56,6 +57,25 @@ public:
   virtual bool                remove_device        (DeviceIface &containee) override;
 };
 using DeviceContainerImplP = DeviceContainerImpl::DeviceContainerImplP;
+
+// == AspDeviceImpl ==
+class AspDeviceImpl : public DeviceImpl {
+  AudioSignal::ProcessorP procp_;
+public:
+  AudioSignal::ProcessorP processor () override { return procp_; }
+  explicit AspDeviceImpl (const String &uri, AudioSignal::ProcessorP procp);
+};
+
+// == AspDeviceContainerImpl ==
+class AspDeviceContainerImpl : public DeviceContainerImpl {
+  AudioSignal::ChainP chainp_;
+protected:
+  void added_device (size_t idx) override;
+  void removing_device (size_t idx) override;
+public:
+  AudioSignal::ProcessorP processor () override { return chainp_; }
+  explicit AspDeviceContainerImpl (const String &uri, AudioSignal::ChainP chainp);
+};
 
 } // Bse
 

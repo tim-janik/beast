@@ -7,51 +7,42 @@
 namespace Bse {
 
 // == AspDeviceImpl ==
-class AspDeviceImpl : public DeviceImpl {
-  AudioSignal::ProcessorP procp_;
-public:
-  AudioSignal::ProcessorP processor () override { return procp_; }
-  explicit AspDeviceImpl (const String &uri, AudioSignal::ProcessorP procp) :
-    DeviceImpl (uri), procp_ (procp)
-  {
-    assert_return (procp != nullptr);
-  }
-};
+AspDeviceImpl::AspDeviceImpl (const String &uri, AudioSignal::ProcessorP procp) :
+  DeviceImpl (uri), procp_ (procp)
+{
+  assert_return (procp != nullptr);
+}
 
 // == AspDeviceContainerImpl ==
-class AspDeviceContainerImpl : public DeviceContainerImpl {
-  AudioSignal::ChainP chainp_;
-protected:
-  void
-  added_device (size_t idx) override
-  {
-    auto devs = device_vec();
-    ProcessorP procp = devs[idx]->processor();
-    AudioSignal::ChainP chainp = chainp_;
-    commit_job ([chainp, procp, idx] () {
-      chainp->insert (procp, idx);
-    });
-  }
-  void
-  removing_device (size_t idx) override
-  {
-    auto devs = device_vec();
-    ProcessorP procp = devs[idx]->processor();
-    assert_return (procp);
-    AudioSignal::ChainP chainp = chainp_;
-    commit_job ([chainp, procp] () {
-      const bool proc_found_and_removed = chainp->remove (*procp);
-      assert_return (proc_found_and_removed);
-    });
-  }
-public:
-  AudioSignal::ProcessorP processor () override { return chainp_; }
-  explicit AspDeviceContainerImpl (const String &uri, AudioSignal::ChainP chainp) :
-    DeviceContainerImpl (uri), chainp_ (chainp)
-  {
-    assert_return (chainp != nullptr);
-  }
-};
+void
+AspDeviceContainerImpl::added_device (size_t idx)
+{
+  auto devs = device_vec();
+  ProcessorP procp = devs[idx]->processor();
+  AudioSignal::ChainP chainp = chainp_;
+  commit_job ([chainp, procp, idx] () {
+    chainp->insert (procp, idx);
+  });
+}
+
+void
+AspDeviceContainerImpl::removing_device (size_t idx)
+{
+  auto devs = device_vec();
+  ProcessorP procp = devs[idx]->processor();
+  assert_return (procp);
+  AudioSignal::ChainP chainp = chainp_;
+  commit_job ([chainp, procp] () {
+    const bool proc_found_and_removed = chainp->remove (*procp);
+    assert_return (proc_found_and_removed);
+  });
+}
+
+AspDeviceContainerImpl::AspDeviceContainerImpl (const String &uri, AudioSignal::ChainP chainp) :
+  DeviceContainerImpl (uri), chainp_ (chainp)
+{
+  assert_return (chainp != nullptr);
+}
 
 // == DeviceImpl ==
 DeviceImpl::DeviceImpl (const String &uuiduri) :
