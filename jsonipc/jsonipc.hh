@@ -625,7 +625,8 @@ struct ClassPrinter {
       {
         JSONIPC_ASSERT_RETURN (classname_.empty() && !classname.empty());
         classname_ = classname;
-        jsclass_ = name.empty() ? classname : name;
+        jsclass_ = canonify (classname);
+        jsalias_ = name.empty() ? "" : canonify (name);
         out_ += "\nexport class " + jsclass_;
         if (jsclass_ != classname_)
           out_ += " // " + classname_;
@@ -638,7 +639,7 @@ struct ClassPrinter {
         if (jsprinter_extends)
           out_ += " /* extends " + name + " */\n";
         else
-          out_ += "  extends " + name + "\n";
+          out_ += "  extends " + canonify (name) + "\n";
         jsprinter_extends = true;
       }
     if (what == "method")
@@ -680,6 +681,37 @@ struct ClassPrinter {
       advance_state (0);                // force close
   }
 private:
+  /// Enforce a canonical charset for a string.
+  static std::string
+  canonify (const std::string &string)
+  {
+    const char *const valids = "abcdefghijklmnopqrstuvwxyz" "0123456789" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "_$";
+    const char *const substitute = "_";
+    const size_t l = string.size();
+    const char *p = string.c_str();
+    for (size_t i = 0; i < l; i++)
+      if (!strchr (valids, p[i]))
+        {
+          // rewrite_string:
+          std::string d = string.substr (0, i);
+          bool collapse = true; // collapse substitutions
+          d += substitute;
+          for (++i; i < l; i++)
+            if (strchr (valids, p[i]))
+              {
+                d += p[i];
+                collapse = false;
+              }
+            else if (!collapse)
+              {
+                d += substitute;
+                collapse = true;
+              }
+          return d;
+        }
+    // else, pass through
+    return string;
+  }
   void
   advance_state (int next)
   {
@@ -731,6 +763,8 @@ private:
         if (tag_ == CLASSES ||          // support '$class' lookups
             tag_ == SERIALIZABLE)
           out_ += "$jsonipc.classes['" + classname_ + "'] = " + jsclass_ + ";\n";
+        if (!jsalias_.empty())
+          out_ += "export const " + jsalias_ + " = " + jsclass_ + ";\n";
         state_++;                       // class closed
       }
     if (state_ < next)
@@ -738,7 +772,7 @@ private:
   }
   static std::vector<ClassPrinter*>& printers_() { static std::vector<ClassPrinter*> printers; return printers; }
   std::vector<std::string> serializable_attributes;
-  std::string classname_, jsclass_, out_;
+  std::string classname_, jsclass_, jsalias_, out_;
   int state_ = 0;
   Tag tag_ = Tag (0);
   bool jsprinter_extends = false;
@@ -771,7 +805,7 @@ struct Enum : TypeInfo {
   Enum (const std::string &altname = "")
   {
     const std::string class_name = rtti_typename<T>();
-    print (class_name, "new", altname.empty() ? class_name : altname);
+    print (class_name, "new", altname);
   }
   Enum&
   set (T v, const char *valuename)
@@ -862,7 +896,7 @@ struct Serializable : TypeInfo {
   Serializable (const std::string &altname = "")
   {
     const std::string class_name = rtti_typename<T>();
-    print (class_name, "new", altname.empty() ? class_name : altname);
+    print (class_name, "new", altname);
     make_serializable<T>();
   }
   /// Add a member object pointer
@@ -959,14 +993,14 @@ struct Class : TypeInfo {
   Class (const std::string &altname = "")
   {
     const std::string class_name = classname();
-    print (class_name, "new", altname.empty() ? class_name : altname);
+    print (class_name, "new", altname);
   }
   // Inherit base class `B`
   template<typename B> Class&
-  inherit (const std::string &jsclass = "")
+  inherit()
   {
     add_base<B>();
-    print (classname(), "inherit", jsclass.empty() ? rtti_typename<B>() : jsclass, 0);
+    print (classname(), "inherit", rtti_typename<B>(), 0);
     return *this;
   }
   /// Add a member function pointer
