@@ -957,7 +957,7 @@ ProjectImpl::xml_serialize (SerializationNode &xs)
     }
   if (xs.in_save() && song)
     for (auto trackp : song->list_tracks())
-      if (trackp->device_container())
+      if (dynamic_cast<TrackImpl*> (&*trackp)->needs_serialize())
         xs.save_under ("Track", *trackp->as<TrackImplP>());
 }
 

@@ -153,6 +153,13 @@ bse_track_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static gboolean
+bse_track_needs_storage (BseItem *item, BseStorage *storage)
+{
+  BseTrack *self = BSE_TRACK (item);
+  return self->n_entries_SL > 0; // has parts
+}
+
 static void	track_uncross_part	(BseItem *owner,
 					 BseItem *ref_item);
 
@@ -1095,6 +1102,7 @@ bse_track_class_init (BseTrackClass *klass)
   object_class->restore_private = bse_track_restore_private;
 
   item_class->get_candidates = bse_track_get_candidates;
+  item_class->needs_storage = bse_track_needs_storage;
 
   source_class->prepare = bse_track_prepare;
   source_class->context_create = bse_track_context_create;
@@ -1155,6 +1163,12 @@ void
 TrackImpl::xml_reflink (SerializationNode &xs)
 {
   ContextMergerImpl::xml_reflink (xs);
+}
+
+bool
+TrackImpl::needs_serialize()
+{
+  return device_container()->list_devices().size() > 0;
 }
 
 bool
