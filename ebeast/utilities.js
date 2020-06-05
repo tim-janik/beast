@@ -3,6 +3,31 @@
 
 const AUTOTEST = true;
 
+// == Compat fixes ==
+class FallbackResizeObserver {
+  constructor (resize_handler) {
+    this.observables = new Set();
+    this.resizer = () => resize_handler.call (null, [], this);
+  }
+  disconnect() {
+    this.observables.clear();
+    window.removeEventListener ('resize', this.resizer);
+  }
+  observe (ele) {
+    if (!this.observables.size)
+      window.addEventListener ('resize', this.resizer);
+    this.observables.add (ele);
+  }
+  unobserve (ele) {
+    this.observables.delete (ele);
+    if (!this.observables.size())
+      this.disconnect();
+  }
+}
+/// Work around FireFox 68 having ResizeObserver disabled
+export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
+
+// == Vue Helpers ==
 export const vue_mixins = {};
 export const vue_directives = {};
 
@@ -1798,30 +1823,6 @@ export function data_bubble_update (element, text) {
   if (element.data_bubble_active)
     global_data_bubble.update();
 }
-
-class FallbackResizeObserver {
-  constructor (resize_handler) {
-    this.observables = new Set();
-    this.resizer = () => resize_handler.call (null, [], this);
-  }
-  disconnect() {
-    this.observables.clear();
-    window.removeEventListener ('resize', this.resizer);
-  }
-  observe (ele) {
-    if (!this.observables.size)
-      window.addEventListener ('resize', this.resizer);
-    this.observables.add (ele);
-  }
-  unobserve (ele) {
-    this.observables.delete (ele);
-    if (!this.observables.size())
-      this.disconnect();
-  }
-}
-
-/// Work around FireFox 68 having ResizeObserver disabled
-export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
 /** Assign `map[key] = cleaner`, while awaiting and calling any previously existing cleanup function */
 export function assign_async_cleanup (map, key, cleaner) {
