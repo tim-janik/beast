@@ -47,9 +47,9 @@
       </b-hflex>
 
       <template v-for="f in group[1]" >
-	<span style="grid-column: 1; padding: 0 1em 0; text-align: left" :title="f.attrs.blurb" :key="'f1:' + f.ident"
+	<span style="grid-column: 1; padding: 0 1em 0; text-align: left" :data-bubble="f.blurb" :key="'f1:' + f.ident"
 	>{{ f.label }}</span>
-	<span style="text-align: right" :title="f.attrs.blurb" :key="'f2:' + f.ident">
+	<span style="text-align: right" :data-bubble="f.blurb" :key="'f2:' + f.ident">
 	  <component :is="f.ctype" v-bind="f.attrs" :class="'b-fed-object--' + f.ident"
 		     :value="f.odata[f.ident]" @input="f.apply" ></component></span>
 	<span :key="'f3:' + f.ident">
@@ -164,11 +164,13 @@ export default {
 		}
 	      else
 		groupfields = groupmap[group][1];
+	      const blurb = td[fieldname + '.blurb'] || undefined;
 	      groupfields.push ({ ident: fieldname,
 				  ctype: ct,
 				  label: label,
 				  attrs: attrs,
 				  odata: o,
+				  blurb: blurb,
 				  apply: handler });
 	    }
 	}
