@@ -719,6 +719,39 @@ export function inside_display_none (element) {
   return false;
 }
 
+/** Retrieve normalized scroll wheel event delta (across Browsers)
+ * This returns an object `{x,y}` with negative values pointing
+ * LEFT/UP and positive values RIGHT/DOWN respectively.
+ * For zoom step interpretation, the x/y pixel values should be
+ * reduced via `Math.sign()`.
+ * For scales the pixel values might feel more natural, because
+ * while Firefox tends to increase the number of events with
+ * increasing wheel distance, Chromium tends to accumulate and
+ * send fewer events with higher values instead.
+ */
+export function wheel_delta (ev)
+{
+  const DPR = Math.max (window.devicePixelRatio || 1, 1);
+  const WHEEL_DELTA = 120;	// Corresponds to a 15° mouse wheel step
+  const CHROMEPIXEL = 53;	// Chromium has a wheelDeltaY/deltaY ratio of 120/53 and includes DPR
+  const FIREFOXPIXEL = DPR / 3;	// Firefox sets deltaX=1 and deltaY=3 per step on Linux
+  const PAGESTEP = 100 * DPR;	// Chromium pixels per scroll step
+  // https://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
+  // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/U3kH6_98BuY
+  if (ev.deltaMode >= 2) // DOM_DELTA_PAGE
+    return { x: ev.deltaX * PAGESTEP, y: ev.deltaY * PAGESTEP };
+  if (ev.deltaMode >= 1) // DOM_DELTA_LINE - Firefox sets deltaX=1 and deltaY=3 per step on Linux
+    return { x: ev.deltaX * 3 * FIREFOXPIXEL * 10, y: ev.deltaY * FIREFOXPIXEL * 10 };
+  if (ev.deltaMode >= 0) // DOM_DELTA_PIXEL - adjusted for Chromium ratio, includes DPR
+    return { x: ev.deltaX / CHROMEPIXEL * 10, y: ev.deltaY / CHROMEPIXEL * 10 };
+  if (ev.wheelDeltaX !== undefined) // Chromium includes DPR in wheelDelta
+    return { x: -ev.wheelDeltaX / WHEEL_DELTA * 10,
+	     y: -ev.wheelDeltaY / WHEEL_DELTA * 10 };
+  if (ev.wheelDelta !== undefined)
+    return { x: 0, y: -ev.wheelDelta / WHEEL_DELTA * 10 };
+  return { x: 0, y: (ev.detail || 0) * DPR * 10 };
+}
+
 /** List all elements that can take focus and are descendants of `element` or the document. */
 export function list_focusables (element)
 {
