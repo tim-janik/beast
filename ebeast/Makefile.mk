@@ -106,7 +106,7 @@ $>/electron/ebeast:						| $>/
 # == app ==
 $>/app/package.json: $>/electron/ebeast $>/ebeast/lint.done
 $>/app/package.json: $(ebeast/copy.targets) $(app/generated) $(app/assets.copies)
-$>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done
+$>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done ebeast/eknob.svg
 	$(QGEN)
 	$Q echo -e '{ "name": "ebeast",'				> $@.tmp
 	$Q echo -e '  "productName": "EBeast",'				>>$@.tmp
@@ -119,8 +119,10 @@ $>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_m
 	$Q echo -e '  "main": "main.js" }'				>>$@.tmp
 	@: # Embed package.json in index.html, using record-separator \036 in sed
 	$Q PACKAGE_JSON=$$(tr '\n' ' ' < $@.tmp) && R=$$'\036' \
-	  && sed -r "s$$R<!--@-html-head-package_json@-->$$R$$PACKAGE_JSON$$R" \
-		<ebeast/index.html	>$>/app/index.html
+	  && sed -r \
+		-e"s$$R<!--@-html-head-package_json@-->$$R$$PACKAGE_JSON$$R" \
+		-e "/<!--'eknob.svg'-->/ r ebeast/eknob.svg" \
+		< ebeast/index.html	>$>/app/index.html
 	$Q ln -f -s ../doc $>/app/doc
 	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/
 	$Q $(CP) -a $>/ebeast/node_modules/vue-runtime-helpers/dist/index.mjs $>/app/vue-runtime-helpers.mjs \
@@ -131,6 +133,7 @@ $>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_m
 # == $>/app/b/%.bundle.js ==
 ebeast/targets.vuebundles.js  ::= $(patsubst %, $>/app/b/%.bundle.js,  $(ebeast/b/vue.stems))
 ebeast/targets.vuebundles.css ::= $(patsubst %, $>/app/b/%.bundle.css, $(ebeast/b/vue.stems))
+# $>/app/b/%.bundle.js: $(ebeast/app.scss.d)
 $>/app/b/%.bundle.js: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/ebeast/b/ $>/ebeast/node_modules/npm.done
 	$(QGEN)
 	$Q cd $>/ebeast/ && $(abspath $(NODE_MODULES.bin)/rollup) -c ./rollup.config.js -i $(abspath $<) -o $(abspath $>/ebeast/b/$(@F))
