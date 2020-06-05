@@ -1745,6 +1745,15 @@ class DataBubble {
     };
     document.addEventListener ("mousemove", data_bubble_mousemove_event, { capture: true, passive: true });
     document.addEventListener ("mousedown", data_bubble_mousemove_event, { capture: true, passive: true });
+    const data_bubble_mouseleave = (ev) => {
+      if (!this.pending_debounce && this.current === ev.target)
+	{ // e.g. mouse leaves browser window
+	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
+	  if (this.pending_idler)
+	    this.pending_idler = clearTimeout (this.pending_idler);
+	}
+    };
+    document.addEventListener ("mouseleave",  data_bubble_mouseleave, { capture: true, passive: true });
     const data_bubble_resizes = () => {
       if (!this.pending_debounce && this.current)
 	{
@@ -1760,6 +1769,7 @@ class DataBubble {
     this.resizeob.disconnect();
     document.removeEventListener ("mousemove", this.mousemove);
     document.removeEventListener ("mousedown", this.mousemove);
+    document.removeEventListener ("mouseleave", this.mousemove);
   }
   mouse_moved (idling) {
     if (this.buttonsdown)
