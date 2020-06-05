@@ -154,15 +154,15 @@ plaintext, listing, xmp,
 /* == Bubbles == */
 // Tooltips via CSS, using the data-bubble="" attribute
 .data-bubble {
-  display: flex; z-index: 9999; pointer-events: none;
-  position: absolute;
+  display: flex; pointer-events: none;
+  position: absolute; z-index: 9999999999;
   //*bottom: 100%; left: 50%; transform: translateX(-50%);*/
   margin: 0; padding: 2px 3px; border-radius: 1px;
   border: dppx(2) ridge #a59900; color: #fff133;
   background: #1a1800; background-image: linear-gradient(to bottom right, #0d0c00, #2a2700);
   font-variant-numeric: tabular-nums;
   content: attr(data-bubble); white-space: nowrap;
-  transition: visibility 0.1s, opacity 0.1s ease-in-out;
+  transition: visibility 0.1s, opacity 0.09s ease-in-out;
   visibility: hidden; opacity: 0;
   &.data-bubble-visible {
     visibility: visible; opacity: 0.78;
