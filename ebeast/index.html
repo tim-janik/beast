@@ -103,6 +103,8 @@
 	  window.$log.loadstatus = null; // end bootup logging
 	}
     };
+    // Add helpers for device specific CSS
+    document.body.parentNode.style.setProperty ('--device-pixel-ratio', window.devicePixelRatio);
     // Add helpers for browser specific CSS (needs document.body to exists)
     document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
     document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
