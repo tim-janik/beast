@@ -1518,7 +1518,17 @@ export function clear_keyboard_click (element)
 /** Check whether `element` is contained in `array` */
 export function in_array (element, array)
 {
+  console.assert (array instanceof Array);
   return array.indexOf (element) >= 0;
+}
+
+/** Check whether `element` is found during `for (... of iteratable)` */
+export function matches_forof (element, iteratable)
+{
+  for (let item of iteratable)
+    if (element === item)
+      return true;
+  return false;
 }
 
 /// Symbolic names for key codes
