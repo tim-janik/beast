@@ -1682,6 +1682,123 @@ export function remove_hotkey (hotkey, callback) {
   return false;
 }
 
+/** A mechanism to display data-bubble="" tooltip popups */
+class DataBubble {
+  constructor() {
+    // create one toplevel div.data-bubble element to deal with all popups
+    this.bubble = document.createElement ('div');
+    this.bubble.classList.add ('data-bubble');
+    document.body.appendChild (this.bubble);
+    this.current = null; // current element showing a data-bubble
+    this.lasttext = "";
+    // milliseconds to wait to detect idle time after mouse moves
+    const IDLE_DELAY = 115;
+    // trigger popup handling after mouse rests
+    this.pending_debounce = null;
+    this.pending_idler = null;
+    const data_bubble_mouse_idles = () => {
+      this.pending_idler = null;
+      this.mouse_moved (true);
+    };
+    const data_bubble_debounce_mousemoves = () => {
+      this.pending_debounce = null;
+      if (this.pending_idler)
+	clearTimeout (this.pending_idler);
+      this.pending_idler = setTimeout (data_bubble_mouse_idles, IDLE_DELAY);
+      this.mouse_moved (false);
+    };
+    const data_bubble_mousemove_event = () => {
+      if (!this.pending_debounce) // minimize per-event handling
+	{
+	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
+	  if (this.pending_idler)
+	    this.pending_idler = clearTimeout (this.pending_idler);
+	}
+    };
+    document.addEventListener ("mousemove", data_bubble_mousemove_event,
+			       { capture: true, passive: true });
+  }
+  shutdown() {
+    console.assert (!this.current);
+    document.removeEventListener ("mousemove", this.mousemove);
+  }
+  mouse_moved (idling) {
+    if (!idling && this.current)
+      {
+	const els = document.body.querySelectorAll ('*:hover[data-bubble]');
+	if (!matches_forof (this.current, els))
+	  this.hide();
+	return;
+      }
+    if (idling && !this.current)
+      {
+	const els = document.body.querySelectorAll ('*:hover[data-bubble]');
+	if (els.length >= 1)
+	  this.show (els[els.length - 1]);
+      }
+  }
+  hide() {
+    if (this.current)
+      {
+	delete this.current.data_bubble_active;
+	this.current = null;
+      }
+    this.bubble.classList.remove ('data-bubble-visible');
+    // keep textContent for fade-outs
+  }
+  update() {
+    if (this.current)
+      {
+	const nextext = this.current.getAttribute ('data-bubble');
+	if (nextext != this.lasttext)
+	  {
+	    this.bubble.textContent = nextext;
+	    this.lasttext = nextext;
+	  }
+      }
+  }
+  show (element) {
+    console.assert (!this.current);
+    const text = element.getAttribute ('data-bubble');
+    if (text)
+      {
+	this.current = element;
+	this.current.data_bubble_active = true;
+	this.update();
+	const viewport = {
+	  width:  Math.max (document.documentElement.clientWidth || 0, window.innerWidth || 0),
+	  height: Math.max (document.documentElement.clientHeight || 0, window.innerHeight || 0),
+	};
+	this.bubble.classList.add ('data-bubble-visible');
+	// request ideal layout
+	const r = this.current.getBoundingClientRect();
+	this.bubble.style.top = '0px';
+	this.bubble.style.right = '0px';
+	let s = this.bubble.getBoundingClientRect();
+	let top = Math.max (0, r.y - s.height);
+	let right = Math.max (0, viewport.width - (r.x + r.width / 2 + s.width / 2));
+	this.bubble.style.top = top + 'px';
+	this.bubble.style.right = right + 'px';
+	s = this.bubble.getBoundingClientRect();
+	// constrain layout
+	if (s.left < 0)
+	  {
+	    right += s.left;
+	    right = Math.max (0, right);
+	    this.bubble.style.right = right + 'px';
+	  }
+      }
+  }
+}
+const global_data_bubble = new DataBubble();
+
+/** Set the `data-bubble` attribute of `element` to `text`, allows live bubble updates */
+export function data_bubble_update (element, text) {
+  element.setAttribute ('data-bubble', text);
+  if (element.data_bubble_active)
+    global_data_bubble.update();
+}
+
 class FallbackResizeObserver {
   constructor (resize_handler) {
     this.observables = new Set();
