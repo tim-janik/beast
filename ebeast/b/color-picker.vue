@@ -38,34 +38,6 @@
       height: 20px;
       border: 1px solid #777;
     }
-
-    .b-data-tooltip {
-      position: relative;
-      text-decoration: none;
-    }
-    .b-data-tooltip:before, .b-data-tooltip:after {
-      position: absolute; bottom: 100%;
-      visibility: hidden; opacity: 0; pointer-events: none;
-      transition: all 0.2s ease-in-out 0.15s;
-    }
-    .b-data-tooltip:before {
-      left: 20%; padding: 5px 11px;
-      box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.8) , 0px 0px 6px 1px rgba(255,255,255,0.3) ;
-      color: #fef033; background: linear-gradient(#333, #2a2a2a);
-      content: attr(data-tooltip); white-space: nowrap;
-      border-radius: 7px;
-      margin-left: -7px;
-      margin-bottom: 9px;
-    }
-    .b-data-tooltip:after { /* tooltip bubble triangle */
-      left: 50%; width: 0; height: 0; content: "";
-      border-top: 9px solid #2a2a2a; border-right: 9px solid transparent;
-    }
-    .b-data-tooltip:hover:after, .b-data-tooltip:hover:before {
-      visibility: visible;
-      opacity: 1;
-    }
-
   }
 </style>
 
@@ -76,10 +48,10 @@
       <div v-if="visible_dropdown" ref="dropdown" class="b-color-picker-dropdown" >
 	<div style="display: flex; flex-direction: row;"
 	     v-for="(row, row_index) in color_rows" :key="'row-' + row_index" >
-	  <div class="b-color-picker-entry b-data-tooltip"
+	  <div class="b-color-picker-entry"
 	       v-for="(item, index) in row"
 	       @click="select (item[0])"
-	       :data-tooltip=" item[1] + '   ' + item[0] + '' "
+	       :data-bubble=" item[1] + '   ' + item[0] + '' "
 	       :key="row_index + '.' + index" :style="{ 'background-color': item[0] }" ></div>
 	</div>
       </div>
