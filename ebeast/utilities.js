@@ -1716,6 +1716,7 @@ class DataBubble {
     document.body.appendChild (this.bubble);
     this.current = null; // current element showing a data-bubble
     this.lasttext = "";
+    this.buttonsdown = 0;
     // milliseconds to wait to detect idle time after mouse moves
     const IDLE_DELAY = 115;
     // trigger popup handling after mouse rests
@@ -1728,11 +1729,13 @@ class DataBubble {
     const data_bubble_debounce_mousemoves = () => {
       this.pending_debounce = null;
       if (this.pending_idler)
-	clearTimeout (this.pending_idler);
-      this.pending_idler = setTimeout (data_bubble_mouse_idles, IDLE_DELAY);
+	this.pending_idler = clearTimeout (this.pending_idler);
+      if (!this.buttonsdown && !this.current)
+	this.pending_idler = setTimeout (data_bubble_mouse_idles, IDLE_DELAY);
       this.mouse_moved (false);
     };
-    const data_bubble_mousemove_event = () => {
+    const data_bubble_mousemove_event = (ev) => {
+      this.buttonsdown = ev.buttons;
       if (!this.pending_debounce) // minimize per-event handling
 	{
 	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
@@ -1740,22 +1743,34 @@ class DataBubble {
 	    this.pending_idler = clearTimeout (this.pending_idler);
 	}
     };
-    document.addEventListener ("mousemove", data_bubble_mousemove_event,
-			       { capture: true, passive: true });
+    document.addEventListener ("mousemove", data_bubble_mousemove_event, { capture: true, passive: true });
+    document.addEventListener ("mousedown", data_bubble_mousemove_event, { capture: true, passive: true });
+    const data_bubble_resizes = () => {
+      if (!this.pending_debounce && this.current)
+	{
+	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
+	  if (this.pending_idler)
+	    this.pending_idler = clearTimeout (this.pending_idler);
+	}
+    };
+    this.resizeob = new ResizeObserver (data_bubble_resizes);
   }
   shutdown() {
     console.assert (!this.current);
+    this.resizeob.disconnect();
     document.removeEventListener ("mousemove", this.mousemove);
+    document.removeEventListener ("mousedown", this.mousemove);
   }
   mouse_moved (idling) {
-    if (!idling && this.current)
+    if (this.buttonsdown)
+      this.hide();
+    else if (!idling && this.current)
       {
 	const els = document.body.querySelectorAll ('*:hover[data-bubble]');
 	if (!matches_forof (this.current, els))
 	  this.hide();
-	return;
       }
-    if (idling && !this.current)
+    else if (idling && !this.current)
       {
 	const els = document.body.querySelectorAll ('*:hover[data-bubble]');
 	if (els.length >= 1)
@@ -1767,6 +1782,7 @@ class DataBubble {
       {
 	delete this.current.data_bubble_active;
 	this.current = null;
+	this.resizeob.disconnect();
       }
     this.bubble.classList.remove ('data-bubble-visible');
     // keep textContent for fade-outs
@@ -1789,6 +1805,7 @@ class DataBubble {
       {
 	this.current = element;
 	this.current.data_bubble_active = true;
+	this.resizeob.observe (this.current);
 	this.update();
 	const viewport = {
 	  width:  Math.max (document.documentElement.clientWidth || 0, window.innerWidth || 0),
