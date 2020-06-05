@@ -45,7 +45,7 @@
 	   :value="value" @input="emit_input_value ($event.target.value)" >
     <input ref="numbertype" type="number" :style="numberstyle()"
 	   :min="fmin()" :max="fmax()" :step="fstep()" :readonly="readonly"
-	   :value="value" @input="emit_input_value ($event.target.value)" >
+	   :value="value" @input="emit_input_value ($event.target.value)" title="" >
   </label>
 </template>
 
