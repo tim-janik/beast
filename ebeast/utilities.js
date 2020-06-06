@@ -2,6 +2,7 @@
 'use strict';
 
 const AUTOTEST = true;
+const UNSET = Symbol ('UNSET');
 
 // == Compat fixes ==
 class FallbackResizeObserver {
@@ -1779,54 +1780,28 @@ class DataBubble {
     this.bubble.classList.add ('data-bubble');
     document.body.appendChild (this.bubble);
     this.current = null; // current element showing a data-bubble
+    this.stack = []; // element stack to force bubble
     this.lasttext = "";
+    this.last_event = null;
     this.buttonsdown = 0;
+    this.coords = {};
     // milliseconds to wait to detect idle time after mouse moves
     const IDLE_DELAY = 115;
     // trigger popup handling after mouse rests
-    this.pending_debounce = null;
-    this.pending_idler = null;
-    const data_bubble_mouse_idles = () => {
-      this.pending_idler = null;
-      this.mouse_moved (true);
+    this.restart_bubble_timer = debounce (() => this.check_showtime (true),
+					  { restart: true, wait: IDLE_DELAY });
+    this.debounced_check = debounce (this.check_showtime);
+    this.queue_update = debounce (this.update_now);
+    const recheck_event = (ev, newmove) => {
+      this.last_event = ev;
+      this.debounced_check();
     };
-    const data_bubble_debounce_mousemoves = () => {
-      this.pending_debounce = null;
-      if (this.pending_idler)
-	this.pending_idler = clearTimeout (this.pending_idler);
-      if (!this.buttonsdown && !this.current)
-	this.pending_idler = setTimeout (data_bubble_mouse_idles, IDLE_DELAY);
-      this.mouse_moved (false);
-    };
-    const data_bubble_mousemove_event = (ev) => {
-      this.buttonsdown = ev.buttons;
-      if (!this.pending_debounce) // minimize per-event handling
-	{
-	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
-	  if (this.pending_idler)
-	    this.pending_idler = clearTimeout (this.pending_idler);
-	}
-    };
-    document.addEventListener ("mousemove", data_bubble_mousemove_event, { capture: true, passive: true });
-    document.addEventListener ("mousedown", data_bubble_mousemove_event, { capture: true, passive: true });
-    const data_bubble_mouseleave = (ev) => {
-      if (!this.pending_debounce && this.current === ev.target)
-	{ // e.g. mouse leaves browser window
-	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
-	  if (this.pending_idler)
-	    this.pending_idler = clearTimeout (this.pending_idler);
-	}
-    };
-    document.addEventListener ("mouseleave",  data_bubble_mouseleave, { capture: true, passive: true });
-    const data_bubble_resizes = () => {
-      if (!this.pending_debounce && this.current)
-	{
-	  this.pending_debounce = window.requestAnimationFrame (data_bubble_debounce_mousemoves);
-	  if (this.pending_idler)
-	    this.pending_idler = clearTimeout (this.pending_idler);
-	}
-    };
-    this.resizeob = new ResizeObserver (data_bubble_resizes);
+    document.addEventListener ("mousemove", recheck_event, { capture: true, passive: true });
+    document.addEventListener ("mousedown", recheck_event, { capture: true, passive: true });
+    document.addEventListener ("mouseleave",
+			       ev => (ev.target === this.current) && this.debounced_check(),
+			       { capture: true, passive: true });
+    this.resizeob = new ResizeObserver (() => !!this.current && this.debounced_check());
   }
   shutdown() {
     console.assert (!this.current);
@@ -1835,21 +1810,44 @@ class DataBubble {
     document.removeEventListener ("mousedown", this.mousemove);
     document.removeEventListener ("mouseleave", this.mousemove);
   }
-  mouse_moved (idling) {
+  check_showtime (showtime = false) {
+    if (this.last_event)
+      {
+	const coords = { x: this.last_event.screenX, y: this.last_event.screenY };
+	this.buttonsdown = !!this.last_event.buttons;
+	if (!this.buttonsdown && !this.stack.length &&
+	    !equals_recursively (coords, this.coords) &&
+	    this.last_event.type === "mousemove")
+	  this.restart_bubble_timer();
+	this.coords = coords; // needed to ignore 0-distance moves
+	this.last_event = null;
+      }
+    if (this.stack.length) // stack takes precedence over events
+      {
+	const next = this.stack[0];
+	if (next != this.current)
+	  {
+	    this.hide();
+	    this.restart_bubble_timer.cancel();
+	  }
+	if (!this.current)
+	  this.show (next);
+	return;
+      }
     if (this.buttonsdown)
+      {
+	this.hide();
+	this.restart_bubble_timer.cancel();
+	return;
+      }
+    if (!showtime && !this.current)
+      return;
+    const els = document.body.querySelectorAll ('*:hover[data-bubble]');
+    const next = els.length ? els[els.length - 1] : null;
+    if (next != this.current)
       this.hide();
-    else if (!idling && this.current)
-      {
-	const els = document.body.querySelectorAll ('*:hover[data-bubble]');
-	if (!matches_forof (this.current, els))
-	  this.hide();
-      }
-    else if (idling && !this.current)
-      {
-	const els = document.body.querySelectorAll ('*:hover[data-bubble]');
-	if (els.length >= 1)
-	  this.show (els[els.length - 1]);
-      }
+    if (next && showtime && !this.current)
+      this.show (next);
   }
   hide() {
     if (this.current)
@@ -1857,37 +1855,42 @@ class DataBubble {
 	delete this.current.data_bubble_active;
 	this.current = null;
 	this.resizeob.disconnect();
+	this.bubble.classList.remove ('data-bubble-visible');
       }
-    this.bubble.classList.remove ('data-bubble-visible');
     // keep textContent for fade-outs
   }
-  update() {
+  update_now() {
     if (this.current)
       {
+	let cbtext;
 	if (this.current.data_bubble_callback)
-	  this.current.setAttribute ('data-bubble', this.current.data_bubble_callback());
-	const newtext = this.current.getAttribute ('data-bubble');
-	if (newtext != this.lasttext)
 	  {
-	    this.bubble.textContent = newtext;
+	    cbtext = this.current.data_bubble_callback();
+	    this.current.setAttribute ('data-bubble', cbtext);
+	  }
+	const newtext = cbtext || this.current.getAttribute ('data-bubble');
+	if (!newtext)
+	  this.hide();
+	else if (newtext != this.lasttext)
+	  {
 	    this.lasttext = newtext;
+	    this.bubble.textContent = this.lasttext;
 	  }
       }
   }
   show (element) {
     console.assert (!this.current);
-    const text = element.getAttribute ('data-bubble');
-    if (text)
+    this.current = element;
+    this.current.data_bubble_active = true;
+    this.resizeob.observe (this.current);
+    this.bubble.classList.add ('data-bubble-visible');
+    this.update_now(); // might hide()
+    if (this.current) // resizing
       {
-	this.current = element;
-	this.current.data_bubble_active = true;
-	this.resizeob.observe (this.current);
-	this.update();
 	const viewport = {
 	  width:  Math.max (document.documentElement.clientWidth || 0, window.innerWidth || 0),
 	  height: Math.max (document.documentElement.clientHeight || 0, window.innerHeight || 0),
 	};
-	this.bubble.classList.add ('data-bubble-visible');
 	// request ideal layout
 	const r = this.current.getBoundingClientRect();
 	this.bubble.style.top = '0px';
@@ -1911,20 +1914,41 @@ class DataBubble {
 const global_data_bubble = new DataBubble();
 
 /** Set the `data-bubble` attribute of `element` to `text` or force its callback */
-export function data_bubble_update (element, text) {
-  if (text !== undefined)
-    element.setAttribute ('data-bubble', text);
-  if (element.data_bubble_active)
-    global_data_bubble.update();
+export function data_bubble_update (element, text = UNSET) {
+  if (text !== UNSET && !element.data_bubble_callback)
+    {
+      if (text)
+	element.setAttribute ('data-bubble', text);
+      else
+	element.removeAttribute ('data-bubble');
+    }
+  global_data_bubble.queue_update();
 }
 
 /** Assign a callback function to fetch the `data-bubble` attribute of `element` */
 export function data_bubble_callback (element, callback) {
   element.data_bubble_callback = callback;
   if (callback)
-    element.setAttribute ('data-bubble', ""); // [data-bubble] selector needs non-empty string
+    element.setAttribute ('data-bubble', "");	// [data-bubble] selector needs existing attribute
+  global_data_bubble.queue_update();
+}
+
+/** Force `data-bubble` to be shown for `element` */
+export function data_bubble_force (element) {
+  global_data_bubble.stack.unshift (element);
+  global_data_bubble.debounced_check();
+}
+
+/** Reset the `data-bubble` attribute, its callback and cancel a forced bubble */
+export function data_bubble_clear (element) {
+  if (global_data_bubble.stack.length)
+    array_remove (global_data_bubble.stack, element);
   if (element.data_bubble_active)
-    global_data_bubble.update();
+    global_data_bubble.hide();
+  if (element.data_bubble_callback)
+    element.data_bubble_callback = undefined;
+  element.removeAttribute ('data-bubble');
+  global_data_bubble.debounced_check();
 }
 
 /** Assign `map[key] = cleaner`, while awaiting and calling any previously existing cleanup function */
