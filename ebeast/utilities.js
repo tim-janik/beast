@@ -27,6 +27,63 @@ class FallbackResizeObserver {
 /// Work around FireFox 68 having ResizeObserver disabled
 export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
+/** Yield a wrapper function for `callback` that throttles invocations.
+ * Regardless of the frequency of calls to the returned wrapper, `callback`
+ * will only be called once per `requestAnimationFrame()` cycle, or
+ * after `milliseconds`.
+ * The return value of the wrapper functions is the value of the last
+ * callback invocation.
+ * A `cancel()` method can be called on the returned wrapper to cancel the
+ * next pending `callback` invocation.
+ * Options:
+ * - `wait` - number of milliseconds to pass until `callback` may be called.
+ * - `restart` - always restart the timer once the wrapper is called.
+ */
+export function debounce (callback, options = {}) {
+  if (!(callback instanceof Function))
+    throw new TypeError ('argument `callback` must be of type Function');
+  const restart = !!options.restart;
+  const milliseconds = Number.isFinite (options.wait) ? options.wait : -1;
+  options = undefined; // allow GC
+  let handlerid = undefined;
+  let cresult = undefined;
+  let cthis = undefined;
+  let cargs = undefined;
+  function callback_caller() {
+    handlerid = undefined;
+    const ithis = cthis, iargs = cargs;
+    cthis = undefined;
+    cargs = undefined; // allow GC
+    cresult = callback.apply (ithis, iargs);
+  }
+  function wrapper_func (...newargs) {
+    if (restart) // always restart timer
+      wrapper_func.cancel();
+    cthis = this;
+    cargs = newargs;
+    if (!handlerid)
+      {
+	if (milliseconds < 0)
+	  handlerid = requestAnimationFrame (callback_caller);
+	else
+	  handlerid = setTimeout (callback_caller, milliseconds);
+      }
+    return cresult;
+  }
+  wrapper_func.cancel = () => {
+    if (handlerid)
+      {
+	if (milliseconds < 0)
+	  handlerid = cancelAnimationFrame (handlerid);
+	else // milliseconds >= 0
+	  handlerid = clearTimeout (handlerid);
+	cthis = undefined;
+	cargs = undefined; // allow GC
+      } // but keep last result
+  };
+  return wrapper_func;
+}
+
 // == Vue Helpers ==
 export const vue_mixins = {};
 export const vue_directives = {};
@@ -43,32 +100,6 @@ export function assign_forof (target, source) {
   for (let e of source)
     target[e] = source[e];
   return target;
-}
-
-/// Yield a wrapper that delays calling `callback` until `delay` miliseconds have passed since the last wrapper call.
-export function debounce (delay, callback) {
-  if (!(callback instanceof Function))
-    throw new TypeError ('argument `callback` must be of type Function');
-  let ctimer, cthis, cargs, creturn; // closure variables
-  function invoke_callback() {
-    ctimer = undefined;
-    const invoke_this = cthis, invoke_args = cargs;
-    cthis = undefined;
-    cargs = undefined;
-    creturn = callback.apply (invoke_this, invoke_args);
-    return undefined;
-  }
-  function cwrapper (...args) {
-    cthis = this;
-    cargs = args;
-    if (ctimer != undefined)
-      clearTimeout (ctimer);
-    ctimer = setTimeout (invoke_callback, delay);
-    const last_return = creturn;
-    creturn = undefined;
-    return last_return;
-  }
-  return cwrapper;
 }
 
 /** Remove element `item` from `array` */

@@ -192,7 +192,10 @@ export default {
       const o = this.object;
       Vue.set (o, fieldname, value);
       if (this.emit_update_ == undefined)
-	this.emit_update_ = Util.debounce (this.debounce, () => this.$emit ('input', this.object));
+	this.emit_update_ = Util.debounce (() => this.$emit ('input', this.object),
+					   { wait: this.debounce,
+					     restart: true,
+					   });
       this.emit_update_();
     },
   },
