@@ -1833,11 +1833,13 @@ class DataBubble {
   update() {
     if (this.current)
       {
-	const nextext = this.current.getAttribute ('data-bubble');
-	if (nextext != this.lasttext)
+	if (this.current.data_bubble_callback)
+	  this.current.setAttribute ('data-bubble', this.current.data_bubble_callback());
+	const newtext = this.current.getAttribute ('data-bubble');
+	if (newtext != this.lasttext)
 	  {
-	    this.bubble.textContent = nextext;
-	    this.lasttext = nextext;
+	    this.bubble.textContent = newtext;
+	    this.lasttext = newtext;
 	  }
       }
   }
@@ -1877,9 +1879,19 @@ class DataBubble {
 }
 const global_data_bubble = new DataBubble();
 
-/** Set the `data-bubble` attribute of `element` to `text`, allows live bubble updates */
+/** Set the `data-bubble` attribute of `element` to `text` or force its callback */
 export function data_bubble_update (element, text) {
-  element.setAttribute ('data-bubble', text);
+  if (text !== undefined)
+    element.setAttribute ('data-bubble', text);
+  if (element.data_bubble_active)
+    global_data_bubble.update();
+}
+
+/** Assign a callback function to fetch the `data-bubble` attribute of `element` */
+export function data_bubble_callback (element, callback) {
+  element.data_bubble_callback = callback;
+  if (callback)
+    element.setAttribute ('data-bubble', ""); // [data-bubble] selector needs non-empty string
   if (element.data_bubble_active)
     global_data_bubble.update();
 }
