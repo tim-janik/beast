@@ -131,13 +131,14 @@ export default {
       }
     },
     wheel_event (ev) {
-      if (ev.deltaX != 0 && ((ev.deltaX > 0 && this.value < 1) || (ev.deltaX < 0 && this.value > 0))) {
+      const p = Util.wheel_delta (ev);
+      if (p.x != 0 && ((p.x > 0 && this.value < 1) || (p.x < 0 && this.value > 0))) {
 	ev.preventDefault();
 	ev.stopPropagation();
 	const tbr = this.$refs.track.getBoundingClientRect();
 	const sbr = this.$refs.slider.getBoundingClientRect();
 	const currentx = sbr.left - tbr.left;
-	const targetx = currentx + ev.deltaX * 0.1;
+	const targetx = currentx + p.x;
 	const range = tbr.width - sbr.width;
 	this.value = targetx / range;
       }
