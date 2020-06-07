@@ -154,17 +154,29 @@ plaintext, listing, xmp,
 /* == Bubbles == */
 // Tooltips via CSS, using the data-bubble="" attribute
 .data-bubble {
-  display: flex; pointer-events: none;
-  position: absolute; z-index: 9999999999;
-  //*bottom: 100%; left: 50%; transform: translateX(-50%);*/
-  margin: 0; padding: 2px 3px; border-radius: 1px;
-  border: dppx(2) ridge #a59900; color: #fff133;
-  background: #1a1800; background-image: linear-gradient(to bottom right, #0d0c00, #2a2700);
-  font-variant-numeric: tabular-nums;
-  content: attr(data-bubble); white-space: nowrap;
+  position: absolute; z-index: 9999999999; pointer-events: none;
+  display: flex; max-width: 95vw;
+  margin: 0; padding: 0 0 8px 0; /* make room for triangle: 5px + 3px */
   transition: visibility 0.1s, opacity 0.09s ease-in-out;
   visibility: hidden; opacity: 0;
+  .data-bubble-inner {
+    display: flex; overflow: hidden; position: relative;
+    white-space: normal; margin: 0;
+    max-width: 40em;
+    border-radius: 1px; border: dppx(2) solid #a59900; color: #fff133; padding: 2px 3px;
+    background: #1a1800; background-image: linear-gradient(to bottom right, #0d0c00, #2a2700);
+    font-variant-numeric: tabular-nums;
+  }
   &.data-bubble-visible {
     visibility: visible; opacity: 0.78;
   }
+
+  &:after {	/* tooltip bubble triangle */
+    position: absolute; bottom: 5px; /* room below triangle: 5px */
+    left: calc(50% - 3px); width: 0; height: 0; content: "";
+    border-top: 3px solid #a59900;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+  }
+
 }
