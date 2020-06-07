@@ -85,6 +85,22 @@ export function debounce (callback, options = {}) {
   return wrapper_func;
 }
 
+/** Process all events of type `eventname` with a single callback exclusively */
+export function capture_event (eventname, callback) {
+  const handler = ev => {
+    callback (ev);
+    ev.preventDefault();
+    ev.stopPropagation();
+    return true;
+  };
+  const options = { capture: true, passive: false };
+  document.body.addEventListener (eventname, handler, options);
+  const uncapture = () => {
+    document.body.removeEventListener (eventname, handler, options);
+  };
+  return uncapture;
+}
+
 // == Vue Helpers ==
 export const vue_mixins = {};
 export const vue_directives = {};
