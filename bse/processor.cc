@@ -598,7 +598,7 @@ Processor::add_output_bus (CString name, SpeakerArrangement speakerarrangement)
 
 /// Return the IBusId for input bus `name` or else 0.
 IBusId
-Processor::find_input_bus (const std::string &name) const
+Processor::find_ibus (const std::string &name) const
 {
   auto ident = CString::lookup (name);
   if (!ident.empty())
@@ -610,7 +610,7 @@ Processor::find_input_bus (const std::string &name) const
 
 /// Return the OBusId for output bus `name` or else 0.
 OBusId
-Processor::find_output_bus (const std::string &name) const
+Processor::find_obus (const std::string &name) const
 {
   auto ident = CString::lookup (name);
   if (!ident.empty())

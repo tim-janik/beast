@@ -234,8 +234,8 @@ public:
   void          set_param         (ParamId paramid, float value);
   bool          check_dirty       (ParamId paramid) const;
   // Buses
-  IBusId        find_input_bus    (const std::string &name) const;
-  OBusId        find_output_bus   (const std::string &name) const;
+  IBusId        find_ibus         (const std::string &name) const;
+  OBusId        find_obus         (const std::string &name) const;
   uint          n_ibuses          () const;
   uint          n_obuses          () const;
   uint          n_ichannels       (IBusId busid) const;
