@@ -106,13 +106,12 @@ static constexpr uint PTAG_FLOATS = 1;
 static constexpr uint PTAG_CENTRIES = 2;
 
 ParamInfo::ParamInfo() :
-  id (ParamId (0)), union_tag (0)
+  union_tag (0)
 {
   memset (&u, 0, sizeof (u));
 }
 
-ParamInfo::ParamInfo (const ParamInfo &src) :
-  id (ParamId (0))
+ParamInfo::ParamInfo (const ParamInfo &src)
 {
   *this = src;
 }
@@ -134,7 +133,6 @@ ParamInfo::release()
 ParamInfo&
 ParamInfo::operator= (const ParamInfo &src)
 {
-  id = src.id;
   identifier = src.identifier;
   display_name = src.display_name;
   short_name = src.short_name;
@@ -158,7 +156,6 @@ ParamInfo::operator= (const ParamInfo &src)
 void
 ParamInfo::clear ()
 {
-  id = ParamId (0);
   identifier = "";
   display_name = "";
   short_name = "";
@@ -403,15 +400,15 @@ Processor::add_param (ParamId id, const ParamInfo &pinfo, float value)
 {
   assert_return (pinfo.identifier != "", {});
   PParam param { id, ParamInfo (pinfo), alloc_float() };
-  if (param.info.group.empty())
-    param.info.group = tls_param_group;
+  if (param.info->group.empty())
+    param.info->group = tls_param_group;
   using P = decltype (params_);
   std::pair<P::iterator, bool> existing_parameter_position =
     binary_lookup_insertion_pos (params_.begin(), params_.end(), PParam::cmp, param);
   assert_return (existing_parameter_position.second == false, {});
   params_.insert (existing_parameter_position.first, std::move (param));
-  set_param (param.info.id, value); // forces dirty
-  return param.info.id;
+  set_param (param.id, value); // forces dirty
+  return param.id;
 }
 
 /// Add new range parameter with most `ParamInfo` fields as inlined arguments.
@@ -454,18 +451,18 @@ Processor::find_param (const std::string &identifier) const
   auto ident = CString::lookup (identifier);
   if (!ident.empty())
     for (const PParam &p : params_)
-      if (p.info.identifier == ident)
-        return p.info.id;
+      if (p.info->identifier == ident)
+        return p.id;
   return ParamId (0);
 }
 
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
-ParamInfo
+ParamInfoP
 Processor::param_info (ParamId paramid) const
 {
   // fast path for sequential ids
   const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
     return params_[idx].info;
   // lookup id with gaps
   const PParam param { paramid };
@@ -1276,18 +1273,16 @@ Processor::registry_list()
 }
 
 // == Processor::PParam ==
-Processor::PParam::PParam (ParamId i, const ParamInfo &pinfo, float *p) :
-  info (pinfo)
+Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo, float *p) :
+  id (_id), info (std::make_shared<ParamInfo> (pinfo))
 {
-  info.id = i;
   if (p)
     set_ptr (p);
 }
 
-Processor::PParam::PParam (ParamId i)
-{
-  info.id = i;
-}
+Processor::PParam::PParam (ParamId _id) :
+  id (_id)
+{}
 
 void
 Processor::PParam::set_ptr (float *p)

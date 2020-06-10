@@ -95,7 +95,6 @@ struct ChoiceEntries : std::vector<ChoiceDetails> {
 
 /// Detailed information and common properties of parameters.
 struct ParamInfo {
-  ParamId    id;           ///< Tag to identify parameter in APIs.
   CString    identifier;   ///< Identifier used for serialization.
   CString    display_name; ///< Preferred user interface name.
   CString    short_name;   ///< Abbreviated user interface name.
@@ -125,6 +124,7 @@ private:
   } u;
   uint union_tag = 0;
 };
+using ParamInfoP = std::shared_ptr<ParamInfo>;
 
 /// Structure providing supplementary information about input/output buses.
 struct BusInfo {
@@ -229,7 +229,7 @@ public:
   String        debug_name        () const;
   // Parameters
   ParamId       find_param        (const std::string &identifier) const;
-  ParamInfo     param_info        (ParamId paramid) const;
+  ParamInfoP    param_info        (ParamId paramid) const;
   float         get_param         (ParamId paramid);
   void          set_param         (ParamId paramid, float value);
   bool          check_dirty       (ParamId paramid) const;
@@ -371,8 +371,8 @@ union Processor::PBus {
 
 // Processor internal parameter book keeping
 struct Processor::PParam {
-  PParam (ParamId i);
-  PParam (ParamId i, const ParamInfo &pinfo, float *p);
+  PParam (ParamId id);
+  PParam (ParamId id, const ParamInfo &pinfo, float *p);
   bool
   get_dirty () const
   {
@@ -405,7 +405,7 @@ struct Processor::PParam {
   static int // Helper to keep PParam structures sorted.
   cmp (const PParam &a, const PParam &b)
   {
-    return a.info.id < b.info.id ? -1 : a.info.id > b.info.id;
+    return a.id < b.id ? -1 : a.id > b.id;
   }
 private:
   uintptr_t ptr_ = 0;
@@ -418,7 +418,8 @@ private:
     return reinterpret_cast<float*> (ptr_ & PTR_MASK);
   }
 public:
-  ParamInfo info;
+  ParamId    id;           ///< Tag to identify parameter in APIs.
+  ParamInfoP info;
 };
 
 /// Number of channels described by `speakers`.
@@ -485,7 +486,7 @@ Processor::set_param (ParamId paramid, float value)
 {
   // fast path for sequential ids
   const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
     params_[idx].assign (value);
   return set_param_ (paramid, value);
 }
@@ -496,7 +497,7 @@ Processor::get_param (ParamId paramid)
 {
   // fast path for sequential ids
   const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
     return params_[idx].get_value_and_clean();
   // lookup id with gaps
   return get_param_ (paramid);
@@ -509,7 +510,7 @@ Processor::check_dirty (ParamId paramid) const
 {
   // fast path for sequential ids
   const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
     return params_[idx].get_dirty();
   // lookup id with gaps
   return check_dirty_ (paramid);
