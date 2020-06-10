@@ -262,6 +262,8 @@ public:
   static ProcessorP    registry_create    (const std::string &uuiduri);
   static uint          registry_enroll    (const std::function<ProcessorP ()> &create,
                                            const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
+  // MT-Safe accessors
+  static double peek_param_mt     (ProcessorP proc, ParamId paramid);
 };
 
 /// Timing information around AudioSignal processing.
@@ -384,6 +386,7 @@ struct Processor::PParam {
   /*copy*/ PParam              (const PParam &);
   PParam& operator=            (const PParam &);
   double   get_value_and_clean ()       { clear_dirty(); return value_; }
+  double   peek_value          () const { return value_; }
   bool     is_dirty            () const { return flags_ & 1; }
   void     mark_dirty          ()       { flags_ |= 1; }
   void     clear_dirty         ()       { flags_ &= ~uint32 (1); }

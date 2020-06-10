@@ -511,6 +511,21 @@ Processor::get_param_ (ParamId paramid)
   return 0;
 }
 
+double
+Processor::peek_param_mt (ProcessorP proc, ParamId paramid)
+{
+  assert_return (proc, FP_NAN);
+  assert_return (proc->flags_ & INITIALIZED, FP_NAN);
+  // lookup id with gaps
+  const PParam param { paramid };
+  auto iter = binary_lookup (proc->params_.begin(), proc->params_.end(), PParam::cmp, param);
+  const bool found_paramid = iter != proc->params_.end();
+  if (ISLIKELY (found_paramid))
+    return iter->peek_value();
+  assert_return (found_paramid == true, FP_NAN);
+  return FP_NAN;
+}
+
 // Non-fastpath implementation of check_dirty().
 bool
 Processor::check_dirty_ (ParamId paramid) const
