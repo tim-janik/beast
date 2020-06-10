@@ -103,11 +103,11 @@ struct ParamInfo {
   CString    hints;        ///< Hints for parameter handling.
   GroupId    group;        ///< Group for parameters of similar function.
   ParamInfo& operator=   (const ParamInfo &src);
-  using MinMax = std::pair<float,float>;
+  using MinMax = std::pair<double,double>;
   void       clear       ();
   MinMax     get_minmax  () const;
-  void       get_range   (float &fmin, float &fmax, float &fstep) const;
-  void       set_range   (float fmin, float fmax, float fstep = 0);
+  void       get_range   (double &fmin, double &fmax, double &fstep) const;
+  void       set_range   (double fmin, double fmax, double fstep = 0);
   void       set_choices (const ChoiceEntries &centries);
   void       set_choices (ChoiceEntries &&centries);
   ChoiceEntries
@@ -118,7 +118,7 @@ struct ParamInfo {
 private:
   void       release     ();
   union {
-    struct { float fmin, fmax, fstep; };
+    struct { double fmin, fmax, fstep; };
     uint64_t mem[sizeof (ChoiceEntries) / sizeof (uint64_t)];
     ChoiceEntries* centries() const { return (ChoiceEntries*) mem; }
   } u;
@@ -148,7 +148,6 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   struct PParam;
   class FloatBuffer;
   friend class ProcessorManager;
-  struct FloatBlock { uint total = 0, next = 0; float *floats = nullptr; };
   struct OConnection {
     Processor *proc = nullptr; IBusId ibusid = {};
     bool operator== (const OConnection &o) const { return proc == o.proc && ibusid == o.ibusid; }
@@ -159,13 +158,11 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   uint32                   output_offset_ = 0;
   std::vector<PBus>        iobuses_;
   std::vector<PParam>      params_;
-  std::vector<FloatBlock>  float_blocks_;
   std::vector<OConnection> outputs_;
   static __thread uint64   tls_timestamp;
   static void registry_init   ();
-  float*      alloc_float     ();
-  void        set_param_      (ParamId paramid, float value);
-  float       get_param_      (ParamId paramid);
+  void        set_param_      (ParamId paramid, double value);
+  double      get_param_      (ParamId paramid);
   bool        check_dirty_    (ParamId paramid) const;
   void        assign_iobufs   ();
   void        release_iobufs  ();
@@ -196,13 +193,13 @@ protected:
   virtual void  reset             (const RenderSetup &rs) = 0;
   virtual void  render            (const RenderSetup &rs, uint n_frames) = 0;
   // Parameters
-  ParamId       add_param         (ParamId id, const ParamInfo &pinfo, float value);
+  ParamId       add_param         (ParamId id, const ParamInfo &pinfo, double value);
   ParamId       add_param         (const std::string &identifier, const std::string &display_name,
-                                   const std::string &short_name, float pmin, float pmax,
-                                   const std::string &hints, float value, const std::string &unit = "");
+                                   const std::string &short_name, double pmin, double pmax,
+                                   const std::string &hints, double value, const std::string &unit = "");
   ParamId       add_param         (const std::string &identifier, const std::string &display_name,
                                    const std::string &short_name, ChoiceEntries &&centries,
-                                   const std::string &hints, float value, const std::string &unit = "");
+                                   const std::string &hints, double value, const std::string &unit = "");
   void          start_param_group (const std::string &groupname) const;
   // Buses
   IBusId        add_input_bus     (CString name, SpeakerArrangement speakerarrangement);
@@ -230,8 +227,8 @@ public:
   // Parameters
   ParamId       find_param        (const std::string &identifier) const;
   ParamInfoP    param_info        (ParamId paramid) const;
-  float         get_param         (ParamId paramid);
-  void          set_param         (ParamId paramid, float value);
+  double        get_param         (ParamId paramid);
+  void          set_param         (ParamId paramid, double value);
   bool          check_dirty       (ParamId paramid) const;
   // Buses
   IBusId        find_ibus         (const std::string &name) const;
@@ -372,53 +369,38 @@ union Processor::PBus {
 // Processor internal parameter book keeping
 struct Processor::PParam {
   PParam (ParamId id);
-  PParam (ParamId id, const ParamInfo &pinfo, float *p);
-  bool
-  get_dirty () const
-  {
-    return ptr_ & TAG_MASK;
-  }
-  float
+  PParam (ParamId id, const ParamInfo &pinfo);
+  double
   get_value_and_clean ()
   {
-    const float f = *valuep();
-    set_dirty (false);
-    return f;
+    clear_dirty();
+    return value_;
   }
+  bool  is_dirty () const       { return flags_ & 1; }
+  void  mark_dirty()            { flags_ |= 1; }
+  void  clear_dirty()           { flags_ &= ~uint32 (1); }
+  bool  has_updated () const    { return flags_ & 2; }
+  void  mark_updated()          { flags_ |= 2; }
+  void  clear_updated()         { flags_ &= ~uint32 (2); }
   void
-  set_dirty (bool b)
+  assign (double f)
   {
-    BSE_ASSERT_RETURN (0 == (b & PTR_MASK));
-    ptr_ &= PTR_MASK;
-    ptr_ |= b;
-  }
-  void
-  assign (float f)
-  {
-    const float old = *valuep();
-    if (BSE_ISLIKELY (old != f))
-      {
-        *valuep() = f;
-        set_dirty (true);
-      }
+    const auto old = value_;
+    value_ = f;
+    if (BSE_ISLIKELY (old != value_))
+      mark_dirty();
   }
   static int // Helper to keep PParam structures sorted.
   cmp (const PParam &a, const PParam &b)
   {
     return a.id < b.id ? -1 : a.id > b.id;
   }
-private:
-  uintptr_t ptr_ = 0;
-  static const uintptr_t TAG_MASK = sizeof (float) - 1;
-  static const uintptr_t PTR_MASK = ~TAG_MASK;
-  void set_ptr (float *p);
-  float*
-  valuep () const
-  {
-    return reinterpret_cast<float*> (ptr_ & PTR_MASK);
-  }
 public:
   ParamId    id;           ///< Tag to identify parameter in APIs.
+private:
+  uint32     flags_ = 0;
+  double     value_ = 0;
+public:
   ParamInfoP info;
 };
 
@@ -482,7 +464,7 @@ Processor::n_ochannels (OBusId busid) const
 
 /// Set parameter `id` to `value`.
 inline void
-Processor::set_param (ParamId paramid, float value)
+Processor::set_param (ParamId paramid, double value)
 {
   // fast path for sequential ids
   const size_t idx = size_t (paramid) - 1;
@@ -492,7 +474,7 @@ Processor::set_param (ParamId paramid, float value)
 }
 
 /// Fetch `value` of parameter `id` and clear its `dirty` flag.
-inline float
+inline double
 Processor::get_param (ParamId paramid)
 {
   // fast path for sequential ids
@@ -511,7 +493,7 @@ Processor::check_dirty (ParamId paramid) const
   // fast path for sequential ids
   const size_t idx = size_t (paramid) - 1;
   if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
-    return params_[idx].get_dirty();
+    return params_[idx].is_dirty();
   // lookup id with gaps
   return check_dirty_ (paramid);
 }

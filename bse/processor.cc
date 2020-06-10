@@ -183,7 +183,7 @@ ParamInfo::get_minmax () const
 
 /// Get parameter range properties.
 void
-ParamInfo::get_range (float &fmin, float &fmax, float &fstep) const
+ParamInfo::get_range (double &fmin, double &fmax, double &fstep) const
 {
   switch (union_tag)
     {
@@ -207,7 +207,7 @@ ParamInfo::get_range (float &fmin, float &fmax, float &fstep) const
 
 /// Assign range properties to parameter.
 void
-ParamInfo::set_range (float fmin, float fmax, float fstep)
+ParamInfo::set_range (double fmin, double fmax, double fstep)
 {
   release();
   union_tag = PTAG_FLOATS;
@@ -284,17 +284,6 @@ Processor::Processor ()
 Processor::~Processor ()
 {
   release_iobufs();
-  while (float_blocks_.size())
-    {
-      const FloatBlock fb = float_blocks_.back();
-      float_blocks_.pop_back();
-      SharedBlock sb;
-      sb.mem_start = fb.floats;
-      sb.mem_length = fb.total * sizeof (float);
-      sb.mem_offset = ServerImpl::instance().shared_block_offset (sb.mem_start);
-      assert_return (sb.mem_offset != -1);
-      ServerImpl::instance().release_shared_block (sb);
-    }
 }
 
 const Processor::FloatBuffer&
@@ -369,21 +358,6 @@ Processor::assign_iobufs ()
     fbuffers_ = nullptr;
 }
 
-// Allocate a single float value from cache-line aligned float_blocks_ to avoid false sharing
-float*
-Processor::alloc_float ()
-{
-  if (float_blocks_.size() == 0 || float_blocks_.back().next >= float_blocks_.back().total)
-    {
-      const SharedBlock sb = ServerImpl::instance().allocate_shared_block (sizeof (float) * 8);
-      const uint total = sb.mem_length / sizeof (float);
-      FloatBlock fb { total, 0, (float*) sb.mem_start };
-      float_blocks_.push_back (fb);
-    }
-  FloatBlock &fb = float_blocks_.back();
-  return &fb.floats[fb.next++];
-}
-
 static __thread CString tls_param_group;
 
 /// Introduce a `ParamInfo.group` to be used for the following add_param() calls.
@@ -396,10 +370,10 @@ Processor::start_param_group (const std::string &groupname) const
 /// Add a new parameter with unique `ParamInfo.identifier`.
 /// The returned `ParamId` is forced to match `id` (and must be unique).
 ParamId
-Processor::add_param (ParamId id, const ParamInfo &pinfo, float value)
+Processor::add_param (ParamId id, const ParamInfo &pinfo, double value)
 {
   assert_return (pinfo.identifier != "", {});
-  PParam param { id, ParamInfo (pinfo), alloc_float() };
+  PParam param { id, ParamInfo (pinfo) };
   if (param.info->group.empty())
     param.info->group = tls_param_group;
   using P = decltype (params_);
@@ -415,8 +389,8 @@ Processor::add_param (ParamId id, const ParamInfo &pinfo, float value)
 /// The returned `ParamId` is newly assigned and increases with the number of parameters added.
 ParamId
 Processor::add_param (const std::string &identifier, const std::string &display_name,
-                      const std::string &short_name, float pmin, float pmax,
-                      const std::string &hints, float value, const std::string &unit)
+                      const std::string &short_name, double pmin, double pmax,
+                      const std::string &hints, double value, const std::string &unit)
 {
   ParamInfo info;
   info.identifier = identifier;
@@ -432,7 +406,7 @@ Processor::add_param (const std::string &identifier, const std::string &display_
 ParamId
 Processor::add_param (const std::string &identifier, const std::string &display_name,
                       const std::string &short_name, ChoiceEntries &&centries,
-                      const std::string &hints, float value, const std::string &unit)
+                      const std::string &hints, double value, const std::string &unit)
 {
   ParamInfo info;
   info.identifier = identifier;
@@ -474,7 +448,7 @@ Processor::param_info (ParamId paramid) const
 
 // Non-fastpath implementation of set_param().
 void
-Processor::set_param_ (ParamId paramid, float value)
+Processor::set_param_ (ParamId paramid, double value)
 {
   // lookup id with gaps
   const PParam param { paramid };
@@ -486,7 +460,7 @@ Processor::set_param_ (ParamId paramid, float value)
 }
 
 // Non-fastpath implementation of get_param().
-float
+double
 Processor::get_param_ (ParamId paramid)
 {
   // lookup id with gaps
@@ -507,7 +481,7 @@ Processor::check_dirty_ (ParamId paramid) const
   const PParam param { paramid };
   auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
   if (ISLIKELY (iter != params_.end()))
-    return iter->get_dirty();
+    return iter->is_dirty();
   return 0;
 }
 
@@ -515,7 +489,7 @@ Processor::check_dirty_ (ParamId paramid) const
 Processor::MinMax
 Processor::param_range (ParamId paramid) const
 {
-  using MinMax = std::pair<float,float>;
+  using MinMax = std::pair<double,double>;
   // fast path for sequential ids
   const size_t idx = size_t (paramid - 1);
   if (ISLIKELY (idx < params_.size()) && ISLIKELY (params_[idx].id == paramid))
@@ -1273,24 +1247,13 @@ Processor::registry_list()
 }
 
 // == Processor::PParam ==
-Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo, float *p) :
+Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo) :
   id (_id), info (std::make_shared<ParamInfo> (pinfo))
-{
-  if (p)
-    set_ptr (p);
-}
+{}
 
 Processor::PParam::PParam (ParamId _id) :
   id (_id)
 {}
-
-void
-Processor::PParam::set_ptr (float *p)
-{
-  BSE_ASSERT_RETURN (0 == (reinterpret_cast<uintptr_t> (p) & TAG_MASK));
-  ptr_ &= TAG_MASK;
-  ptr_ |= uintptr_t (p);
-}
 
 // == FloatBuffer ==
 /// Check for end-of-buffer overwrites
