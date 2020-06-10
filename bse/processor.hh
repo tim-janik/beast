@@ -86,6 +86,8 @@ struct GroupId : CString {
 /// One possible choice for selection parameters.
 struct ChoiceDetails {
   CString name;
+  bool    operator== (const ChoiceDetails &o) const     { return name == o.name; }
+  bool    operator!= (const ChoiceDetails &o) const     { return !operator== (o); }
 };
 
 /// List of choices for ParamInfo.set_choices().
@@ -103,6 +105,8 @@ struct ParamInfo {
   CString    hints;        ///< Hints for parameter handling.
   GroupId    group;        ///< Group for parameters of similar function.
   ParamInfo& operator=   (const ParamInfo &src);
+  bool       operator==  (const ParamInfo &o) const;
+  bool       operator!=  (const ParamInfo &o) const     { return !operator== (o); }
   using MinMax = std::pair<double,double>;
   void       clear       ();
   MinMax     get_minmax  () const;
@@ -159,6 +163,10 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   std::vector<PBus>        iobuses_;
   std::vector<PParam>      params_;
   std::vector<OConnection> outputs_;
+protected:
+  enum { INITIALIZED = 1, HAS_RESET = 2, };
+  uint32                   flags_ = 0;
+private:
   static __thread uint64   tls_timestamp;
   static void registry_init   ();
   void        set_param_      (ParamId paramid, double value);
@@ -219,13 +227,16 @@ protected:
 public:
   struct RegistryEntry;
   using RegistryList = std::vector<RegistryEntry>;
+  using ParamInfoPVec = std::vector<ParamInfoP>;
+  using MaybeParamId = std::pair<ParamId,bool>;
   [[gnu::const]]
   uint          sample_rate       () const;
   void          reset_state       (const RenderSetup &rs);
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
   // Parameters
-  ParamId       find_param        (const std::string &identifier) const;
+  ParamInfoPVec list_params       () const;
+  MaybeParamId  find_param        (const std::string &identifier) const;
   ParamInfoP    param_info        (ParamId paramid) const;
   double        get_param         (ParamId paramid);
   void          set_param         (ParamId paramid, double value);
@@ -368,24 +379,21 @@ union Processor::PBus {
 
 // Processor internal parameter book keeping
 struct Processor::PParam {
-  PParam (ParamId id);
-  PParam (ParamId id, const ParamInfo &pinfo);
-  double
-  get_value_and_clean ()
-  {
-    clear_dirty();
-    return value_;
-  }
-  bool  is_dirty () const       { return flags_ & 1; }
-  void  mark_dirty()            { flags_ |= 1; }
-  void  clear_dirty()           { flags_ &= ~uint32 (1); }
-  bool  has_updated () const    { return flags_ & 2; }
-  void  mark_updated()          { flags_ |= 2; }
-  void  clear_updated()         { flags_ &= ~uint32 (2); }
+  explicit PParam              (ParamId id);
+  explicit PParam              (ParamId id, const ParamInfo &pinfo);
+  /*copy*/ PParam              (const PParam &);
+  PParam& operator=            (const PParam &);
+  double   get_value_and_clean ()       { clear_dirty(); return value_; }
+  bool     is_dirty            () const { return flags_ & 1; }
+  void     mark_dirty          ()       { flags_ |= 1; }
+  void     clear_dirty         ()       { flags_ &= ~uint32 (1); }
+  bool     has_updated         () const { return flags_ & 2; }
+  void     mark_updated        ()       { flags_ |= 2; }
+  void     clear_updated       ()       { flags_ &= ~uint32 (2); }
   void
   assign (double f)
   {
-    const auto old = value_;
+    const double old = value_;
     value_ = f;
     if (BSE_ISLIKELY (old != value_))
       mark_dirty();
@@ -396,12 +404,12 @@ struct Processor::PParam {
     return a.id < b.id ? -1 : a.id > b.id;
   }
 public:
-  ParamId    id;           ///< Tag to identify parameter in APIs.
+  ParamId             id;       ///< Tag to identify parameter in APIs.
 private:
-  uint32     flags_ = 0;
-  double     value_ = 0;
+  uint32              flags_ = 0;
+  std::atomic<double> value_ = 0;
 public:
-  ParamInfoP info;
+  ParamInfoP          info;
 };
 
 /// Number of channels described by `speakers`.
@@ -560,5 +568,24 @@ enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
 }
 
 } // Bse
+
+namespace std {
+template<>
+struct hash<::Bse::AudioSignal::ParamInfo> {
+  /// Hash value for Bse::AudioSignal::ParamInfo.
+  size_t
+  operator() (const ::Bse::AudioSignal::ParamInfo &pi) const
+  {
+    size_t h = ::std::hash<::Bse::CString>() (pi.identifier);
+    // h ^= ::std::hash (pi.display_name);
+    // h ^= ::std::hash (pi.short_name);
+    // h ^= ::std::hash (pi.description);
+    h ^= ::std::hash<::Bse::CString>() (pi.unit);
+    h ^= ::std::hash<::Bse::CString>() (pi.hints);
+    // min, max, step
+    return h;
+  }
+};
+} // std
 
 #endif // __BSE_PROCESSOR_HH__

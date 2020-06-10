@@ -152,6 +152,31 @@ ParamInfo::operator= (const ParamInfo &src)
   return *this;
 }
 
+bool
+ParamInfo::operator== (const ParamInfo &o) const
+{
+  return_unless (identifier == o.identifier, false);
+  return_unless (display_name == o.display_name, false);
+  return_unless (short_name == o.short_name, false);
+  return_unless (description == o.description, false);
+  return_unless (unit == o.unit, false);
+  return_unless (hints == o.hints, false);
+  return_unless (group == o.group, false);
+  return_unless (union_tag == o.union_tag, false);
+  switch (union_tag)
+    {
+    case PTAG_FLOATS:
+      return_unless (u.fmin == o.u.fmin, false);
+      return_unless (u.fmax == o.u.fmax, false);
+      return_unless (u.fstep == o.u.fstep, false);
+      break;
+    case PTAG_CENTRIES:
+      return_unless (*u.centries() == *o.u.centries(), false);
+      break;
+    }
+  return true;
+}
+
 /// Clear all ParamInfo fields.
 void
 ParamInfo::clear ()
@@ -372,6 +397,7 @@ Processor::start_param_group (const std::string &groupname) const
 ParamId
 Processor::add_param (ParamId id, const ParamInfo &pinfo, double value)
 {
+  assert_return (!(flags_ & INITIALIZED), {});
   assert_return (pinfo.identifier != "", {});
   PParam param { id, ParamInfo (pinfo) };
   if (param.info->group.empty())
@@ -418,16 +444,28 @@ Processor::add_param (const std::string &identifier, const std::string &display_
   return add_param (ParamId (1 + params_.size()), info, value);
 }
 
+/// List all Processor parameters.
+auto
+Processor::list_params() const -> ParamInfoPVec
+{
+  assert_return (flags_ & INITIALIZED, {});
+  ParamInfoPVec iv;
+  iv.reserve (params_.size());
+  for (const PParam &p : params_)
+    iv.push_back (p.info);
+  return iv;
+}
+
 /// Return the ParamId for parameter `identifier` or else 0.
-ParamId
-Processor::find_param (const std::string &identifier) const
+auto
+Processor::find_param (const std::string &identifier) const -> MaybeParamId
 {
   auto ident = CString::lookup (identifier);
   if (!ident.empty())
     for (const PParam &p : params_)
       if (p.info->identifier == ident)
-        return p.id;
-  return ParamId (0);
+        return std::make_pair (p.id, true);
+  return std::make_pair (ParamId (0), false);
 }
 
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
@@ -746,10 +784,11 @@ Processor::reset_state (const RenderSetup &rs)
   assert_return (rs.mix_freq == samplerate);
   assert_return (0 == (samplerate & 3));
   sample_rate_ = samplerate;
-  if (n_ibuses() + n_obuses() == 0)
+  if (!(flags_ & INITIALIZED))
     {
       tls_param_group = "";
       initialize();
+      flags_ |= INITIALIZED;
       tls_param_group = "";
       const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
       const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
@@ -758,6 +797,7 @@ Processor::reset_state (const RenderSetup &rs)
         throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
       assign_iobufs();
     }
+  flags_ |= HAS_RESET;
   reset (rs);
 }
 
@@ -1010,6 +1050,7 @@ Chain::at (uint nth)
 void
 Chain::render_frames (uint n_frames)
 {
+  assert_return (flags_ & HAS_RESET);
   while (n_frames)
     {
       const uint blocksize = std::min (n_frames, MAX_RENDER_BLOCK_SIZE);
@@ -1254,6 +1295,21 @@ Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo) :
 Processor::PParam::PParam (ParamId _id) :
   id (_id)
 {}
+
+Processor::PParam::PParam (const PParam &src)
+{
+  *this = src;
+}
+
+Processor::PParam&
+Processor::PParam::operator= (const PParam &src)
+{
+  id = src.id;
+  flags_ = src.flags_;
+  value_ = src.value_.load();
+  info = src.info;
+  return *this;
+}
 
 // == FloatBuffer ==
 /// Check for end-of-buffer overwrites
