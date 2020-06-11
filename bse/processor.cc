@@ -105,33 +105,26 @@ ChoiceEntries::operator+= (const ChoiceDetails &ce)
 static constexpr uint PTAG_FLOATS = 1;
 static constexpr uint PTAG_CENTRIES = 2;
 
-ParamInfo::ParamInfo() :
-  union_tag (0)
+ParamInfo::ParamInfo (ParamId pid) :
+  id (pid), union_tag (0)
 {
   memset (&u, 0, sizeof (u));
-}
-
-ParamInfo::ParamInfo (const ParamInfo &src)
-{
-  *this = src;
 }
 
 ParamInfo::~ParamInfo()
 {
   release();
+  while (!notifiers_.empty())
+    {
+      Callback *c = notifiers_.back();
+      notifiers_.pop_back();
+      delete c;
+    }
+  assert_return (next_notifier_ == MAX_NOTIFIER); // notifies should *not* be running
 }
 
 void
-ParamInfo::release()
-{
-  const bool destroy = union_tag == PTAG_CENTRIES;
-  union_tag = 0;
-  if (destroy)
-    u.centries()->~ChoiceEntries();
-}
-
-ParamInfo&
-ParamInfo::operator= (const ParamInfo &src)
+ParamInfo::copy_fields (const ParamInfo &src)
 {
   identifier = src.identifier;
   display_name = src.display_name;
@@ -149,32 +142,17 @@ ParamInfo::operator= (const ParamInfo &src)
       set_choices (*src.u.centries());
       break;
     }
-  return *this;
+  assert_return (notifiers_.empty());
+  assert_return (next_notifier_ == MAX_NOTIFIER);
 }
 
-bool
-ParamInfo::operator== (const ParamInfo &o) const
+void
+ParamInfo::release()
 {
-  return_unless (identifier == o.identifier, false);
-  return_unless (display_name == o.display_name, false);
-  return_unless (short_name == o.short_name, false);
-  return_unless (description == o.description, false);
-  return_unless (unit == o.unit, false);
-  return_unless (hints == o.hints, false);
-  return_unless (group == o.group, false);
-  return_unless (union_tag == o.union_tag, false);
-  switch (union_tag)
-    {
-    case PTAG_FLOATS:
-      return_unless (u.fmin == o.u.fmin, false);
-      return_unless (u.fmax == o.u.fmax, false);
-      return_unless (u.fstep == o.u.fstep, false);
-      break;
-    case PTAG_CENTRIES:
-      return_unless (*u.centries() == *o.u.centries(), false);
-      break;
-    }
-  return true;
+  const bool destroy = union_tag == PTAG_CENTRIES;
+  union_tag = 0;
+  if (destroy)
+    u.centries()->~ChoiceEntries();
 }
 
 /// Clear all ParamInfo fields.
@@ -265,6 +243,60 @@ void
 ParamInfo::set_choices (const ChoiceEntries &centries)
 {
   set_choices (ChoiceEntries (centries));
+}
+
+size_t
+ParamInfo::add_notify (ProcessorP proc, const std::function<void()> &callback)
+{
+  assert_return (this_thread_is_bse(), -1);
+  assert_return (callback, -1);
+  assert_return (proc, -1);
+  assert_return (proc->is_initialized(), -1);
+  if (notifiers_.empty())
+    Processor::param_notifies_mt (proc, id, true);
+  notifiers_.push_back (new Callback (callback));
+  return size_t (notifiers_.back());
+}
+
+bool
+ParamInfo::del_notify (ProcessorP proc, size_t callbackid)
+{
+  assert_return (this_thread_is_bse(), false);
+  assert_return (proc, false);
+  for (size_t i = 0; i < notifiers_.size(); ++i)
+    {
+      Callback *c = notifiers_[i];
+      static_assert (sizeof (size_t) == sizeof (c));
+      if (size_t (c) != callbackid)
+        continue;
+      if (next_notifier_ != MAX_NOTIFIER && next_notifier_ > i)
+        next_notifier_ -= 1;
+      notifiers_.erase (notifiers_.begin() + i);
+      delete c;
+      if (notifiers_.empty())
+        Processor::param_notifies_mt (proc, id, false);
+      return true;
+    }
+  return false;
+}
+
+void
+ParamInfo::call_notify ()
+{
+  assert_return (this_thread_is_bse());
+  if (next_notifier_ != MAX_NOTIFIER)
+    {
+      next_notifier_ = 0; // restart notifications
+      return;
+    }
+  next_notifier_ = 0;
+  while (next_notifier_ < notifiers_.size())
+    {
+      Callback *c = notifiers_[next_notifier_];
+      next_notifier_ += 1;
+      (*c) (); // may change next_notifier_
+    }
+  next_notifier_ = MAX_NOTIFIER;
 }
 
 // == PBus ==
@@ -395,11 +427,11 @@ Processor::start_param_group (const std::string &groupname) const
 /// Add a new parameter with unique `ParamInfo.identifier`.
 /// The returned `ParamId` is forced to match `id` (and must be unique).
 ParamId
-Processor::add_param (ParamId id, const ParamInfo &pinfo, double value)
+Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 {
-  assert_return (!(flags_ & INITIALIZED), {});
-  assert_return (pinfo.identifier != "", {});
-  PParam param { id, ParamInfo (pinfo) };
+  assert_return (!is_initialized(), {});
+  assert_return (infotmpl.identifier != "", {});
+  PParam param { id, infotmpl };
   if (param.info->group.empty())
     param.info->group = tls_param_group;
   using P = decltype (params_);
@@ -425,7 +457,8 @@ Processor::add_param (const std::string &identifier, const std::string &display_
   info.hints = hints;
   info.unit = unit;
   info.set_range (pmin, pmax);
-  return add_param (ParamId (1 + params_.size()), info, value);
+  ParamId id = ParamId (1 + params_.size());
+  return add_param (id, info, value);
 }
 
 /// Add new choice parameter with most `ParamInfo` fields as inlined arguments.
@@ -441,14 +474,15 @@ Processor::add_param (const std::string &identifier, const std::string &display_
   info.hints = hints;
   info.unit = unit;
   info.set_choices (std::move (centries));
-  return add_param (ParamId (1 + params_.size()), info, value);
+  ParamId id = ParamId (1 + params_.size());
+  return add_param (id, info, value);
 }
 
 /// List all Processor parameters.
 auto
 Processor::list_params() const -> ParamInfoPVec
 {
-  assert_return (flags_ & INITIALIZED, {});
+  assert_return (is_initialized(), {});
   ParamInfoPVec iv;
   iv.reserve (params_.size());
   for (const PParam &p : params_)
@@ -468,93 +502,65 @@ Processor::find_param (const std::string &identifier) const -> MaybeParamId
   return std::make_pair (ParamId (0), false);
 }
 
+// Non-fastpath implementation of find_param().
+Processor::PParam*
+Processor::find_pparam_ (ParamId paramid)
+{
+  // lookup id with gaps
+  const PParam key { paramid };
+  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, key);
+  const bool found_paramid = iter != params_.end();
+  if (ISLIKELY (found_paramid))
+    return &*iter;
+  assert_return (found_paramid == true, nullptr);
+  return nullptr;
+}
+
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
 ParamInfoP
 Processor::param_info (ParamId paramid) const
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
-    return params_[idx].info;
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  if (ISLIKELY (iter != params_.end()))
-    return iter->info;
-  return {};
+  PParam *param = const_cast<Processor*> (this)->find_pparam (paramid);
+  return BSE_ISLIKELY (param) ? param->info : nullptr;
 }
 
-// Non-fastpath implementation of set_param().
-void
-Processor::set_param_ (ParamId paramid, double value)
-{
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  const bool found_paramid = iter != params_.end();
-  if (ISLIKELY (found_paramid))
-    iter->assign (value);
-  assert_return (found_paramid == true);
-}
-
-// Non-fastpath implementation of get_param().
+/// Fetch the current parameter value of a Processor from any thread.
+/// This function is MT-Safe after proper Processor initialization.
 double
-Processor::get_param_ (ParamId paramid)
-{
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  const bool found_paramid = iter != params_.end();
-  if (ISLIKELY (found_paramid))
-    return iter->get_value_and_clean();
-  assert_return (found_paramid == true, 0);
-  return 0;
-}
-
-double
-Processor::peek_param_mt (ProcessorP proc, ParamId paramid)
+Processor::peek_param_mt (ProcessorP proc, ParamId pid)
 {
   assert_return (proc, FP_NAN);
-  assert_return (proc->flags_ & INITIALIZED, FP_NAN);
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (proc->params_.begin(), proc->params_.end(), PParam::cmp, param);
-  const bool found_paramid = iter != proc->params_.end();
-  if (ISLIKELY (found_paramid))
-    return iter->peek_value();
-  assert_return (found_paramid == true, FP_NAN);
-  return FP_NAN;
+  assert_return (proc->is_initialized(), FP_NAN);
+  PParam *param = proc->find_pparam (pid);
+  return BSE_ISLIKELY (param) ? param->peek_value() : FP_NAN;
 }
 
-// Non-fastpath implementation of check_dirty().
-bool
-Processor::check_dirty_ (ParamId paramid) const
+/// Enable/disable notification sending for a Processor parameter.
+/// This function is MT-Safe after proper Processor initialization.
+void
+Processor::param_notifies_mt (ProcessorP proc, ParamId pid, bool need_notifies)
 {
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  if (ISLIKELY (iter != params_.end()))
-    return iter->is_dirty();
-  return 0;
+  assert_return (proc);
+  assert_return (proc->is_initialized());
+  PParam *param = proc->find_pparam (pid);
+  if (BSE_ISLIKELY (param))
+    param->must_notify (need_notifies);
 }
 
-#if 0
+/// Check if Processor has been properly intiialized (so the set parameters is fixed).
+bool
+Processor::is_initialized () const
+{
+  return flags_ & INITIALIZED;
+}
+
+/// Retrieve the minimum / maximum values for a parameter.
 Processor::MinMax
 Processor::param_range (ParamId paramid) const
 {
-  using MinMax = std::pair<double,double>;
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid - 1);
-  if (ISLIKELY (idx < params_.size()) && ISLIKELY (params_[idx].id == paramid))
-    return { params_[idx].fmin, params_[idx].fmax };
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), pparams_cmp, param);
-  if (ISLIKELY (iter != params_.end()))
-    return { iter->fmin, iter->fmax };
-  return { NAN, NAN };
+  ParamInfo *info = param_info (paramid).get();
+  return info ? info->get_minmax() : MinMax { FP_NAN, FP_NAN };
 }
-#endif
 
 String
 Processor::debug_name () const
@@ -788,6 +794,25 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   oproc.outputs_.push_back ({ this, ibusid });
 }
 
+/// Ensure `Processor::initialize()` has been called, so the parameters are fixed.
+void
+Processor::ensure_initialized()
+{
+  if (!is_initialized())
+    {
+      tls_param_group = "";
+      initialize();
+      tls_param_group = "";
+      flags_ |= INITIALIZED;
+      const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
+      const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
+      configure (1, &ibuses, 1, &obuses);
+      if (n_ibuses() + n_obuses() == 0)
+        throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
+      assign_iobufs();
+    }
+}
+
 /// Reset internal states.
 /// This method is called to assign the sample rate and
 /// to switch between realtime and offline rendering.
@@ -799,19 +824,7 @@ Processor::reset_state (const RenderSetup &rs)
   assert_return (rs.mix_freq == samplerate);
   assert_return (0 == (samplerate & 3));
   sample_rate_ = samplerate;
-  if (!(flags_ & INITIALIZED))
-    {
-      tls_param_group = "";
-      initialize();
-      flags_ |= INITIALIZED;
-      tls_param_group = "";
-      const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
-      const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
-      configure (1, &ibuses, 1, &obuses);
-      if (n_ibuses() + n_obuses() == 0)
-        throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
-      assign_iobufs();
-    }
+  ensure_initialized();
   flags_ |= HAS_RESET;
   reset (rs);
 }
@@ -1284,9 +1297,14 @@ Processor::registry_create (const std::string &uuiduri)
     if (it != processor_registry_table->end())
       rentry = it->second;
   }
+  ProcessorP procp;
   if (rentry.uri != "")
-    return rentry.create();
-  return nullptr;
+    {
+      procp = rentry.create();
+      if (procp)
+        procp->ensure_initialized();
+    }
+  return procp;
 }
 
 /// List the registry entries of all known Processor types.
@@ -1304,8 +1322,10 @@ Processor::registry_list()
 
 // == Processor::PParam ==
 Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo) :
-  id (_id), info (std::make_shared<ParamInfo> (pinfo))
-{}
+  id (_id), info (std::make_shared<ParamInfo> (_id))
+{
+  info->copy_fields (pinfo);
+}
 
 Processor::PParam::PParam (ParamId _id) :
   id (_id)
@@ -1320,7 +1340,7 @@ Processor::PParam&
 Processor::PParam::operator= (const PParam &src)
 {
   id = src.id;
-  flags_ = src.flags_;
+  flags_ = src.flags_.load();
   value_ = src.value_.load();
   info = src.info;
   return *this;

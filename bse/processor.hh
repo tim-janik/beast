@@ -104,9 +104,6 @@ struct ParamInfo {
   CString    unit;         ///< Units of the values within range.
   CString    hints;        ///< Hints for parameter handling.
   GroupId    group;        ///< Group for parameters of similar function.
-  ParamInfo& operator=   (const ParamInfo &src);
-  bool       operator==  (const ParamInfo &o) const;
-  bool       operator!=  (const ParamInfo &o) const     { return !operator== (o); }
   using MinMax = std::pair<double,double>;
   void       clear       ();
   MinMax     get_minmax  () const;
@@ -116,17 +113,27 @@ struct ParamInfo {
   void       set_choices (ChoiceEntries &&centries);
   ChoiceEntries
   const&     get_choices () const;
-  /*ctor*/   ParamInfo   ();
-  /*copy*/   ParamInfo   (const ParamInfo &src);
+  void       copy_fields (const ParamInfo &src);
+  /*ctor*/   ParamInfo   (ParamId pid = ParamId (0));
   virtual   ~ParamInfo   ();
+  // BSE thread accessors
+  size_t     add_notify  (ProcessorP proc, const std::function<void()> &callback);
+  bool       del_notify  (ProcessorP proc, size_t callbackid);
+  void       call_notify ();
+  const ParamId id;
 private:
-  void       release     ();
+  uint union_tag = 0;
   union {
     struct { double fmin, fmax, fstep; };
     uint64_t mem[sizeof (ChoiceEntries) / sizeof (uint64_t)];
     ChoiceEntries* centries() const { return (ChoiceEntries*) mem; }
   } u;
-  uint union_tag = 0;
+  /*copy*/   ParamInfo   (const ParamInfo&) = delete;
+  void       release     ();
+  using Callback = std::function<void()>;
+  static constexpr uint32 MAX_NOTIFIER = ~uint32 (0);
+  uint32 next_notifier_ = MAX_NOTIFIER;
+  std::vector<Callback*> notifiers_;
 };
 using ParamInfoP = std::shared_ptr<ParamInfo>;
 
@@ -165,16 +172,16 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   std::vector<OConnection> outputs_;
 protected:
   enum { INITIALIZED = 1, HAS_RESET = 2, };
-  uint32                   flags_ = 0;
+  std::atomic<uint32>      flags_ = 0;
 private:
   static __thread uint64   tls_timestamp;
   static void registry_init   ();
-  void        set_param_      (ParamId paramid, double value);
-  double      get_param_      (ParamId paramid);
-  bool        check_dirty_    (ParamId paramid) const;
+  PParam*     find_pparam     (ParamId paramid);
+  PParam*     find_pparam_    (ParamId paramid);
   void        assign_iobufs   ();
   void        release_iobufs  ();
   void        reconfigure     (IBusId ibus, SpeakerArrangement ipatch, OBusId obus, SpeakerArrangement opatch);
+  void        ensure_initialized  ();
   const FloatBuffer& float_buffer (IBusId busid, uint channelindex) const;
   FloatBuffer&       float_buffer (OBusId busid, uint channelindex, bool resetptr = false);
   static
@@ -193,6 +200,7 @@ protected:
   using SpeakerArrangement = AudioSignal::SpeakerArrangement;
   using ProcessorInfo = AudioSignal::ProcessorInfo;
   using RenderSetup = AudioSignal::RenderSetup;
+  using MinMax = std::pair<double,double>;
 #endif
   virtual      ~Processor         ();
   virtual void  initialize        ();
@@ -201,7 +209,7 @@ protected:
   virtual void  reset             (const RenderSetup &rs) = 0;
   virtual void  render            (const RenderSetup &rs, uint n_frames) = 0;
   // Parameters
-  ParamId       add_param         (ParamId id, const ParamInfo &pinfo, double value);
+  ParamId       add_param         (ParamId id, const ParamInfo &infotmpl, double value);
   ParamId       add_param         (const std::string &identifier, const std::string &display_name,
                                    const std::string &short_name, double pmin, double pmax,
                                    const std::string &hints, double value, const std::string &unit = "");
@@ -238,9 +246,11 @@ public:
   ParamInfoPVec list_params       () const;
   MaybeParamId  find_param        (const std::string &identifier) const;
   ParamInfoP    param_info        (ParamId paramid) const;
+  MinMax        param_range       (ParamId paramid) const;
   double        get_param         (ParamId paramid);
   void          set_param         (ParamId paramid, double value);
   bool          check_dirty       (ParamId paramid) const;
+  bool          is_initialized    () const;
   // Buses
   IBusId        find_ibus         (const std::string &name) const;
   OBusId        find_obus         (const std::string &name) const;
@@ -263,7 +273,8 @@ public:
   static uint          registry_enroll    (const std::function<ProcessorP ()> &create,
                                            const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
   // MT-Safe accessors
-  static double peek_param_mt     (ProcessorP proc, ParamId paramid);
+  static double peek_param_mt     (ProcessorP proc, ParamId pid);
+  static void   param_notifies_mt (ProcessorP proc, ParamId pid, bool need_notifies);
 };
 
 /// Timing information around AudioSignal processing.
@@ -393,6 +404,8 @@ struct Processor::PParam {
   bool     has_updated         () const { return flags_ & 2; }
   void     mark_updated        ()       { flags_ |= 2; }
   void     clear_updated       ()       { flags_ &= ~uint32 (2); }
+  void     must_notify         (bool n) { if (n) flags_ |= 4; else flags_ &= ~uint32 (4); }
+  bool     must_notify         () const { return flags_ & 4; }
   void
   assign (double f)
   {
@@ -407,9 +420,9 @@ struct Processor::PParam {
     return a.id < b.id ? -1 : a.id > b.id;
   }
 public:
-  ParamId             id;       ///< Tag to identify parameter in APIs.
+  ParamId             id = {};  ///< Tag to identify parameter in APIs.
 private:
-  uint32              flags_ = 0;
+  std::atomic<uint32> flags_ = 0;
   std::atomic<double> value_ = 0;
 public:
   ParamInfoP          info;
@@ -473,27 +486,32 @@ Processor::n_ochannels (OBusId busid) const
   return obus.n_channels();
 }
 
+// Find parameter for internal access.
+inline Processor::PParam*
+Processor::find_pparam (ParamId paramid)
+{
+  // fast path via sequential ids
+  const size_t idx = size_t (paramid) - 1;
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
+    return &params_[idx];
+  return find_pparam_ (paramid);
+}
+
 /// Set parameter `id` to `value`.
 inline void
 Processor::set_param (ParamId paramid, double value)
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
-    params_[idx].assign (value);
-  return set_param_ (paramid, value);
+  PParam *pparam = find_pparam (paramid);
+  if (BSE_ISLIKELY (pparam))
+    pparam->assign (value);
 }
 
 /// Fetch `value` of parameter `id` and clear its `dirty` flag.
 inline double
 Processor::get_param (ParamId paramid)
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
-    return params_[idx].get_value_and_clean();
-  // lookup id with gaps
-  return get_param_ (paramid);
+  PParam *pparam = find_pparam (paramid);
+  return BSE_ISLIKELY (pparam) ? pparam->get_value_and_clean() : FP_NAN;
 }
 
 /// Check if the parameter `dirty` flag is set.
@@ -501,12 +519,8 @@ Processor::get_param (ParamId paramid)
 inline bool
 Processor::check_dirty (ParamId paramid) const
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
-    return params_[idx].is_dirty();
-  // lookup id with gaps
-  return check_dirty_ (paramid);
+  PParam *param = const_cast<Processor*> (this)->find_pparam (paramid);
+  return BSE_ISLIKELY (param) ? param->is_dirty() : false;
 }
 
 /// Access readonly float buffer of input bus `b`, channel `c`, see also ofloats().
