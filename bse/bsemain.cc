@@ -146,6 +146,9 @@ bse_main_loop_thread (Bse::AsyncBlockingQueue<int> *init_queue)
       return;
     }
   // register new thread
+  assert_return (this_thread_is_bse() == false);
+  TaskRegistry::setupbse();
+  assert_return (this_thread_is_bse() == true);
   const char *const myid = "BseMain";
   Bse::this_thread_set_name (myid);
   Bse::TaskRegistry::add (myid, Bse::this_thread_getpid(), Bse::this_thread_gettid());

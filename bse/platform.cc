@@ -945,6 +945,16 @@ TaskRegistry::list ()
   return task_registry_tasks_;
 }
 
+void
+TaskRegistry::setupbse ()
+{
+  assert_return (bsethread_id == std::thread::id{});
+  bsethread_id = std::this_thread::get_id();
+  assert_return (bsethread_id != std::thread::id{});
+}
+
+std::thread::id TaskRegistry::bsethread_id = {};
+
 // == Thread Info ==
 ThreadId
 this_thread_self ()
