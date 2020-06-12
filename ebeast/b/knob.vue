@@ -31,8 +31,13 @@
   .b-knob {
     display: flex; position: relative;
     margin: 0; padding: 0; text-align: center;
-    svg { position: absolute; }
-    .b-knob-trf { will-change: transform; } /* request GPU texture for fast transforms */
+    svg { position: absolute; height: 100%; }
+    .b-knob-trf {
+      will-change: transform; /* request GPU texture for fast transforms */
+    }
+    .b-knob-base {
+      position: relative;
+    }
   }
 </style>
 
@@ -40,7 +45,7 @@
 
 <template>
   <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick" >
-    <svg  class="b-knob-base"               :style="style()" :viewBox="viewbox()">
+    <svg  class="b-knob-base"               :style="style()" :viewBox="viewbox()" >
       <use href="#eknob-base" />
     </svg>
     <svg  class="b-knob-h1light"            :style="style()" :viewBox="viewbox()" v-if="!bidi()">
@@ -100,6 +105,16 @@ export default {
     this.uncapture_wheel = this.uncapture_wheel?. ();
   },
   methods: {
+    style (div = 0) {
+      const sz = { w: eknob.viewBox.baseVal.width, h: eknob.viewBox.baseVal.height };
+      if (div)
+	return ""; "width:" + sz.w + "px; height:" + sz.h + "px;";
+      const origin = eknob_origin.x / sz.w * 100 + '% ' + eknob_origin.y / sz.h * 100 + '%';
+      return "transform-origin:" + origin;
+    },
+    viewbox() {
+      return eknob.getAttribute ('viewBox');
+    },
     bidi() {
       const unidir = !this.bidir || this.bidir == '0' || this.bidir == 'false';
       return !unidir;
@@ -225,16 +240,6 @@ export default {
 	}
       ev.preventDefault();
       ev.stopPropagation();
-    },
-    viewbox() {
-      return eknob.getAttribute ('viewBox');
-    },
-    style (div = 0) {
-      const sz = { w: eknob.viewBox.baseVal.width, h: eknob.viewBox.baseVal.height };
-      if (div)
-	return "width:" + sz.w + "px; height:" + sz.h + "px;";
-      const origin = eknob_origin.x / sz.w * 100 + '% ' + eknob_origin.y / sz.h * 100 + '%';
-      return "transform-origin:" + origin;
     },
     bubble() {
       if (!this.scalar_)
