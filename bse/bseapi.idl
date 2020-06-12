@@ -960,6 +960,27 @@ interface Module : Object {
 };
 sequence ModuleSeq { Module modules; };
 
+/// A Property allows querying, setting and monitoring of an object property.
+interface Property : Object {
+  String  identifier    ();             ///< Unique name (per owner) of this Property.
+  String  label         ();             ///< Preferred user interface name.
+  String  nick          ();             ///< Abbreviated user interface name, usually not more than 6 characters.
+  String  unit          ();             ///< Units of the values within range.
+  String  hints         ();             ///< Hints for parameter handling.
+  String  group         ();             ///< Group name for parameters of similar function.
+  String  blurb         ();             ///< Short description for user interface tooltips.
+  String  description   ();             ///< Elaborate description for help dialogs.
+  float64 get_min       ();             ///< Get the minimum property value, converted to float64.
+  float64 get_max       ();             ///< Get the maximum property value, converted to float64.
+  float64 get_step      ();             ///< Get the property value stepping, converted to float64.
+  float64 get_num       ();             ///< Get the current property value, converted to float64.
+  bool    set_num       (float64 v);    ///< Set the current property value as float64.
+  String  get_string    ();             ///< Get the current property value, converted to String.
+  bool    set_string    (String v);     ///< Set the current property value as String.
+  bool    is_numeric    ();
+};
+sequence PropertySeq { Property property; };
+
 /// Info for device types.
 record DeviceInfo {
   String uri;          ///< Unique identifier for de-/serialization.
