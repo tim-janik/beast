@@ -207,6 +207,7 @@ struct Convert<Aida::RemoteMember<Bse::PartHandle>> {
 #include "bsesnet.hh"
 #include "bsesong.hh"
 #include "device.hh"
+#include "property.hh"
 #include "bsesoundfont.hh"
 #include "bsesoundfontrepo.hh"
 #include "bsetrack.hh"
