@@ -107,6 +107,7 @@ struct ParamInfo {
   using MinMax = std::pair<double,double>;
   void       clear       ();
   MinMax     get_minmax  () const;
+  double     get_stepping() const;
   void       get_range   (double &fmin, double &fmax, double &fstep) const;
   void       set_range   (double fmin, double fmax, double fstep = 0);
   void       set_choices (const ChoiceEntries &centries);

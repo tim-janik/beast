@@ -184,6 +184,21 @@ ParamInfo::get_minmax () const
     }
 }
 
+/// Get parameter stepping or 0 if not quantized.
+double
+ParamInfo::get_stepping () const
+{
+  switch (union_tag)
+    {
+    case PTAG_FLOATS:
+      return u.fstep;
+    case PTAG_CENTRIES:
+      return 1;
+    default:
+      return 0;
+    }
+}
+
 /// Get parameter range properties.
 void
 ParamInfo::get_range (double &fmin, double &fmax, double &fstep) const
