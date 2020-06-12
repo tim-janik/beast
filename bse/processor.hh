@@ -498,15 +498,6 @@ Processor::find_pparam (ParamId paramid)
   return find_pparam_ (paramid);
 }
 
-/// Set parameter `id` to `value`.
-inline void
-Processor::set_param (ParamId paramid, double value)
-{
-  PParam *pparam = find_pparam (paramid);
-  if (BSE_ISLIKELY (pparam))
-    pparam->assign (value);
-}
-
 /// Fetch `value` of parameter `id` and clear its `dirty` flag.
 inline double
 Processor::get_param (ParamId paramid)

@@ -531,6 +531,24 @@ Processor::find_pparam_ (ParamId paramid)
   return nullptr;
 }
 
+/// Set parameter `id` to `value`.
+void
+Processor::set_param (ParamId paramid, double value)
+{
+  PParam *pparam = find_pparam (paramid);
+  return_unless (pparam);
+  ParamInfo *info = pparam->info.get();
+  if (info)
+    {
+      const double stepping = info->get_stepping();
+      if (stepping != 0)
+        value = stepping * uint64_t (value / stepping + 0.5);
+      auto mm = info->get_minmax();
+      value = CLAMP (value, mm.first, mm.second);
+    }
+  pparam->assign (value);
+}
+
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
 ParamInfoP
 Processor::param_info (ParamId paramid) const
