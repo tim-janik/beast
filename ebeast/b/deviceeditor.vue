@@ -27,6 +27,9 @@
 	     class="b-deviceeditor-entry" center style="margin: 5px" >
       <span > Module {{ module.$id }} </span>
     </b-vflex>
+    <b-vflex style="flex-wrap: wrap;">
+      <b-pro-input v-for="prop in dprops" :key="prop.$id" :prop="prop" />
+    </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
       <b-menuitem fa="plus-circle"      uri="add-module" >      Add Module		</b-menuitem>
@@ -40,6 +43,7 @@ function observable_device_data () {
   const data = {
     modules:	{ default: [],  	notify: n => this.device.on ("notify:modules", n),
 		  getter: async c => Object.freeze (await this.device.list_modules()), },
+    dprops:     { default: [], getter: async c => Object.freeze (await this.device.access_properties ("")), },
     device_info: { default: "",		notify: n => this.device.on ("notify:device_info", n),
 		  getter: async c => Object.freeze (await this.device.device_info()), },
   };
