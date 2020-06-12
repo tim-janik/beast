@@ -6,6 +6,15 @@
 
 #define PDEBUG(...)     Bse::debug ("processor", __VA_ARGS__)
 
+// == Helpers ==
+static std::string
+canonify_identifier (const std::string &input)
+{
+  static const std::string validset = Bse::string_set_a2z() + "0123456789" + "_-";
+  const std::string lowered = Bse::string_tolower (input);
+  return Bse::string_canonify (lowered, validset, "-");
+}
+
 namespace Bse {
 
 /** This namespace provides the components for all audio signal processing modules.
@@ -126,13 +135,14 @@ ParamInfo::~ParamInfo()
 void
 ParamInfo::copy_fields (const ParamInfo &src)
 {
-  identifier = src.identifier;
-  display_name = src.display_name;
-  short_name = src.short_name;
-  description = src.description;
+  ident = src.ident;
+  label = src.label;
+  nick = src.nick;
   unit = src.unit;
   hints = src.hints;
   group = src.group;
+  blurb = src.blurb;
+  description = src.description;
   switch (src.union_tag)
     {
     case PTAG_FLOATS:
@@ -159,13 +169,14 @@ ParamInfo::release()
 void
 ParamInfo::clear ()
 {
-  identifier = "";
-  display_name = "";
-  short_name = "";
-  description = "";
+  ident = "";
+  label = "";
+  nick = "";
   unit = "";
   hints = "";
   group = "";
+  blurb = "";
+  description = "";
   release();
 }
 
@@ -315,27 +326,29 @@ ParamInfo::call_notify ()
 }
 
 // == PBus ==
-Processor::PBus::PBus (const std::string &ident, SpeakerArrangement sa) :
-  ibus (ident, sa)
+Processor::PBus::PBus (const std::string &ident, const std::string &uilabel, SpeakerArrangement sa) :
+  ibus (ident, uilabel, sa)
 {}
 
-Processor::IBus::IBus (const std::string &ident, SpeakerArrangement sa)
+Processor::IBus::IBus (const std::string &identifier, const std::string &uilabel, SpeakerArrangement sa)
 {
+  ident = identifier;
+  label = uilabel;
   speakers = sa;
   proc = nullptr;
   obusid = {};
-  identifier = ident;
-  assert_return (identifier != "");
+  assert_return (ident != "");
 }
 
-Processor::OBus::OBus (const std::string &ident, SpeakerArrangement sa)
+Processor::OBus::OBus (const std::string &identifier, const std::string &uilabel, SpeakerArrangement sa)
 {
+  ident = identifier;
+  label = uilabel;
   speakers = sa;
   fbuffer_concounter = 0;
   fbuffer_count = 0;
   fbuffer_index = ~0;
-  identifier = ident;
-  assert_return (identifier != "");
+  assert_return (ident != "");
 }
 
 // == RenderSetup ==
@@ -372,7 +385,7 @@ Processor::iobus (OBusId obusid)
   const size_t busindex = size_t (obusid) - 1;
   if (BSE_ISLIKELY (busindex < n_obuses()))
     return iobuses_[output_offset_ + busindex].obus;
-  static const OBus dummy { "?", {} };
+  static const OBus dummy { "?", "", {} };
   assert_return (busindex < n_obuses(), const_cast<OBus&> (dummy));
   return const_cast<OBus&> (dummy);
 }
@@ -384,7 +397,7 @@ Processor::iobus (IBusId ibusid)
   const size_t busindex = size_t (ibusid) - 1;
   if (BSE_ISLIKELY (busindex < n_ibuses()))
     return iobuses_[busindex].ibus;
-  static const IBus dummy { "?", {} };
+  static const IBus dummy { "?", "", {} };
   assert_return (busindex < n_ibuses(), const_cast<IBus&> (dummy));
   return const_cast<IBus&> (dummy);
 }
@@ -445,8 +458,10 @@ ParamId
 Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 {
   assert_return (!is_initialized(), {});
-  assert_return (infotmpl.identifier != "", {});
+  assert_return (infotmpl.label != "", {});
   PParam param { id, infotmpl };
+  if (param.info->ident == "")
+    param.info->ident = canonify_identifier (param.info->label);
   if (param.info->group.empty())
     param.info->group = tls_param_group;
   using P = decltype (params_);
@@ -460,34 +475,44 @@ Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 
 /// Add new range parameter with most `ParamInfo` fields as inlined arguments.
 /// The returned `ParamId` is newly assigned and increases with the number of parameters added.
+/// The `clabel` is the canonical, non-translated name for this parameter, its
+/// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &identifier, const std::string &display_name,
-                      const std::string &short_name, double pmin, double pmax,
-                      const std::string &hints, double value, const std::string &unit)
+Processor::add_param (const std::string &clabel,
+                      const std::string &nickname, double pmin, double pmax,
+                      const std::string &hints, double value, const std::string &unit,
+                      const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
-  info.identifier = identifier;
-  info.display_name = display_name;
-  info.short_name = short_name;
+  info.ident = canonify_identifier (clabel);
+  info.label = clabel;
+  info.nick = nickname;
   info.hints = hints;
   info.unit = unit;
+  info.blurb = blurb;
+  info.description = description;
   info.set_range (pmin, pmax);
   ParamId id = ParamId (1 + params_.size());
   return add_param (id, info, value);
 }
 
 /// Add new choice parameter with most `ParamInfo` fields as inlined arguments.
+/// The returned `ParamId` is newly assigned and increases with the number of parameters added.
+/// The `clabel` is the canonical, non-translated name for this parameter, its
+/// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &identifier, const std::string &display_name,
-                      const std::string &short_name, ChoiceEntries &&centries,
-                      const std::string &hints, double value, const std::string &unit)
+Processor::add_param (const std::string &clabel,
+                      const std::string &nickname, ChoiceEntries &&centries,
+                      const std::string &hints, double value,
+                      const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
-  info.identifier = identifier;
-  info.display_name = display_name;
-  info.short_name = short_name;
+  info.ident = canonify_identifier (clabel);
+  info.label = clabel;
+  info.nick = nickname;
   info.hints = hints;
-  info.unit = unit;
+  info.blurb = blurb;
+  info.description = description;
   info.set_choices (std::move (centries));
   ParamId id = ParamId (1 + params_.size());
   return add_param (id, info, value);
@@ -512,7 +537,7 @@ Processor::find_param (const std::string &identifier) const -> MaybeParamId
   auto ident = CString::lookup (identifier);
   if (!ident.empty())
     for (const PParam &p : params_)
-      if (p.info->identifier == ident)
+      if (p.info->ident == ident)
         return std::make_pair (p.id, true);
   return std::make_pair (ParamId (0), false);
 }
@@ -626,59 +651,65 @@ Processor::configure (uint n_ibuses, const SpeakerArrangement *ibuses,
                       uint n_obuses, const SpeakerArrangement *obuses)
 {}
 
-/// Add an input bus with `name` and channels configured via `speakerarrangement`.
+/// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
 IBusId
-Processor::add_input_bus (CString name, SpeakerArrangement speakerarrangement)
+Processor::add_input_bus (CString uilabel, SpeakerArrangement speakerarrangement,
+                          const std::string &hints, const std::string &blurb)
 {
   const IBusId zero {0};
-  assert_return (name != "", zero);
+  assert_return (uilabel != "", zero);
   assert_return (uint64_t (speaker_arrangement_channels (speakerarrangement)) > 0, zero);
   assert_return (iobuses_.size() < 65535, zero);
   if (n_ibuses())
-    assert_return (name != iobus (IBusId (n_ibuses())).identifier, zero); // easy CnP error
-  PBus pbus { name, speakerarrangement };
+    assert_return (uilabel != iobus (IBusId (n_ibuses())).label, zero); // easy CnP error
+  PBus pbus { canonify_identifier (uilabel), uilabel, speakerarrangement };
+  pbus.pbus.hints = hints;
+  pbus.pbus.blurb = blurb;
   iobuses_.insert (iobuses_.begin() + output_offset_, pbus);
   output_offset_ += 1;
   const IBusId id = IBusId (n_ibuses());
   return id; // 1 + index
 }
 
-/// Add an output bus with `name` and channels configured via `speakerarrangement`.
+/// Add an output bus with `uilabel` and channels configured via `speakerarrangement`.
 OBusId
-Processor::add_output_bus (CString name, SpeakerArrangement speakerarrangement)
+Processor::add_output_bus (CString uilabel, SpeakerArrangement speakerarrangement,
+                           const std::string &hints, const std::string &blurb)
 {
   const OBusId zero {0};
-  assert_return (name != "", zero);
+  assert_return (uilabel != "", zero);
   assert_return (uint64_t (speaker_arrangement_channels (speakerarrangement)) > 0, zero);
   assert_return (iobuses_.size() < 65535, zero);
   if (n_obuses())
-    assert_return (name != iobus (OBusId (n_obuses())).identifier, zero); // easy CnP error
-  PBus pbus { name, speakerarrangement };
+    assert_return (uilabel != iobus (OBusId (n_obuses())).label, zero); // easy CnP error
+  PBus pbus { canonify_identifier (uilabel), uilabel, speakerarrangement };
+  pbus.pbus.hints = hints;
+  pbus.pbus.blurb = blurb;
   iobuses_.push_back (pbus);
   const OBusId id = OBusId (n_obuses());
   return id; // 1 + index
 }
 
-/// Return the IBusId for input bus `name` or else 0.
+/// Return the IBusId for input bus `uilabel` or else 0.
 IBusId
-Processor::find_ibus (const std::string &name) const
+Processor::find_ibus (const std::string &uilabel) const
 {
-  auto ident = CString::lookup (name);
+  auto ident = CString::lookup (uilabel);
   if (!ident.empty())
     for (IBusId ib = IBusId (1); size_t (ib) <= n_ibuses(); ib = IBusId (size_t (ib) + 1))
-      if (iobus (ib).identifier == ident)
+      if (iobus (ib).ident == ident)
         return ib;
   return IBusId (0);
 }
 
-/// Return the OBusId for output bus `name` or else 0.
+/// Return the OBusId for output bus `uilabel` or else 0.
 OBusId
-Processor::find_obus (const std::string &name) const
+Processor::find_obus (const std::string &uilabel) const
 {
-  auto ident = CString::lookup (name);
+  auto ident = CString::lookup (uilabel);
   if (!ident.empty())
     for (OBusId ob = OBusId (1); size_t (ob) <= n_obuses(); ob = OBusId (size_t (ob) + 1))
-      if (iobus (ob).identifier == ident)
+      if (iobus (ob).ident == ident)
         return ob;
   return OBusId (0);
 }

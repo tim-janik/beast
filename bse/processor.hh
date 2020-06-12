@@ -97,13 +97,14 @@ struct ChoiceEntries : std::vector<ChoiceDetails> {
 
 /// Detailed information and common properties of parameters.
 struct ParamInfo {
-  CString    identifier;   ///< Identifier used for serialization.
-  CString    display_name; ///< Preferred user interface name.
-  CString    short_name;   ///< Abbreviated user interface name.
-  CString    description;  ///< Elaborate description for help dialogs.
+  CString    ident;        ///< Identifier used for serialization.
+  CString    label;        ///< Preferred user interface name.
+  CString    nick;         ///< Abbreviated user interface name, usually not more than 6 characters.
   CString    unit;         ///< Units of the values within range.
   CString    hints;        ///< Hints for parameter handling.
   GroupId    group;        ///< Group for parameters of similar function.
+  CString    blurb;        ///< Short description for user interface tooltips.
+  CString    description;  ///< Elaborate description for help dialogs.
   using MinMax = std::pair<double,double>;
   void       clear       ();
   MinMax     get_minmax  () const;
@@ -140,11 +141,10 @@ using ParamInfoP = std::shared_ptr<ParamInfo>;
 
 /// Structure providing supplementary information about input/output buses.
 struct BusInfo {
-  CString            identifier;   ///< Identifier used for serialization.
-  CString            display_name; ///< Preferred user interface name.
-  CString            short_name;   ///< Abbreviated user interface name.
-  CString            description;  ///< Elaborate description for help dialogs.
-  CString            hints;        ///< Hints for parameter handling.
+  CString            ident;     ///< Identifier used for serialization.
+  CString            label;     ///< Preferred user interface name.
+  CString            hints;     ///< Hints for parameter handling.
+  CString            blurb;     ///< Short description for user interface tooltips.
   SpeakerArrangement speakers = SpeakerArrangement::NONE; ///< Channel to speaker arrangement.
   uint               n_channels () const;
 };
@@ -211,16 +211,20 @@ protected:
   virtual void  render            (const RenderSetup &rs, uint n_frames) = 0;
   // Parameters
   ParamId       add_param         (ParamId id, const ParamInfo &infotmpl, double value);
-  ParamId       add_param         (const std::string &identifier, const std::string &display_name,
-                                   const std::string &short_name, double pmin, double pmax,
-                                   const std::string &hints, double value, const std::string &unit = "");
-  ParamId       add_param         (const std::string &identifier, const std::string &display_name,
-                                   const std::string &short_name, ChoiceEntries &&centries,
-                                   const std::string &hints, double value, const std::string &unit = "");
+  ParamId       add_param         (const std::string &clabel, const std::string &nickname,
+                                   double pmin, double pmax, const std::string &hints,
+                                   double value, const std::string &unit = "",
+                                   const std::string &blurb = "", const std::string &description = "");
+  ParamId       add_param         (const std::string &clabel, const std::string &nickname,
+                                   ChoiceEntries &&centries, const std::string &hints,
+                                   double value,
+                                   const std::string &blurb = "", const std::string &description = "");
   void          start_param_group (const std::string &groupname) const;
   // Buses
-  IBusId        add_input_bus     (CString name, SpeakerArrangement speakerarrangement);
-  OBusId        add_output_bus    (CString name, SpeakerArrangement speakerarrangement);
+  IBusId        add_input_bus     (CString uilabel, SpeakerArrangement speakerarrangement,
+                                   const std::string &hints = "", const std::string &blurb = "");
+  OBusId        add_output_bus    (CString uilabel, SpeakerArrangement speakerarrangement,
+                                   const std::string &hints = "", const std::string &blurb = "");
   void          remove_all_buses  ();
   OBus&         iobus             (OBusId busid);
   IBus&         iobus             (IBusId busid);
@@ -375,20 +379,20 @@ private:
 struct Processor::IBus : BusInfo {
   Processor *proc = {};
   OBusId     obusid = {};
-  explicit IBus (const std::string &ident, SpeakerArrangement sa);
+  explicit IBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
 };
 struct Processor::OBus : BusInfo {
   uint fbuffer_concounter = 0;
   uint fbuffer_count = 0;
   uint fbuffer_index = ~0;
-  explicit OBus (const std::string &ident, SpeakerArrangement sa);
+  explicit OBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
 };
 // Processor internal input/output bus book keeping
 union Processor::PBus {
   IBus    ibus;
   OBus    obus;
   BusInfo pbus;
-  explicit PBus (const std::string &ident, SpeakerArrangement sa);
+  explicit PBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
 };
 
 // Processor internal parameter book keeping
@@ -585,9 +589,9 @@ struct hash<::Bse::AudioSignal::ParamInfo> {
   size_t
   operator() (const ::Bse::AudioSignal::ParamInfo &pi) const
   {
-    size_t h = ::std::hash<::Bse::CString>() (pi.identifier);
-    // h ^= ::std::hash (pi.display_name);
-    // h ^= ::std::hash (pi.short_name);
+    size_t h = ::std::hash<::Bse::CString>() (pi.ident);
+    // h ^= ::std::hash (pi.label);
+    // h ^= ::std::hash (pi.nick);
     // h ^= ::std::hash (pi.description);
     h ^= ::std::hash<::Bse::CString>() (pi.unit);
     h ^= ::std::hash<::Bse::CString>() (pi.hints);
