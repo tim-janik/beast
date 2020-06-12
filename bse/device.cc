@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "device.hh"
 #include "processor.hh"
+#include "property.hh"
 #include "bseserver.hh"
 #include "internal.hh"
 
@@ -8,12 +9,18 @@ namespace Bse {
 
 // == AspDeviceImpl ==
 AspDeviceImpl::AspDeviceImpl (const String &uri, AudioSignal::ProcessorP procp) :
-  DeviceImpl (uri), procp_ (procp)
+  DeviceImpl (uri), procp_ (procp), params_ (procp->list_params())
 {
   assert_return (procp != nullptr);
 }
 
 // == AspDeviceContainerImpl ==
+AspDeviceContainerImpl::AspDeviceContainerImpl (const String &uri, AudioSignal::ChainP chainp) :
+  DeviceContainerImpl (uri), chainp_ (chainp), params_ (chainp->list_params())
+{
+  assert_return (chainp != nullptr);
+}
+
 void
 AspDeviceContainerImpl::added_device (size_t idx)
 {
@@ -38,10 +45,95 @@ AspDeviceContainerImpl::removing_device (size_t idx)
   });
 }
 
-AspDeviceContainerImpl::AspDeviceContainerImpl (const String &uri, AudioSignal::ChainP chainp) :
-  DeviceContainerImpl (uri), chainp_ (chainp)
+// == DevicePropertyWrapper ==
+class DevicePropertyWrapper : public PropertyWrapper {
+  using ParamId = AudioSignal::ParamId;
+  DeviceImplW             device_;
+  AudioSignal::ParamInfoP info_;
+public:
+  friend class DeviceImpl;
+  virtual std::string get_tag          (Tag) override;
+  virtual bool        is_numeric       () override;
+  virtual void        get_range        (double *min, double *max, double *step) override;
+  virtual double      get_num          () override;
+  virtual bool        set_num          (double v) override;
+  virtual std::string get_string       () override;
+  virtual bool        set_string       (const std::string &v) override;
+  explicit DevicePropertyWrapper (DeviceImplP device, AudioSignal::ParamInfoP param_);
+};
+
+DevicePropertyWrapper::DevicePropertyWrapper (DeviceImplP device, AudioSignal::ParamInfoP param_) :
+  device_ (device), info_ (param_)
+{}
+
+std::string
+DevicePropertyWrapper::get_tag (Tag tag)
 {
-  assert_return (chainp != nullptr);
+  auto &info = *info_;
+  switch (tag)
+    {
+    case IDENTIFIER:    return info.ident;
+    case LABEL:         return info.label;
+    case NICK:          return info.nick;
+    case UNIT:          return info.unit;
+    case HINTS:         return info.hints;
+    case GROUP:         return info.group;
+    case BLURB:         return info.blurb;
+    case DESCRIPTION:   return info.description;
+    }
+}
+
+void
+DevicePropertyWrapper::get_range (double *min, double *max, double *step)
+{
+  double a, b, c;
+  info_->get_range (min ? *min : a, max ? *max : b, step ? *step : c);
+}
+
+double
+DevicePropertyWrapper::get_num ()
+{
+  DeviceImplP device = device_.lock();
+  return_unless (device, FP_NAN);
+  AudioSignal::ProcessorP proc = device->processor();
+  return_unless (proc, FP_NAN);
+  return AudioSignal::Processor::peek_param_mt (proc, info_->id);
+}
+
+bool
+DevicePropertyWrapper::set_num (double v)
+{
+  DeviceImplP device = device_.lock();
+  return_unless (device, false);
+  AudioSignal::ProcessorP proc = device->processor();
+  return_unless (proc, false);
+  const AudioSignal::ParamId pid = info_->id;
+  auto lambda = [proc, pid, v] () {
+    proc->set_param (pid, v);
+  };
+  BSE_SERVER.commit_job (lambda);
+  return true;
+}
+
+bool
+DevicePropertyWrapper::is_numeric ()
+{
+  // TODO: we have yet to implement non-numeric Processor parameters
+  return true;
+}
+
+std::string
+DevicePropertyWrapper::get_string ()
+{
+  // TODO: we have yet to implement non-numeric Processor parameters
+  return {};
+}
+
+bool
+DevicePropertyWrapper::set_string (const std::string &v)
+{
+  // TODO: we have yet to implement non-numeric Processor parameters
+  return false;
 }
 
 // == DeviceImpl ==
@@ -121,6 +213,66 @@ DeviceImpl::create_single_device (const String &uri)
   else if (procp)
     devicep = FriendAllocator<AspDeviceImpl>::make_shared (uri, procp);
   return devicep;
+}
+
+StringSeq
+DeviceImpl::list_properties ()
+{
+  using namespace AudioSignal;
+  const auto &iv = list_params();
+  StringSeq names;
+  names.reserve (iv.size());
+  for (const auto &param : iv)
+    names.push_back (param->ident);
+  return names;
+}
+
+PropertyIfaceP
+DeviceImpl::access_property (const std::string &ident)
+{
+  using namespace AudioSignal;
+  const ParamInfoPVec &piv = list_params();
+  ParamInfoP infop;
+  for (const ParamInfoP info : piv)
+    if (info->ident == ident)
+      {
+        infop = info;
+        break;
+      }
+  return_unless (infop, {});
+  auto devicep = Bse::shared_ptr_cast<DeviceImpl> (this);
+  auto pwrapper = std::make_unique<DevicePropertyWrapper> (devicep, infop);
+  return PropertyImpl::create (std::move (pwrapper));
+}
+
+PropertySeq
+DeviceImpl::access_properties (const std::string &hints)
+{
+  using namespace AudioSignal;
+  auto devicep = Bse::shared_ptr_cast<DeviceImpl> (this);
+  PropertySeq ps;
+  for (const ParamInfoP info : list_params())
+    {
+      auto pwrapper = std::make_unique<DevicePropertyWrapper> (devicep, info);
+      PropertyIfaceP prop = PropertyImpl::create (std::move (pwrapper));
+      ps.push_back (prop);
+    }
+  return ps;
+}
+
+AudioSignal::ParamInfoP
+DeviceImpl::param_info (const std::string &ident)
+{
+  using namespace AudioSignal;
+  const CString cident = CString::lookup (ident);
+  if (!cident.empty()) // ident must be seen before
+    {
+      const ParamInfoPVec &piv = list_params();
+      for (const ParamInfoP info : piv)
+        if (info->ident == cident)
+          return info;
+    }
+  return nullptr;
 }
 
 // == DeviceContainerImpl ==

@@ -1002,8 +1002,12 @@ interface Device : Object {
   StringSeq      list_module_types ();                 ///< List known module types.
 
   // device type determination
-  String         device_uri       ();                  ///< Retrieve unique identifier for the device type.
-  DeviceInfo     device_info      ();                  ///< Describe this device type.
+  String         device_uri        ();                  ///< Retrieve unique identifier for the device type.
+  DeviceInfo     device_info       ();                  ///< Describe this device type.
+  // Device Parameters
+  StringSeq      list_properties   ();                  ///< List all property identifiers.
+  Property       access_property   (String ident);      ///< Retrieve handle for a Property.
+  PropertySeq    access_properties (String hints);      ///< Retrieve handles for properties with specific hints.
 };
 sequence DeviceSeq { Device devices; };
 
