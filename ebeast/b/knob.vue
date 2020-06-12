@@ -126,6 +126,7 @@ export default {
 	{
 	  this.bidi_ = this.bidi();
 	  this.value_ = undefined;
+	  this.point_ = 0; // internal drag position
 	  const outer = this.$refs.bknob;
 	  this.needle_ = outer.querySelector ('svg.b-knob-needle');
 	  this.h1dark_  = this.bidi_ ? null : outer.querySelector ('svg.b-knob-h1dark');
@@ -221,12 +222,12 @@ export default {
       else if (dx < 0)    // if LEFT
 	s = dy <= dx;     //   Decrease unless mostly UP
       const dist = (s ? +1 : -1) * Math.sqrt (dx * dx + dy * dy) * this.ptraccel;
-      const v = Util.clamp (this.value_ + dist, this.bidi_ ? -1 : 0, +1);
+      this.point_ = Util.clamp (this.point_ + dist, this.bidi_ ? -1 : 0, +1);
       if (USE_PTRLOCK)
 	this.drag = { x: 0, y: 0 };
       else
 	this.last = { x: this.drag.x, y: this.drag.y };
-      this.emit_value (v);
+      this.emit_value (this.point_);
     },
     wheel_event (ev) {
       const p = Util.wheel_delta (ev);
@@ -235,8 +236,8 @@ export default {
       if ((delta > 0 && this.value_ < 1) || (delta < 0 && this.value_ > min))
 	{
 	  const wheel_accel = this.granularity (ev);
-	  const v = Util.clamp (this.value_ + delta * wheel_accel, min, +1);
-	  this.emit_value (v);
+	  this.point_ = Util.clamp (this.point_ + delta * wheel_accel, min, +1);
+	  this.emit_value (this.point_);
 	}
       ev.preventDefault();
       ev.stopPropagation();
@@ -271,6 +272,7 @@ export default {
       if (this.value_ === value)
 	return;
       this.value_ = value;
+      this.point_ = this.value_;
       if (this.bidi_)
 	{
 	  let v = 135 * value;
