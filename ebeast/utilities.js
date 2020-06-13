@@ -28,6 +28,11 @@ class FallbackResizeObserver {
 /// Work around FireFox 68 having ResizeObserver disabled
 export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
+/// Retrieve current time in milliseconds.
+export function now () {
+  return window.Date.now();
+}
+
 /** Yield a wrapper function for `callback` that throttles invocations.
  * Regardless of the frequency of calls to the returned wrapper, `callback`
  * will only be called once per `requestAnimationFrame()` cycle, or
