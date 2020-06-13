@@ -18,6 +18,7 @@
 #include "bsesoundfontpreset.hh"
 #include "bsesoundfont.hh"
 #include "bsepart.hh"
+#include "bseserver.hh"
 #include "bsecxxplugin.hh"
 #include "processor.hh"
 #include "bse/internal.hh"
@@ -150,6 +151,13 @@ bse_track_finalize (GObject *object)
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static gboolean
+bse_track_needs_storage (BseItem *item, BseStorage *storage)
+{
+  BseTrack *self = BSE_TRACK (item);
+  return self->n_entries_SL > 0; // has parts
 }
 
 static void	track_uncross_part	(BseItem *owner,
@@ -1056,6 +1064,26 @@ bse_track_restore_private (BseObject  *object,
 }
 
 static void
+bse_track_prepare (BseSource *source)
+{
+  Bse::TrackImpl &self = *source->as<Bse::TrackImplP>();
+  auto &devcon = *dynamic_cast<Bse::DeviceContainerImpl*> (&*self.device_container());
+  self.render_setup (true);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source); // chain up
+  devcon.processor()->reset_state (self.render_setup());
+  BSE_SERVER.add_pcm_output_processor (devcon.processor());
+}
+
+static void
+bse_track_reset (BseSource *source)
+{
+  Bse::TrackImpl &self = *source->as<Bse::TrackImplP>();
+  auto &devcon = *dynamic_cast<Bse::DeviceContainerImpl*> (&*self.device_container());
+  BSE_SERVER.del_pcm_output_processor (devcon.processor());
+  BSE_SOURCE_CLASS (parent_class)->reset (source); // chain up
+}
+
+static void
 bse_track_class_init (BseTrackClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
@@ -1074,9 +1102,12 @@ bse_track_class_init (BseTrackClass *klass)
   object_class->restore_private = bse_track_restore_private;
 
   item_class->get_candidates = bse_track_get_candidates;
+  item_class->needs_storage = bse_track_needs_storage;
 
+  source_class->prepare = bse_track_prepare;
   source_class->context_create = bse_track_context_create;
   source_class->context_dismiss = bse_track_context_dismiss;
+  source_class->reset = bse_track_reset;
 
   bse_source_class_inherit_channels (BSE_SOURCE_CLASS (klass));
 
@@ -1122,16 +1153,22 @@ void
 TrackImpl::xml_serialize (SerializationNode &xs)
 {
   ContextMergerImpl::xml_serialize (xs);
-  for (auto &xc : xs.children ("Device"))       // in_load
-    xc.load (*dynamic_cast<DeviceImpl*> (create_device (xc.get ("type")).get()));
-  for (DeviceImplP device : devices_)           // in_save
-    xs.save_under ("Device", *device);
+  for (auto &xc : xs.children ("Device"))                        // in_load
+    xc.load (*dynamic_cast<DeviceImpl*> (device_container()->create_device (xc.get ("type")).get()));
+  for (DeviceIfaceP device : device_container()->list_devices()) // in_save
+    xs.save_under ("Device", *dynamic_cast<DeviceImpl*> (device.get()));
 }
 
 void
 TrackImpl::xml_reflink (SerializationNode &xs)
 {
   ContextMergerImpl::xml_reflink (xs);
+}
+
+bool
+TrackImpl::needs_serialize()
+{
+  return device_container()->list_devices().size() > 0;
 }
 
 bool
@@ -1355,48 +1392,30 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
   bse_bus_or_track_set_outputs (self, newoutputs);
 }
 
-DeviceInfoSeq
-TrackImpl::list_device_types ()
+DeviceContainerIfaceP
+TrackImpl::device_container()
 {
-  using namespace AudioSignal;
-  DeviceInfoSeq iseq;
-  const auto rlist = Processor::registry_list();
-  iseq.reserve (rlist.size());
-  for (const auto &entry : rlist)
+  if (!device_container_)
     {
-      DeviceInfo info;
-      info.uri          = entry.uri;
-      info.name         = entry.label;
-      info.category     = entry.category;
-      info.description  = entry.description;
-      info.website_url  = entry.website_url;
-      info.creator_name = entry.creator_name;
-      info.creator_url  = entry.creator_url;
-      iseq.push_back (info);
+      DeviceImplP devicep = DeviceImpl::create_single_device ("Bse.AudioSignal.Chain");
+      assert_return (devicep != nullptr, nullptr);
+      DeviceContainerImplP device_container = std::dynamic_pointer_cast<DeviceContainerImpl> (devicep);
+      assert_return (device_container != nullptr, nullptr);
+      device_container_ = device_container;
     }
-  return iseq;
+  return device_container_;
 }
 
-DeviceIfaceP
-TrackImpl::create_device (const String &uuiduri)
+AudioSignal::RenderSetup&
+TrackImpl::render_setup (bool needsreset)
 {
-  DeviceImplP devicep = FriendAllocator<DeviceImpl>::make_shared (uuiduri);
-  if (devicep)
+  if (needsreset)
     {
-      devices_.push_back (devicep);
-      notify ("devices");
-      return devices_.back();
+      delete render_setup_;
+      static AudioSignal::AudioTiming audio_timing { 120, 0 }; // FIXME
+      render_setup_ = new AudioSignal::RenderSetup (bse_engine_sample_freq(), audio_timing);
     }
-  return nullptr;
-}
-
-DeviceSeq
-TrackImpl::list_devices ()
-{
-  DeviceSeq devices;
-  for (auto &d : devices_)
-    devices.push_back (d);
-  return devices;
+  return *render_setup_;
 }
 
 } // Bse

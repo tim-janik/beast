@@ -681,6 +681,17 @@ ServerImpl::enginechange (bool active)
   emit_event ("enginechange", "active"_v = active);
 }
 
+void
+ServerImpl::commit_job (const std::function<void()> &lambda)
+{
+  BseServer *self = this->as<BseServer*>();
+  assert_return (lambda != nullptr);
+  assert_return (self->pcm_omodule);
+  BseTrans *trans = bse_trans_open ();
+  bse_trans_add (trans, bse_job_access (self->pcm_omodule, lambda));
+  bse_trans_commit (trans);
+}
+
 bool
 ServerImpl::engine_active ()
 {
@@ -1368,6 +1379,22 @@ void
 ServerImpl::test_counter_set (int v)
 {
   tc_ = v;
+}
+
+void
+ServerImpl::add_pcm_output_processor (AudioSignal::ProcessorP procp)
+{
+  BseServer *self = this->as<BseServer*>();
+  assert_return (procp != nullptr);
+  bse_pcm_module_add_proc (self->pcm_omodule, procp);
+}
+
+void
+ServerImpl::del_pcm_output_processor (AudioSignal::ProcessorP procp)
+{
+  BseServer *self = this->as<BseServer*>();
+  assert_return (procp != nullptr);
+  bse_pcm_module_del_proc (self->pcm_omodule, procp);
 }
 
 } // Bse

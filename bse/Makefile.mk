@@ -342,7 +342,7 @@ endif
 # == BeastSoundEngine defs ==
 lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
 bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
-bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc
+bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc bse/jsonipcstubs.cc
 bse/BeastSoundEngine.gensources ::= $>/bse/bse_jsonipc_stub1.cc $>/bse/bse_jsonipc_stub2.cc $>/bse/bse_jsonipc_stub3.cc $>/bse/bse_jsonipc_stub4.cc
 bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources)) $(bse/BeastSoundEngine.gensources:.cc=.o)
 bse/all: $(lib/BeastSoundEngine)

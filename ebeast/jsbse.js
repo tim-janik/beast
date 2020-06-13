@@ -17,10 +17,11 @@ Bse.ObjectIface.prototype.on = function (eventselector, callback) {
     connection.id = await Bse.$jsonipc.send ("Bse/EventHub/connect", [ this, eventselector ]);
     if (connection.id)
       {
-	Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection.id ], function (...args) {
+	const BseObjectIface_dispatchevent_ = function (...args) {
 	  if (connection.active)
 	    callback.call (this, ...args);
-	});
+	}; // this wrapper function needs an accurate name for backtraces
+	Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection.id ], BseObjectIface_dispatchevent_);
       }
   };
   connection.promise = connect();

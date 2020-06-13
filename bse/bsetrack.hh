@@ -88,7 +88,8 @@ class SongImpl;
 using SongImplP = std::shared_ptr<SongImpl>;
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
-  std::vector<DeviceImplP> devices_;
+  DeviceContainerImplP device_container_;
+  AudioSignal::RenderSetup *render_setup_ = nullptr;
 protected:
   virtual             ~TrackImpl         ();
   virtual void         xml_serialize     (SerializationNode &xs) override;
@@ -96,6 +97,8 @@ protected:
 public:
   explicit             TrackImpl         (BseObject*);
   SongImplP            get_song          ();
+  AudioSignal::RenderSetup& render_setup (bool needsreset = false);
+  bool                 needs_serialize   ();
   virtual SongTiming   get_timing        (int tick) override;
   virtual PartIfaceP   create_part       (int32 tick) override;
   virtual int          insert_part       (int tick, PartIface &part) override;
@@ -115,9 +118,7 @@ public:
   virtual void         midi_channel      (int val) override;
   virtual int          n_voices          () const override;
   virtual void         n_voices          (int val) override;
-  virtual DeviceInfoSeq  list_device_types () override;
-  virtual DeviceIfaceP   create_device     (const String &uuiduri) override;
-  virtual DeviceSeq      list_devices      () override;
+  virtual DeviceContainerIfaceP device_container () override;
 };
 using TrackImplP = std::shared_ptr<TrackImpl>;
 

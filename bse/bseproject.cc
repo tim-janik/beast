@@ -28,7 +28,7 @@
 #include <errno.h>
 
 #define PDEBUG(...)             Bse::debug ("project", __VA_ARGS__)
-#define FEATURE_XML_PROJECT     Bse::feature_check ("xml-project")
+#define FEATURE_XML_PROJECT     (1 /*Bse::feature_check ("xml-project")*/)
 
 typedef struct {
   GType    base_type;
@@ -957,7 +957,7 @@ ProjectImpl::xml_serialize (SerializationNode &xs)
     }
   if (xs.in_save() && song)
     for (auto trackp : song->list_tracks())
-      if (!trackp->list_devices().empty())
+      if (dynamic_cast<TrackImpl*> (&*trackp)->needs_serialize())
         xs.save_under ("Track", *trackp->as<TrackImplP>());
 }
 

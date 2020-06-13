@@ -20,15 +20,15 @@
 
 <template>
   <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
-    <b-more @click.native.stop="menuopen" :sibling="null" />
     <template v-for="device in devices" >
-      <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
       <b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id" />
+      <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
     </template>
+    <b-more @click.native.stop="menuopen" :sibling="null" />
     <b-contextmenu ref="cmenu" @click="menuactivation" yscale="1.6" >
       <b-menutitle> Device </b-menutitle>
-      <b-menuitem fa="plus-circle"      uri="add-device" >      Add Device		</b-menuitem>
-      <b-menuitem fa="times-circle"     uri="delete-device" >   Delete Device		</b-menuitem>
+      <b-menuitem fa="plus-circle"      uri="EBeast:add-device" >      Add Device		</b-menuitem>
+      <b-menuitem fa="times-circle"     uri="EBeast:delete-device" >   Delete Device		</b-menuitem>
       <b-treeselector :tree="devicetypes"> </b-treeselector>
     </b-contextmenu>
   </b-hflex>
@@ -50,18 +50,26 @@ async function list_audio_device_types () {
   const list = [];
   for (const c of Object.keys (cats).sort())
     list.push (cats[c]);
-  list_audio_device_types.return_entries = { entries: list };
+  list_audio_device_types.return_entries = Object.freeze ({ entries: list });
   return list_audio_device_types.return_entries;
 }
 list_audio_device_types();
 
 function observable_device_data () {
   const data = {
-    devices:	{ default: [],  	notify: n => this.track.on ("notify:devices", n),
-		  getter: async c => Object.freeze (await this.track.list_devices()), },
-    devicetypes: { getter: async c => Object.freeze (await list_audio_device_types()), },
+    devices:	  { default: [],	 notify: n => this.devcon_.on ("notify:devices", n),
+		    getter: async c => Object.freeze (await this.devcon_.list_devices()), },
+    devicetypes:  { getter: c => list_audio_device_types(), },
   };
-  return this.observable_from_getters (data, () => this.track);
+  const have_devcon = async () => {
+    if (this.last_track_ != this.track)
+      {
+	this.devcon_ = this.track ? await this.track.device_container() : null;
+	this.last_track_ = this.track;
+      }
+    return this.devcon_;
+  };
+  return this.observable_from_getters (data, have_devcon);
 }
 
 export default {
@@ -75,10 +83,15 @@ export default {
       const popup_options = this.$refs.cmenu.popup_options;
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      if (uri == 'add-device')
-	console.log ("create_device: after:", popup_options.device_sibling);
-      if (uri == 'add-device')
-	this.track.create_device ('Dummy');
+      if (uri == 'EBeast:add-device' || uri == 'EBeast:delete-device')
+	debug ("devicepanel.vue:", uri);
+      if (this.devcon_ && !uri.startsWith ('EBeast:')) // assuming b-treeselector.devicetypes
+	{
+	  if (popup_options.device_sibling)
+	    this.devcon_.create_device_before (uri, popup_options.device_sibling);
+	  else
+	    this.devcon_.create_device (uri);
+	}
     },
     menucheck (uri, component) {
       if (!this.track)

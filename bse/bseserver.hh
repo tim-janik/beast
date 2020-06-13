@@ -61,6 +61,7 @@ protected:
   virtual            ~ServerImpl            ();
 public:
   void                enginechange          (bool active);
+  void                commit_job            (const std::function<void()> &lambda);
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
   size_t              shared_block_offset   (const void *mem) const;
@@ -72,6 +73,8 @@ public:
   Error               open_pcm_driver       (uint mix_freq, uint latency, uint *block_size);
   void                require_pcm_input     ();
   void                close_pcm_driver      ();
+  void                add_pcm_output_processor (AudioSignal::ProcessorP procp);
+  void                del_pcm_output_processor (AudioSignal::ProcessorP procp);
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;

@@ -11,7 +11,8 @@ protected:
   virtual     ~ResourceCrawlerImpl  ();
   friend class FriendAllocator<ResourceCrawlerImpl>;
 public:
-  ResourceList list_files           (ResourceType file_type, ResourceOrigin file_origin) override;
+  ResourceList list_files   (ResourceType file_type, ResourceOrigin file_origin) override;
+  ResourceList list_devices (ResourceType rtype) override;
   static ResourceCrawlerImplP instance_p ();
   static ResourceCrawlerImpl& instance   () { return *instance_p(); }
 };

@@ -1722,18 +1722,23 @@ export function assign_async_cleanup (map, key, cleaner) {
     oldcleaner();
 }
 
-/** Method to be added to a `vue_observable_from_getters()` template to force updates. */
+/** Method to be added to a `vue_observable_from_getters()` result to force updates. */
 export function observable_force_update () {
   // This method works as a tag for vue_observable_from_getters()
 }
 
-/** Create an observable binding for the fields in `tmpl`.
- * Once the expression `predicate` changes and becomes true-ish, the `getter` of each field in `tmpl` is
- * called, resolved and assigned to the corresponding field in the observable binding returned from this function.
- * Optionally, fields may provide a `notify` setup handler to install a notification callback that re-invokes
- * the `getter`. A destructor can be returned from `notify` that is executed during cleanup phases.
- * The `default` of each field in `tmpl` may provide an initial value before `getter` is called the first time.
- * The first argument to a `getter` is a function that can be used to register cleanup code for the getter result.
+/** Create an observable binding for the fields in `tmpl` with async callbacks.
+ * Once the resolved result from `predicate()` changes and becomes true-ish, the
+ * `getter()` of each field in `tmpl` is called, resolved and assigned to the
+ * corresponding field in the observable binding returned from this function.
+ * Optionally, fields may provide a `notify` setup handler to install a
+ * notification callback that re-invokes the `getter`.
+ * A destructor can be returned from `notify()` once resolved, that is executed
+ * during cleanup phases.
+ * The `default` of each field in `tmpl` may provide an initial value before
+ * `getter` is called the first time and in case `predicate()` becomes false-ish.
+ * The first argument to `getter()` is a function that can be used to register
+ * cleanup code for the getter result.
  */
 export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue instance
   const monitoring_getters = [];
@@ -1761,8 +1766,8 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	else if (!equals_recursively (odata[key], result))
 	  odata[key] = result; // compare to reduce Vue updates
       };
-      const getter_and_reconnect = (reset) => {
-	if (reset)
+      const getter_and_listen = (reset) => {
+	if (reset) // if reset==true, getter() might not be callable
 	  {
 	    if (async_notify)
 	      assign_async_cleanup (notify_cleanups, key, undefined);
@@ -1772,17 +1777,17 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	  }
 	else
 	  {
-	    if (async_notify)
+	    if (async_notify) // sets up listener
 	      assign_async_cleanup (notify_cleanups, key, async_notify (getter));
 	    getter ();
 	  }
       };
-      monitoring_getters.push (getter_and_reconnect);
+      monitoring_getters.push (getter_and_listen);
       tmpl[key] = default_value;
     }
+  // make all fields observable
   odata = Vue.observable (tmpl);
-  const run_monitoring_getters = (reset) => monitoring_getters.forEach (f => f (reset));
-  // cleanup notifiers on `destroyed`
+  // cleanup notifiers and getter results on `destroyed`
   const run_cleanups = () => {
     for (const key in notify_cleanups)
       assign_async_cleanup (notify_cleanups, key, undefined);
@@ -1790,33 +1795,46 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       assign_async_cleanup (getter_cleanups, key, undefined);
   };
   this.$once ('hook:destroyed', run_cleanups);
-  // prepare to allow forced updates
-  let update_, watch_predicate = predicate;
+  // create trigger for forced updates
+  const ucount = Vue.observable ({ c: 1 }); // reactive update counter
+  const updater = function () { ucount.c += 1; }; // forces observable update
+  // the $watch callback updates monitoring getters once `predicate` or `ucount`
+  // changes, but `predicate` needs wrapping to allow Promise returns
+  const watch_predicate = function () {
+    // all reactive accesses are tracked from within a $watch predicate, so:
+    // *always* invoke the reactive `ucount.c` getter and…
+    const p = ucount.c && predicate.call (this); // …the custom `predicate`
+    // Promises need to re-trigger the $watch once resolved
+    if (p instanceof Promise)
+      (async () => {
+	const value = await p;
+	if (value !== watch_predicate.last)
+	  {
+	    watch_predicate.last = value;
+	    updater();
+	  }
+      }) ();
+    else
+      watch_predicate.last = p;
+    return watch_predicate.last;
+  };
+  watch_predicate.last = undefined; // initial value for async `predicate`
   // install tmpl functions
   if (add_functions)
     for (const key in tmpl)
       {
 	if (tmpl[key] == observable_force_update)
-	  {
-	    if (!update_)
-	      {
-		const updater = Vue.observable ({ c: 1 });
-		update_ = function () { updater.c += 1; }; // force observable update
-		// update monitoring getters once `predicate` or `updater` changes
-		watch_predicate = function () {
-		  // all reactive accesses are tracked from within a $watch predicate, so…
-		  const c = updater.c; // always invoke reactive getter from predicate
-		  const p = predicate.call (this); // always invoke custom predicate
-		  return c && p;
-		};
-	      }
-	    odata[key] = update_;      // add method to force updates
-	  }
+	  odata[key] = updater;      // add method to force updates
 	else if (tmpl[key] instanceof Function)
 	  odata[key] = tmpl[key];
       }
   // create watch, triggering the getters if predicate turns true
-  this.$watch (watch_predicate, (nv, ov) => run_monitoring_getters (!nv), { immediate: true });
+  this.$watch (watch_predicate,
+	       (newval /*, oldval*/) => {
+		 const reset = !newval;
+		 monitoring_getters.forEach (getter_and_listen => getter_and_listen (reset));
+	       },
+	       { immediate: true });
   return odata;
 }
 
