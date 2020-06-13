@@ -1810,7 +1810,9 @@ class NoteBoard {
     this.noteboard.classList.add ('note-board');
     document.body.appendChild (this.noteboard);
     this.queue = [];
-    this.run_queue = debounce (this.run_queue_now, { wait: this.THROTTLE });
+    this.run_queue = debounce (this.run_queue_now,
+			       { wait: this.FADING + this.THROTTLE,
+				 immediate: true });
   }
   create_note (text) {
     // create note with FADEIN
