@@ -40,7 +40,17 @@
 	    if (Electron) // When running inside Electron, provide 'Electron' globally
 	      {
 		Object.defineProperty (window, 'Electron', { value: Electron });
-		Object.assign (CONFIG, Electron.getCurrentWindow().MAINCONFIG);
+		const win = Electron.getCurrentWindow();
+		Object.assign (CONFIG, win.MAINCONFIG);
+		const navigate_external = (ev, url) => {
+		  if (ev.defaultPrevented) // <- main.js causes prevention
+		    {
+		      console.log ("NAVIGATE-EXTERNAL:", url);
+		      Electron.shell.openExternal (url);
+		    }
+		};
+		win.webContents.addListener ('will-navigate', navigate_external);
+		win.webContents.addListener ('new-window', navigate_external);
 		if (CONFIG.debug) // show DevTools on hotkey
 		  document.addEventListener ("keydown", (event) => {
 		    // Shift+Ctrl+I
