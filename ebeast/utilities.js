@@ -39,33 +39,40 @@ export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
  * Options:
  * - `wait` - number of milliseconds to pass until `callback` may be called.
  * - `restart` - always restart the timer once the wrapper is called.
+ * - `immediate` - immediately invoke `callback` and then start the timeout period.
  */
 export function debounce (callback, options = {}) {
   if (!(callback instanceof Function))
     throw new TypeError ('argument `callback` must be of type Function');
   const restart = !!options.restart;
   const milliseconds = Number.isFinite (options.wait) ? options.wait : -1;
+  let immediate = milliseconds >= 0 && !!options.immediate;
   options = undefined; // allow GC
   let handlerid = undefined;
   let cresult = undefined;
-  let cthis = undefined;
-  let cargs = undefined;
+  let args = undefined;
   function callback_caller() {
     handlerid = undefined;
-    const ithis = cthis, iargs = cargs;
-    cthis = undefined;
-    cargs = undefined; // allow GC
-    cresult = callback.apply (ithis, iargs);
+    if (args)
+      {
+	const cthis = args.cthis, cargs = args.cargs;
+	args = undefined;
+	if (immediate)
+	  handlerid = setTimeout (() => callback_caller (false), milliseconds);
+	cresult = callback.apply (cthis, cargs);
+      }
   }
   function wrapper_func (...newargs) {
+    const first_handler = !handlerid;
     if (restart) // always restart timer
       wrapper_func.cancel();
-    cthis = this;
-    cargs = newargs;
+    args = { cthis: this, cargs: newargs };
     if (!handlerid)
       {
 	if (milliseconds < 0)
 	  handlerid = requestAnimationFrame (callback_caller);
+	else if (immediate && first_handler)
+	  handlerid = setTimeout (callback_caller, 0);
 	else
 	  handlerid = setTimeout (callback_caller, milliseconds);
       }
@@ -78,9 +85,8 @@ export function debounce (callback, options = {}) {
 	  handlerid = cancelAnimationFrame (handlerid);
 	else // milliseconds >= 0
 	  handlerid = clearTimeout (handlerid);
-	cthis = undefined;
-	cargs = undefined; // allow GC
-      } // but keep last result
+	args = undefined;
+      } // keep last result
   };
   return wrapper_func;
 }
