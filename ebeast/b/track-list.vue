@@ -8,25 +8,6 @@
   : The *Bse.Song* containing playback tracks.
 </docs>
 
-<template>
-
-  <b-hflex class="b-track-list" @dblclick.stop="list_dblclick" >
-    <div class="b-track-list-tracks" >
-      <b-track-view class="b-track-list-row"
-		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
-		    :track="pair[0]" :trackindex="tindex"></b-track-view>
-      <div class="b-track-scrollbar-spacer"></div>
-    </div>
-    <div class="b-track-list-parts" >
-      <b-part-list class="b-track-list-row"
-		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
-		    :track="pair[0]" :trackindex="tindex"></b-part-list>
-      <span class="b-track-list-pointer" ref="tickpointer"></span>
-    </div>
-  </b-hflex>
-
-</template>
-
 <style lang="scss">
   @import 'mixins.scss';
   $b-track-list-arranger-lpad: 3px;
@@ -61,6 +42,25 @@
     width: 3px; background: linear-gradient(to right, #0f00, #0f08 80%, #0f0f);
   }
 </style>
+
+<template>
+
+  <b-hflex class="b-track-list" @dblclick.stop="list_dblclick" >
+    <div class="b-track-list-tracks" >
+      <b-track-view class="b-track-list-row"
+		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
+		    :track="pair[0]" :trackindex="tindex"></b-track-view>
+      <div class="b-track-scrollbar-spacer"></div>
+    </div>
+    <div class="b-track-list-parts" >
+      <b-part-list class="b-track-list-row"
+		    v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
+		    :track="pair[0]" :trackindex="tindex"></b-part-list>
+      <span class="b-track-list-pointer" ref="tickpointer"></span>
+    </div>
+  </b-hflex>
+
+</template>
 
 <script>
 async function list_tracks () {
