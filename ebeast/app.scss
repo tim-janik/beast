@@ -180,3 +180,40 @@ plaintext, listing, xmp,
   }
 
 }
+
+/* == NoteBoard == */
+div.note-board {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; flex-wrap: wrap-reverse;
+  align-items: flex-end; align-content: end;
+  pointer-events: none; user-select: none;
+  --note-board-padding: 12px;
+  padding: 0 0 var(--note-board-padding) var(--note-board-padding);
+  transition: all 0.3s ease;
+  .note-board-note {
+    position: relative; width: 25em; min-height: 5em;
+    color: #111; background: #eef; opacity: 0.95;
+    pointer-events: all;
+    padding: var(--note-board-padding); margin: var(--note-board-padding) var(--note-board-padding) 0 0;
+    border-radius: calc(var(--note-board-padding) / 2);
+    transition: all 0.3s ease-in-out; // see Util.NoteBoard.FADING
+    &.note-board-fadein {
+      transform: translateY(100vh);
+    }
+    &.note-board-fadeout {
+      overflow: hidden; transform: translateY(-33vh);  // visual slide-up effect
+      padding: 0; margin: 0; height: 0; min-height: 0; // allow siblings to flow up
+      transition: all 0.3s ease-in, transform 0.3s linear; // see Util.NoteBoard.FADING
+      opacity: 0.3; // smoothen with subtle fade
+      z-index: -1;  // avoid overlaping children during transition
+    }
+    // style close button
+    .note-board-note-close {
+      position: absolute; top: var(--note-board-padding); right: var(--note-board-padding);
+      display: flex; margin-top: -0.2em;
+      &:hover { color: #f88; }
+    }
+    // make room for .note-board-note-close
+    &:before { float: right; content: ' '; padding: 1px; }
+  }
+}

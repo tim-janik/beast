@@ -1799,6 +1799,65 @@ export function remove_hotkey (hotkey, callback) {
   return false;
 }
 
+/** Show temporary notifications */
+class NoteBoard {
+  THROTTLE = 500;	// delay between notes
+  TIMEOUT = 15 * 1000;	// time for note to last
+  FADING = 300;		// fade in/out in milliseconds, see app.scss
+  constructor() {
+    // create one toplevel div.note-board element to deal with all popups
+    this.noteboard = document.createElement ('div');
+    this.noteboard.classList.add ('note-board');
+    document.body.appendChild (this.noteboard);
+    this.queue = [];
+    this.run_queue = debounce (this.run_queue_now, { wait: this.THROTTLE });
+  }
+  create_note (text) {
+    // create note with FADEIN
+    const note = document.createElement ('div');
+    note.classList.add ('note-board-note');
+    note.classList.add ('note-board-fadein');
+    note.innerText = text;
+    // setup close button
+    const close = document.createElement ('span');
+    close.classList.add ('note-board-note-close');
+    close.innerText = "✖";
+    note.appendChild (close);
+    const popdown = () => {
+      note.classList.add ('note-board-fadeout');
+      setTimeout (() => {
+	if (note.parentNode)
+	  note.parentNode.removeChild (note);
+      }, this.FADING + 1);
+    };
+    close.onclick = popdown;
+    // show note with delay and throttling
+    const popup = () => {
+      this.noteboard.appendChild (note);
+      setTimeout (() => {
+	note.classList.remove ('note-board-fadein');
+	setTimeout (popdown, this.TIMEOUT);
+      }, this.FADING);
+    };
+    this.queue.push (popup);
+    this.run_queue();
+  }
+  run_queue_now() {
+    const nextf = this.queue.shift();
+    if (nextf)
+      {
+	nextf();
+	this.run_queue();
+      }
+  }
+}
+const global_note_board = new NoteBoard();
+
+/** Show a temporary notification popup */
+export function show_note (text) {
+  global_note_board.create_note (text);
+}
+
 /** A mechanism to display data-bubble="" tooltip popups */
 class DataBubble {
   constructor() {
