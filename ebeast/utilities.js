@@ -1814,17 +1814,18 @@ class NoteBoard {
 			       { wait: this.FADING + this.THROTTLE,
 				 immediate: true });
   }
-  create_note (text) {
+  create_note (text, timeout) {
     // create note with FADEIN
     const note = document.createElement ('div');
     note.classList.add ('note-board-note');
     note.classList.add ('note-board-fadein');
+    // setup content
     note.innerText = text;
     // setup close button
     const close = document.createElement ('span');
     close.classList.add ('note-board-note-close');
     close.innerText = "✖";
-    note.appendChild (close);
+    note.insertBefore (close, note.firstChild);
     const popdown = () => {
       note.classList.add ('note-board-fadeout');
       setTimeout (() => {
@@ -1835,10 +1836,12 @@ class NoteBoard {
     close.onclick = popdown;
     // show note with delay and throttling
     const popup = () => {
+      note.setAttribute ('data-timestamp', now());
       this.noteboard.appendChild (note);
       setTimeout (() => {
 	note.classList.remove ('note-board-fadein');
-	setTimeout (popdown, this.TIMEOUT);
+	if (!(timeout < 0))
+	  setTimeout (popdown, timeout ? timeout : this.TIMEOUT);
       }, this.FADING);
     };
     this.queue.push (popup);
@@ -1855,9 +1858,9 @@ class NoteBoard {
 }
 const global_note_board = new NoteBoard();
 
-/** Show a temporary notification popup */
-export function show_note (text) {
-  global_note_board.create_note (text);
+/** Show a notification popup, with adequate default timeout */
+export function show_note (text, timeout = undefined) {
+  global_note_board.create_note (text, timeout);
 }
 
 /** A mechanism to display data-bubble="" tooltip popups */
