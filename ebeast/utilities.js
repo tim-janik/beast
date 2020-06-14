@@ -1823,7 +1823,7 @@ class NoteBoard {
     if (globalThis.MarkdownIt)
       {
 	note.classList.add ('note-board-markdown');
-	note.innerHTML = (new globalThis.MarkdownIt()).render (text);
+	markdown_to_html (note, text);
       }
     else
       {
@@ -1870,6 +1870,29 @@ const global_note_board = new NoteBoard();
 /** Show a notification popup, with adequate default timeout */
 export function show_note (text, timeout = undefined) {
   global_note_board.create_note (text, timeout);
+}
+
+/** Generate `element.innerHTML` from `markdown_text` */
+export function markdown_to_html (element, markdown_text) {
+  // configure Markdown generator
+  const config = { linkify: true };
+  const md = new globalThis.MarkdownIt (config);
+  // add target=_blank to all links
+  const orig_link_open = md.renderer.rules.link_open || function (tokens, idx, options, env, self) {
+    return self.renderToken (tokens, idx, options); // default renderer
+  };
+  md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+    const aIndex = tokens[idx].attrIndex ('target'); // attribute could be present already
+    if (aIndex >= 0)
+      tokens[idx].attrs[aIndex][1] = '_blank';       // override when present
+    else
+      tokens[idx].attrPush (['target', '_blank']);   // or add new attribute
+    return orig_link_open (tokens, idx, options, env, self); // resume
+  };
+  // render HTML
+  const html = md.render (markdown_text);
+  element.classList.add ('markdown-it-outer');
+  element.innerHTML = html;
 }
 
 /** A mechanism to display data-bubble="" tooltip popups */
