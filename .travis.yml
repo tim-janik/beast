@@ -65,12 +65,12 @@ jobs:
     # == Stage2 Fedora ==
     # Fedora build tests, runs *after* the 'appimage' succeeded
     - stage: Stage1
-      name: "Fedora-28 (build check appimage)"
-      env: PIPELINE=Fedora-28
+      name: "Fedora-32 (build check appimage)"
+      env: PIPELINE=Fedora-32
       before_install: |
         travis_retry git fetch --unshallow --tags
       script: |
-        docker build --build-arg DIST=fedora:28 -f misc/Dockerfile-yum -t beast-fedora-28 .
+        docker build --build-arg DIST=fedora:32 -f misc/Dockerfile-yum -t beast-fedora-32 .
 
     # == 'Asan' Pipeline ==
     # Run checks with asan turned on.
