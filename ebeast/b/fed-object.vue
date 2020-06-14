@@ -46,14 +46,14 @@
 	<hr style="flex-grow: 1; margin-left: 0.5em; min-width: 5em" />
       </b-hflex>
 
-      <template v-for="field in group[1]" >
-	<span style="grid-column: 1; padding: 0 1em 0; text-align: left" :title="field[3].blurb" :key="'f1:' + field[0]"
-	>{{ field[2] }}</span>
-	<span style="text-align: right" :title="field[3].blurb" :key="'f2:' + field[0]">
-	  <component :is="field[1]" v-bind="field[3]" :class="'b-fed-object--' + field[0]"
-		     :value="field[4][field[0]]" @input="field[5]" ></component></span>
-	<span :key="'f3:' + field[0]">
-	  <button class="b-fed-object-clear" tabindex="-1" @click="clear_field (field[0])" > ⊗  </button></span>
+      <template v-for="f in group[1]" >
+	<span style="grid-column: 1; padding: 0 1em 0; text-align: left" :data-bubble="f.blurb" :key="'f1:' + f.ident"
+	>{{ f.label }}</span>
+	<span style="text-align: right" :data-bubble="f.blurb" :key="'f2:' + f.ident">
+	  <component :is="f.ctype" v-bind="f.attrs" :class="'b-fed-object--' + f.ident"
+		     :value="f.odata[f.ident]" @input="f.apply" ></component></span>
+	<span :key="'f3:' + f.ident">
+	  <button class="b-fed-object-clear" tabindex="-1" @click="clear_field (f.ident)" > ⊗  </button></span>
       </template>
 
     </template>
@@ -164,7 +164,14 @@ export default {
 		}
 	      else
 		groupfields = groupmap[group][1];
-	      groupfields.push ([ fieldname, ct, label, attrs, o, handler ]);
+	      const blurb = td[fieldname + '.blurb'] || undefined;
+	      groupfields.push ({ ident: fieldname,
+				  ctype: ct,
+				  label: label,
+				  attrs: attrs,
+				  odata: o,
+				  blurb: blurb,
+				  apply: handler });
 	    }
 	}
       return grouplist; // [ [ 'Group', [ field1, field2 ], [ 'Other', [ field3, field4 ] ] ]
@@ -185,7 +192,10 @@ export default {
       const o = this.object;
       Vue.set (o, fieldname, value);
       if (this.emit_update_ == undefined)
-	this.emit_update_ = Util.debounce (this.debounce, () => this.$emit ('input', this.object));
+	this.emit_update_ = Util.debounce (() => this.$emit ('input', this.object),
+					   { wait: this.debounce,
+					     restart: true,
+					   });
       this.emit_update_();
     },
   },

@@ -28,6 +28,7 @@
       {
 	// Global configuration
 	const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295,              // plus delayed package.json values
+			 dpr_movement: false, // Chrome bug, movementX *should* match screenX units
 			 files: [], p: '', m: '', norc: false, uiscript: '' }; // defaults for non-Electron connections
 	// Add package.json build info
 	const packagejson = JSON.parse (document.getElementById ('-html-head-package_json').innerHTML);
@@ -47,6 +48,11 @@
 		  });
 	      }
 	  }
+	// Detect Chrome Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1092358 https://github.com/w3c/pointerlock/issues/42
+	const chrome_major = parseInt (( /\bChrome\/([0-9]+)\./.exec (navigator.userAgent) || [0,0] )[1]);
+	CONFIG.dpr_movement = chrome_major >= 37 && chrome_major <= 83;
+	console.assert (chrome_major <= 83, `WARNING: Chrome/${chrome_major} has not been tested for the movementX devicePixelRatio bug`);
+	// Provide globals: CONFIG, debug()
 	Object.defineProperty (window, 'CONFIG', { value: CONFIG });
 	Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
       }
@@ -103,6 +109,8 @@
 	  window.$log.loadstatus = null; // end bootup logging
 	}
     };
+    // Add helpers for device specific CSS
+    document.body.parentNode.style.setProperty ('--device-pixel-ratio', window.devicePixelRatio);
     // Add helpers for browser specific CSS (needs document.body to exists)
     document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
     document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
@@ -125,7 +133,7 @@
       productionTip: false,
       devtools: false,	// prevent warning about VUEJS_DEVTOOLS missing
       silent: !CONFIG.debug,
-      performance: true,
+      performance: false,
     });
     Object.assign (Vue.options, {
       inheritAttrs: false, // Add non-props attributes to $attrs (default in Vue-3)
@@ -229,6 +237,11 @@
     await remove_load_status ();
   }) ();
   </script>
+
+  <!-- Embedded SVGs, hide but keep 'defs' element valid by not using display:none -->
+  <div id='ebeast-embedded-svgs' style="position: fixed !important; width: 0 !important; height: 0 !important">
+    <!--'eknob.svg'-->
+  </div>
 
 </body>
 </html>

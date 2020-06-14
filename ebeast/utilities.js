@@ -2,7 +2,106 @@
 'use strict';
 
 const AUTOTEST = true;
+const UNSET = Symbol ('UNSET');
 
+// == Compat fixes ==
+class FallbackResizeObserver {
+  constructor (resize_handler) {
+    this.observables = new Set();
+    this.resizer = () => resize_handler.call (null, [], this);
+  }
+  disconnect() {
+    this.observables.clear();
+    window.removeEventListener ('resize', this.resizer);
+  }
+  observe (ele) {
+    if (!this.observables.size)
+      window.addEventListener ('resize', this.resizer);
+    this.observables.add (ele);
+  }
+  unobserve (ele) {
+    this.observables.delete (ele);
+    if (!this.observables.size())
+      this.disconnect();
+  }
+}
+/// Work around FireFox 68 having ResizeObserver disabled
+export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
+
+/** Yield a wrapper function for `callback` that throttles invocations.
+ * Regardless of the frequency of calls to the returned wrapper, `callback`
+ * will only be called once per `requestAnimationFrame()` cycle, or
+ * after `milliseconds`.
+ * The return value of the wrapper functions is the value of the last
+ * callback invocation.
+ * A `cancel()` method can be called on the returned wrapper to cancel the
+ * next pending `callback` invocation.
+ * Options:
+ * - `wait` - number of milliseconds to pass until `callback` may be called.
+ * - `restart` - always restart the timer once the wrapper is called.
+ */
+export function debounce (callback, options = {}) {
+  if (!(callback instanceof Function))
+    throw new TypeError ('argument `callback` must be of type Function');
+  const restart = !!options.restart;
+  const milliseconds = Number.isFinite (options.wait) ? options.wait : -1;
+  options = undefined; // allow GC
+  let handlerid = undefined;
+  let cresult = undefined;
+  let cthis = undefined;
+  let cargs = undefined;
+  function callback_caller() {
+    handlerid = undefined;
+    const ithis = cthis, iargs = cargs;
+    cthis = undefined;
+    cargs = undefined; // allow GC
+    cresult = callback.apply (ithis, iargs);
+  }
+  function wrapper_func (...newargs) {
+    if (restart) // always restart timer
+      wrapper_func.cancel();
+    cthis = this;
+    cargs = newargs;
+    if (!handlerid)
+      {
+	if (milliseconds < 0)
+	  handlerid = requestAnimationFrame (callback_caller);
+	else
+	  handlerid = setTimeout (callback_caller, milliseconds);
+      }
+    return cresult;
+  }
+  wrapper_func.cancel = () => {
+    if (handlerid)
+      {
+	if (milliseconds < 0)
+	  handlerid = cancelAnimationFrame (handlerid);
+	else // milliseconds >= 0
+	  handlerid = clearTimeout (handlerid);
+	cthis = undefined;
+	cargs = undefined; // allow GC
+      } // but keep last result
+  };
+  return wrapper_func;
+}
+
+/** Process all events of type `eventname` with a single callback exclusively */
+export function capture_event (eventname, callback) {
+  const handler = ev => {
+    callback (ev);
+    ev.preventDefault();
+    ev.stopPropagation();
+    return true;
+  };
+  const options = { capture: true, passive: false };
+  document.body.addEventListener (eventname, handler, options);
+  const uncapture = () => {
+    document.body.removeEventListener (eventname, handler, options);
+  };
+  return uncapture;
+}
+
+// == Vue Helpers ==
 export const vue_mixins = {};
 export const vue_directives = {};
 
@@ -18,32 +117,6 @@ export function assign_forof (target, source) {
   for (let e of source)
     target[e] = source[e];
   return target;
-}
-
-/// Yield a wrapper that delays calling `callback` until `delay` miliseconds have passed since the last wrapper call.
-export function debounce (delay, callback) {
-  if (!(callback instanceof Function))
-    throw new TypeError ('argument `callback` must be of type Function');
-  let ctimer, cthis, cargs, creturn; // closure variables
-  function invoke_callback() {
-    ctimer = undefined;
-    const invoke_this = cthis, invoke_args = cargs;
-    cthis = undefined;
-    cargs = undefined;
-    creturn = callback.apply (invoke_this, invoke_args);
-    return undefined;
-  }
-  function cwrapper (...args) {
-    cthis = this;
-    cargs = args;
-    if (ctimer != undefined)
-      clearTimeout (ctimer);
-    ctimer = setTimeout (invoke_callback, delay);
-    const last_return = creturn;
-    creturn = undefined;
-    return last_return;
-  }
-  return cwrapper;
 }
 
 /** Remove element `item` from `array` */
@@ -692,6 +765,39 @@ export function inside_display_none (element) {
       element = element.parentElement;
     }
   return false;
+}
+
+/** Retrieve normalized scroll wheel event delta (across Browsers)
+ * This returns an object `{x,y}` with negative values pointing
+ * LEFT/UP and positive values RIGHT/DOWN respectively.
+ * For zoom step interpretation, the x/y pixel values should be
+ * reduced via `Math.sign()`.
+ * For scales the pixel values might feel more natural, because
+ * while Firefox tends to increase the number of events with
+ * increasing wheel distance, Chromium tends to accumulate and
+ * send fewer events with higher values instead.
+ */
+export function wheel_delta (ev)
+{
+  const DPR = Math.max (window.devicePixelRatio || 1, 1);
+  const WHEEL_DELTA = 120;	// Corresponds to a 15° mouse wheel step
+  const CHROMEPIXEL = 53;	// Chromium has a wheelDeltaY/deltaY ratio of 120/53 and includes DPR
+  const FIREFOXPIXEL = DPR / 3;	// Firefox sets deltaX=1 and deltaY=3 per step on Linux
+  const PAGESTEP = 100 * DPR;	// Chromium pixels per scroll step
+  // https://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
+  // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/U3kH6_98BuY
+  if (ev.deltaMode >= 2) // DOM_DELTA_PAGE
+    return { x: ev.deltaX * PAGESTEP, y: ev.deltaY * PAGESTEP };
+  if (ev.deltaMode >= 1) // DOM_DELTA_LINE - Firefox sets deltaX=1 and deltaY=3 per step on Linux
+    return { x: ev.deltaX * 3 * FIREFOXPIXEL * 10, y: ev.deltaY * FIREFOXPIXEL * 10 };
+  if (ev.deltaMode >= 0) // DOM_DELTA_PIXEL - adjusted for Chromium ratio, includes DPR
+    return { x: ev.deltaX / CHROMEPIXEL * 10, y: ev.deltaY / CHROMEPIXEL * 10 };
+  if (ev.wheelDeltaX !== undefined) // Chromium includes DPR in wheelDelta
+    return { x: -ev.wheelDeltaX / WHEEL_DELTA * 10,
+	     y: -ev.wheelDeltaY / WHEEL_DELTA * 10 };
+  if (ev.wheelDelta !== undefined)
+    return { x: 0, y: -ev.wheelDelta / WHEEL_DELTA * 10 };
+  return { x: 0, y: (ev.detail || 0) * DPR * 10 };
 }
 
 /** List all elements that can take focus and are descendants of `element` or the document. */
@@ -1518,7 +1624,17 @@ export function clear_keyboard_click (element)
 /** Check whether `element` is contained in `array` */
 export function in_array (element, array)
 {
+  console.assert (array instanceof Array);
   return array.indexOf (element) >= 0;
+}
+
+/** Check whether `element` is found during `for (... of iteratable)` */
+export function matches_forof (element, iteratable)
+{
+  for (let item of iteratable)
+    if (element === item)
+      return true;
+  return false;
 }
 
 /// Symbolic names for key codes
@@ -1672,29 +1788,188 @@ export function remove_hotkey (hotkey, callback) {
   return false;
 }
 
-class FallbackResizeObserver {
-  constructor (resize_handler) {
-    this.observables = new Set();
-    this.resizer = () => resize_handler.call (null, [], this);
+/** A mechanism to display data-bubble="" tooltip popups */
+class DataBubble {
+  constructor() {
+    // create one toplevel div.data-bubble element to deal with all popups
+    this.bubble = document.createElement ('div');
+    this.bubble.classList.add ('data-bubble');
+    this.bubblediv = document.createElement ('div');
+    this.bubblediv.classList.add ('data-bubble-inner');
+    this.bubble.appendChild (this.bubblediv);
+    document.body.appendChild (this.bubble);
+    this.current = null; // current element showing a data-bubble
+    this.stack = []; // element stack to force bubble
+    this.lasttext = "";
+    this.last_event = null;
+    this.buttonsdown = 0;
+    this.coords = {};
+    // milliseconds to wait to detect idle time after mouse moves
+    const IDLE_DELAY = 115;
+    // trigger popup handling after mouse rests
+    this.restart_bubble_timer = debounce (() => this.check_showtime (true),
+					  { restart: true, wait: IDLE_DELAY });
+    this.debounced_check = debounce (this.check_showtime);
+    this.queue_update = debounce (this.update_now);
+    const recheck_event = (ev, newmove) => {
+      this.last_event = ev;
+      this.debounced_check();
+    };
+    document.addEventListener ("mousemove", recheck_event, { capture: true, passive: true });
+    document.addEventListener ("mousedown", recheck_event, { capture: true, passive: true });
+    document.addEventListener ("mouseleave",
+			       ev => (ev.target === this.current) && this.debounced_check(),
+			       { capture: true, passive: true });
+    this.resizeob = new ResizeObserver (() => !!this.current && this.debounced_check());
   }
-  disconnect() {
-    this.observables.clear();
-    window.removeEventListener ('resize', this.resizer);
+  shutdown() {
+    console.assert (!this.current);
+    this.resizeob.disconnect();
+    document.removeEventListener ("mousemove", this.mousemove);
+    document.removeEventListener ("mousedown", this.mousemove);
+    document.removeEventListener ("mouseleave", this.mousemove);
   }
-  observe (ele) {
-    if (!this.observables.size)
-      window.addEventListener ('resize', this.resizer);
-    this.observables.add (ele);
+  check_showtime (showtime = false) {
+    if (this.last_event)
+      {
+	const coords = { x: this.last_event.screenX, y: this.last_event.screenY };
+	this.buttonsdown = !!this.last_event.buttons;
+	if (!this.buttonsdown && !this.stack.length &&
+	    !equals_recursively (coords, this.coords) &&
+	    this.last_event.type === "mousemove")
+	  this.restart_bubble_timer();
+	this.coords = coords; // needed to ignore 0-distance moves
+	this.last_event = null;
+      }
+    if (this.stack.length) // stack takes precedence over events
+      {
+	const next = this.stack[0];
+	if (next != this.current)
+	  {
+	    this.hide();
+	    this.restart_bubble_timer.cancel();
+	  }
+	if (!this.current)
+	  this.show (next);
+	return;
+      }
+    if (this.buttonsdown)
+      {
+	this.hide();
+	this.restart_bubble_timer.cancel();
+	return;
+      }
+    if (!showtime && !this.current)
+      return;
+    const els = document.body.querySelectorAll ('*:hover[data-bubble]');
+    const next = els.length ? els[els.length - 1] : null;
+    if (next != this.current)
+      this.hide();
+    if (next && showtime && !this.current)
+      this.show (next);
   }
-  unobserve (ele) {
-    this.observables.delete (ele);
-    if (!this.observables.size())
-      this.disconnect();
+  hide() {
+    if (this.current)
+      {
+	delete this.current.data_bubble_active;
+	this.current = null;
+	this.resizeob.disconnect();
+	this.bubble.classList.remove ('data-bubble-visible');
+      }
+    // keep textContent for fade-outs
+  }
+  update_now() {
+    if (this.current)
+      {
+	let cbtext;
+	if (this.current.data_bubble_callback)
+	  {
+	    cbtext = this.current.data_bubble_callback();
+	    this.current.setAttribute ('data-bubble', cbtext);
+	  }
+	const newtext = cbtext || this.current.getAttribute ('data-bubble');
+	if (!newtext)
+	  this.hide();
+	else if (newtext != this.lasttext)
+	  {
+	    this.lasttext = newtext;
+	    this.bubblediv.textContent = this.lasttext;
+	  }
+      }
+  }
+  show (element) {
+    console.assert (!this.current);
+    this.current = element;
+    this.current.data_bubble_active = true;
+    this.resizeob.observe (this.current);
+    this.bubble.classList.add ('data-bubble-visible');
+    this.update_now(); // might hide()
+    if (this.current) // resizing
+      {
+	document.body.appendChild (this.bubble); // restack the bubble
+	const viewport = {
+	  width:  Math.max (document.documentElement.clientWidth || 0, window.innerWidth || 0),
+	  height: Math.max (document.documentElement.clientHeight || 0, window.innerHeight || 0),
+	};
+	// request ideal layout
+	const r = this.current.getBoundingClientRect();
+	this.bubble.style.top = '0px';
+	this.bubble.style.right = '0px';
+	let s = this.bubble.getBoundingClientRect();
+	let top = Math.max (0, r.y - s.height);
+	let right = Math.max (0, viewport.width - (r.x + r.width / 2 + s.width / 2));
+	this.bubble.style.top = top + 'px';
+	this.bubble.style.right = right + 'px';
+	s = this.bubble.getBoundingClientRect();
+	// constrain layout
+	if (s.left < 0)
+	  {
+	    right += s.left;
+	    right = Math.max (0, right);
+	    this.bubble.style.right = right + 'px';
+	  }
+      }
   }
 }
+const global_data_bubble = new DataBubble();
 
-/// Work around FireFox 68 having ResizeObserver disabled
-export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
+/** Set the `data-bubble` attribute of `element` to `text` or force its callback */
+export function data_bubble_update (element, text = UNSET) {
+  if (text !== UNSET && !element.data_bubble_callback)
+    {
+      if (text)
+	element.setAttribute ('data-bubble', text);
+      else
+	element.removeAttribute ('data-bubble');
+    }
+  global_data_bubble.queue_update();
+}
+
+/** Assign a callback function to fetch the `data-bubble` attribute of `element` */
+export function data_bubble_callback (element, callback) {
+  element.data_bubble_callback = callback;
+  if (callback)
+    element.setAttribute ('data-bubble', "");	// [data-bubble] selector needs existing attribute
+  global_data_bubble.queue_update();
+}
+
+/** Force `data-bubble` to be shown for `element` */
+export function data_bubble_force (element) {
+  global_data_bubble.stack.unshift (element);
+  global_data_bubble.debounced_check();
+}
+
+/** Reset the `data-bubble` attribute, its callback and cancel a forced bubble */
+export function data_bubble_clear (element) {
+  if (global_data_bubble.stack.length)
+    array_remove (global_data_bubble.stack, element);
+  if (element.data_bubble_active)
+    global_data_bubble.hide();
+  if (element.data_bubble_callback)
+    element.data_bubble_callback = undefined;
+  element.removeAttribute ('data-bubble');
+  global_data_bubble.debounced_check();
+}
 
 /** Assign `map[key] = cleaner`, while awaiting and calling any previously existing cleanup function */
 export function assign_async_cleanup (map, key, cleaner) {

@@ -1,6 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
-// HSV (HSB) to RGBA
+/** HSV (HSB) to RGBA */
 @function hsv($hue, $satb, $value, $a: 1) {
   @if $satb == 0 {
     @return hsla($hue, 0, $value, $a)
@@ -11,4 +11,12 @@
     $satl: $satb * $value / if($lumi < 50, $lumi * 2, 200 - $lumi * 2);
     @return hsla($hue, $satl, $lumi, $a);
   }
+}
+
+/** Value of window.devicePixelRatio, assigned via JS to the CSS var `--device-pixel-ratio` */
+$device-pixel-ratio: var(--device-pixel-ratio);
+
+/** Convert CSS `px` to device pixels via the CSS var `--device-pixel-ratio` */
+@function dppx($n: 1) {
+  @return calc(1px * #{$n} / #{$device-pixel-ratio});
 }

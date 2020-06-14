@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="eknob"
+   version="1.1"
+   viewBox="0 0 64 56"
+   height="56"
+   width="64">
+  <defs
+     id="eknob-defs">
+    <linearGradient
+       id="eknob-linearGradient4585">
+      <stop
+         style="stop-color:#848484;stop-opacity:1"
+         offset="0" />
+      <stop
+         style="stop-color:#686868;stop-opacity:1"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="52"
+       y1="10"
+       x2="31"
+       x1="31"
+       id="eknob-linearGradient4587"
+       xlink:href="#eknob-linearGradient4585"
+       gradientTransform="matrix(1.0000014,0,0,1.0000014,0.99995636,0.9999541)" />
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="52"
+       y1="10"
+       x2="31"
+       x1="31"
+       id="eknob-linearGradient4587-0"
+       xlink:href="#eknob-linearGradient4585"
+       gradientTransform="matrix(1.3953509,0,0,1.3953503,-11.255873,-11.255848)" />
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="52"
+       y1="10"
+       x2="31"
+       x1="31"
+       id="eknob-linearGradient4587-9"
+       xlink:href="#eknob-linearGradient4585"
+       gradientTransform="matrix(1.0000014,0,0,1.0000014,0.9999564,0.9999541)" />
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="52"
+       y1="10"
+       x2="31"
+       x1="31"
+       id="eknob-linearGradient4587-2"
+       xlink:href="#eknob-linearGradient4585"
+       gradientTransform="matrix(1.0000014,0,0,1.0000014,0.9999564,0.9999541)" />
+  </defs>
+  <metadata
+     id="eknob-metadata">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="eknob-base">
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 32,2 A 30,30 0 0 0 2,32 30,30 0 0 0 10.800781,53.201172 L 13.626953,50.375 A 26,26 0 0 1 6,32 26,26 0 0 1 32,6 26,26 0 0 1 58,32 26,26 0 0 1 50.373047,50.375 l 2.826172,2.826172 A 30,30 0 0 0 62,32 30,30 0 0 0 32,2 Z"
+       id="eknob-base-slot" />
+    <circle
+       r="19"
+       cy="32"
+       cx="32"
+       id="eknob-base-knob"
+       style="display:inline;fill:url(#eknob-linearGradient4587);fill-opacity:1;stroke:#161616;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     id="eknob-h1light">
+    <path
+       style="display:inline;fill:#71cff2;fill-opacity:1;stroke:#71cff2;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 32 2 A 30 30 0 0 0 2 32 A 30 30 0 0 0 10.800781 53.201172 L 13.626953 50.375 A 26 26 0 0 1 6 32 A 26 26 0 0 1 32 6 L 32 2 z "
+       id="eknob-h1light-path" />
+  </g>
+  <g
+     id="eknob-needle">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#444444;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="eknob-needle135b"
+       width="4"
+       height="17"
+       x="30"
+       y="11"
+       rx="2"
+       ry="1" />
+  </g>
+  <g
+     id="eknob-h1dark">
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 32 2 A 30 30 0 0 0 2 32 A 30 30 0 0 0 10.800781 53.201172 L 13.626953 50.375 A 26 26 0 0 1 6 32 A 26 26 0 0 1 32 6 L 32 2 z "
+       id="eknob-h1dark-path" />
+  </g>
+  <g
+     id="eknob-h2light">
+    <path
+       style="display:inline;fill:#71cff2;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 32 2 L 32 6 A 26 26 0 0 1 58 32 A 26 26 0 0 1 50.373047 50.375 L 53.199219 53.201172 A 30 30 0 0 0 62 32 A 30 30 0 0 0 32 2 z "
+       id="eknob-h2light-path" />
+  </g>
+  <g
+     id="eknob-h3light">
+    <path
+       id="eknob-h3light-path"
+       d="M 32,2 C 15.431458,2 2,15.431458 2,32 c 0.0069,7.954332 3.1725081,15.580318 8.800781,21.201172 L 13.626953,50.375 C 8.7491003,45.50337 6.0057026,38.893924 6,32 6,17.640597 17.640597,6 32,6 c 0.834888,0.00215 1.435288,0.031775 2.2661,0.1142071 L 34.614445,2.1326054 C 33.783132,2.0581324 32.834628,2.0049195 32,2 Z"
+       style="display:inline;fill:#71cff2;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     id="eknob-h3dark">
+    <path
+       id="eknob-h3dark-path"
+       d="M 34.5 2.1191406 L 34.5 6.1269531 A 26 26 0 0 1 58 32 A 26 26 0 0 1 50.373047 50.375 L 53.199219 53.201172 A 30 30 0 0 0 62 32 A 30 30 0 0 0 34.5 2.1191406 z "
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     id="eknob-finish">
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 32,2 A 30,30 0 0 0 2,32 30,30 0 0 0 10.800781,53.201172 L 13.626953,50.375 A 26,26 0 0 1 6,32 26,26 0 0 1 32,6 26,26 0 0 1 58,32 26,26 0 0 1 50.373047,50.375 l 2.826172,2.826172 A 30,30 0 0 0 62,32 30,30 0 0 0 32,2 Z"
+       id="eknob-finish-frame" />
+  </g>
+</svg>
