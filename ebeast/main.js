@@ -67,6 +67,8 @@ function create_window ()
   });
   win.webContents.printout = function (...args) { console.log (...args); };
   win.webContents.printerr = function (...args) { console.error (...args); };
+  win.webContents.addListener ('will-navigate', ev => ev.preventDefault()); // href click
+  win.webContents.addListener ('new-window', ev => ev.preventDefault()); // target='_blank' click
   return win;
 }
 

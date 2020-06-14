@@ -188,24 +188,30 @@ div.note-board {
   align-items: flex-end; align-content: end;
   pointer-events: none; user-select: none;
   --note-board-padding: 12px;
-  padding: 0 0 var(--note-board-padding) var(--note-board-padding);
+  padding: var(--note-board-padding) var(--note-board-padding) 0 0;
   transition: all 0.3s ease;
   .note-board-note {
     position: relative; width: 25em; min-height: 5em;
     color: #111; background: #eef; opacity: 0.95;
     pointer-events: all;
-    padding: var(--note-board-padding); margin: var(--note-board-padding) var(--note-board-padding) 0 0;
+    padding: var(--note-board-padding); margin: 0 0 var(--note-board-padding) var(--note-board-padding);
     border-radius: calc(var(--note-board-padding) / 2);
-    transition: all 0.3s ease-in-out; // see Util.NoteBoard.FADING
+    transition: all 0.333s ease-in-out; // see Util.NoteBoard.FADING
+    overflow: hidden; max-height: 100vh;
     &.note-board-fadein {
       transform: translateY(100vh);
     }
     &.note-board-fadeout {
-      overflow: hidden; transform: translateY(-33vh);  // visual slide-up effect
-      padding: 0; margin: 0; height: 0; min-height: 0; // allow siblings to flow up
-      transition: all 0.3s ease-in, transform 0.3s linear; // see Util.NoteBoard.FADING
-      opacity: 0.3; // smoothen with subtle fade
-      z-index: -1;  // avoid overlaping children during transition
+      /* CSS cannot fade from height:auto -> height:0...
+       * But we can animate absolute dimensions of max-height and somewhat
+       * cover up artefacts with transition and color fading.
+       */
+      padding-top: 0; padding-bottom: 0; margin-top: 0;
+      max-height: 0; min-height: 0; // vertical shrinking, to allow siblings to flow up
+      color: transparent;           // hide text reflow artefacts
+      z-index: -1;                  // transition *behind* siblings
+      transform: translateY(-33vh); // visual slide-up effect
+      transition: all 0.283s ease-out 0.05s, transform 0.333s ease-in; // see Util.NoteBoard.FADING
     }
     // style close button
     .note-board-note-close {
@@ -215,5 +221,14 @@ div.note-board {
     }
     // make room for .note-board-note-close
     &:before { float: right; content: ' '; padding: 1px; }
+  }
+  // markdown styling for notes
+  .note-board-markdown {
+    h1,h2,h3,h4,h5,h6 { font-size: inherit; padding: 0; margin: 0; }
+    p { margin: 0.5em 0; }
+    ul { padding-left: 1em; }
+    h1 { color: #09b; }
+    h2 { color: #090; }
+    h3 { color: #a00; }
   }
 }

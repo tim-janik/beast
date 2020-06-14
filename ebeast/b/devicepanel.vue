@@ -103,7 +103,7 @@ export default {
       return false;
     },
     menuopen (event) {
-      const sibling = event?.path[0]?.__vue__?.$attrs?.sibling;
+      const sibling = event.target?.__vue__?.$attrs?.sibling;
       this.$refs.cmenu.popup (event, { check: this.menucheck.bind (this),
 				       device_sibling: sibling });
     },

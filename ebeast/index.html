@@ -14,6 +14,7 @@
   <link rel="modulepreload" href="./jsbse.js">
   <link rel="modulepreload" href="./vue.esm.browser.js">
   <link rel="modulepreload" href="./vue-runtime-helpers.mjs">
+  <link rel="modulepreload" href="./markdown-it.esm.js">
   <link rel="modulepreload" href="./utilities.js">
   <link rel="modulepreload" href="./bundle.imports.js">
   <!-- Avoid preloading conditional module "./menus.js" -->
@@ -39,7 +40,17 @@
 	    if (Electron) // When running inside Electron, provide 'Electron' globally
 	      {
 		Object.defineProperty (window, 'Electron', { value: Electron });
-		Object.assign (CONFIG, Electron.getCurrentWindow().MAINCONFIG);
+		const win = Electron.getCurrentWindow();
+		Object.assign (CONFIG, win.MAINCONFIG);
+		const navigate_external = (ev, url) => {
+		  if (ev.defaultPrevented) // <- main.js causes prevention
+		    {
+		      console.log ("NAVIGATE-EXTERNAL:", url);
+		      Electron.shell.openExternal (url);
+		    }
+		};
+		win.webContents.addListener ('will-navigate', navigate_external);
+		win.webContents.addListener ('new-window', navigate_external);
 		if (CONFIG.debug) // show DevTools on hotkey
 		  document.addEventListener ("keydown", (event) => {
 		    // Shift+Ctrl+I
@@ -142,6 +153,10 @@
     $log ("Importing vue-runtime-helpers...");
     Object.defineProperty (globalThis, 'vue-runtime-helpers', {
       value: await import ('./vue-runtime-helpers.mjs') });
+    // Import Markdown, needed by Util
+    $log ("Importing Markdown...");
+    Object.defineProperty (globalThis, 'MarkdownIt', {
+      value: (await import ('./markdown-it.esm.js')).default });
     // Import Util, depends on Vue
     $log ("Importing Util...");
     Object.defineProperty (globalThis, 'Util', {
