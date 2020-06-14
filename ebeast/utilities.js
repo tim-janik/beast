@@ -28,6 +28,11 @@ class FallbackResizeObserver {
 /// Work around FireFox 68 having ResizeObserver disabled
 export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
 
+/// Retrieve current time in milliseconds.
+export function now () {
+  return window.Date.now();
+}
+
 /** Yield a wrapper function for `callback` that throttles invocations.
  * Regardless of the frequency of calls to the returned wrapper, `callback`
  * will only be called once per `requestAnimationFrame()` cycle, or
@@ -39,33 +44,40 @@ export const ResizeObserver = window.ResizeObserver || FallbackResizeObserver;
  * Options:
  * - `wait` - number of milliseconds to pass until `callback` may be called.
  * - `restart` - always restart the timer once the wrapper is called.
+ * - `immediate` - immediately invoke `callback` and then start the timeout period.
  */
 export function debounce (callback, options = {}) {
   if (!(callback instanceof Function))
     throw new TypeError ('argument `callback` must be of type Function');
   const restart = !!options.restart;
   const milliseconds = Number.isFinite (options.wait) ? options.wait : -1;
+  let immediate = milliseconds >= 0 && !!options.immediate;
   options = undefined; // allow GC
   let handlerid = undefined;
   let cresult = undefined;
-  let cthis = undefined;
-  let cargs = undefined;
+  let args = undefined;
   function callback_caller() {
     handlerid = undefined;
-    const ithis = cthis, iargs = cargs;
-    cthis = undefined;
-    cargs = undefined; // allow GC
-    cresult = callback.apply (ithis, iargs);
+    if (args)
+      {
+	const cthis = args.cthis, cargs = args.cargs;
+	args = undefined;
+	if (immediate)
+	  handlerid = setTimeout (() => callback_caller (false), milliseconds);
+	cresult = callback.apply (cthis, cargs);
+      }
   }
   function wrapper_func (...newargs) {
+    const first_handler = !handlerid;
     if (restart) // always restart timer
       wrapper_func.cancel();
-    cthis = this;
-    cargs = newargs;
+    args = { cthis: this, cargs: newargs };
     if (!handlerid)
       {
 	if (milliseconds < 0)
 	  handlerid = requestAnimationFrame (callback_caller);
+	else if (immediate && first_handler)
+	  handlerid = setTimeout (callback_caller, 0);
 	else
 	  handlerid = setTimeout (callback_caller, milliseconds);
       }
@@ -78,9 +90,8 @@ export function debounce (callback, options = {}) {
 	  handlerid = cancelAnimationFrame (handlerid);
 	else // milliseconds >= 0
 	  handlerid = clearTimeout (handlerid);
-	cthis = undefined;
-	cargs = undefined; // allow GC
-      } // but keep last result
+	args = undefined;
+      } // keep last result
   };
   return wrapper_func;
 }
@@ -1786,6 +1797,70 @@ export function remove_hotkey (hotkey, callback) {
 	return true;
       }
   return false;
+}
+
+/** Show temporary notifications */
+class NoteBoard {
+  THROTTLE = 500;	// delay between notes
+  TIMEOUT = 15 * 1000;	// time for note to last
+  FADING = 300;		// fade in/out in milliseconds, see app.scss
+  constructor() {
+    // create one toplevel div.note-board element to deal with all popups
+    this.noteboard = document.createElement ('div');
+    this.noteboard.classList.add ('note-board');
+    document.body.appendChild (this.noteboard);
+    this.queue = [];
+    this.run_queue = debounce (this.run_queue_now,
+			       { wait: this.FADING + this.THROTTLE,
+				 immediate: true });
+  }
+  create_note (text, timeout) {
+    // create note with FADEIN
+    const note = document.createElement ('div');
+    note.classList.add ('note-board-note');
+    note.classList.add ('note-board-fadein');
+    // setup content
+    note.innerText = text;
+    // setup close button
+    const close = document.createElement ('span');
+    close.classList.add ('note-board-note-close');
+    close.innerText = "✖";
+    note.insertBefore (close, note.firstChild);
+    const popdown = () => {
+      note.classList.add ('note-board-fadeout');
+      setTimeout (() => {
+	if (note.parentNode)
+	  note.parentNode.removeChild (note);
+      }, this.FADING + 1);
+    };
+    close.onclick = popdown;
+    // show note with delay and throttling
+    const popup = () => {
+      note.setAttribute ('data-timestamp', now());
+      this.noteboard.appendChild (note);
+      setTimeout (() => {
+	note.classList.remove ('note-board-fadein');
+	if (!(timeout < 0))
+	  setTimeout (popdown, timeout ? timeout : this.TIMEOUT);
+      }, this.FADING);
+    };
+    this.queue.push (popup);
+    this.run_queue();
+  }
+  run_queue_now() {
+    const nextf = this.queue.shift();
+    if (nextf)
+      {
+	nextf();
+	this.run_queue();
+      }
+  }
+}
+const global_note_board = new NoteBoard();
+
+/** Show a notification popup, with adequate default timeout */
+export function show_note (text, timeout = undefined) {
+  global_note_board.create_note (text, timeout);
 }
 
 /** A mechanism to display data-bubble="" tooltip popups */
