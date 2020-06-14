@@ -250,12 +250,11 @@ CLEANFILES += $(wildcard $>/beast-*.tar $>/beast-*.tar.xz)
 # - verify that no CLEANFILES are shipped in dist tarball;
 # - check that $(DESTDIR) is properly honored in installation rules.
 # distcheck_uniqdir - directory for build tests, outside of srcdir, unique per user and checkout
-# distcheck_uniqdir = distcheck-$(shell printf %d-%04x\\n $$UID 0x`X=$$(pwd) && echo -n "$$X" | md5sum | sed 's/^\(....\).*/\1/'`)
-#distcheck: distcheck_uniqdir ::= distcheck-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:4]))")
-distcheck: distcheck_uniqdir ::= distcheck-beast-$(shell python -c "import os, md5; print ('%u-%s' % (os.getuid(), md5.new (os.getcwd()).hexdigest()[:5]))")
+distcheck_uniqdir_py3 ::= "import os, hashlib; print ('%u-%s' % (os.getuid(), hashlib.md5 (os.getcwd().encode()).hexdigest()[:5]))"
 distcheck: dist
 	$(QGEN)
 	@$(eval distversion != ./version.sh -l)
+	@$(eval distcheck_uniqdir ::= distcheck-beast-$(shell python3 -c $(distcheck_uniqdir_py3)) )
 	$Q TMPDIR="$${TMPDIR-$${TEMP-$${TMP-/tmp}}}" \
 	&& DCDIR="$$TMPDIR/$(distcheck_uniqdir)" \
 	&& test -n "$$TMPDIR" -a -n "$(distcheck_uniqdir)" -a -n "$$DCDIR" -a -n "$(distname)" \

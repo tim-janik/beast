@@ -15,6 +15,7 @@ RUN retry yum -y upgrade
 # electron needs libXss.so.1 and libgconf-2.so.4
 RUN retry yum -y install \
     findutils file bzip2 unzip patch \
+    make python27 \
     gcc-c++ git libtool gettext-devel perl-XML-Parser boost-devel \
     alsa-lib-devel flac-devel libvorbis-devel libmad-devel \
     pandoc python3-pandocfilters doxygen graphviz \
@@ -60,8 +61,10 @@ RUN make install
 RUN make installcheck
 RUN make dist
 RUN make uninstall
-RUN make default prefix=/usr && \
-    make all -j`nproc` && \
-    make appimage
+
+# AppImage builds fail on Fedora >= 29
+#RUN make default prefix=/usr && \
+#    make all -j`nproc` && \
+#    make appimage
 
 # docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
