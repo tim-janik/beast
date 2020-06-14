@@ -1820,7 +1820,16 @@ class NoteBoard {
     note.classList.add ('note-board-note');
     note.classList.add ('note-board-fadein');
     // setup content
-    note.innerText = text;
+    if (globalThis.MarkdownIt)
+      {
+	note.classList.add ('note-board-markdown');
+	note.innerHTML = (new globalThis.MarkdownIt()).render (text);
+      }
+    else
+      {
+	note.classList.add ('note-board-plaintext');
+	note.innerText = text;
+      }
     // setup close button
     const close = document.createElement ('span');
     close.classList.add ('note-board-note-close');
