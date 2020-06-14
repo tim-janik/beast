@@ -60,8 +60,10 @@ RUN make install
 RUN make installcheck
 RUN make dist
 RUN make uninstall
-RUN make default prefix=/usr && \
-    make all -j`nproc` && \
-    make appimage
+
+# AppImage builds fail on Fedora >= 29
+#RUN make default prefix=/usr && \
+#    make all -j`nproc` && \
+#    make appimage
 
 # docker build --build-arg DIST=fedora:27 -f misc/Dockerfile-yum -t beast-fedora-27 .
