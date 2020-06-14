@@ -81,6 +81,7 @@ DevicePropertyWrapper::get_tag (Tag tag)
     case BLURB:         return info.blurb;
     case DESCRIPTION:   return info.description;
     }
+  assert_return_unreached ({});
 }
 
 void
