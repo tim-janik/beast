@@ -1803,7 +1803,7 @@ export function remove_hotkey (hotkey, callback) {
 class NoteBoard {
   THROTTLE = 500;	// delay between notes
   TIMEOUT = 15 * 1000;	// time for note to last
-  FADING = 300;		// fade in/out in milliseconds, see app.scss
+  FADING = 333;		// fade in/out in milliseconds, see app.scss
   constructor() {
     // create one toplevel div.note-board element to deal with all popups
     this.noteboard = document.createElement ('div');
