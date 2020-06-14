@@ -36,6 +36,8 @@ app/assets.copies	::= $(strip	\
 )
 ebeast/copy.tool.targets ::= $(strip	\
 	$>/ebeast/rollup.config.js	\
+	$>/ebeast/markdown-it.esm0.js	\
+	$>/ebeast/markdown-it.rollup.js	\
 	$>/ebeast/babel.config.js	\
 	$>/ebeast/.eslintrc.js		\
 )
@@ -129,6 +131,22 @@ $>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_m
 	  && sed 's|^//# sourceMappingURL=index\.mjs\.map$$||' -i $>/app/vue-runtime-helpers.mjs
 	$Q mv $@.tmp $@
 
+# == &>/app/markdown-it.esm.js ==
+# rollup for import+require is tricky: https://github.com/rollup/rollup/issues/1058#issuecomment-254187433
+$>/app/markdown-it.esm.js: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/npm.done	| $>/app/
+	$(QGEN)
+	@: # rollup markdown-it with all dependencies
+	$Q cd $>/ebeast/ && \
+	  $(abspath $(NODE_MODULES.bin)/rollup) --format=es \
+		-c ./markdown-it.rollup.js \
+		-i ./markdown-it.esm0.js \
+		-o ./markdown-it.esm1.js
+	@: # the 'export default' statement must be added manually
+	$Q sed '/^console.assert (ESM6EXPORT.default);/s/;/; export default ESM6EXPORT.default;/' \
+		< $>/ebeast/markdown-it.esm1.js \
+		> $>/ebeast/markdown-it.esm2.js
+	$Q cp $>/ebeast/markdown-it.esm2.js $@
+$>/app/package.json: $>/app/markdown-it.esm.js
 
 # == $>/app/b/%.bundle.js ==
 ebeast/targets.vuebundles.js  ::= $(patsubst %, $>/app/b/%.bundle.js,  $(ebeast/b/vue.stems))
