@@ -156,10 +156,12 @@ export default {
 	gran = gran * 2;            // bi-directional knobs cover twice the value range
       return gran;
     },
-    dblclick () {
+    dblclick (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
       this.emit_value (0);
     },
-    drag_start (ev, override_offset) {
+    drag_start (ev) {
       // allow only primary button press
       if (ev.buttons != 1)
 	return this.drag_stop();
