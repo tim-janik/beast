@@ -205,7 +205,9 @@ $>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
 $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/node_modules/npm.done
 	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
-	$Q $(NODE_MODULES.bin)/node-sass ebeast/app.scss $>/app/assets/stylesheets.css \
+	$Q $(NODE_MODULES.bin)/node-sass \
+		--functions $(NODE_MODULES.bin)/../chromatic-sass/dist/main.js \
+		ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map-embed --source-map-contents --source-comments
 $>/app/assets/material-icons.css:			| $>/app/assets/
 	$(QECHO) FETCH material-icons-190326.1.tar.xz

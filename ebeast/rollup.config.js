@@ -25,6 +25,7 @@ export default {
       // https://github.com/thgh/rollup-plugin-scss#options https://github.com/sass/node-sass#options
       sourceMapEmbed: true,
       sourceComments: true,
+      functions: require ("chromatic-sass"),
       outputStyle: 'nested', // nested, expanded, compact, compressed
     }),
     resolve(),

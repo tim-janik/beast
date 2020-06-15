@@ -16,6 +16,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^8.0.1",
     "babel-eslint": "^10.1.0",
+    "chromatic-sass": "^0.1.8",
     "eslint": "^5.16.0",
     "eslint-plugin-html": "^5.0.5",
     "eslint-plugin-vue": "^5.2.3",
