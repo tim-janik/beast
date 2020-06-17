@@ -8,6 +8,34 @@
   : Implicit *Bse.Project*, using App.bse_project().
 </docs>
 
+<style lang="scss">
+  @import 'mixins.scss';
+  .b-projectshell {
+    border: 5px solid #322;
+    --b-resize-handle-thickness: #{$b-resize-handle-thickness};
+    --b-transition-fast-slide: #{$b-transition-fast-slide};
+  }
+  .b-projectshell-part-area {
+    background-color: $b-button-border;
+    padding: $b-focus-outline-width; }
+  .b-projectshell-sidebar {
+    padding: 3px;
+    overflow: hidden scroll;
+    &, * { text-overflow: ellipsis; white-space: nowrap; }
+  }
+  .b-projectshell-resizer {
+    width: var(--b-resize-handle-thickness);
+    background: $b-resize-handle-bgcolor;
+    border-left: $b-resize-handle-border;
+    border-right: $b-resize-handle-border;
+    cursor: col-resize;
+  }
+  html.b-projectshell-during-drag .b-root {
+    .b-projectshell-resizer { background: $b-resize-handle-hvcolor; }
+    * { cursor: col-resize !important; user-select: none !important; }
+  }
+</style>
+
 <template>
   <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
     <b-hflex center style="margin: 5px">
@@ -42,34 +70,6 @@
     <b-preferencesdialog v-model="show_preferences_dialog" />
   </b-vflex>
 </template>
-
-<style lang="scss">
-  @import 'mixins.scss';
-  .b-projectshell {
-    border: 5px solid #322;
-    --b-resize-handle-thickness: #{$b-resize-handle-thickness};
-    --b-transition-fast-slide: #{$b-transition-fast-slide};
-  }
-  .b-projectshell-part-area {
-    background-color: $b-button-border;
-    padding: $b-focus-outline-width; }
-  .b-projectshell-sidebar {
-    padding: 3px;
-    overflow: hidden scroll;
-    &, * { text-overflow: ellipsis; white-space: nowrap; }
-  }
-  .b-projectshell-resizer {
-    width: var(--b-resize-handle-thickness);
-    background: $b-resize-handle-bgcolor;
-    border-left: $b-resize-handle-border;
-    border-right: $b-resize-handle-border;
-    cursor: col-resize;
-  }
-  html.b-projectshell-during-drag .b-root {
-    .b-projectshell-resizer { background: $b-resize-handle-hvcolor; }
-    * { cursor: col-resize !important; user-select: none !important; }
-  }
-</style>
 
 <script>
 async function list_sample_files() {
