@@ -20,3 +20,25 @@ $device-pixel-ratio: var(--device-pixel-ratio);
 @function dppx($n: 1) {
   @return calc(1px * #{$n} / #{$device-pixel-ratio});
 }
+
+/// Convert a percentage number to a factor within 0…1
+@function asfactor($f) {
+  @if (unit($f) == "%") {
+    $f: $f / 100%;
+  }
+  @return $f;
+}
+
+/// Reduce luminance by a percentage
+@function darker($col, $f: 10%) {
+  // decrease luminance by a percentage, also work around luminance==0 -> 0
+  $lum: max(0.0000001, chromatic-color-luminance($col) * (1 - asfactor($f)));
+  @return chromatic-color-luminance($col, $lum, 'lab');
+}
+
+/// Increase luminance by a percentage
+@function lighter($col, $f: 10%) {
+  // increase luminance by a percentage, also work around luminance==0 -> 0
+  $lum: max(0.0000001, chromatic-color-luminance($col) * (1 + asfactor($f)));
+  @return chromatic-color-luminance($col, $lum, 'lab');
+}
