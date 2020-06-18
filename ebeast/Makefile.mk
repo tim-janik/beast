@@ -14,7 +14,7 @@ ebeast/all: $>/app/package.json
 # - When DevTools are enabled, Shift+Ctrl+R can initiate a page reload.
 
 # == sources ==
-ebeast/b/vue.inputs	::= $(wildcard ebeast/b/*.vue)
+ebeast/b/vue.inputs	::= $(sort $(wildcard ebeast/b/*.vue))
 ebeast/b/vue.stems	::= $(patsubst ebeast/b/%.vue, %, $(ebeast/b/vue.inputs))
 ebeast/eslint.files	::= $(wildcard ebeast/*.html) $(wildcard ebeast/*.js ebeast/b/*.js)
 ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/b/*.scss)
@@ -55,7 +55,7 @@ $(filter $>/app/%, $(ebeast/copy.targets)):	$>/app/%:    ebeast/% | $>/app/    ;
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
-$>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff | $>/ebeast/
+$>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff ebeast/fix-vue-ccu.diff | $>/ebeast/
 	$(QGEN)
 	$Q rm -f -r $>/ebeast/node_modules/
 	$Q cp $< $>/ebeast/package.json # avoids dependency on other ebeast/copy.targets
@@ -65,6 +65,7 @@ $>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff | $
 	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
 	@: # Patch broken modules
 	$Q (cd  $>/ebeast/ && patch -p0) < ebeast/fix-scss.diff
+	$Q (cd  $>/ebeast/ && patch -p0) < ebeast/fix-vue-ccu.diff
 	$Q echo >$@
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
