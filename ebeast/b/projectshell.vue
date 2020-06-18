@@ -10,10 +10,14 @@
 
 <style lang="scss">
   @import 'mixins.scss';
+
   .b-projectshell {
-    border: 5px solid #322;
     --b-resize-handle-thickness: #{$b-resize-handle-thickness};
     --b-transition-fast-slide: #{$b-transition-fast-slide};
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-items: stretch;
   }
   .b-projectshell-part-area {
     background-color: $b-button-border;
@@ -37,7 +41,9 @@
 </style>
 
 <template>
-  <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
+  <b-vflex class="b-projectshell" >
+
+    <!-- play controls, time display -->
     <b-hflex center style="margin: 5px">
       <b-playcontrols :project="project"> </b-playcontrols>
       <span style="width: 3em"><!-- spacer --></span>
@@ -46,9 +52,11 @@
 
     <b-hflex grow1 style="overflow-y: hidden">
       <b-vflex grow1 shrink1>
+	<!-- upper main area -->
 	<b-hflex class="b-projectshell-track-area" style="height: 50%">
 	  <b-track-list class="grow1" :song="song"></b-track-list>
 	</b-hflex>
+	<!-- lower main area -->
 	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
 	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="panel2 == 0" ></b-piano-roll>
 	  <b-vflex v-show="panel2 == 1" style="flex-grow: 1" >
@@ -58,6 +66,7 @@
 	</b-hflex>
       </b-vflex>
 
+      <!-- browser -->
       <b-hflex ref="sidebarcontainer" style="width:15%" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
 	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
@@ -66,8 +75,13 @@
       </b-hflex>
     </b-hflex>
 
+    <!-- status bar -->
+    <b-statusbar />
+
+    <!-- popup dialogs -->
     <b-aboutdialog v-model="show_about_dialog" />
     <b-preferencesdialog v-model="show_preferences_dialog" />
+
   </b-vflex>
 </template>
 
