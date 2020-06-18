@@ -160,6 +160,7 @@ export default {
       ev.preventDefault();
       ev.stopPropagation();
       this.emit_value (0);
+      return this.drag_stop();
     },
     drag_start (ev) {
       // allow only primary button press
@@ -170,7 +171,8 @@ export default {
       this.uncapture_wheel = Util.capture_event ('wheel', this.wheel_event);
       this.$el.onpointermove = this.drag_move;
       this.$el.onpointerup = this.drag_stop;
-      this.$el.setPointerCapture (ev.pointerId);
+      this.captureid_ = ev.pointerId;
+      this.$el.setPointerCapture (this.captureid_);
       if (USE_PTRLOCK)
 	this.$el.requestPointerLock();
       // display data-bubble during drag and monitor movement distance
@@ -188,7 +190,9 @@ export default {
       this.uncapture_wheel = this.uncapture_wheel?. ();
       this.$el.onpointermove = null;
       this.$el.onpointerup = null;
-      this.$el.releasePointerCapture (ev.pointerId);
+      if (this.captureid_ !== undefined)
+	this.$el.releasePointerCapture (this.captureid_);
+      this.captureid_ = undefined;
       if (document.pointerLockElement === this.$el)
 	document.exitPointerLock();
       Util.data_bubble_clear (this.$el);
