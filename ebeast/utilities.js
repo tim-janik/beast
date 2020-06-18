@@ -1895,6 +1895,9 @@ export function markdown_to_html (element, markdown_text) {
   element.innerHTML = html;
 }
 
+/** Tooltip callback list */
+export let seen_pointermove = [];
+
 /** A mechanism to display data-bubble="" tooltip popups */
 class DataBubble {
   constructor() {
@@ -1944,7 +1947,11 @@ class DataBubble {
 	if (!this.buttonsdown && !this.stack.length &&
 	    !equals_recursively (coords, this.coords) &&
 	    this.last_event.type === "mousemove")
-	  this.restart_bubble_timer();
+	  {
+	    this.restart_bubble_timer();
+	    for (let i = 0; i < seen_pointermove.length; i += 1)
+	      seen_pointermove[i] (this.last_event);
+	  }
 	this.coords = coords; // needed to ignore 0-distance moves
 	this.last_event = null;
       }
