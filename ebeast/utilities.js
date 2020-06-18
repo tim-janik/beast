@@ -403,6 +403,22 @@ vue_directives['inlineblur'] = {
   }
 };
 
+/** Automatically add `$attrs['data-*']` to `$el`. */
+vue_mixins.autodataattrs = {
+  mounted: function () {
+    autodataattrs_apply.call (this);
+  },
+  updated: function () {
+    autodataattrs_apply.call (this);
+  },
+};
+function autodataattrs_apply () {
+  const keys = [];
+  for (let datakey in this.$attrs)
+    if (datakey.startsWith ('data-'))
+      this.$el.setAttribute (datakey, this.$attrs[datakey]);
+}
+
 /** This Vue mixin sets up reactive `data` from `data_tmpl` and non-reactive data from `priv_tmpl` */
 vue_mixins.data_tmpl = {
   beforeCreate: function () {
