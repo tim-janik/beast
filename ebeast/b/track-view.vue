@@ -70,7 +70,8 @@
 
 <template>
   <div class="b-track-view" @contextmenu.prevent="menuopen" @click.prevent="click0"
-       :class="EQ (Shell.current_track, track) ? 'b-track-view-current' : ''" >
+       :class="EQ (Shell.current_track, track) ? 'b-track-view-current' : ''"
+       data-tip="**CLICK** Select Track **RIGHTCLICK** Track Menu" >
     <div class="b-track-view-control">
       <span class="b-track-view-label"
 	    @dblclick="nameedit_++" >

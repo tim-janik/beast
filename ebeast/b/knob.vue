@@ -44,7 +44,8 @@
 <!-- NOTE: This implementation assumes the HTML embeds eknob.svg -->
 
 <template>
-  <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick" >
+  <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick"
+	  data-tip="**DRAG** Adjust Value **DBLCLICK** Reset Value" >
     <svg  class="b-knob-base"               :style="style()" :viewBox="viewbox()" >
       <use href="#eknob-base" />
     </svg>
