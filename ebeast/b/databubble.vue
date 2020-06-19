@@ -47,6 +47,16 @@
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
     }
+
+    /* markdown styling for data-bubble */
+    .markdown-it-outer {
+      h1,h2,h3,h4,h5,h6 { font-size: inherit; padding: 0; margin: 0; }
+      p { margin: 0; }
+      ul { padding-left: 1em; }
+      h1 { color: #09b; }
+      h2 { color: #090; }
+      h3 { color: #a00; }
+    }
   }
 </style>
 
@@ -155,7 +165,7 @@ class DataBubbleImpl {
 	else if (newtext != this.lasttext)
 	  {
 	    this.lasttext = newtext;
-	    this.bubblediv.textContent = this.lasttext;
+	    Util.markdown_to_html (this.bubblediv, this.lasttext);
 	  }
       }
   }
