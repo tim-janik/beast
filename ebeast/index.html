@@ -153,6 +153,12 @@
     $log ("Importing vue-runtime-helpers...");
     Object.defineProperty (globalThis, 'vue-runtime-helpers', {
       value: await import ('./vue-runtime-helpers.mjs') });
+    // Setup global App object
+    const app_tmpl = {
+      data_bubble: null,
+      onpointermoves: [],
+    };
+    Object.defineProperty (globalThis, 'App', { value: Vue.observable (app_tmpl) });
     // Import Markdown, needed by Util
     $log ("Importing Markdown...");
     Object.defineProperty (globalThis, 'MarkdownIt', {
@@ -176,6 +182,7 @@
       debug: debug,
       EQ: Util.equals_recursively,
       Util: Util,
+      App: App,
       observable_from_getters: Util.vue_observable_from_getters,
     });
     // _() - add translation indicator
