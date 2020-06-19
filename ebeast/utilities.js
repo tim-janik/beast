@@ -1959,7 +1959,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   const getter_cleanups = {};
   const notify_cleanups = {};
   let add_functions = false;
-  let odata; // Vue.observable
+  let odata; // Vue.reactive
   for (const key in tmpl)
     {
       if (tmpl[key] instanceof Function)
@@ -2000,7 +2000,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       tmpl[key] = default_value;
     }
   // make all fields observable
-  odata = Vue.observable (tmpl);
+  odata = Vue.reactive (tmpl);
   // cleanup notifiers and getter results on `destroyed`
   const run_cleanups = () => {
     for (const key in notify_cleanups)
@@ -2010,7 +2010,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   };
   this.$once ('hook:destroyed', run_cleanups);
   // create trigger for forced updates
-  const ucount = Vue.observable ({ c: 1 }); // reactive update counter
+  const ucount = Vue.reactive ({ c: 1 }); // reactive update counter
   const updater = function () { ucount.c += 1; }; // forces observable update
   // the $watch callback updates monitoring getters once `predicate` or `ucount`
   // changes, but `predicate` needs wrapping to allow Promise returns

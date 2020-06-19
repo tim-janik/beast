@@ -149,6 +149,8 @@
     Object.assign (Vue.options, {
       inheritAttrs: false, // Add non-props attributes to $attrs (default in Vue-3)
     });
+    console.assert (!Vue.reactive); // provided by Vue-3
+    Vue.reactive = Vue.observable;  // rename by Vue-3
     // Bundles need 'vue-runtime-helpers', see rollup.config.js
     $log ("Importing vue-runtime-helpers...");
     Object.defineProperty (globalThis, 'vue-runtime-helpers', {
@@ -158,7 +160,7 @@
       data_bubble: null,
       onpointermoves: [],
     };
-    Object.defineProperty (globalThis, 'App', { value: Vue.observable (app_tmpl) });
+    Object.defineProperty (globalThis, 'App', { value: Vue.reactive (app_tmpl) });
     // Import Markdown, needed by Util
     $log ("Importing Markdown...");
     Object.defineProperty (globalThis, 'MarkdownIt', {
