@@ -1906,7 +1906,7 @@ export function markdown_to_html (element, markdown_text) {
   };
   // render HTML
   const html = md.render (markdown_text);
-  element.classList.add ('markdown-it-outer');
+  element.classList.add ('b-markdown-it-outer');
   element.innerHTML = html;
 }
 

@@ -49,13 +49,8 @@
     }
 
     /* markdown styling for data-bubble */
-    .markdown-it-outer {
-      h1,h2,h3,h4,h5,h6 { font-size: inherit; padding: 0; margin: 0; }
-      p { margin: 0; }
-      ul { padding-left: 1em; }
-      h1 { color: #09b; }
-      h2 { color: #090; }
-      h3 { color: #a00; }
+    .b-markdown-it-outer {
+      @include b-markdown-it-inlined;
     }
   }
 </style>

@@ -37,10 +37,11 @@
       }
     }
 
-    // markdown styling for statusbar
-    .b-statusbar-text {
+    /* markdown styling for statusbar */
+    .b-markdown-it-outer {
+      @include b-markdown-it-inlined;
       color: darker($b-main-foreground, 35%);
-      * { padding: 0; margin: 0; font-size: inherit; }
+      * { padding: 0; margin: 0; font-size: inherit; white-space: nowrap; }
       strong { color: $b-main-foreground; font-weight: normal; padding: 0 0.5em; }
     }
   }
