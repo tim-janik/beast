@@ -66,10 +66,10 @@
 export default {
   name: 'b-statusbar',
   mounted() {
-    Util.seen_pointermove.push (this.seen_move);
+    App.onpointermoves.push (this.seen_move);
   },
   destroyed() {
-    Util.array_remove (Util.seen_pointermove, this.seen_move);
+    Util.array_remove (App.onpointermoves, this.seen_move);
   },
   methods: {
     seen_move (ev) {

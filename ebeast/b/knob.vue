@@ -96,7 +96,7 @@ export default {
   mounted() {
     this.$el.onwheel = this.wheel_event;
     if (HOVER_BUBBLE)
-      Util.data_bubble_callback (this.$el, this.bubble);
+      App.data_bubble.callback (this.$el, this.bubble);
   },
   beforeDestroy () {
     if (document.pointerLockElement === this.$el)
@@ -177,8 +177,8 @@ export default {
       if (USE_PTRLOCK)
 	this.$el.requestPointerLock();
       // display data-bubble during drag and monitor movement distance
-      Util.data_bubble_callback (this.$el, this.bubble);
-      Util.data_bubble_force (this.$el);
+      App.data_bubble.callback (this.$el, this.bubble);
+      App.data_bubble.force (this.$el);
       this.last = { x: ev.pageX, y: ev.pageY };
       this.drag = USE_PTRLOCK ? { x: 0, y: 0 } : { x: ev.pageX, y: ev.pageY };
       ev.preventDefault();
@@ -196,11 +196,11 @@ export default {
       this.captureid_ = undefined;
       if (document.pointerLockElement === this.$el)
 	document.exitPointerLock();
-      Util.data_bubble_clear (this.$el);
+      App.data_bubble.clear (this.$el);
       this.last = null;
       this.drag = null;
       if (HOVER_BUBBLE)
-	Util.data_bubble_callback (this.$el, this.bubble);
+	App.data_bubble.callback (this.$el, this.bubble);
       if (!ev)
 	return;
       ev.preventDefault();
@@ -316,7 +316,7 @@ export default {
 	}
       // to reduce CPU load, update data-bubble on demand only
       if (this.$el.data_bubble_active)
-	Util.data_bubble_update (this.$el);
+	App.data_bubble.update (this.$el);
     },
   },
 };
