@@ -58,8 +58,8 @@
 	</b-hflex>
 	<!-- lower main area -->
 	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
-	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="panel2 == 0" ></b-piano-roll>
-	  <b-vflex v-show="panel2 == 1" style="flex-grow: 1" >
+	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="App.panel2 == 'p'" ></b-piano-roll>
+	  <b-vflex v-show="App.panel2 == 'd'" style="flex-grow: 1" >
 	    Device Panel
 	    <b-devicepanel :track="current_track" />
 	  </b-vflex>
@@ -113,7 +113,6 @@ export default {
     show_preferences_dialog: false,
     song: undefined,
     notifynameclear: () => 0,
-    panel2: 0,
   }; },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
@@ -134,6 +133,7 @@ export default {
     // load_project() also forces an update with new Shell properties in place
   },
   mounted() {
+    this.switch_panel2 = App.switch_panel2.bind (App);
     Util.add_hotkey ('Backquote', this.switch_panel2);
   },
   destroyed() {
@@ -142,9 +142,6 @@ export default {
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
-    switch_panel2() {
-      this.panel2 = (this.panel2 + 1) % 2;
-    },
     sidebar_mouse (e) {
       const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);

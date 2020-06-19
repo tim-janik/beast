@@ -159,6 +159,15 @@
     const app_tmpl = {
       data_bubble: null,
       onpointermoves: [],
+      panel2_types: [ 'd' /*devices*/, 'p' /*pianoroll*/ ],
+      panel2: 'p',
+      switch_panel2 (n) {
+	const a = this.panel2_types;
+	if ('string' == typeof n)
+	  this.panel2 = n;
+	else
+	  this.panel2 = a[(a.indexOf (this.panel2) + 1) % a.length];
+      }
     };
     Object.defineProperty (globalThis, 'App', { value: Vue.reactive (app_tmpl) });
     // Import Markdown, needed by Util
