@@ -87,7 +87,7 @@
   <g
      id="eknob-h1light">
     <path
-       style="display:inline;fill:#71cff2;fill-opacity:1;stroke:#71cff2;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:#00e5ea;fill-opacity:1;stroke:#00e5ea;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 32 2 A 30 30 0 0 0 2 32 A 30 30 0 0 0 10.800781 53.201172 L 13.626953 50.375 A 26 26 0 0 1 6 32 A 26 26 0 0 1 32 6 L 32 2 z "
        id="eknob-h1light-path" />
   </g>
@@ -113,7 +113,7 @@
   <g
      id="eknob-h2light">
     <path
-       style="display:inline;fill:#71cff2;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:#00e5ea;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 32 2 L 32 6 A 26 26 0 0 1 58 32 A 26 26 0 0 1 50.373047 50.375 L 53.199219 53.201172 A 30 30 0 0 0 62 32 A 30 30 0 0 0 32 2 z "
        id="eknob-h2light-path" />
   </g>
@@ -122,7 +122,7 @@
     <path
        id="eknob-h3light-path"
        d="M 32,2 C 15.431458,2 2,15.431458 2,32 c 0.0069,7.954332 3.1725081,15.580318 8.800781,21.201172 L 13.626953,50.375 C 8.7491003,45.50337 6.0057026,38.893924 6,32 6,17.640597 17.640597,6 32,6 c 0.834888,0.00215 1.435288,0.031775 2.2661,0.1142071 L 34.614445,2.1326054 C 33.783132,2.0581324 32.834628,2.0049195 32,2 Z"
-       style="display:inline;fill:#71cff2;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="display:inline;fill:#00e5ea;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
   <g
      id="eknob-h3dark">

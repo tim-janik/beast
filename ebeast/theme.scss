@@ -3,12 +3,15 @@
 // == Import helpers ==
 @import 'cssaux.scss';
 
+// == Color Theme ==
+$b-main-foreground: 	#f3f1f5;
+$b-main-background: 	#222222;
+$b-color-active:	#00e5ea; // #ff8811;
+
 // == Font Basics ==
 $b-main-font-family: 'Inter';
 
 // == Basic Colors ==
-$b-main-foreground: 		#ffffff !default;
-$b-main-background: 		#282828 !default;
 $b-base-foreground: 		#f0f0f0 !default;
 $b-base-background: 		#202020 !default;
 $b-menu-foreground: 		#fcfcfc !default;
