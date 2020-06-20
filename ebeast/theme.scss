@@ -8,6 +8,13 @@ $b-main-foreground: 	#f3f1f5;
 $b-main-background: 	#222222;
 $b-color-active:	#00e5ea; // #ff8811;
 
+// == Status Bar ==
+$b-statusbar-field-spacing: 0.5em;
+$b-statusbar-text-color: $b-main-foreground;
+$b-statusbar-text-shade: darker($b-statusbar-text-color, 35%);
+$b-statusbar-separator-shade: darker($b-statusbar-text-color, 50%);
+$b-statusbar-icon-brightness: 0.8;
+
 // == Font Basics ==
 $b-main-font-family: 'Inter';
 
