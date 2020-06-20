@@ -1783,7 +1783,7 @@ function hotkey_handler (event) {
 	return true;
       }
   // activate elements with data-hotkey=""
-  const hotkey_elements = document.querySelectorAll ('[data-hotkey]');
+  const hotkey_elements = document.querySelectorAll ('[data-hotkey]:not([disabled])');
   for (const el of hotkey_elements)
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
