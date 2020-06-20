@@ -21,6 +21,10 @@
     text-align: center; margin: 0; padding: 3px 1em;
     display: flex;
     align-items: center;
+    &.b-button-disabled {
+      filter: saturate(80%) brightness(80%);
+      pointer-events: none;
+    }
   }
   .b-button:focus            	{ outline: $b-focus-outline; }
   .b-button:hover            	{ @include b-buttonhover; }
@@ -36,14 +40,16 @@ export default {};
 
 const b_button = {
   name: 'b-button',
-  props: [ 'hotkey' ],
+  props: { hotkey: String, disabled: Boolean },
   functional: true,
   render: function (h, context) {
     const attrs = {
       'data-hotkey': context.props.hotkey,
+      disabled: context.props.disabled,
     };
     const localdata = {
-      staticClass: Util.join_classes ('b-button', context.data.staticClass),
+      staticClass: Util.join_classes ('b-button', context.data.staticClass,
+				      context.props.disabled ? 'b-button-disabled' : ''),
       attrs: Object.assign ({}, context.data.attrs, attrs),
     };
     const data = Object.assign ({}, context.data, localdata);
