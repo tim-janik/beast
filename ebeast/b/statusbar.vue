@@ -25,8 +25,7 @@
       display: inline; flex-shrink: 1; flex-grow: 0; white-space: nowrap;
       text-align: center;
       margin: 0 $b-statusbar-field-spacing;
-      border-left: 1px solid $b-statusbar-separator-shade;
-      width: 1px;
+      @include b-statusbar-vseparator;
     }
     .b-icon {
       align-items: center;
