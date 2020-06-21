@@ -21,6 +21,11 @@ $device-pixel-ratio: var(--device-pixel-ratio);
   @return calc(1px * #{$n} / #{$device-pixel-ratio});
 }
 
+/// Clamp `$number` between `$min` and `$max`
+@function clamp($number, $min, $max) {
+  @return min(max($number, $min), $max);
+}
+
 /// Convert a percentage number to a factor within 0…1
 @function asfactor($f) {
   @if (unit($f) == "%") {
@@ -41,4 +46,62 @@ $device-pixel-ratio: var(--device-pixel-ratio);
   // increase luminance by a percentage, also work around luminance==0 -> 0
   $lum: max(0.0000001, chromatic-color-luminance($col) * (1 + asfactor($f)));
   @return chromatic-color-luminance($col, $lum, 'lab');
+}
+
+/// Lighten `$color` until a target contrast ratio is met.
+@function contrast-lighten($color, $targetratio: 1, $pivot: 'SAME') {
+  @if (unit($targetratio) == "%") {
+    $targetratio: $targetratio / 100% * 21;
+  }
+  @if $pivot == 'SAME' {
+    $pivot: $color;
+  }
+  $targetratio: max(1, min(21, $targetratio));
+  $lnext: chromatic-color-luminance($color);
+  $new: $color;
+  $currentratio: chromatic-contrast($pivot, $new);
+  @while $currentratio < $targetratio and $lnext < 1 {
+    $delta: max(0.000379, ($targetratio - $currentratio) / 21 / 2);
+    $lnext: $lnext + $delta;
+    $new: chromatic-color-luminance($color, max(0.0001, $lnext));
+    $currentratio: chromatic-contrast($pivot, $new);
+  }
+  @return $new;
+}
+@if contrast-lighten(#000000, 1.006) != #010101 {
+  @error "FAIL: contrast-lighten(#000000, 1.006):" contrast-lighten(#000000, 1.006);
+}
+@if contrast-lighten(#000000, 1.0075) != #020202 {
+  @error "FAIL: contrast-lighten($start, 1.0075):" contrast-lighten($start, 1.0075);
+}
+@if contrast-lighten(#000000, 20.8) != #fefefe {
+  @error "FAIL: contrast-lighten(#000000, 20.8):" contrast-lighten(#000000, 20.8);
+}
+
+/// Darken `$color` until a target contrast ratio is met.
+@function contrast-darken($color, $targetratio: 1, $pivot: 'SAME') {
+  @if (unit($targetratio) == "%") {
+    $targetratio: $targetratio / 100% * 21;
+  }
+  @if $pivot == 'SAME' {
+    $pivot: $color;
+  }
+  $targetratio: clamp($targetratio, 1, 21);
+  $lnext: chromatic-color-luminance($color);
+  $new: $color;
+  $currentratio: chromatic-contrast($pivot, $new);
+  @while $currentratio < $targetratio and $lnext > 0.00015 {
+    $delta: clamp(($targetratio - $currentratio) / 21 / 2, 0.00045, $lnext * 0.7);
+    $lnext: $lnext - $delta;
+    $new: chromatic-color-luminance($color, max(0.0001, $lnext));
+    $currentratio: chromatic-contrast($pivot, $new);
+  }
+  @return $new;
+}
+@if contrast-darken(#ffffff, 1.007) != #fefefe {
+  @error "FAIL: contrast-darken(#ffffff, 1.007):" contrast-darken(#ffffff, 1.007);
+}
+@if contrast-darken(#ffffff, 20.8) != #010101 {
+  @error "FAIL: contrast-darken(#ffffff, 20.8):" contrast-darken(#ffffff, 20.8);
+  // $s:#fff; $t:contrast-darken($s, 20); @debug $s $t chromatic-contrast($t,$s);
 }
