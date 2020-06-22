@@ -28,7 +28,9 @@
       <span > Module {{ module.$id }} </span>
     </b-vflex>
     <b-vflex style="flex-wrap: wrap;">
-      <b-pro-input v-for="prop in dprops" :key="prop.$id" :prop="prop" />
+      <b-hflex style="flex-wrap: wrap;" v-for="group in gprops" :key="group.name" >
+	<b-pro-input v-for="prop in group.props" :key="prop.$id" :prop="prop" />
+      </b-hflex>
     </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
@@ -39,11 +41,39 @@
 </template>
 
 <script>
+
+async function property_groups (props) {
+  props = await props;
+  // fetch group of all properties
+  const promises = [];
+  for (const r of props)
+    promises.push (r.group()); // accessing group() yields promise
+  const groups = await Promise.all (promises);
+  console.assert (groups.length == props.length);
+  // split properties into groups
+  const grouplists = {}, groupnames = [];
+  for (let i = 0; i < props.length; i++)
+    {
+      const groupname = groups[i];
+      if (!grouplists[groupname])
+	{
+	  groupnames.push (groupname);
+	  grouplists[groupname] = [];
+	}
+      grouplists[groupname].push (props[i]);
+    }
+  // return list of groups
+  const ret = [];
+  for (const groupname of groupnames)
+    ret.push ({ name: groupname, props: grouplists[groupname] });
+  return Object.freeze (ret); // list of groups: [ { name, props: [ Prop... ] }... ]
+}
+
 function observable_device_data () {
   const data = {
     modules:	{ default: [],  	notify: n => this.device.on ("notify:modules", n),
 		  getter: async c => Object.freeze (await this.device.list_modules()), },
-    dprops:     { default: [], getter: async c => Object.freeze (await this.device.access_properties ("")), },
+    gprops:     { default: [], getter: async c => property_groups (this.device.access_properties ("")), },
     device_info: { default: "",		notify: n => this.device.on ("notify:device_info", n),
 		  getter: async c => Object.freeze (await this.device.device_info()), },
   };
