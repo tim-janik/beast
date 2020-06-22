@@ -31,7 +31,7 @@
       box-shadow:
       0 0 0 1px change-color($b-data-bubble-br, $alpha: 0.8),
       0px 0px 2px 1px black;
-      color: $b-data-bubble-fg; padding: 2px 3px;
+      color: $b-data-bubble-fg; padding: 0.5em 0.5em 0.4em;
       background: $b-data-bubble-bg;
       background-image: chromatic-gradient(to bottom right, $b-data-bubble-bg, $b-data-bubble-bg2);
       font-variant-numeric: tabular-nums;
