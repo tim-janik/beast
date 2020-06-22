@@ -24,7 +24,7 @@
     visibility: hidden; opacity: 0;
 
     .b-data-bubble-inner {
-      display: flex; overflow: hidden; position: relative;
+      display: block; overflow: hidden; position: relative;
       white-space: normal; margin: 0;
       max-width: 40em; border-radius: 3px;
       // border: dppx(2) solid lighter($b-data-bubble-bg2, 5%);
@@ -51,6 +51,13 @@
     /* markdown styling for data-bubble */
     .b-markdown-it-outer {
       @include b-markdown-it-inlined;
+      $fsf: 1.05; //* font size factor */
+      h1 { font-size: ipow($fsf, 6) * 1em; }
+      h2 { font-size: ipow($fsf, 5) * 1em; }
+      h3 { font-size: ipow($fsf, 4) * 1em; }
+      h4 { font-size: ipow($fsf, 3) * 1em; }
+      h5 { font-size: ipow($fsf, 2) * 1em; }
+      h6 { font-size: ipow($fsf, 1) * 1em; }
     }
   }
 </style>
