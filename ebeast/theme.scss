@@ -14,7 +14,8 @@ $b-statusbar-field-spacing: 0.5em;
 $b-statusbar-text-color: $b-main-foreground;
 $b-statusbar-text-shade: darker($b-statusbar-text-color, 35%);
 $b-statusbar-separator-shade: darker($b-statusbar-text-color, 50%);
-$b-statusbar-icon-brightness: 0.8;
+$b-statusbar-icon-brightness: 0.9; // dim non-active
+$b-statusbar-icon-scaleup: 1.1;    // enlarge active
 @mixin b-statusbar-vseparator {
   $groove-tint:  contrast-lighten($b-statusbar-bg, 7.5);
   $groove-shade: contrast-darken($groove-tint, 3);

@@ -33,10 +33,11 @@
       filter: brightness(asfactor($b-statusbar-icon-brightness));
       &:hover:not(.b-active) {
 	filter: brightness(1 / asfactor($b-statusbar-icon-brightness));
-	transform: scale(1.1);
+	transform: scale($b-statusbar-icon-scaleup);
       }
       &.b-active {
 	color: $b-color-active;
+	transform: scale($b-statusbar-icon-scaleup);
       }
     }
 
