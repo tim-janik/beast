@@ -159,6 +159,15 @@
     const app_tmpl = {
       data_bubble: null,
       onpointermoves: [],
+      panel3_types: [ 'i' /*info*/, 'b' /*browser*/ ],
+      panel3: 'i',
+      switch_panel3 (n) {
+	const a = this.panel3_types;
+	if ('string' == typeof n)
+	  this.panel3 = n;
+	else
+	  this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
+      },
       panel2_types: [ 'd' /*devices*/, 'p' /*pianoroll*/ ],
       panel2: 'p',
       switch_panel2 (n) {

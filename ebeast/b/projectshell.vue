@@ -70,7 +70,8 @@
       <b-hflex ref="sidebarcontainer" style="width:15%" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
 	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
-	  <b-treeselector :tree="o.filetree"></b-treeselector>
+	  <b-treeselector :tree="o.filetree" v-show="App.panel3 == 'b'" ></b-treeselector>
+	  <span v-show="App.panel3 == 'i'" >Info Panel</span>
 	</b-vflex>
       </b-hflex>
     </b-hflex>
@@ -135,9 +136,12 @@ export default {
   mounted() {
     this.switch_panel2 = App.switch_panel2.bind (App);
     Util.add_hotkey ('Backquote', this.switch_panel2);
+    this.switch_panel3 = App.switch_panel3.bind (App);
+    Util.add_hotkey ('KeyI', this.switch_panel3);
   },
   destroyed() {
     Util.remove_hotkey ('Backquote', this.switch_panel2);
+    Util.remove_hotkey ('KeyI', this.switch_panel3);
     this.notifynameclear();
   },
   provide () { return { 'b-projectshell': this }; },

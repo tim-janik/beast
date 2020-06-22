@@ -67,8 +67,8 @@
   <b-hflex class="b-statusbar" >
     <span class="b-statusbar-field" >
       <b-icon fa="tasks" style="font-size:110%;" hflip :class="App.panel2 == 'd' && 'b-active'"
-	      @click.native="App.switch_panel2 ('d')"
-	      data-kbd="^" data-tip="**CLICK** Show Device Stack" />
+	      @click.native="App.switch_panel2 ('d')" data-kbd="^"
+	      data-tip="**CLICK** Show Device Stack" />
       <b-icon mi="queue_music" style="font-size:140%" :class="App.panel2 == 'p' && 'b-active'"
 	      @click.native="App.switch_panel2 ('p')"
 	      data-kbd="^" data-tip="**CLICK** Show Piano Roll Editor" />
@@ -79,9 +79,12 @@
       <strong>KEY</strong> <kbd>{{ kbd_ }}</kbd> </span>
     <span class="b-statusbar-spacer" />
     <span class="b-statusbar-field" >
-      <b-icon fa="info-circle" style="font-size:120%"
+      <b-icon fa="info-circle" style="font-size:120%" :class="App.panel3 == 'i' && 'b-active'"
+	      @click.native="App.switch_panel3 ('i')" data-kbd="i"
 	      data-tip="**CLICK** Show Information View" />
-      <b-icon mi="folder_open" style="font-size:120%" data-tip="**CLICK** Show Browser" />
+      <b-icon mi="folder_open" style="font-size:120%" :class="App.panel3 == 'b' && 'b-active'"
+	      @click.native="App.switch_panel3 ('b')" data-kbd="i"
+	      data-tip="**CLICK** Show Browser" />
     </span>
   </b-hflex>
 </template>
