@@ -195,5 +195,8 @@ div.note-board {
   // markdown styling for notes
   .note-board-markdown {
     @include b-markdown-it-inlined;
+    h1 { color: #09b; }
+    h2 { color: #090; }
+    h3 { color: #a00; }
   }
 }
