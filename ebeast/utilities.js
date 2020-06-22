@@ -412,7 +412,6 @@ vue_mixins.autodataattrs = {
   },
 };
 function autodataattrs_apply () {
-  const keys = [];
   for (let datakey in this.$attrs)
     if (datakey.startsWith ('data-'))
       this.$el.setAttribute (datakey, this.$attrs[datakey]);
