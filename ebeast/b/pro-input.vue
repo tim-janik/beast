@@ -30,9 +30,9 @@
 </style>
 
 <template>
-  <b-vflex class="b-pro-input tabular-nums" :data-bubble="blurb" >
+  <b-vflex class="b-pro-input tabular-nums" :data-bubble="blurb || label" >
     <b-knob class="b-pro-input-knob" v-if="type=='knob'" :value="get_num()" @input="set_num ($event)" />
-    <span   class="b-pro-input-span" v-if="!!label">{{ label }}</span>
+    <span   class="b-pro-input-span" v-if="!!nick">{{ nick }}</span>
   </b-vflex>
 </template>
 
