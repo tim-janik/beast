@@ -26,6 +26,28 @@ $device-pixel-ratio: var(--device-pixel-ratio);
   @return min(max($number, $min), $max);
 }
 
+// Raises `$base` to the power of `$exponent` which must be a positive integer
+@function ipow($base, $exponent) {
+  @if not unitless($base) {
+    @error "Error: $base must be unitless:" $base;
+  }
+  @if $exponent < 1 {
+    @return 1;
+  }
+  $val: $base;
+  @while $exponent > 1 {
+    $val: $val * $base;
+    $exponent: $exponent - 1;
+  }
+  @return $val;
+}
+@if ipow(12345, 0) != 1 {
+  @error "FAIL: ipow(12345, 0):" ipow(12345, 0);
+}
+@if ipow(2, 8) != 256 {
+  @error "FAIL: ipow(2, 8) :" ipow(2, 8);
+}
+
 /// Convert a percentage number to a factor within 0…1
 @function asfactor($f) {
   @if (unit($f) == "%") {
