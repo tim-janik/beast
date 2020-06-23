@@ -1815,22 +1815,24 @@ export function remove_hotkey (hotkey, callback) {
 
 /** Show temporary notifications */
 class NoteBoard {
-  THROTTLE = 500;	// delay between notes
   TIMEOUT = 15 * 1000;	// time for note to last
-  FADING = 333;		// fade in/out in milliseconds, see app.scss
+  FADING = 233;		// fade in/out in milliseconds, see app.scss
   constructor() {
     // create one toplevel div.note-board element to deal with all popups
     this.noteboard = document.createElement ('div');
     this.noteboard.classList.add ('note-board');
     document.body.appendChild (this.noteboard);
-    this.queue = [];
-    this.run_queue = debounce (this.run_queue_now,
-			       { wait: this.FADING + this.THROTTLE,
-				 immediate: true });
   }
   create_note (text, timeout) {
+    const h53 = hash53 (text);
+    const dupselector = ".note-board-note[data-hash53='" + h53 + "']";
+    debug(h53, this.noteboard.querySelectorAll (dupselector).length);
+    for (const dup of this.noteboard.querySelectorAll (dupselector))
+      if (dup && dup.__popdown) // deduplicate existing messages
+	dup.__popdown();
     // create note with FADEIN
     const note = document.createElement ('div');
+    note.setAttribute ('data-hash53', h53);
     note.classList.add ('note-board-note');
     note.classList.add ('note-board-fadein');
     // setup content
@@ -1856,6 +1858,7 @@ class NoteBoard {
 	  note.parentNode.removeChild (note);
       }, this.FADING + 1);
     };
+    note.__popdown = popdown;
     close.onclick = popdown;
     // show note with delay and throttling
     const popup = () => {
@@ -1867,16 +1870,7 @@ class NoteBoard {
 	  setTimeout (popdown, timeout ? timeout : this.TIMEOUT);
       }, this.FADING);
     };
-    this.queue.push (popup);
-    this.run_queue();
-  }
-  run_queue_now() {
-    const nextf = this.queue.shift();
-    if (nextf)
-      {
-	nextf();
-	this.run_queue();
-      }
+    popup();
   }
 }
 const global_note_board = new NoteBoard();
