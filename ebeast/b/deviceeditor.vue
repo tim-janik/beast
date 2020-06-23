@@ -28,9 +28,7 @@
       <span > Module {{ module.$id }} </span>
     </b-vflex>
     <b-vflex style="flex-wrap: wrap;">
-      <b-hflex style="flex-wrap: wrap;" v-for="group in gprops" :key="group.name" >
-	<b-pro-input v-for="prop in group.props" :key="prop.$id" :prop="prop" />
-      </b-hflex>
+      <b-pro-group v-for="group in gprops" :key="group.name" :name="group.name" :props="group.props" />
     </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
