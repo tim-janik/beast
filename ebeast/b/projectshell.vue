@@ -95,7 +95,8 @@ async function list_sample_files() {
 
 function observable_project_data () { // yields reactive Proxy object
   const data = {
-    filetree:	{ default: {}, getter: c => list_sample_files(), },
+    filetree:	     { default: {}, getter: c => list_sample_files(), },
+    usermessagehook: { notify: n => Bse.server.on ("usermessage", this.usermessage), },
     // TODO: tracks: { getter: c => list_tracks.call (this), notify: n => this.song.on ("treechange", n), },
     // update current_track if tracks change
     __update__: Util.observable_force_update,
@@ -146,6 +147,22 @@ export default {
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
+    usermessage (e) {
+      let msg = '';
+      switch (e.umtype)
+      {
+	case Bse.UserMessageType.ERROR:		msg += '### '; break;
+	case Bse.UserMessageType.WARNING:	msg += '### '; break;
+	case Bse.UserMessageType.INFO:		msg += '# '; break;
+	case Bse.UserMessageType.DEBUG:		msg += '##### '; break;
+      }
+      msg += e.title + '\n';
+      msg += e.text1 + '\n';
+      msg += e.text2 + '\n';
+      if (e.text3)
+	msg += '  \n  \n**' + e.text3 + '**\n';
+      Util.show_note (msg);
+    },
     sidebar_mouse (e) {
       const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);
