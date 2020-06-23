@@ -2064,3 +2064,20 @@ export function strpad (string, len, fill = ' ') {
     }
   return string;
 }
+
+const default_seed = Math.random() * 4294967295 >>> 0;
+
+/// Generate 53-Bit hash from `key`.
+export function hash53 (key, seed = default_seed) {
+  // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript/52171480#52171480
+  let h1 = 0xcc9e2d51 ^ seed, h2 = 0x1b873593 ^ seed;
+  for (let i = 0; i < key.length; i++)
+    {
+      const ch = key.charCodeAt (i);
+      h1 = Math.imul (h1 ^ ch, 2654435761);
+      h2 = Math.imul (h2 ^ ch, 1597334677);
+    }
+  h1 = Math.imul (h1 ^ h2 >>> 16, 0x85ebca6b) ^ Math.imul (h2 ^ h1 >>> 13, 0xc2b2ae35);
+  h2 = Math.imul (h2 ^ h1 >>> 16, 0x85ebca6b) ^ Math.imul (h1 ^ h2 >>> 13, 0xc2b2ae35);
+  return 0x100000000 * (0x1fffff & h2) + (h1 >>> 0);
+}
