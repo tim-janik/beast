@@ -461,21 +461,17 @@ aux_data_map()
 }
 
 // == Introspection ==
-static inline bool
-is_identifier_char (int ch)
-{
-  if ((ch >= 'A' && ch <= 'Z') ||
-      (ch >= 'a' && ch <= 'z') ||
-      (ch >= '0' && ch <= '9') ||
-      ch == '_' || ch == '$')
-    return true;
-  return false;
-}
-
+// This must mimick what Jsonipc::normalize_typename does
 static std::string
 normalize_typename (const std::string &string)
 {
   std::string normalized;
+  auto is_identifier_char = [] (int ch) {
+    return ( (ch >= 'A' && ch <= 'Z') ||
+             (ch >= 'a' && ch <= 'z') ||
+             (ch >= '0' && ch <= '9') ||
+             ch == '_' || ch == '$' );
+  };
   for (size_t i = 0; i < string.size() && string[i]; ++i)
     if (is_identifier_char (string[i]))
       normalized += string[i];
