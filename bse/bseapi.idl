@@ -1448,7 +1448,8 @@ sequence ShmFragmentSeq {
  * used in the BSE context.
  *
  * ### Events:
- * - **enginechange** - A notification event for DSP engine changes, the event field *active* contains the activateion state.
+ * - **enginechange** - A notification event for DSP engine changes, the event field *active* contains the activation state.
+ * - **usermessage**  - A notification event with information relevant to the user.
  */
 interface Server : Container {
   // signal void   user_message      (UserMessage umsg);   ///< Notification signal for user messages from BSE.

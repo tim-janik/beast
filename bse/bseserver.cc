@@ -732,6 +732,13 @@ ServerImpl::send_user_message (const UserMessage &umsg)
   if (out.empty() || out[out.size() -1] != '\n')
     out += "\n";
   Bse::printerr ("BSE:UserMessage:%s", out);
+  using namespace Aida::KeyValueArgs;
+  emit_event ("usermessage",
+              "umtype"_v = umsg.utype,
+              "title"_v  = umsg.title,
+              "text1"_v  = umsg.text1,
+              "text2"_v  = umsg.text2,
+              "text3"_v  = umsg.text3);
 }
 
 String
