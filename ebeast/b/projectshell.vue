@@ -50,7 +50,7 @@
       <b-positionview :song="song"> </b-positionview>
     </b-hflex>
 
-    <b-hflex grow1 style="overflow-y: hidden">
+    <b-hflex grow1 style="overflow: hidden">
       <b-vflex grow1 shrink1>
 	<!-- upper main area -->
 	<b-hflex class="b-projectshell-track-area" style="height: 50%">
