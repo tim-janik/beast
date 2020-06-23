@@ -459,9 +459,13 @@ Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 {
   assert_return (!is_initialized(), {});
   assert_return (infotmpl.label != "", {});
+  if (params_.size())
+    assert_return (infotmpl.label != params_.back().info->label, {}); // easy CnP error
   PParam param { id, infotmpl };
   if (param.info->ident == "")
     param.info->ident = canonify_identifier (param.info->label);
+  if (params_.size())
+    assert_return (param.info->ident != params_.back().info->ident, {}); // easy CnP error
   if (param.info->group.empty())
     param.info->group = tls_param_group;
   using P = decltype (params_);
