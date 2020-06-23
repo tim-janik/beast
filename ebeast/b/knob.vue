@@ -13,6 +13,8 @@
   : Float, the knob value to be displayed, the value range is `0…+1` if *bidir* is `false`.
   *label*
   : String, format specification for popup bubbles, containinig a number for the peak amplitude.
+  *width4height*
+  : Automatically determine width from externally specified height (default), otherwise determines height.
   ## Events:
   *input (value)*
   : Value change notification event, the first argument is the new value.
@@ -31,12 +33,14 @@
   .b-knob {
     display: flex; position: relative;
     margin: 0; padding: 0; text-align: center;
-    svg { position: absolute; height: 100%; }
+    &.b-knob-h4w svg { position: absolute; width:  100%; } //* height for width */
+    &.b-knob-w4h svg { position: absolute; height: 100%; } //* width for height */
     .b-knob-trf {
       will-change: transform; /* request GPU texture for fast transforms */
     }
-    .b-knob-base {
-      position: relative;
+    & svg.b-knob-sizer {
+      //* empty SVG element, used by .b-knob to determine width from height from viewBox */
+      position: relative; //* participate in layout space allocation */
     }
   }
 </style>
@@ -44,8 +48,10 @@
 <!-- NOTE: This implementation assumes the HTML embeds eknob.svg -->
 
 <template>
-  <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick"
+  <div    class="b-knob" :class="width4height ? 'b-knob-w4h' : 'b-knob-h4w'" ref="bknob"
+	  @pointerdown="drag_start" @dblclick="dblclick"
 	  data-tip="**DRAG** Adjust Value **DBLCLICK** Reset Value" >
+    <svg  class="b-knob-sizer" :viewBox="viewbox()" />
     <svg  class="b-knob-base"               :style="style()" :viewBox="viewbox()" >
       <use href="#eknob-base" />
     </svg>
@@ -89,7 +95,8 @@ export default {
   name: 'b-knob',
   props: { bidir: { default: false },
 	   value: { default: 0 },
-	   label: { default: "100 %" }, },
+	   label: { default: "100 %" },
+	   width4height: { type: Boolean, default: true }, },
   data: () => ({
     scalar_: 0,
   }),
@@ -108,8 +115,6 @@ export default {
   methods: {
     style (div = 0) {
       const sz = { w: eknob.viewBox.baseVal.width, h: eknob.viewBox.baseVal.height };
-      if (div)
-	return ""; "width:" + sz.w + "px; height:" + sz.h + "px;";
       const origin = eknob_origin.x / sz.w * 100 + '% ' + eknob_origin.y / sz.h * 100 + '%';
       return "transform-origin:" + origin;
     },
