@@ -39,7 +39,7 @@ async function list_audio_device_types () {
   if (list_audio_device_types.return_entries)
     return list_audio_device_types.return_entries;
   const crawler = await Bse.server.resource_crawler();
-  const entries = await crawler.list_devices ('audio-device');
+  const entries = await crawler.list_devices (Bse.ResourceType.AUDIO_DEVICE);
   const cats = {};
   for (const e of entries)
     {
