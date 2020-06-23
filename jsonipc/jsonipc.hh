@@ -592,26 +592,23 @@ struct ClassPrinter {
       }
     return all;
   }
+  /// Yield the Javascript identifier name by substituting ':+' with '.'
   static std::string
-  enumstring (const std::string &name)
+  normalize_typename (const std::string &string)
   {
-    std::string o;
-    char last = 0;
-    for (const auto c : name)
-      {
-        if (c >= 'A' && c <= 'Z')
-          {
-            if (last >= 'a' && last <= 'z') // camelCase transition
-              o += '-';
-            o += c + 'a' - 'A';
-          }
-        else if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
-          o += c;
-        else if (o.empty() || o[o.size()-1] != '-')
-          o += '-';
-        last = c;
-      }
-    return o;
+    std::string normalized;
+    auto is_identifier_char = [] (int ch) {
+      return ( (ch >= 'A' && ch <= 'Z') ||
+               (ch >= 'a' && ch <= 'z') ||
+               (ch >= '0' && ch <= '9') ||
+               ch == '_' || ch == '$' );
+    };
+    for (size_t i = 0; i < string.size() && string[i]; ++i)
+      if (is_identifier_char (string[i]))
+        normalized += string[i];
+      else if (normalized.size() && normalized[normalized.size() - 1] != '.')
+        normalized += '.';
+    return normalized;
   }
   void
   done()
@@ -674,7 +671,7 @@ struct ClassPrinter {
     if (what == "enumvalue")
       {
         done();                         // enum values are defined *after* the class
-        std::string jsname = enumstring (classname_ + "-" + name);
+        std::string jsname = normalize_typename (classname_ + "." + name);
         out_ += string_format ("%s.%s = \"%s\"; // %d\n", jsclass_.c_str(), name.c_str(), jsname.c_str(), count);
       }
     if (what == "done")
@@ -812,7 +809,7 @@ struct Enum : TypeInfo {
   {
     const std::string class_name = typename_of<T>();
     auto &entries_ = entries();
-    Entry e { ClassPrinter::enumstring (class_name + "-" + valuename), v };
+    Entry e { ClassPrinter::normalize_typename (class_name + "." + valuename), v };
     entries_.push_back (e);
     print (class_name, "enumvalue", valuename, UnderlyingType (v));
     return *this;
