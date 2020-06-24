@@ -40,7 +40,6 @@
   .b-hflex, .b-vflex {
     display: flex; flex-basis: auto;
     flex-wrap: nowrap;
-    justify-content: space-evenly;	//* distribute extra main-axis space */
     align-items: stretch;		//* distribute extra cross-axis space */
     align-content: stretch;		//* distribute extra cross-axis space for multi-line layouts */
   }
