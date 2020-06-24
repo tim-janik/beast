@@ -13,6 +13,10 @@
   : Float, the knob value to be displayed, the value range is `0…+1` if *bidir* is `false`.
   *label*
   : String, format specification for popup bubbles, containinig a number for the peak amplitude.
+  *hscroll*
+  : Boolean, adjust value with horizontal scrolling (without dragging).
+  *vscroll*
+  : Boolean, adjust value with vertical scrolling (without dragging).
   *width4height*
   : Automatically determine width from externally specified height (default), otherwise determines height.
   ## Events:
@@ -96,6 +100,8 @@ export default {
   props: { bidir: { default: false },
 	   value: { default: 0 },
 	   label: { default: "100 %" },
+	   hscroll: { type: Boolean, default: true },
+	   vscroll: { type: Boolean, default: true },
 	   width4height: { type: Boolean, default: true }, },
   data: () => ({
     scalar_: 0,
@@ -254,6 +260,10 @@ export default {
     },
     wheel_event (ev) {
       const p = Util.wheel_delta (ev);
+      if (this.captureid_ === undefined && // not dragging
+	  ((!this.hscroll && p.x != 0) ||
+	   (!this.vscroll && p.y != 0)))
+	return;	// only consume scroll events if enabled
       const delta = -p.y || p.x;
       const min = this.bidi_ ? -1 : 0;
       if ((delta > 0 && this.value_ < 1) || (delta < 0 && this.value_ > min))
