@@ -106,11 +106,10 @@ export default {
       App.data_bubble.callback (this.$el, this.bubble);
   },
   beforeDestroy () {
-    if (document.pointerLockElement === this.$el)
-      document.exitPointerLock();
+    this.unlock_pointer = this.unlock_pointer?. ();
+    this.uncapture_wheel = this.uncapture_wheel?. ();
     if (this.pending_change)
       this.pending_change = cancelAnimationFrame (this.pending_change);
-    this.uncapture_wheel = this.uncapture_wheel?. ();
   },
   methods: {
     style (div = 0) {
@@ -163,24 +162,35 @@ export default {
       return gran;
     },
     dblclick (ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      this.emit_value (0);
-      return this.drag_stop();
+      this.drag_stop (ev);
+      /* Avoid spurious dblclick restes that are delivered at the
+       * falling edge of a drag operation. That is likely to
+       * happen on touchpads with sometimes bouncing clicks.
+       */
+      if (this.allow_dblclick)
+	this.emit_value (0);
     },
     drag_start (ev) {
       // allow only primary button press
-      if (ev.buttons != 1)
-	return this.drag_stop();
+      if (ev.buttons != 1 || this.captureid_ !== undefined)
+	{
+	  this.drag_stop (ev);
+	  return;
+	}
       // setup drag mode
-      window.focus(); // FF requires document focus for requestPointerLock
-      this.uncapture_wheel = Util.capture_event ('wheel', this.wheel_event);
+      try {
+	this.$el.setPointerCapture (ev.pointerId);
+	this.captureid_ = ev.pointerId;
+      } catch (e) {
+	// something went wrong, bail out the drag
+	console.warn ('knob.vue:drag_start:', e.message);
+	return this.drag_stop (ev);
+      }
       this.$el.onpointermove = this.drag_move;
       this.$el.onpointerup = this.drag_stop;
-      this.captureid_ = ev.pointerId;
-      this.$el.setPointerCapture (this.captureid_);
-      if (USE_PTRLOCK)
-	this.$el.requestPointerLock();
+      if (USE_PTRLOCK && this.captureid_ !== undefined)
+	this.unlock_pointer = Util.request_pointer_lock (this.$el);
+      this.uncapture_wheel = Util.capture_event ('wheel', this.wheel_event);
       // display data-bubble during drag and monitor movement distance
       App.data_bubble.callback (this.$el, this.bubble);
       App.data_bubble.force (this.$el);
@@ -188,19 +198,19 @@ export default {
       this.drag = USE_PTRLOCK ? { x: 0, y: 0 } : { x: ev.pageX, y: ev.pageY };
       ev.preventDefault();
       ev.stopPropagation();
+      this.allow_dblclick = true;
     },
     drag_stop (ev) {
       // unset drag mode
-      if (this.pending_change)
-	this.pending_change = cancelAnimationFrame (this.pending_change);
+      this.unlock_pointer = this.unlock_pointer?. ();
       this.uncapture_wheel = this.uncapture_wheel?. ();
-      this.$el.onpointermove = null;
-      this.$el.onpointerup = null;
       if (this.captureid_ !== undefined)
 	this.$el.releasePointerCapture (this.captureid_);
+      if (this.pending_change)
+	this.pending_change = cancelAnimationFrame (this.pending_change);
+      this.$el.onpointermove = null;
+      this.$el.onpointerup = null;
       this.captureid_ = undefined;
-      if (document.pointerLockElement === this.$el)
-	document.exitPointerLock();
       App.data_bubble.clear (this.$el);
       this.last = null;
       this.drag = null;
@@ -240,6 +250,7 @@ export default {
       else
 	this.last = { x: this.drag.x, y: this.drag.y };
       this.emit_value (this.point_);
+      this.allow_dblclick = false;
     },
     wheel_event (ev) {
       const p = Util.wheel_delta (ev);
@@ -253,6 +264,7 @@ export default {
 	}
       ev.preventDefault();
       ev.stopPropagation();
+      this.allow_dblclick = false;
     },
     bubble() {
       if (!this.scalar_)
