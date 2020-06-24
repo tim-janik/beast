@@ -70,6 +70,12 @@ $device-pixel-ratio: var(--device-pixel-ratio);
   @return chromatic-color-luminance($col, $lum, 'lab');
 }
 
+/// Black/grey/white by perceptible lightness (CIE L*)
+// https://en.wikipedia.org/wiki/CIELAB_color_space
+@function lgrey($l: 50%) {
+  @return chromatic-color-set(#ffffff, 'lab.l', 100 * asfactor($l));
+}
+
 /// Lighten `$color` until a target contrast ratio is met.
 @function contrast-lighten($color, $targetratio: 1, $pivot: 'SAME') {
   @if (unit($targetratio) == "%") {
