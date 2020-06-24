@@ -111,6 +111,73 @@ export function capture_event (eventname, callback) {
   return uncapture;
 }
 
+// Maintain pending_pointer_lock state
+function pointer_lock_changed (ev) {
+  if (document.pointerLockElement !== pending_pointer_lock)
+    {
+      // grabbing the lock did not work
+      pending_pointer_lock = null;
+      // exit erroneous pointer lock
+      if (document.pointerLockElement &&
+	  document.pointerLockElement.__unrequest_pointer_lock)
+	document.pointerLockElement.__unrequest_pointer_lock();
+    }
+}
+let pending_pointer_lock = null;
+document.addEventListener ('pointerlockchange', pointer_lock_changed, { passive: true });
+document.addEventListener ('pointerlockerror', pointer_lock_changed, { passive: true });
+
+/** Clear (pending) pointer locks
+ * Clear an existing pointer lock on `element` if any and
+ * ensure it does not get a pointer lock granted unless
+ * request_pointer_lock() is called on it again.
+ */
+export function unrequest_pointer_lock (element) {
+  console.assert (element instanceof Element);
+  // this API only operates on elements that have the __unrequest_pointer_lock member set
+  if (element.__unrequest_pointer_lock)
+    {
+      if (pending_pointer_lock === element)
+	pending_pointer_lock = null;
+      if (document.pointerLockElement === element)
+	document.exitPointerLock();
+    }
+}
+
+/** Check if `element` has a (pending) pointer lock
+ * Return:
+ * - 2- if `element` has the pointer lock;
+ * - 1- if the pointer lock is pending;
+ * - 0- otherwise.
+ */
+export function has_pointer_lock (element) {
+  if (document.pointerLockElement === element)
+    return 2;
+  if (pending_pointer_lock === element)
+    return 1;
+  return 0;
+}
+
+/** Request a pointer lock on `element` and track its state
+ * Use this function to maintain pointer locks to avoid stuck
+ * locks that can get granted *after* exitPointerLock() has been called.
+ */
+export function request_pointer_lock (element) {
+  console.assert (element instanceof Element);
+  if (has_pointer_lock (element) && element.__unrequest_pointer_lock)
+    return element.__unrequest_pointer_lock;
+  // this API only operates on elements that have the __unrequest_pointer_lock member set
+  element.__unrequest_pointer_lock = () => unrequest_pointer_lock (element);
+  pending_pointer_lock = element;
+  if (document.pointerLockElement != element)
+    {
+      if (document.pointerLockElement)
+	document.exitPointerLock();
+      pending_pointer_lock.requestPointerLock();
+    }
+  return element.__unrequest_pointer_lock;
+}
+
 // == Vue Helpers ==
 export const vue_mixins = {};
 export const vue_directives = {};
