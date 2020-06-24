@@ -80,7 +80,7 @@ class DataBubbleImpl {
     this.lasttext = "";
     this.last_event = null;
     this.buttonsdown = 0;
-    this.coords = {};
+    this.coords = null;
     // milliseconds to wait to detect idle time after mouse moves
     const IDLE_DELAY = 115;
     // trigger popup handling after mouse rests
@@ -104,8 +104,8 @@ class DataBubbleImpl {
       {
 	const coords = { x: this.last_event.screenX, y: this.last_event.screenY };
 	this.buttonsdown = !!this.last_event.buttons;
-	if (!this.buttonsdown && !this.stack.length &&
-	    !Util.equals_recursively (coords, this.coords) &&
+	if (!this.buttonsdown && !this.stack.length && this.coords &&
+	    (this.coords.x != coords.x || this.coords.y != coords.y) &&
 	    this.last_event.type === "mousemove")
 	  {
 	    this.restart_bubble_timer();
@@ -143,6 +143,9 @@ class DataBubbleImpl {
       this.show (next);
   }
   hide() {
+    // ignore the next 0-distance move
+    this.coords = null;
+    // hide bubble if any
     if (this.current)
       {
 	delete this.current.data_bubble_active;
