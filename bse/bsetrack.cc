@@ -1154,7 +1154,23 @@ TrackImpl::xml_serialize (SerializationNode &xs)
 {
   ContextMergerImpl::xml_serialize (xs);
   for (auto &xc : xs.children ("Device"))                        // in_load
-    xc.load (*dynamic_cast<DeviceImpl*> (device_container()->create_device (xc.get ("type")).get()));
+    {
+      const String uuiduri = xc.get ("type");
+      if (!uuiduri.empty())
+        {
+          DeviceIfaceP devicei = device_container()->create_device (uuiduri);
+          if (devicei)
+            {
+              auto *dimpl = dynamic_cast<DeviceImpl*> (devicei.get());
+              if (dimpl)
+                {
+                  xc.load (*dimpl);
+                  continue;
+                }
+            }
+        }
+      printerr ("Bse::TrackImpl::%s: failed to create device: %s\n", __func__, uuiduri);
+    }
   for (DeviceIfaceP device : device_container()->list_devices()) // in_save
     xs.save_under ("Device", *dynamic_cast<DeviceImpl*> (device.get()));
 }
