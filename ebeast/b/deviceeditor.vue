@@ -68,30 +68,94 @@
 
 <script>
 
-async function property_groups (props) {
-  props = await props;
-  // fetch group of all properties
+async function cache_properties (propertylist) {
+  propertylist = await propertylist;
   const promises = [];
-  for (const r of props)
-    promises.push (r.group()); // accessing group() yields promise
-  const groups = await Promise.all (promises);
-  console.assert (groups.length == props.length);
-  // split properties into groups
-  const grouplists = {}, groupnames = [];
+  for (const p of propertylist)
+    {
+      promises.push (p.label());		// ①
+      promises.push (p.nick()); 		// ②
+      promises.push (p.unit()); 		// ③
+      promises.push (p.hints()); 		// ④
+      promises.push (p.group()); 		// ⑤
+      promises.push (p.blurb()); 		// ⑥
+      promises.push (p.description()); 		// ⑦
+      promises.push (p.get_min()); 		// ⑧
+      promises.push (p.get_max()); 		// ⑨
+      promises.push (p.get_step()); 		// ⑩
+      promises.push (p.is_numeric()); 		// ⑪
+    }
+  const results = await Promise.all (promises);
+  console.assert (results.length == 11 * propertylist.length);
+  for (let k = 0, i = 0; i < propertylist.length; i++)
+    {
+      const p = {
+	__proto__: propertylist[i],
+	label_: results[k++],			// ①
+	nick_: results[k++], 			// ②
+	unit_: results[k++], 			// ③
+	hints_: results[k++], 			// ④
+	group_: results[k++], 			// ⑤
+	blurb_: results[k++], 			// ⑥
+	description_: results[k++], 		// ⑦
+	get_min_: results[k++], 		// ⑧
+	get_max_: results[k++], 		// ⑨
+	get_step_: results[k++], 		// ⑩
+	is_numeric_: results[k++], 		// ⑪
+      };
+      propertylist[i] = p;
+    }
+  return propertylist;
+}
+
+function assign_layout_rows (props) {
+  let nrows = 1;
+  if (props.length > 8)
+    nrows = 2;
+  if (props.length > 16)
+    nrows = 3;
+  if (props.length > 24)
+    nrows = 4;
+  const run = Math.ceil (props.length / nrows);
   for (let i = 0; i < props.length; i++)
     {
-      const groupname = groups[i];
+      const p = props[i];
+      p.lrow_ = Math.trunc (i / run);
+    }
+  return nrows;
+}
+
+function prop_visible (prop) {
+  const hints = ':' + prop.hints_ + ':';
+  if (hints.search (/:G:/) < 0)
+    return false;
+  return true;
+}
+
+async function property_groups (props) {
+  props = await cache_properties (props);
+  // split properties into groups
+  const grouplists = {}, groupnames = [];
+  for (const p of props)
+    {
+      if (!prop_visible (p))
+	continue;
+      const groupname = p.group_;
       if (!grouplists[groupname])
 	{
 	  groupnames.push (groupname);
 	  grouplists[groupname] = [];
 	}
-      grouplists[groupname].push (props[i]);
+      grouplists[groupname].push (p);
     }
   // return list of groups
   const ret = [];
   for (const groupname of groupnames)
-    ret.push ({ name: groupname, props: grouplists[groupname] });
+    {
+      const gprops = grouplists[groupname];
+      const nrows = assign_layout_rows (gprops);
+      ret.push ({ name: groupname, props: gprops, nrows: nrows });
+    }
   return Object.freeze (ret); // list of groups: [ { name, props: [ Prop... ] }... ]
 }
 

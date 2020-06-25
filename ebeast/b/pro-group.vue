@@ -7,7 +7,7 @@
   *name*
   : Group name.
   *props*
-  : Contains the properties.
+  : List of properties with cached information and layout rows.
   *readonly*
   : Make this component non editable for the user.
 </docs>
@@ -33,7 +33,7 @@
     .b-pro-group-nick {
       font-size: 90%;
     }
-    .b-pro-group-numeric {
+    .b-pro-group-big {
       /*max-height: 2em;*/
     }
   }
@@ -42,87 +42,40 @@
 <template>
   <div class="b-pro-group tabular-nums" >
     <span class="b-pro-group-title" :style="`grid-column: 1 / ${maxcols}`" > {{ name }} </span>
-    <b-vflex class="b-pro-group-vprop" v-for="tp in ptypes" :key="tp.prop.$id" :style="tp.style" >
-      <b-pro-input :prop="tp.prop"
-		   :class="ptype_class (tp)" :labeled="false"
+    <b-vflex class="b-pro-group-vprop" v-for="p in lprops" :key="p.$id" :style="p.style_" >
+      <b-pro-input :prop="p"
+		   :class="prop_class (p)" :labeled="false"
 		   :readonly="readonly" />
       <span class="b-pro-group-nick" >
-	{{ tp.nick }}
+	{{ p.nick_ }}
       </span>
     </b-vflex>
   </div>
 </template>
 
 <script>
-function prop_visible (nick, is_numeric, hints) {
-  hints = ':' + hints + ':';
-  if (hints.search (/:G:/) < 0)
-    return false;
-  return true;
-}
 
-function prop_row (idx, count) {
-  let nrows = 1;
-  if (count > 8)
-    nrows = 2;
-  if (count > 16)
-    nrows = 3;
-  if (count > 24)
-    nrows = 4;
-  const run = Math.ceil (count / nrows);
-  let r = Math.trunc (idx / run);
-  r += 2; // first row is the title
-  return r;
-}
-
-async function property_types (props) {
+async function assign_layout_cols (props) {
   props = await props;
-  // fetch type of all properties
-  const promises = [];
-  for (const p of props)
-    {
-      promises.push (p.is_numeric());		// ①
-      promises.push (p.hints()); 		// ②
-      promises.push (p.nick()); 		// ③
-    }
-  const results = await Promise.all (promises);
-  console.assert (results.length == 3 * props.length);
-  // assign ptypes, count UI elements
-  const ptypes = [];
+  const cols = {};
+  // restart column count per new layout row
   for (let i = 0; i < props.length; i++)
     {
-      const is_numeric = results[i * 3 + 0];	// ①
-      const hints = results[i * 3 + 1];		// ②
-      const nick = results[i * 3 + 2];		// ③
-      const visible = prop_visible (nick, is_numeric, hints);
-      if (!visible)
-	continue;
-      const type = {
-	is_numeric, hints, nick,
-	prop:	    props[i],
-	style:      '',
-      };
-      ptypes.push (type);
-    }
-  // layout visible props
-  const cols = {};
-  for (let i = 0; i < ptypes.length; i++)
-    {
-      const type = ptypes[i];
-      const row = prop_row (i, ptypes.length);
+      const p = props[i];
+      const row = p.lrow_ + 2; // add offset for title row
       const c = cols[row] || 1;
       cols[row] = c + 1;
       cols.max = Math.max (cols.max | 0, cols[row]);
-      type.style = `grid-row: ${row}; grid-column: ${c};`;
+      p.style_ = `grid-row: ${row}; grid-column: ${c};`;
     }
   // return list
   this.maxcols = cols.max;
-  return Object.freeze (ptypes); // [ { prop, is_numeric, hints }… ]
+  return Object.freeze (props);
 }
 
 function pro_group_data () {
   const data = {
-    ptypes:	{ default: [], getter: async c => property_types.call (this, this.props), },
+    lprops:	{ default: [], getter: async c => assign_layout_cols.call (this, this.props), },
     maxcols:    { default: 1, },
   };
   return this.observable_from_getters (data, () => this.props);
@@ -142,11 +95,11 @@ export default {
     },
   },
   methods: {
-    ptype_class (ptype) {
-      const hints = ':' + ptype.hints + ':';
+    prop_class (prop) {
+      const hints = ':' + prop.hints_ + ':';
       let c = '';
-      if (ptype.is_numeric && hints.search (/:big:/) < 0) // FIXME: test "big" hint
-	c += 'b-pro-group-numeric';
+      if (prop.is_numeric_ && hints.search (/:big:/) < 0) // FIXME: test "big" hint
+	c += 'b-pro-group-big';
       return c;
     },
     dom_update() {
