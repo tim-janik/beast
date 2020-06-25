@@ -42,7 +42,7 @@ function pro_input_data () {
   const data = {
     // ident:   { default: '', getter: async c => await this.prop.identifier(), },
     // group:   { default: '', getter: async c => await this.prop.group(), },
-    is_numeric: { default:  0, getter: async c => await this.prop.is_numeric(), },
+    is_numeric: { default:  1, getter: async c => await this.prop.is_numeric(), },
     label:      { default: '', getter: async c => await this.prop.label(), },
     nick:       { default: '', getter: async c => await this.prop.nick(), },
     unit:       { default: '', getter: async c => await this.prop.unit(), },
