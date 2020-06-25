@@ -10,29 +10,93 @@
 
 <style lang="scss">
   @import 'mixins.scss';
+
+  $scrollbar-height: 6px; //* Should match Firefox 'scrollbar-width:thin' */
+
   .b-devicepanel.b-hflex {
-    border: 3px solid #777;
-    border-radius: $b-theme-border-radius;
+    height: 100%; width: 0; flex-grow: 1;
+    background: $b-devicepanel-bg;
+    border-radius: inherit;
     justify-content: flex-start;
     align-items: center;
+
+    .b-devicepanel-title {
+      text-align: center;
+      /* FF: writing-mode: sideways-rl; */
+      writing-mode: vertical-rl; transform: rotate(180deg);
+      border-right: 7px solid #9c61ff;
+      padding: 0 5px;
+      border-top-right-radius: inherit;
+      border-bottom-right-radius: inherit;
+      height: 100%;
+    }
+    .b-devicepanel-scroller {
+      height: 100%; flex-grow: 1;
+      padding-top: $scrollbar-height;
+      padding-bottom: 0;
+      overflow-y: hidden;
+      overflow-x: scroll;
+      & > * {
+	flex-grow: 0;
+      }
+      .b-more {
+	margin-top: $scrollbar-height;
+      }
+    }
+  }
+
+  // scrollbar styling
+  .b-devicepanel-scroller {
+    $scrollbar-bg: #111;
+    $scrollbar-dd: #222;
+    $scrollbar-fg: #777;
+    // Chrome
+    &::-webkit-scrollbar	{ height: $scrollbar-height; }
+    &::-webkit-scrollbar-button { display: none; }
+    &::-webkit-scrollbar-track, &::-webkit-scrollbar-track-piece,
+    &::-webkit-scrollbar	{
+      background: $scrollbar-bg;
+      border: none; box-shadow: none;
+    }
+    &::-webkit-scrollbar-thumb	{
+      border-radius: 999px;
+      transition: background 0.4s ease;
+      background: $scrollbar-dd;
+    }
+    &:hover::-webkit-scrollbar-thumb {
+      transition: background 0.4s ease;
+      background: linear-gradient(lighter($scrollbar-fg), darker($scrollbar-fg));
+    }
+    // Firefox
+    html[gecko] & {
+      scrollbar-width: thin;
+      transition: scrollbar-color 0.4s ease;
+      scrollbar-color: $scrollbar-dd $scrollbar-bg;
+      &:hover {
+	scrollbar-color: $scrollbar-fg $scrollbar-bg;
+      }
+    }
   }
 </style>
 
 <template>
-  <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
-    <template v-for="device in devices" >
-      <b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id"
+  <b-hflex class="b-devicepanel" >
+    <span class="b-devicepanel-title"> Device Panel </span>
+    <b-hflex class="b-devicepanel-scroller" >
+      <template v-for="device in devices" >
+	<b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id"
+		data-tip="**CLICK** Add New Elements" />
+	<b-deviceeditor :device="device" center :key="'deviceeditor' + device.$id" />
+      </template>
+      <b-more @click.native.stop="menuopen" :sibling="null"
 	      data-tip="**CLICK** Add New Elements" />
-      <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
-    </template>
-    <b-more @click.native.stop="menuopen" :sibling="null"
-	    data-tip="**CLICK** Add New Elements" />
-    <b-contextmenu ref="cmenu" @click="menuactivation" yscale="1.6" >
-      <b-menutitle> Device </b-menutitle>
-      <b-menuitem fa="plus-circle"      uri="EBeast:add-device" >      Add Device		</b-menuitem>
-      <b-menuitem fa="times-circle"     uri="EBeast:delete-device" >   Delete Device		</b-menuitem>
-      <b-treeselector :tree="devicetypes"> </b-treeselector>
-    </b-contextmenu>
+      <b-contextmenu ref="cmenu" @click="menuactivation" yscale="1.6" >
+	<b-menutitle> Device </b-menutitle>
+	<b-menuitem fa="plus-circle"      uri="EBeast:add-device" >      Add Device		</b-menuitem>
+	<b-menuitem fa="times-circle"     uri="EBeast:delete-device" >   Delete Device		</b-menuitem>
+	<b-treeselector :tree="devicetypes"> </b-treeselector>
+      </b-contextmenu>
+    </b-hflex>
   </b-hflex>
 </template>
 
