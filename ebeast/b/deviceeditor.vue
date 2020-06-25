@@ -21,6 +21,7 @@
     }
     .b-deviceeditor-areas {
       background: $b-device-bg;
+      grid-gap: 3px;
       border: $b-panel-border; /*DEBUG: border-color: #333;*/
       border-radius: $b-device-radius; border-top-left-radius: 0; border-bottom-left-radius: 0;
       justify-content: flex-start;
@@ -98,7 +99,7 @@ function assign_layout_rows (props) {
   if (props.length > 18)
     n_lrows = 4;
   if (props.length > 24)
-    n_lrows = 5;
+    ; // n_lrows = 5; is not supported, see rows_from_lrows()
   const run = Math.ceil (props.length / n_lrows);
   for (let i = 0; i < props.length; i++)
     {
@@ -117,7 +118,7 @@ function prop_visible (prop) {
 
 async function property_groups (asyncpropertylist) {
   const propertylist = await cache_properties (asyncpropertylist);
-  // split properties into groups
+  // split properties into group lists
   const grouplists = {}, groupnames = [];
   for (const p of propertylist)
     {
@@ -131,7 +132,7 @@ async function property_groups (asyncpropertylist) {
 	}
       grouplists[groupname].push (p);
     }
-  // return list of groups
+  // create group objects
   const grouplist = [];
   for (const name of groupnames)
     {
@@ -149,12 +150,12 @@ async function property_groups (asyncpropertylist) {
   // determine grid rows from group internal layout rows
   const rows_from_lrows = (group) => {
     /* Available vertical panel areas:
-     * 1lrow   2lrows    3lrows       4lrows (*)      5lrows
-     * 123456 123456789 123456789012 123456789012345 123456789012345678
-     * TT kkk TT kkkqqq TT kkkqqqkkk TT kkkqqqkkkqqq TT kkkqqqkkkqqqkkk
+     * 1lrow   2lrows    3lrows       4lrows
+     * 123456 123456789 123456789012 123456789012345
+     * TT kkk TT kkkqqq TT kkkqqqkkk TT kkkqqqkkkqqq
      *
-     * (*) 4 lrows does not leave room for another panel area, so
-     * it is always stretched to fit 5 lrows.
+     * Supporting 5 lrows would not leave room for another panel after a 4 lrow panel,
+     * so the 4 lrows and 5 lrows panels would always be stretched to same grid rows.
      */
     if (group.n_lrows == 1)
       return 2;			// title + knobs
@@ -163,12 +164,10 @@ async function property_groups (asyncpropertylist) {
     if (group.n_lrows == 3)
       return 4;			// title + knobs + knobs + knobs
     if (group.n_lrows == 4)
-      return 5 + 1;		// title + knobs + knobs + knobs + knobs (*)
-    if (group.n_lrows == 5)
-      return 6;		// title + knobs + knobs + knobs + knobs + knobs
+      return 5;			// title + knobs + knobs + knobs + knobs
   };
   // wrap groups into columns
-  const maxrows = 6, cols = {};
+  const maxrows = 5, cols = {};
   let c = 0, r = 0;
   for (let i = 0; i < grouplist.length; i++)
     {

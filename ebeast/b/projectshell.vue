@@ -26,7 +26,7 @@
     color: $b-panel-foreground;
     background: $b-panel-background; //* $b-panel-focus */
     border: $b-panel-border; border-radius: $b-panel-radius;
-    height: 22em; overflow: hidden;
+    height: 19em; overflow: hidden;
     margin-left: 3px;
   }
   .b-projectshell-sidebar {
