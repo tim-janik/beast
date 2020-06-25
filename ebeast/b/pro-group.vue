@@ -14,25 +14,33 @@
 
 <style lang="scss">
   @import 'mixins.scss';
-  .b-pro-group        {
-    display: grid;
-    padding: 5px; grid-gap: 5px;
-    justify-content: flex-start;
+  .b-pro-group {
+    display: flex;
+    padding: 5px;
+    justify-content: space-evenly;
     border-radius: $b-device-radius;
-    margin: 0 0 3px 3px;
     background: $b-device-area1;
     &:nth-child(2n) {
       background: $b-device-area2;
     }
     .b-pro-group-title {
-      justify-self: center;
+      display: flex;
+      justify-content: center;
+      flex-grow: 1;
     }
-    .b-pro-group-vprop {
-      align-items: center;
+    .b-pro-group-row {
+      justify-content: space-evenly;
+      .b-pro-group-vprop {
+	align-items: center;
+	.b-pro-group-nick {
+	  font-size: 90%;
+	}
+      }
+      //* emulate: .b-pro-group-row { gap: ...; } */
+      & > *:not(:last-child) { margin-right: 7px; }
     }
-    .b-pro-group-nick {
-      font-size: 90%;
-    }
+    //* emulate: .b-pro-group { gap: ...; } */
+    & > *:not(:last-child) { margin-bottom: 5px; }
     .b-pro-group-big {
       /*max-height: 2em;*/
     }
@@ -40,43 +48,40 @@
 </style>
 
 <template>
-  <div class="b-pro-group tabular-nums" >
-    <span class="b-pro-group-title" :style="`grid-column: 1 / ${maxcols}`" > {{ name }} </span>
-    <b-vflex class="b-pro-group-vprop" v-for="p in lprops" :key="p.$id" :style="p.style_" >
-      <b-pro-input :prop="p"
-		   :class="prop_class (p)" :labeled="false"
-		   :readonly="readonly" />
-      <span class="b-pro-group-nick" >
-	{{ p.nick_ }}
-      </span>
-    </b-vflex>
-  </div>
+  <b-vflex class="b-pro-group tabular-nums" >
+    <span class="b-pro-group-title" > {{ name }} </span>
+    <b-hflex class="b-pro-group-row" v-for="row in proprows" :key="row.index" >
+      <b-vflex class="b-pro-group-vprop" v-for="prop in row" :key="prop.$id" :class="prop_class (prop)" >
+	<b-pro-input class="b-pro-group-input" :prop="prop" :labeled="false" :readonly="readonly" />
+	<span class="b-pro-group-nick" > {{ prop.nick_ }} </span>
+      </b-vflex>
+    </b-hflex>
+  </b-vflex>
 </template>
 
 <script>
 
-async function assign_layout_cols (props) {
+async function assign_layout_rows (props) {
   props = await props;
-  const cols = {};
-  // restart column count per new layout row
-  for (let i = 0; i < props.length; i++)
+  // split properties into rows, according to lrow_
+  const rows = [];
+  for (const prop of props)
     {
-      const p = props[i];
-      const row = p.lrow_ + 2; // add offset for title row
-      const c = cols[row] || 1;
-      cols[row] = c + 1;
-      cols.max = Math.max (cols.max | 0, cols[row]);
-      p.style_ = `grid-row: ${row}; grid-column: ${c};`;
+      console.assert ('number' == typeof prop.lrow_);
+      if (!rows[prop.lrow_])
+	{
+	  rows[prop.lrow_] = [];
+	  rows[prop.lrow_].index = prop.lrow_;
+	}
+      rows[prop.lrow_].push (prop);
     }
   // return list
-  this.maxcols = cols.max;
-  return Object.freeze (props);
+  return Object.freeze (rows);
 }
 
 function pro_group_data () {
   const data = {
-    lprops:	{ default: [], getter: async c => assign_layout_cols.call (this, this.props), },
-    maxcols:    { default: 1, },
+    proprows:	{ default: [], getter: async c => assign_layout_rows.call (this, this.props), },
   };
   return this.observable_from_getters (data, () => this.props);
 }
