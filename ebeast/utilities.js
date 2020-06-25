@@ -46,6 +46,8 @@ export function now () {
  * - `immediate` - immediately invoke `callback` and then start the timeout period.
  */
 export function debounce (callback, options = {}) {
+  if ('number' == typeof options)
+    options = { wait: options };
   if (!(callback instanceof Function))
     throw new TypeError ('argument `callback` must be of type Function');
   const restart = !!options.restart;
