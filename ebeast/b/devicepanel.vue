@@ -20,15 +20,26 @@
     justify-content: flex-start;
     align-items: center;
 
-    .b-devicepanel-title {
+    .b-devicepanel-before-scroller {
       text-align: center;
-      /* FF: writing-mode: sideways-rl; */
+      //* FF: writing-mode: sideways-rl; */
       writing-mode: vertical-rl; transform: rotate(180deg);
       border-right: 7px solid #9c61ff;
       padding: 0 5px;
       border-top-right-radius: inherit;
       border-bottom-right-radius: inherit;
       height: 100%;
+      //* Add slight shadow to the right for a soft scroll boundary */
+      box-shadow: 0 0 5px 2px #000;
+      background: #000000ef;
+      z-index: 9; //* raise above scrolled siblings */
+    }
+    .b-devicepanel-after-scroller {
+      height: 100%;
+      //* Add slight shadow to the left for a soft scroll boundary */
+      box-shadow: 0 0 5px 2px #000;
+      width: 1px; background: #000000ef;
+      z-index: 9; //* raise above scrolled siblings */
     }
     .b-devicepanel-scroller {
       height: 100%; flex-grow: 1;
@@ -81,7 +92,7 @@
 
 <template>
   <b-hflex class="b-devicepanel" >
-    <span class="b-devicepanel-title"> Device Panel </span>
+    <span class="b-devicepanel-before-scroller"> Device Panel </span>
     <b-hflex class="b-devicepanel-scroller" >
       <template v-for="device in devices" >
 	<b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id"
@@ -97,6 +108,7 @@
 	<b-treeselector :tree="devicetypes"> </b-treeselector>
       </b-contextmenu>
     </b-hflex>
+    <span class="b-devicepanel-after-scroller"></span>
   </b-hflex>
 </template>
 
