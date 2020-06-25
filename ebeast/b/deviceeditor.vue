@@ -11,24 +11,52 @@
 <style lang="scss">
   @import 'mixins.scss';
   .b-deviceeditor {
-    border: 5px solid #575;
+    .b-deviceeditor-sw {
+      background: $b-device-handle;
+      border-radius: $b-device-radius; border-top-left-radius: 0; border-bottom-left-radius: 0;
+      padding: 0 5px;
+      text-align: center;
+      /* FF: writing-mode: sideways-rl; */
+      writing-mode: vertical-rl; transform: rotate(180deg);
+    }
+    .b-deviceeditor-areas {
+      background: $b-device-bg;
+      border: $b-panel-border; /*DEBUG: border-color: #333;*/
+      border-radius: $b-device-radius; border-top-left-radius: 0; border-bottom-left-radius: 0;
+      justify-content: flex-start;
+    }
   }
-  .b-deviceeditor-sw {
-    text-align: center;
-    /* FF: writing-mode: sideways-rl; */
-    writing-mode: vertical-rl; transform: rotate(180deg);
+  /* As of 2020, 'flex-flow: column wrap;' is still broken in FF and Chrome:
+   * https://stackoverflow.com/questions/33891709/when-flexbox-items-wrap-in-column-mode-container-does-not-grow-its-width/33899301#33899301
+   * https://stackoverflow.com/questions/23408539/how-can-i-make-a-displayflex-container-expand-horizontally-with-its-wrapped-con/41209186#41209186
+   */
+  .b-deviceeditor-gwrap-ascflex {
+    /* Buggy in 2020: the flex container doesn't extend its with beyond the first wrapped child */
+    display: flex; flex-flow: column wrap;
+  }
+  .b-deviceeditor-areas,
+  .b-deviceeditor-gwrap-asvflex {
+    /* Hacky workaround, use flex row but vertical writing mode; 2020: has reflow bugs in FF and Chrome */
+    display: inline-flex; flex-flow: row wrap; writing-mode: vertical-lr;
+    align-content: flex-start;
+    & > * { writing-mode: horizontal-tb; } //* restore writing mode */
+  }
+  .b-deviceeditor-gwrap-asgrid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, auto);
   }
 </style>
 
 <template>
-  <b-hflex class="b-deviceeditor" style="width: 100%; height: 100%" @contextmenu.stop="menuopen" >
+  <b-hflex class="b-deviceeditor" @contextmenu.stop="menuopen" >
     <span class="b-deviceeditor-sw" > {{ device_info.uri + ' #' + device.$id }} </span>
+    <div class="b-deviceeditor-areas" >
+      <b-pro-group v-for="group in gprops" :key="group.name" :name="group.name" :props="group.props" />
+    </div>
     <b-vflex v-for="module in modules" :key="module.$id"
 	     class="b-deviceeditor-entry" center style="margin: 5px" >
       <span > Module {{ module.$id }} </span>
-    </b-vflex>
-    <b-vflex style="flex-wrap: wrap;">
-      <b-pro-group v-for="group in gprops" :key="group.name" :name="group.name" :props="group.props" />
     </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
