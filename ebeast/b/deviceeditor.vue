@@ -90,23 +90,26 @@ async function cache_properties (propertylist) {
   return propertylist;
 }
 
-function assign_layout_rows (props) {
+function guess_layout_rows (number_of_properties) {
   let n_lrows = 1;
-  if (props.length > 6)
+  if (number_of_properties > 6)
     n_lrows = 2;
-  if (props.length > 12)
+  if (number_of_properties > 12)
     n_lrows = 3;
-  if (props.length > 18)
+  if (number_of_properties > 18)
     n_lrows = 4;
-  if (props.length > 24)
+  if (number_of_properties > 24)
     ; // n_lrows = 5; is not supported, see rows_from_lrows()
+  return n_lrows;
+}
+
+function assign_layout_rows (props, n_lrows) {
   const run = Math.ceil (props.length / n_lrows);
   for (let i = 0; i < props.length; i++)
     {
       const p = props[i];
       p.lrow_ = Math.trunc (i / run);
     }
-  return n_lrows;
 }
 
 function prop_visible (prop) {
@@ -137,7 +140,7 @@ async function property_groups (asyncpropertylist) {
   for (const name of groupnames)
     {
       const props = grouplists[name];
-      const n_lrows = assign_layout_rows (props);
+      const n_lrows = guess_layout_rows (props.length);
       const group = {
 	name, props, n_lrows,
 	col: undefined,
@@ -148,7 +151,7 @@ async function property_groups (asyncpropertylist) {
       grouplist.push (group);
     }
   // determine grid rows from group internal layout rows
-  const rows_from_lrows = (group) => {
+  const rows_from_lrows = (n_lrows) => {
     /* Available vertical panel areas:
      * 1lrow   2lrows    3lrows       4lrows
      * 123456 123456789 123456789012 123456789012345
@@ -157,22 +160,24 @@ async function property_groups (asyncpropertylist) {
      * Supporting 5 lrows would not leave room for another panel after a 4 lrow panel,
      * so the 4 lrows and 5 lrows panels would always be stretched to same grid rows.
      */
-    if (group.n_lrows == 1)
+    if (n_lrows == 1)
       return 2;			// title + knobs
-    if (group.n_lrows == 2)
+    if (n_lrows == 2)
       return 3;			// title + knobs + knobs
-    if (group.n_lrows == 3)
+    if (n_lrows == 3)
       return 4;			// title + knobs + knobs + knobs
-    if (group.n_lrows == 4)
+    if (n_lrows == 4)
       return 5;			// title + knobs + knobs + knobs + knobs
+    if (n_lrows == 5)
+      ; // return 6; - not supported, layout becomes too crammed
   };
+  const lrows_from_rows = (nrows) => nrows - 1; // see rows_from_lrows()
   // wrap groups into columns
   const maxrows = 5, cols = {};
   let c = 0, r = 0;
-  for (let i = 0; i < grouplist.length; i++)
+  for (const group of grouplist)
     {
-      const group = grouplist[i];
-      let rspan = rows_from_lrows (group);
+      let rspan = rows_from_lrows (group.n_lrows);
       if (r > 1 && r + rspan > maxrows)
 	{
 	  c += 1;
@@ -208,6 +213,12 @@ async function property_groups (asyncpropertylist) {
       if (r < maxrows)
 	cgroups[cgroups.length - 1].rspan += maxrows - r;
     }
+  // rspan expansion might have made room for another lrow
+  for (const group of grouplist)
+    group.n_lrows = lrows_from_rows (group.rspan);
+  // assign properties to inner group rows
+  for (const group of grouplist)
+    assign_layout_rows (group.props, group.n_lrows);
   return Object.freeze (grouplist); // list of groups: [ { name, props: [ Prop... ] }... ]
 }
 
