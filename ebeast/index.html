@@ -237,6 +237,14 @@
       data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
     });
     console.assert (vue_root); // Vue.$root
+    App.$forceUpdate = () => {
+      function vue_update (component) {
+	component.$forceUpdate();
+	for (let child of component.$children)
+	  vue_update (child);
+      };
+      vue_update (vue_root);
+    };
     // Load external BSE plugins
     $log ("Loading LADSPA plugins...");
     await Bse.server.load_ladspa();
