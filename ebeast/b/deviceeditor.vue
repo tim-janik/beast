@@ -26,34 +26,15 @@
       justify-content: flex-start;
     }
   }
-  /* As of 2020, 'flex-flow: column wrap;' is still broken in FF and Chrome:
-   * https://stackoverflow.com/questions/33891709/when-flexbox-items-wrap-in-column-mode-container-does-not-grow-its-width/33899301#33899301
-   * https://stackoverflow.com/questions/23408539/how-can-i-make-a-displayflex-container-expand-horizontally-with-its-wrapped-con/41209186#41209186
-   */
-  .b-deviceeditor-gwrap-ascflex {
-    /* Buggy in 2020: the flex container doesn't extend its with beyond the first wrapped child */
-    display: flex; flex-flow: column wrap;
-  }
-  .b-deviceeditor-areas,
-  .b-deviceeditor-gwrap-asvflex {
-    /* Hacky workaround, use flex row but vertical writing mode; 2020: has reflow bugs in FF and Chrome */
-    display: inline-flex; flex-flow: row wrap; writing-mode: vertical-lr;
-    align-content: flex-start;
-    & > * { writing-mode: horizontal-tb; } //* restore writing mode */
-  }
-  .b-deviceeditor-gwrap-asgrid {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(2, auto);
-  }
 </style>
 
 <template>
   <b-hflex class="b-deviceeditor" @contextmenu.stop="menuopen" >
     <span class="b-deviceeditor-sw" > {{ device_info.uri + ' #' + device.$id }} </span>
-    <div class="b-deviceeditor-areas" >
-      <b-pro-group v-for="group in gprops" :key="group.name" :name="group.name" :props="group.props" />
-    </div>
+    <b-grid class="b-deviceeditor-areas" >
+      <b-pro-group v-for="group in gprops" :key="group.name" :style="group_style (group)"
+		   :name="group.name" :props="group.props" />
+    </b-grid>
     <b-vflex v-for="module in modules" :key="module.$id"
 	     class="b-deviceeditor-entry" center style="margin: 5px" >
       <span > Module {{ module.$id }} </span>
@@ -109,20 +90,22 @@ async function cache_properties (propertylist) {
 }
 
 function assign_layout_rows (props) {
-  let nrows = 1;
-  if (props.length > 8)
-    nrows = 2;
-  if (props.length > 16)
-    nrows = 3;
+  let n_lrows = 1;
+  if (props.length > 6)
+    n_lrows = 2;
+  if (props.length > 12)
+    n_lrows = 3;
+  if (props.length > 18)
+    n_lrows = 4;
   if (props.length > 24)
-    nrows = 4;
-  const run = Math.ceil (props.length / nrows);
+    n_lrows = 5;
+  const run = Math.ceil (props.length / n_lrows);
   for (let i = 0; i < props.length; i++)
     {
       const p = props[i];
       p.lrow_ = Math.trunc (i / run);
     }
-  return nrows;
+  return n_lrows;
 }
 
 function prop_visible (prop) {
@@ -132,11 +115,11 @@ function prop_visible (prop) {
   return true;
 }
 
-async function property_groups (props) {
-  props = await cache_properties (props);
+async function property_groups (asyncpropertylist) {
+  const propertylist = await cache_properties (asyncpropertylist);
   // split properties into groups
   const grouplists = {}, groupnames = [];
-  for (const p of props)
+  for (const p of propertylist)
     {
       if (!prop_visible (p))
 	continue;
@@ -149,14 +132,84 @@ async function property_groups (props) {
       grouplists[groupname].push (p);
     }
   // return list of groups
-  const ret = [];
-  for (const groupname of groupnames)
+  const grouplist = [];
+  for (const name of groupnames)
     {
-      const gprops = grouplists[groupname];
-      const nrows = assign_layout_rows (gprops);
-      ret.push ({ name: groupname, props: gprops, nrows: nrows });
+      const props = grouplists[name];
+      const n_lrows = assign_layout_rows (props);
+      const group = {
+	name, props, n_lrows,
+	col: undefined,
+	cspan: undefined,
+	row: undefined,
+	rspan: undefined,
+      };
+      grouplist.push (group);
     }
-  return Object.freeze (ret); // list of groups: [ { name, props: [ Prop... ] }... ]
+  // determine grid rows from group internal layout rows
+  const rows_from_lrows = (group) => {
+    /* Available vertical panel areas:
+     * 1lrow   2lrows    3lrows       4lrows (*)      5lrows
+     * 123456 123456789 123456789012 123456789012345 123456789012345678
+     * TT kkk TT kkkqqq TT kkkqqqkkk TT kkkqqqkkkqqq TT kkkqqqkkkqqqkkk
+     *
+     * (*) 4 lrows does not leave room for another panel area, so
+     * it is always stretched to fit 5 lrows.
+     */
+    if (group.n_lrows == 1)
+      return 2;			// title + knobs
+    if (group.n_lrows == 2)
+      return 3;			// title + knobs + knobs
+    if (group.n_lrows == 3)
+      return 4;			// title + knobs + knobs + knobs
+    if (group.n_lrows == 4)
+      return 5 + 1;		// title + knobs + knobs + knobs + knobs (*)
+    if (group.n_lrows == 5)
+      return 6;		// title + knobs + knobs + knobs + knobs + knobs
+  };
+  // wrap groups into columns
+  const maxrows = 6, cols = {};
+  let c = 0, r = 0;
+  for (let i = 0; i < grouplist.length; i++)
+    {
+      const group = grouplist[i];
+      let rspan = rows_from_lrows (group);
+      if (r > 1 && r + rspan > maxrows)
+	{
+	  c += 1;
+	  r = 0;
+	}
+      group.col = c;
+      group.row = r;
+      group.rspan = rspan;
+      r += rspan;
+      if (!cols[c])
+	cols[c] = [];
+      cols[c].push (group);
+    }
+  // distribute excess column space
+  for (const c in cols)  // forall columns
+    {
+      const cgroups = cols[c];
+      let r = 0;
+      for (const g of cgroups) // forall groups in column
+	r += g.rspan;
+      const extra = Math.trunc ((maxrows - r) / cgroups.length);
+      // distribute extra space evenly
+      cgroups[0].rspan += extra;
+      r = cgroups[0].rspan;
+      for (let i = 1; i < cgroups.length; i++)
+	{
+	  const prev = cgroups[i - 1];
+	  cgroups[i].row = prev.row + prev.rspan;
+	  cgroups[i].rspan += extra;
+	  r += cgroups[i].rspan;
+	}
+      // close gap of last row to bottom
+      if (r < maxrows)
+	cgroups[cgroups.length - 1].rspan += maxrows - r;
+    }
+  return Object.freeze (grouplist); // list of groups: [ { name, props: [ Prop... ] }... ]
 }
 
 function observable_device_data () {
@@ -177,6 +230,24 @@ export default {
   },
   data() { return observable_device_data.call (this); },
   methods: {
+    group_style (group) {
+      let s = '';
+      if (group.row !== undefined)
+	{
+	  s += 'grid-row:' + (1 + group.row);
+	  if (group.rspan)
+	    s += '/span ' + group.rspan;
+	  s += ';';
+	}
+      if (group.col !== undefined)
+	{
+	  s += 'grid-column:' + (1 + group.col);
+	  if (group.cspan)
+	    s += '/span ' + group.cspan;
+	  s += ';';
+	}
+      return s;
+    },
     menuactivation (uri) {
       // close popup to remove focus guards
       this.$refs.cmenu.close();
