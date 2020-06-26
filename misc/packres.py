@@ -5,6 +5,10 @@ Generate C source code from a binary file.
 """
 import sys, re, zlib
 
+zformat = False
+with_resource_entry = False
+prefix = ''
+
 class Printer:
   def print_data (self, data):
     self.pad = False
@@ -40,9 +44,6 @@ class Printer:
       self.pos += 1
     self.pad = need_pad
 
-prefix = 'PACKRES_'
-with_resource_entry = True
-
 def print_file (filename, strip_prefix = ''):
   stripped_filename = filename
   if strip_prefix:
@@ -56,7 +57,10 @@ def print_file (filename, strip_prefix = ''):
   f.close()
   del f
   l = len (raw)
-  data = zlib.compress (raw, 9)
+  if not zformat:
+    data = raw
+  else:
+    data = zlib.compress (raw, 9)
   # two things to consider for using the compressed data:
   # 1) For the reader code, compressed size + 1 must be smaller than the original data size to identify compressed data.
   # 2) Using compressed data requires runtime unpacking overhead and extra dynamic memory allocation.
@@ -66,7 +70,7 @@ def print_file (filename, strip_prefix = ''):
     data = raw  # skip compression
   p = Printer()
   out = p.print_data (data)
-  print ('static const char %s[] __attribute__ ((__aligned__ (16))) =' % idd)
+  print ('static const char %s[] __attribute__ ((__aligned__ (64))) =' % idd)
   print (out + '; // %u + 1' % len (data))
   if with_resource_entry:
     print ('static const LocalResourceEntry %s = {' % ide)
@@ -77,14 +81,18 @@ def print_file (filename, strip_prefix = ''):
 
 if __name__ == "__main__":
   if len (sys.argv) <= 1 or sys.argv[1] in ('-h', '--help'):
-    print ("Usage: %s [-s stripprefix] [files...]" % sys.argv[0])
+    print ("Usage: %s [-z] [-s stripprefix] [files...]" % sys.argv[0])
     sys.exit (0)
   # parse args
   strip_prefix = ''
   files = []
   i = 1
   while i < len (sys.argv):
-    if sys.argv[i] == '-s':
+    if sys.argv[i] == '-z':
+      zformat = True
+      with_resource_entry = True
+      prefix = 'PACKRES_'
+    elif sys.argv[i] == '-s':
       i += 1
       strip_prefix = sys.argv[i]
     else:
