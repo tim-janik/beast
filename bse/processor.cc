@@ -526,6 +526,44 @@ Processor::add_param (const std::string &clabel,
   return add_param (id, info, value);
 }
 
+static std::string
+feature_add (std::string featurelist, const std::string feature)
+{
+  if ("" == feature_toggle_find (featurelist, feature, ""))
+    {
+      if (!featurelist.empty() && featurelist.back() != ':')
+        featurelist += ":" + feature;
+      else
+        featurelist += feature;
+    }
+  return featurelist;
+}
+
+/// Add new toggle parameter with most `ParamInfo` fields as inlined arguments.
+/// The returned `ParamId` is newly assigned and increases with the number of parameters added.
+/// The `clabel` is the canonical, non-translated name for this parameter, its
+/// hyphenated lower case version is used for serialization.
+ParamId
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      const std::string &hints, bool boolvalue,
+                      const std::string &blurb, const std::string &description)
+{
+  ParamInfo info;
+  info.ident = canonify_identifier (clabel);
+  info.label = clabel;
+  info.nick = nickname;
+  info.blurb = blurb;
+  info.description = description;
+  static const ChoiceEntries centries { { "Off" }, { "On" } };
+  info.set_choices (centries);
+  if ("" == feature_toggle_find (info.hints, "toggle", ""))
+    info.hints = feature_add (hints, "toggle");
+  else
+    info.hints = hints;
+  ParamId id = ParamId (1 + params_.size());
+  return add_param (id, info, boolvalue);
+}
+
 /// List all Processor parameters.
 auto
 Processor::list_params() const -> ParamInfoPVec

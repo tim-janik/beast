@@ -88,11 +88,15 @@ struct ChoiceDetails {
   CString name;
   bool    operator== (const ChoiceDetails &o) const     { return name == o.name; }
   bool    operator!= (const ChoiceDetails &o) const     { return !operator== (o); }
+  ChoiceDetails (CString name_) : name (name_) {}
 };
 
 /// List of choices for ParamInfo.set_choices().
 struct ChoiceEntries : std::vector<ChoiceDetails> {
   ChoiceEntries& operator+= (const ChoiceDetails &ce);
+  using base_t = std::vector<ChoiceDetails>;
+  ChoiceEntries (std::initializer_list<base_t::value_type> __l) : base_t (__l) {}
+  ChoiceEntries () {}
 };
 
 /// Detailed information and common properties of parameters.
@@ -218,6 +222,9 @@ protected:
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
                                    ChoiceEntries &&centries, const std::string &hints,
                                    double value,
+                                   const std::string &blurb = "", const std::string &description = "");
+  ParamId       add_param         (const std::string &clabel, const std::string &nickname,
+                                   const std::string &hints, bool boolvalue,
                                    const std::string &blurb = "", const std::string &description = "");
   void          start_param_group (const std::string &groupname) const;
   // Buses
