@@ -50,7 +50,6 @@ function pro_input_data () {
     blurb:	{ default: '', getter: async c => await this.prop.blurb(), },
     vmin:       { getter: async c => await this.prop.get_min(), },
     vmax:       { getter: async c => await this.prop.get_max(), },
-    vstep:      { getter: async c => await this.prop.get_step(), },
     vnum:       { getter: async c => await this.prop.get_num(),
 		  notify: n => this.n=n /*this.prop.on ("change", n)*/, },
   };
@@ -96,16 +95,9 @@ export default {
       this.n (); // FIXME : need real notification
     },
     get_num() {
-      if (this.vnum === undefined)
+      if (this.vnum === undefined || this.vmin === undefined || this.vmax === undefined)
 	return 0;
-      let v;
-      if (this.vstep)
-	v = this.vstep * Math.round (this.vnum / this.vstep);
-      else
-	v = this.vnum;
-      if (this.vmin !== undefined && this.vmax !== undefined)
-	v = (Util.clamp (v, this.vmin, this.vmax) - this.vmin) / (this.vmax - this.vmin);
-      return v;
+      return (this.vnum - this.vmin) / (this.vmax - this.vmin);
     },
   },
 };
