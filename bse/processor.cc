@@ -180,21 +180,6 @@ ParamInfo::clear ()
   release();
 }
 
-/// Get parameter range minimum and maximum.
-ParamInfo::MinMax
-ParamInfo::get_minmax () const
-{
-  switch (union_tag)
-    {
-    case PTAG_FLOATS:
-      return { u.fmin, u.fmax };
-    case PTAG_CENTRIES:
-      return { 0, u.centries()->size() };
-    default:
-      return { NAN, NAN };
-    }
-}
-
 /// Get parameter stepping or 0 if not quantized.
 double
 ParamInfo::get_stepping () const
@@ -210,6 +195,22 @@ ParamInfo::get_stepping () const
     }
 }
 
+/// Get parameter range minimum and maximum.
+ParamInfo::MinMax
+ParamInfo::get_minmax () const
+{
+  switch (union_tag)
+    {
+    case PTAG_FLOATS:
+      return { u.fmin, u.fmax };
+    case PTAG_CENTRIES:
+      return { (u.centries()->size() - 1) * -0.5,
+               (u.centries()->size() - 1) * +0.5 };
+    default:
+      return { NAN, NAN };
+    }
+}
+
 /// Get parameter range properties.
 void
 ParamInfo::get_range (double &fmin, double &fmax, double &fstep) const
@@ -222,8 +223,11 @@ ParamInfo::get_range (double &fmin, double &fmax, double &fstep) const
       fstep = u.fstep;
       break;
     case PTAG_CENTRIES:
-      fmin = 0;
-      fmax = u.centries()->size();
+      {
+        auto mm = get_minmax ();
+        fmin = mm.first;
+        fmax = mm.second;
+      }
       fstep = 1;
       break;
     default:
@@ -567,15 +571,17 @@ Processor::set_param (ParamId paramid, double value)
   PParam *pparam = find_pparam (paramid);
   return_unless (pparam);
   ParamInfo *info = pparam->info.get();
+  double v = value;
   if (info)
     {
+      const auto mm = info->get_minmax();
+      v = CLAMP (v, mm.first, mm.second) - mm.first;
       const double stepping = info->get_stepping();
-      if (stepping != 0)
-        value = stepping * uint64_t (value / stepping + 0.5);
-      auto mm = info->get_minmax();
-      value = CLAMP (value, mm.first, mm.second);
+      if (stepping > 0)
+        v = stepping * uint64_t (v / stepping + 0.5);
+      v = CLAMP (mm.first + v, mm.first, mm.second);
     }
-  pparam->assign (value);
+  pparam->assign (v);
 }
 
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
