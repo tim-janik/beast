@@ -76,6 +76,9 @@ def print_file (filename, strip_prefix = ''):
 
 
 if __name__ == "__main__":
+  if len (sys.argv) <= 1 or sys.argv[1] in ('-h', '--help'):
+    print ("Usage: %s [-s stripprefix] [files...]" % sys.argv[0])
+    sys.exit (0)
   # parse args
   strip_prefix = ''
   files = []
