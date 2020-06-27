@@ -16,6 +16,7 @@
     display: flex; justify-content: flex-end;
     .b-pro-input-ldiv[class]:before { content: "\200b"; /* zero width character to force line height */ }
     .b-pro-input-knob { height: 2em; }
+    .b-pro-input-toggle { height: 2em; }
     .b-pro-input-span {
       pointer-events: none; user-select: none;
       max-width: 100%;
@@ -33,6 +34,8 @@
   <b-vflex class="b-pro-input tabular-nums" :data-bubble="bubble()" >
     <b-knob class="b-pro-input-knob" v-if="type=='knob'" :hscroll="false"
 	    :value="get_num()" @input="set_num ($event)" />
+    <b-toggle class="b-pro-input-toggle" v-if="type=='toggle'" label=""
+	      :value="get_num()" @input="set_num ($event)" />
     <span   class="b-pro-input-span" v-if="labeled && !!nick">{{ nick }}</span>
   </b-vflex>
 </template>
@@ -66,7 +69,14 @@ export default {
   data() { return pro_input_data.call (this); },
   computed: {
     type () {
-      return this.is_numeric ? 'knob' : '';
+      if (this.is_numeric)
+	{
+	  const hints = ':' + this.hints + ':';
+	  if (hints.search (/:toggle:/) >= 0)
+	    return 'toggle';
+	  return 'knob';
+	}
+      return '';
     },
   },
   methods: {
