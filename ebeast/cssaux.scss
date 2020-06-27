@@ -76,6 +76,11 @@ $device-pixel-ratio: var(--device-pixel-ratio);
   @return chromatic-color-set(#ffffff, 'lab.l', 100 * asfactor($l));
 }
 
+/// Adjust color `$col` to a specific perceptible lightness (CIE L*)
+@function lcolor($col, $l: 100%) {
+  @return chromatic-color-set($col, 'lab.l', 100 * asfactor($l));
+}
+
 /// Lighten `$color` until a target contrast ratio is met.
 @function contrast-lighten($color, $targetratio: 1, $pivot: 'SAME') {
   @if (unit($targetratio) == "%") {
