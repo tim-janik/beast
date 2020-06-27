@@ -560,8 +560,12 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
     info.hints = feature_add (hints, "toggle");
   else
     info.hints = hints;
-  ParamId id = ParamId (1 + params_.size());
-  return add_param (id, info, boolvalue);
+  const ParamId id = ParamId (1 + params_.size());
+  const auto rid = add_param (id, info, boolvalue);
+  assert_return (rid == id, rid);
+  PParam *param = find_pparam (id);
+  assert_return (param && param->peek_value() == (boolvalue ? +0.5 : -0.5), rid);
+  return rid;
 }
 
 /// List all Processor parameters.
@@ -604,7 +608,7 @@ Processor::find_pparam_ (ParamId paramid)
 
 /// Set parameter `id` to `value`.
 void
-Processor::set_param (ParamId paramid, double value)
+Processor::set_param (ParamId paramid, const double value)
 {
   PParam *pparam = find_pparam (paramid);
   return_unless (pparam);
@@ -613,11 +617,17 @@ Processor::set_param (ParamId paramid, double value)
   if (info)
     {
       const auto mm = info->get_minmax();
-      v = CLAMP (v, mm.first, mm.second) - mm.first;
+      v = CLAMP (v, mm.first, mm.second);
       const double stepping = info->get_stepping();
       if (stepping > 0)
-        v = stepping * uint64_t (v / stepping + 0.5);
-      v = CLAMP (mm.first + v, mm.first, mm.second);
+        {
+          // round halfway cases down, so:
+          // 0 -> -0.5…+0.5 yields -0.5
+          // 1 -> -0.5…+0.5 yields +0.5
+          constexpr const auto nearintoffset = 0.5 - BSE_DOUBLE_EPSILON; // round halfway case down
+          v = stepping * uint64_t ((v - mm.first) / stepping + nearintoffset);
+          v = CLAMP (mm.first + v, mm.first, mm.second);
+        }
     }
   pparam->assign (v);
 }
