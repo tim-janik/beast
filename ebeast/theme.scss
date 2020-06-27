@@ -19,6 +19,14 @@ $b-device-bg:		$b-panel-background;
 $b-device-handle:	lgrey(26%); // or, device-handle
 $b-device-area1:	lgrey(24%);
 $b-device-area2:	lgrey(28%);
+$b-toggle-0-bg:		lgrey(50%);
+$b-toggle-0-bh:		contrast-lighten($b-toggle-0-bg, 1.5); // highlight
+$b-toggle-0-bl:		contrast-lighten($b-toggle-0-bg, 1.3); // light
+$b-toggle-0-bd:		contrast-darken($b-toggle-0-bg, 1.3);  // dark
+$b-toggle-1-bg:		lcolor($b-color-active, 63%);
+$b-toggle-1-bh:		contrast-lighten($b-toggle-1-bg, 1.5); // highlight
+$b-toggle-1-bl:		contrast-lighten($b-toggle-1-bg, 1.3); // light
+$b-toggle-1-bd:		contrast-darken($b-toggle-1-bg, 1.3);  // dark
 
 // == Status Bar ==
 $b-statusbar-bg: $b-main-background;

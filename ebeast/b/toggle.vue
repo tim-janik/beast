@@ -22,15 +22,26 @@
     display: flex; position: relative;
     margin: 0; padding: 0; text-align: center;
     user-select: none;
-    height: 5em;
-    &:hover { background: #00f; }
   }
   .b-toggle-label {
-    flex-grow: 0;
-    .b-toggle-off &            	{ background: #444;
-      &.b-toggle-press:hover  	{ background: #383838; } }
-    .b-toggle-on &             	{ background: #f55;
-      &.b-toggle-press:hover	{ background: #f33; } }
+    //* flex-grow: 1; */
+    white-space: nowrap; overflow: hidden;
+    height: 1.33em;
+    &.b-toggle-empty { width: 2.2em; }
+    align-self: center;
+    border-radius: 3px;
+    background-color: $b-toggle-0-bg;
+    box-shadow: 0 0 3px #00000077;
+
+    .b-toggle-off & {
+      background: linear-gradient(177deg, $b-toggle-0-bh, $b-toggle-0-bl 20%, $b-toggle-0-bd);
+      &.b-toggle-press:hover  	{ filter: brightness(90%); }
+    }
+    .b-toggle-on & {
+      background-color: $b-toggle-1-bg;
+      background: linear-gradient(177deg, $b-toggle-1-bh, $b-toggle-1-bl 20%, $b-toggle-1-bd);
+      &.b-toggle-press:hover	{ filter: brightness(95%); }
+    }
   }
 </style>
 
@@ -39,7 +50,8 @@
 <template>
   <div    class="b-toggle" ref="btoggle" :style="style (1)"
 	  data-tip="**CLICK** Toggle Value" >
-    <div  class="b-toggle-label" ref="button" @pointerdown="pointerdown" @dblclick="dblclick" >
+    <div  ref="button" class="b-toggle-label" :class="!label ? 'b-toggle-empty' : ''"
+	  @pointerdown="pointerdown" @dblclick="dblclick" >
       {{ label }}
     </div>
   </div>
