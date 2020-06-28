@@ -15,6 +15,19 @@ canonify_identifier (const std::string &input)
   return Bse::string_canonify (lowered, validset, "-");
 }
 
+static std::string
+feature_add (std::string featurelist, const std::string feature)
+{
+  if ("" == Bse::feature_toggle_find (featurelist, feature, ""))
+    {
+      if (!featurelist.empty() && featurelist.back() != ':')
+        featurelist += ":" + feature;
+      else
+        featurelist += feature;
+    }
+  return featurelist;
+}
+
 namespace Bse {
 
 /** This namespace provides the components for all audio signal processing modules.
@@ -100,6 +113,19 @@ speaker_arrangement_desc (SpeakerArrangement spa)
   if (isaux)
     s = std::string (speaker_arrangement_bit_name (SpeakerArrangement::AUX)) + "(" + s + ")";
   return s;
+}
+
+// == ChoiceDetails ==
+ChoiceDetails::ChoiceDetails (CString label_, CString subject_) :
+  ident (canonify_identifier (label_)), label (label_), subject (subject_)
+{
+  assert_return (ident.empty() == false);
+}
+
+ChoiceDetails::ChoiceDetails (IconStr icon_, CString label_, CString subject_) :
+  ident (canonify_identifier (label_)), label (label_), subject (subject_), icon (icon_)
+{
+  assert_return (ident.empty() == false);
 }
 
 // == ChoiceEntries ==
@@ -518,25 +544,15 @@ Processor::add_param (const std::string &clabel,
   info.ident = canonify_identifier (clabel);
   info.label = clabel;
   info.nick = nickname;
-  info.hints = hints;
   info.blurb = blurb;
   info.description = description;
   info.set_choices (std::move (centries));
+  if ("" == feature_toggle_find (info.hints, "choice", ""))
+    info.hints = feature_add (hints, "choice");
+  else
+    info.hints = hints;
   ParamId id = ParamId (1 + params_.size());
   return add_param (id, info, value);
-}
-
-static std::string
-feature_add (std::string featurelist, const std::string feature)
-{
-  if ("" == feature_toggle_find (featurelist, feature, ""))
-    {
-      if (!featurelist.empty() && featurelist.back() != ':')
-        featurelist += ":" + feature;
-      else
-        featurelist += feature;
-    }
-  return featurelist;
 }
 
 /// Add new toggle parameter with most `ParamInfo` fields as inlined arguments.

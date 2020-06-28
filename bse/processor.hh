@@ -83,12 +83,20 @@ struct GroupId : CString {
   using CString::operator!=;
 };
 
+/// An in-memory icon representation.
+struct IconStr : std::string {
+};
+
 /// One possible choice for selection parameters.
 struct ChoiceDetails {
-  CString name;
-  bool    operator== (const ChoiceDetails &o) const     { return name == o.name; }
+  const CString ident;          ///< Identifier used for serialization (can be derived from label).
+  const CString label;          ///< Preferred user interface name.
+  const CString subject;        ///< Subject line, a brief one liner or elaborate title.
+  const IconStr icon;           ///< Stringified icon, SVG and PNG should be supported (64x64 pixels recommended).
+  bool    operator== (const ChoiceDetails &o) const     { return ident == o.ident; }
   bool    operator!= (const ChoiceDetails &o) const     { return !operator== (o); }
-  ChoiceDetails (CString name_) : name (name_) {}
+  ChoiceDetails (CString label, CString subject = "");
+  ChoiceDetails (IconStr icon, CString label, CString subject = "");
 };
 
 /// List of choices for ParamInfo.set_choices().
