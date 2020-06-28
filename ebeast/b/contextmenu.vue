@@ -71,7 +71,7 @@ const menuitem_onclick = function (event) {
   this.$emit ('click', event, this.uri);
   if (!event.defaultPrevented)
     {
-      if (this.uri && this.menudata.clicked)
+      if (this.uri !== undefined && this.menudata.clicked)
 	this.menudata.clicked (this.uri);
       else if (this.menudata.close)
 	this.menudata.close();
@@ -214,7 +214,7 @@ export default {
 							close: this.close });
     },
     popup (event, options) {
-      this.popup_options = options || {};
+      this.popup_options = Object.assign ({}, options || {});
       this.visible = false;
       if (this.tieclass)
 	this.tieclass.element.classList.remove (this.tieclass.class);
