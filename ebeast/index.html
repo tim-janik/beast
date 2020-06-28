@@ -15,7 +15,7 @@
   <link rel="modulepreload" href="./vue.esm.browser.js">
   <link rel="modulepreload" href="./vue-runtime-helpers.mjs">
   <link rel="modulepreload" href="./markdown-it.esm.js">
-  <link rel="modulepreload" href="./utilities.js">
+  <link rel="modulepreload" href="./util.js">
   <link rel="modulepreload" href="./bundle.imports.js">
   <!-- Avoid preloading conditional module "./menus.js" -->
 
@@ -186,7 +186,7 @@
     // Util - import, depends on Vue and MarkdownIt
     $log ("Importing Util...");
     Object.defineProperty (globalThis, 'Util', {
-      value: await import ('./utilities.js') });
+      value: await import ('./util.js') });
     Object.defineProperty (globalThis, 'EQ', {
       value: Util.equals_recursively });
     // Setup Vue utilities and shortcuts inside Vue component handlers

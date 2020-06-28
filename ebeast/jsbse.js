@@ -64,7 +64,7 @@ server.$promise = new Promise ((resolve, reject) => {
 Object.freeze (server);
 
 // Handle binary messages for shm updates
-import * as Util from './utilities.js';
+import * as Util from './util.js';
 Bse.$jsonipc.onbinary = Util.shm_receive;
 
 // Define BSE JS unit tests
