@@ -53,12 +53,13 @@ class DevicePropertyWrapper : public PropertyWrapper {
 public:
   friend class DeviceImpl;
   virtual std::string get_tag          (Tag) override;
-  virtual bool        is_numeric       () override;
   virtual void        get_range        (double *min, double *max, double *step) override;
   virtual double      get_num          () override;
   virtual bool        set_num          (double v) override;
   virtual std::string get_string       () override;
   virtual bool        set_string       (const std::string &v) override;
+  virtual bool        is_numeric       () override;
+  virtual ChoiceSeq   choices          () override;
   explicit DevicePropertyWrapper (DeviceImplP device, AudioSignal::ParamInfoP param_);
 };
 
@@ -121,6 +122,24 @@ DevicePropertyWrapper::is_numeric ()
 {
   // TODO: we have yet to implement non-numeric Processor parameters
   return true;
+}
+
+ChoiceSeq
+DevicePropertyWrapper::choices ()
+{
+  ChoiceSeq cs;
+  const auto ce = info_->get_choices();
+  cs.reserve (ce.size());
+  for (const auto &e : ce)
+    {
+      Choice c;
+      c.ident = e.ident;
+      c.label = e.label;
+      c.subject = e.subject;
+      c.icon = e.icon;
+      cs.push_back (c);
+    }
+  return cs;
 }
 
 std::string
