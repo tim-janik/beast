@@ -35,7 +35,7 @@ app/assets.copies	::= $(strip	\
 	$>/app/assets/spinners.svg	\
 )
 ebeast/copy.tool.targets ::= $(strip	\
-	$>/ebeast/rollup.config.js	\
+	$>/ebeast/vue.rollup.js		\
 	$>/ebeast/markdown-it.esm0.js	\
 	$>/ebeast/markdown-it.rollup.js	\
 	$>/ebeast/babel.config.js	\
@@ -155,7 +155,7 @@ ebeast/targets.vuebundles.css ::= $(patsubst %, $>/app/b/%.bundle.css, $(ebeast/
 # $>/app/b/%.bundle.js: $(ebeast/app.scss.d)
 $>/app/b/%.bundle.js: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/ebeast/b/ $>/ebeast/node_modules/npm.done
 	$(QGEN)
-	$Q cd $>/ebeast/ && $(abspath $(NODE_MODULES.bin)/rollup) -c ./rollup.config.js -i $(abspath $<) -o $(abspath $>/ebeast/b/$(@F))
+	$Q cd $>/ebeast/ && $(abspath $(NODE_MODULES.bin)/rollup) -c ./vue.rollup.js -i $(abspath $<) -o $(abspath $>/ebeast/b/$(@F))
 	$Q mv $>/ebeast/b/$(@F) $>/ebeast/b/$(@F:.js=.css) $(@D)
 # Note: rollups babel config currently expects $CWD/babel.config.js
 $>/app/b/%.bundle.css: $>/app/b/%.bundle.js ;
