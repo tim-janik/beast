@@ -19,6 +19,8 @@
   ## Events:
   *click (uri)*
   : Event signaling activation of a submenu item, the `uri` of the submenu is provided as argument.
+  *close*
+  : Event signaling closing of a menu, regardless of whether menu item activation occoured or not.
   ## Methods:
   *popup (event, { origin, tieclass })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
@@ -283,9 +285,9 @@ export default {
       if (this.shield)
 	this.shield.destroy (false);
       this.shield = undefined;
+      this.$emit ('close');
     },
     clicked (uri) {
-      debug ("contextmenu: click:", uri);
       this.$emit ('click', uri);
       this.close();
     },
