@@ -128,7 +128,7 @@
     $log ("Enable "+'<'+"html/"+'>'+" UA attributes:",
 	  document.body.parentElement.hasAttribute ('gecko') ? 'gecko' : '',
 	  document.body.parentElement.hasAttribute ('chrome') ? 'chrome' : '');
-    // Import BSE bindings, Jsonipc based
+    // Bse - import Jsonipc based libbse bindings
     $log ("Importing Bse...");
     Object.defineProperty (globalThis, 'Bse', {
       value: await import ('./jsbse.js') });
@@ -136,7 +136,7 @@
     await Bse.server['$promise'];
     console.assert (Bse.server['$id'] > 0);
     $log ("Retrieved Bse.server...");
-    // Import and configure Vue
+    // Vue - import and configure
     $log ("Importing Vue...");
     Object.defineProperty (globalThis, 'Vue', {
       value: (await import ('./vue.esm.browser.js')).default });
@@ -151,7 +151,7 @@
     });
     console.assert (!Vue.reactive); // provided by Vue-3
     Vue.reactive = Vue.observable;  // rename by Vue-3
-    // Bundles need 'vue-runtime-helpers', see rollup.config.js
+    // Vue-runtime-helpers - import rollup-plugin-vue helper, see also vue.rollup.js
     $log ("Importing vue-runtime-helpers...");
     Object.defineProperty (globalThis, 'vue-runtime-helpers', {
       value: await import ('./vue-runtime-helpers.mjs') });
@@ -179,11 +179,11 @@
       }
     };
     Object.defineProperty (globalThis, 'App', { value: Vue.reactive (app_tmpl) });
-    // Import Markdown, needed by Util
+    // MarkdownIt - import MarkdownIt ESM wrapper, needed by Util
     $log ("Importing Markdown...");
     Object.defineProperty (globalThis, 'MarkdownIt', {
       value: (await import ('./markdown-it.esm.js')).default });
-    // Import Util, depends on Vue
+    // Util - import, depends on Vue and MarkdownIt
     $log ("Importing Util...");
     Object.defineProperty (globalThis, 'Util', {
       value: await import ('./utilities.js') });
@@ -209,7 +209,7 @@
     $log ("Configure i18n...");
     window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
     Vue.prototype._ = window._;
-    // Menu bar for Electron
+    // Menus - import if Electron is present
     if (window.Electron)
       {
 	const menus = await import ('./menus.js');
@@ -218,7 +218,7 @@
       }
     else
       $log ("Skipped Menus...");
-    // Beast Web Components, bundled via b/bundle.js and self registering
+    // Bundle.imports - import list of b/ Vue components, bundled via b/bundle.js and self registering
     $log ("Importing component bundles...");
     const bundle_files = await import ('./bundle.imports.js'); // depends on Vue
     await Util.vue_load_bundles (bundle_files.default);
@@ -242,7 +242,7 @@
 	component.$forceUpdate();
 	for (let child of component.$children)
 	  vue_update (child);
-      };
+      }
       vue_update (vue_root);
     };
     // Load external BSE plugins
