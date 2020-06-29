@@ -16,11 +16,9 @@ module.exports = {
   // "parser": "babel-eslint", // <- moved to parserOptions under vue-eslint-parser
 
   "globals": {
-    "$log": false,
     "App": false,
     "Bse": false,
     "CONFIG": false,
-    "EQ": false,
     "Electron": false,
     "Shell": false,
     "Util": false,

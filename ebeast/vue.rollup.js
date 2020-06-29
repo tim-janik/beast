@@ -16,8 +16,8 @@ export default {
       css: false,
       needMap: false,
       // normalizeComponent needs ./node_modules/vue-runtime-helpers/dist/index.mjs import
-      normalizer: "globalThis['vue-runtime-helpers'].normalizeComponent",
-      // data: { css: '/* globals... */', }, // increases line numbers in source maps
+      normalizer: "globalThis['Vue-Runtime'].normalizeComponent", // see index.html for globalThis['Vue-Runtime']
+      // use node-sass, dart-sass has no support for { functions:... }
       style: { preprocessOptions: {
 	scss: {
 	  sass: require ('node-sass'),           // supports custom functions
@@ -28,9 +28,16 @@ export default {
 	  functions: require ("chromatic-sass"), // provide node-sass color functions
 	},
       }, },
+      // data: { css: '/* globals... */', }, // increases line numbers in source maps
     }),
     scss (),
     resolve(),
   ],
-  external: [ './jsbse.js', ],
+  external: [
+    '/jsbse.js',
+    '/vue.mjs',
+    '/markdown-it.mjs',
+    '/util.js',
+    '/menus.js',
+  ],
 };
