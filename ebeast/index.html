@@ -12,7 +12,7 @@
   <link rel="preload" href="assets/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/material-icons.woff2"      as="font" type="font/woff2" crossorigin>
   <link rel="modulepreload" href="./jsbse.js">
-  <link rel="modulepreload" href="./vue.esm.browser.js">
+  <link rel="modulepreload" href="./vue.mjs">
   <link rel="modulepreload" href="./vue-runtime-helpers.mjs">
   <link rel="modulepreload" href="./markdown-it.esm.js">
   <link rel="modulepreload" href="./util.js">
@@ -139,7 +139,7 @@
     // Vue - import and configure
     $log ("Importing Vue...");
     Object.defineProperty (globalThis, 'Vue', {
-      value: (await import ('./vue.esm.browser.js')).default });
+      value: (await import ('./vue.mjs')).default });
     Object.assign (Vue.config, {
       productionTip: false,
       devtools: false,	// prevent warning about VUEJS_DEVTOOLS missing

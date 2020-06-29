@@ -126,7 +126,7 @@ $>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_m
 		-e "/<!--'eknob.svg'-->/ r ebeast/eknob.svg" \
 		< ebeast/index.html	>$>/app/index.html
 	$Q ln -f -s ../doc $>/app/doc
-	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/
+	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/vue.mjs
 	$Q $(CP) -a $>/ebeast/node_modules/vue-runtime-helpers/dist/index.mjs $>/app/vue-runtime-helpers.mjs \
 	  && sed 's|^//# sourceMappingURL=index\.mjs\.map$$||' -i $>/app/vue-runtime-helpers.mjs
 	$Q mv $@.tmp $@
