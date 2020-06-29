@@ -960,6 +960,37 @@ interface Module : Object {
 };
 sequence ModuleSeq { Module modules; };
 
+/// Details about property choice values.
+record Choice {
+  String ident;         ///< Identifier used for serialization.
+  String label;         ///< Preferred user interface name.
+  String subject;       ///< Subject line, a brief one liner or elaborate title.
+  String icon;          ///< Stringified icon, SVG and PNG should be supported (64x64 pixels recommended).
+};
+sequence ChoiceSeq { Choice choice; };
+
+/// A Property allows querying, setting and monitoring of an object property.
+interface Property : Object {
+  String    identifier  ();             ///< Unique name (per owner) of this Property.
+  String    label       ();             ///< Preferred user interface name.
+  String    nick        ();             ///< Abbreviated user interface name, usually not more than 6 characters.
+  String    unit        ();             ///< Units of the values within range.
+  String    hints       ();             ///< Hints for parameter handling.
+  String    group       ();             ///< Group name for parameters of similar function.
+  String    blurb       ();             ///< Short description for user interface tooltips.
+  String    description ();             ///< Elaborate description for help dialogs.
+  float64   get_min     ();             ///< Get the minimum property value, converted to float64.
+  float64   get_max     ();             ///< Get the maximum property value, converted to float64.
+  float64   get_step    ();             ///< Get the property value stepping, converted to float64.
+  float64   get_num     ();             ///< Get the current property value, converted to float64.
+  bool      set_num     (float64 v);    ///< Set the current property value as float64.
+  String    get_string  ();             ///< Get the current property value, converted to String.
+  bool      set_string  (String v);     ///< Set the current property value as String.
+  bool      is_numeric  ();             ///< Whether the property settings can be represented as a floating point number.
+  ChoiceSeq choices     ();             ///< Enumerate choices for choosable properties.
+};
+sequence PropertySeq { Property property; };
+
 /// Info for device types.
 record DeviceInfo {
   String uri;          ///< Unique identifier for de-/serialization.
@@ -981,8 +1012,12 @@ interface Device : Object {
   StringSeq      list_module_types ();                 ///< List known module types.
 
   // device type determination
-  String         device_uri       ();                  ///< Retrieve unique identifier for the device type.
-  DeviceInfo     device_info      ();                  ///< Describe this device type.
+  String         device_uri        ();                  ///< Retrieve unique identifier for the device type.
+  DeviceInfo     device_info       ();                  ///< Describe this device type.
+  // Device Parameters
+  StringSeq      list_properties   ();                  ///< List all property identifiers.
+  Property       access_property   (String ident);      ///< Retrieve handle for a Property.
+  PropertySeq    access_properties (String hints);      ///< Retrieve handles for properties with specific hints.
 };
 sequence DeviceSeq { Device devices; };
 
