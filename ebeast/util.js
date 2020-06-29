@@ -365,37 +365,6 @@ export function clamp (x, min, max) {
   return x < min ? min : x > max ? max : x;
 }
 
-/** Register all Vue components, needed before instantiating the Vue root component */
-export async function vue_load_bundles (filelist) {
-  // hook up CSS files *before* importing modules that use the styles
-  for (const fname of filelist)
-    {
-      if (!fname.endsWith ('.css'))
-	continue;
-      const link = document.createElement ('link');
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.href = fname;
-      document.head.appendChild (link);
-      continue;
-    }
-  // load all non-CSS files as modules
-  const modules = [];
-  for (const fname of filelist)
-    {
-      if (fname.endsWith ('.css'))
-	continue;
-      modules.push (import (fname));
-    }
-  // register all Vue components
-  for (const mod of modules)
-    {
-      const vcexport = await mod;
-      if (vcexport.default && vcexport.default.name)
-	Vue.component (vcexport.default.name, vcexport.default);
-    }
-}
-
 /** Create a Vue component provide() function that forwards selected properties. */
 export function fwdprovide (injectname, keys) {
   return function() {

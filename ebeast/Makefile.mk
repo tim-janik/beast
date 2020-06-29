@@ -105,10 +105,19 @@ $>/electron/ebeast:						| $>/
 	$Q ln -s ../../app $>/electron/resources/app
 	$Q mv $>/electron/electron $>/electron/ebeast
 
+# == $>/ebeast/index-mjs.list ==
+$>/ebeast/index-mjs.list: $(ebeast/b/vue.inputs) ebeast/index.html | $>/ebeast/
+	$(QGEN)
+	$Q for C in $(ebeast/b/vue.stems) ; do \
+	  echo '    <link rel="stylesheet"    href="./b/'"$$C"'.bundle.css">' || break ; \
+	  echo '    <link rel="modulepreload" href="./b/'"$$C"'.bundle.js" data-autoload>' || break ; \
+	done >$@.tmp
+	$Q mv $@.tmp $@
+
 # == app ==
 $>/app/package.json: $>/electron/ebeast $>/ebeast/lint.done
 $>/app/package.json: $(ebeast/copy.targets) $(app/generated) $(app/assets.copies)
-$>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done ebeast/eknob.svg
+$>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done ebeast/eknob.svg $>/ebeast/index-mjs.list
 	$(QGEN)
 	$Q echo -e '{ "name": "ebeast",'				> $@.tmp
 	$Q echo -e '  "productName": "EBeast",'				>>$@.tmp
@@ -120,10 +129,10 @@ $>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_m
 	$Q echo -e '    "debug": "$(if $(findstring $(MODE), debug quick),true,false)" },' >>$@.tmp
 	$Q echo -e '  "main": "main.js" }'				>>$@.tmp
 	@: # Embed package.json in index.html, using record-separator \036 in sed
-	$Q PACKAGE_JSON=$$(tr '\n' ' ' < $@.tmp) && R=$$'\036' \
-	  && sed -r \
-		-e"s$$R<!--@-html-head-package_json@-->$$R$$PACKAGE_JSON$$R" \
-		-e "/<!--'eknob.svg'-->/ r ebeast/eknob.svg" \
+	$Q sed -r \
+		-e "/<script type='application\/json' id='--EMBEDD-package_json'>/ r $@.tmp" \
+		-e "/<!--EMBEDD='index-mjs\.list'-->/ r $(abspath $>/ebeast/index-mjs.list)" \
+		-e "/<!--EMBEDD='eknob\.svg'-->/ r ebeast/eknob.svg" \
 		< ebeast/index.html	>$>/app/index.html
 	$Q ln -f -s ../doc $>/app/doc
 	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/vue.mjs
@@ -158,18 +167,6 @@ $>/app/b/%.bundle.js: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/
 	$Q mv $>/ebeast/b/$(@F) $>/ebeast/b/$(@F:.js=.css) $(@D)
 $>/app/b/%.bundle.css: $>/app/b/%.bundle.js ;
 $>/app/package.json: $(ebeast/targets.vuebundles.js) $(ebeast/targets.vuebundles.css)
-
-# == $>/app/bundle.imports.js ==
-$>/app/bundle.imports.js: $(wildcard ebeast/b/*.vue) | $>/app/
-	$(QGEN)
-	$Q cd ebeast && ( : \
-	  && printf "export default [\n" \
-	  && for f in b/*.vue ; do \
-	       b="$${f%.vue}.bundle" \
-	       && printf "  %-40s %s,\n" "'./$$b.js'," "'./$$b.css'" ; \
-	     done \
-	  && printf "];\n" ) > $(abspath $@)
-$>/app/package.json: $>/app/bundle.imports.js
 
 # == $>/ebeast/b.*.lint ==
 ebeast/targets.lint ::= $(patsubst %, $>/ebeast/b/%.lint, $(ebeast/b/vue.stems))
