@@ -38,7 +38,6 @@ ebeast/copy.tool.targets ::= $(strip	\
 	$>/ebeast/vue.rollup.js		\
 	$>/ebeast/markdown-it.esm0.js	\
 	$>/ebeast/markdown-it.rollup.js	\
-	$>/ebeast/babel.config.js	\
 	$>/ebeast/.eslintrc.js		\
 )
 ebeast/copy.content.targets ::= $(strip	\
@@ -82,9 +81,9 @@ $>/ebeast/pitfalls.done: $(ebeast/eslint.files)
 	  && { echo 'Error: __dirname is invalid inside Vue component files' | grep --color=auto . ; exit 9 ; } ; \
 	done ; :
 	$Q echo >$@
-$>/ebeast/eslint.done: $(ebeast/eslint.files) ebeast/.eslintrc.js		| $>/ebeast/node_modules/npm.done
+$>/ebeast/eslint.done: $(ebeast/eslint.files) $>/ebeast/.eslintrc.js		| $>/ebeast/node_modules/npm.done
 	$(QECHO) MAKE $@
-	$Q $(NODE_MODULES.bin)/eslint -c ebeast/.eslintrc.js -f unix \
+	$Q $(NODE_MODULES.bin)/eslint --no-eslintrc -c $>/ebeast/.eslintrc.js -f unix \
 		--cache --cache-location $>/ebeast/eslint.cache $(ebeast/eslint.files)
 	$Q echo >$@
 $>/ebeast/lint.done: $>/ebeast/pitfalls.done $>/ebeast/eslint.done
@@ -157,7 +156,6 @@ $>/app/b/%.bundle.js: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/
 	$(QGEN)
 	$Q cd $>/ebeast/ && $(abspath $(NODE_MODULES.bin)/rollup) -c ./vue.rollup.js -i $(abspath $<) -o $(abspath $>/ebeast/b/$(@F))
 	$Q mv $>/ebeast/b/$(@F) $>/ebeast/b/$(@F:.js=.css) $(@D)
-# Note: rollups babel config currently expects $CWD/babel.config.js
 $>/app/b/%.bundle.css: $>/app/b/%.bundle.js ;
 $>/app/package.json: $(ebeast/targets.vuebundles.js) $(ebeast/targets.vuebundles.css)
 
@@ -177,7 +175,7 @@ $>/app/package.json: $>/app/bundle.imports.js
 ebeast/targets.lint ::= $(patsubst %, $>/ebeast/b/%.lint, $(ebeast/b/vue.stems))
 $>/ebeast/b/%.lint: ebeast/b/%.vue	| $>/ebeast/b/ $>/ebeast/node_modules/npm.done
 	$(QGEN)
-	$Q $(NODE_MODULES.bin)/eslint -c ebeast/.eslintrc.js -f unix --cache --cache-location $(@:%=%.cache) $<
+	$Q $(NODE_MODULES.bin)/eslint --no-eslintrc -c $>/ebeast/.eslintrc.js -f unix --cache --cache-location $(@:%=%.cache) $<
 	$Q echo >$@
 $>/app/package.json: $(ebeast/targets.lint)
 

@@ -5,11 +5,15 @@ module.exports = {
     "node": true
   },
 
-  // eslint chokes on `await import();`, see: https://github.com/eslint/eslint/issues/11486
-  // and babel-eslint needs special setup for vue: https://eslint.vuejs.org/user-guide/#usage
-  // "parser": "babel-eslint",
+  // babel-eslint is needed for stage-3 syntax, see:
+  // https://stackoverflow.com/questions/60046847/eslint-does-not-allow-static-class-properties/60464446#60464446
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "sourceType": "module"
+  },
+  // babel-eslint needs special setup for vue: https://eslint.vuejs.org/user-guide/#usage
   "parser": "vue-eslint-parser",
-  "parserOptions": { "parser": "babel-eslint",  "sourceType": "module" },
+  // "parser": "babel-eslint", // <- moved to parserOptions under vue-eslint-parser
 
   "globals": {
     "$log": false,

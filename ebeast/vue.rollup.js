@@ -1,7 +1,6 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 import vue from 'rollup-plugin-vue';		   // compile SFC.vue files
-import babel from 'rollup-plugin-babel';	   // see babel.config.js
 import resolve from '@rollup/plugin-node-resolve'; // find vue-runtime-helpers/dist/normalize-component
 import scss from 'rollup-plugin-scss';		   // compile scss to css
 
@@ -31,7 +30,6 @@ export default {
       }, },
     }),
     scss (),
-    babel(),
     resolve(),
   ],
   external: [ './jsbse.js', ],
