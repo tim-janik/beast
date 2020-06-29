@@ -83,56 +83,80 @@ struct GroupId : CString {
   using CString::operator!=;
 };
 
+/// An in-memory icon representation.
+struct IconStr : std::string {
+};
+
 /// One possible choice for selection parameters.
 struct ChoiceDetails {
-  CString name;
+  const CString ident;          ///< Identifier used for serialization (can be derived from label).
+  const CString label;          ///< Preferred user interface name.
+  const CString subject;        ///< Subject line, a brief one liner or elaborate title.
+  const IconStr icon;           ///< Stringified icon, SVG and PNG should be supported (64x64 pixels recommended).
+  bool    operator== (const ChoiceDetails &o) const     { return ident == o.ident; }
+  bool    operator!= (const ChoiceDetails &o) const     { return !operator== (o); }
+  ChoiceDetails (CString label, CString subject = "");
+  ChoiceDetails (IconStr icon, CString label, CString subject = "");
 };
 
 /// List of choices for ParamInfo.set_choices().
 struct ChoiceEntries : std::vector<ChoiceDetails> {
   ChoiceEntries& operator+= (const ChoiceDetails &ce);
+  using base_t = std::vector<ChoiceDetails>;
+  ChoiceEntries (std::initializer_list<base_t::value_type> __l) : base_t (__l) {}
+  ChoiceEntries () {}
 };
 
 /// Detailed information and common properties of parameters.
 struct ParamInfo {
-  ParamId    id;           ///< Tag to identify parameter in APIs.
-  CString    identifier;   ///< Identifier used for serialization.
-  CString    display_name; ///< Preferred user interface name.
-  CString    short_name;   ///< Abbreviated user interface name.
-  CString    description;  ///< Elaborate description for help dialogs.
+  CString    ident;        ///< Identifier used for serialization.
+  CString    label;        ///< Preferred user interface name.
+  CString    nick;         ///< Abbreviated user interface name, usually not more than 6 characters.
   CString    unit;         ///< Units of the values within range.
   CString    hints;        ///< Hints for parameter handling.
   GroupId    group;        ///< Group for parameters of similar function.
-  ParamInfo& operator=   (const ParamInfo &src);
-  using MinMax = std::pair<float,float>;
+  CString    blurb;        ///< Short description for user interface tooltips.
+  CString    description;  ///< Elaborate description for help dialogs.
+  using MinMax = std::pair<double,double>;
   void       clear       ();
   MinMax     get_minmax  () const;
-  void       get_range   (float &fmin, float &fmax, float &fstep) const;
-  void       set_range   (float fmin, float fmax, float fstep = 0);
+  double     get_stepping() const;
+  void       get_range   (double &fmin, double &fmax, double &fstep) const;
+  void       set_range   (double fmin, double fmax, double fstep = 0);
   void       set_choices (const ChoiceEntries &centries);
   void       set_choices (ChoiceEntries &&centries);
   ChoiceEntries
   const&     get_choices () const;
-  /*ctor*/   ParamInfo   ();
-  /*copy*/   ParamInfo   (const ParamInfo &src);
+  void       copy_fields (const ParamInfo &src);
+  /*ctor*/   ParamInfo   (ParamId pid = ParamId (0));
   virtual   ~ParamInfo   ();
+  // BSE thread accessors
+  size_t     add_notify  (ProcessorP proc, const std::function<void()> &callback);
+  bool       del_notify  (ProcessorP proc, size_t callbackid);
+  void       call_notify ();
+  const ParamId id;
 private:
-  void       release     ();
+  uint union_tag = 0;
   union {
-    struct { float fmin, fmax, fstep; };
+    struct { double fmin, fmax, fstep; };
     uint64_t mem[sizeof (ChoiceEntries) / sizeof (uint64_t)];
     ChoiceEntries* centries() const { return (ChoiceEntries*) mem; }
   } u;
-  uint union_tag = 0;
+  /*copy*/   ParamInfo   (const ParamInfo&) = delete;
+  void       release     ();
+  using Callback = std::function<void()>;
+  static constexpr uint32 MAX_NOTIFIER = ~uint32 (0);
+  uint32 next_notifier_ = MAX_NOTIFIER;
+  std::vector<Callback*> notifiers_;
 };
+using ParamInfoP = std::shared_ptr<ParamInfo>;
 
 /// Structure providing supplementary information about input/output buses.
 struct BusInfo {
-  CString            identifier;   ///< Identifier used for serialization.
-  CString            display_name; ///< Preferred user interface name.
-  CString            short_name;   ///< Abbreviated user interface name.
-  CString            description;  ///< Elaborate description for help dialogs.
-  CString            hints;        ///< Hints for parameter handling.
+  CString            ident;     ///< Identifier used for serialization.
+  CString            label;     ///< Preferred user interface name.
+  CString            hints;     ///< Hints for parameter handling.
+  CString            blurb;     ///< Short description for user interface tooltips.
   SpeakerArrangement speakers = SpeakerArrangement::NONE; ///< Channel to speaker arrangement.
   uint               n_channels () const;
 };
@@ -148,7 +172,6 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   struct PParam;
   class FloatBuffer;
   friend class ProcessorManager;
-  struct FloatBlock { uint total = 0, next = 0; float *floats = nullptr; };
   struct OConnection {
     Processor *proc = nullptr; IBusId ibusid = {};
     bool operator== (const OConnection &o) const { return proc == o.proc && ibusid == o.ibusid; }
@@ -159,17 +182,19 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   uint32                   output_offset_ = 0;
   std::vector<PBus>        iobuses_;
   std::vector<PParam>      params_;
-  std::vector<FloatBlock>  float_blocks_;
   std::vector<OConnection> outputs_;
+protected:
+  enum { INITIALIZED = 1, HAS_RESET = 2, };
+  std::atomic<uint32>      flags_ = 0;
+private:
   static __thread uint64   tls_timestamp;
   static void registry_init   ();
-  float*      alloc_float     ();
-  void        set_param_      (ParamId paramid, float value);
-  float       get_param_      (ParamId paramid);
-  bool        check_dirty_    (ParamId paramid) const;
+  PParam*     find_pparam     (ParamId paramid);
+  PParam*     find_pparam_    (ParamId paramid);
   void        assign_iobufs   ();
   void        release_iobufs  ();
   void        reconfigure     (IBusId ibus, SpeakerArrangement ipatch, OBusId obus, SpeakerArrangement opatch);
+  void        ensure_initialized  ();
   const FloatBuffer& float_buffer (IBusId busid, uint channelindex) const;
   FloatBuffer&       float_buffer (OBusId busid, uint channelindex, bool resetptr = false);
   static
@@ -188,6 +213,7 @@ protected:
   using SpeakerArrangement = AudioSignal::SpeakerArrangement;
   using ProcessorInfo = AudioSignal::ProcessorInfo;
   using RenderSetup = AudioSignal::RenderSetup;
+  using MinMax = std::pair<double,double>;
 #endif
   virtual      ~Processor         ();
   virtual void  initialize        ();
@@ -196,17 +222,24 @@ protected:
   virtual void  reset             (const RenderSetup &rs) = 0;
   virtual void  render            (const RenderSetup &rs, uint n_frames) = 0;
   // Parameters
-  ParamId       add_param         (ParamId id, const ParamInfo &pinfo, float value);
-  ParamId       add_param         (const std::string &identifier, const std::string &display_name,
-                                   const std::string &short_name, float pmin, float pmax,
-                                   const std::string &hints, float value, const std::string &unit = "");
-  ParamId       add_param         (const std::string &identifier, const std::string &display_name,
-                                   const std::string &short_name, ChoiceEntries &&centries,
-                                   const std::string &hints, float value, const std::string &unit = "");
+  ParamId       add_param         (ParamId id, const ParamInfo &infotmpl, double value);
+  ParamId       add_param         (const std::string &clabel, const std::string &nickname,
+                                   double pmin, double pmax, const std::string &hints,
+                                   double value, const std::string &unit = "",
+                                   const std::string &blurb = "", const std::string &description = "");
+  ParamId       add_param         (const std::string &clabel, const std::string &nickname,
+                                   ChoiceEntries &&centries, const std::string &hints,
+                                   double value,
+                                   const std::string &blurb = "", const std::string &description = "");
+  ParamId       add_param         (const std::string &clabel, const std::string &nickname,
+                                   const std::string &hints, bool boolvalue,
+                                   const std::string &blurb = "", const std::string &description = "");
   void          start_param_group (const std::string &groupname) const;
   // Buses
-  IBusId        add_input_bus     (CString name, SpeakerArrangement speakerarrangement);
-  OBusId        add_output_bus    (CString name, SpeakerArrangement speakerarrangement);
+  IBusId        add_input_bus     (CString uilabel, SpeakerArrangement speakerarrangement,
+                                   const std::string &hints = "", const std::string &blurb = "");
+  OBusId        add_output_bus    (CString uilabel, SpeakerArrangement speakerarrangement,
+                                   const std::string &hints = "", const std::string &blurb = "");
   void          remove_all_buses  ();
   OBus&         iobus             (OBusId busid);
   IBus&         iobus             (IBusId busid);
@@ -222,20 +255,25 @@ protected:
 public:
   struct RegistryEntry;
   using RegistryList = std::vector<RegistryEntry>;
+  using ParamInfoPVec = std::vector<ParamInfoP>;
+  using MaybeParamId = std::pair<ParamId,bool>;
   [[gnu::const]]
   uint          sample_rate       () const;
   void          reset_state       (const RenderSetup &rs);
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
   // Parameters
-  ParamId       find_param        (const std::string &identifier) const;
-  ParamInfo     param_info        (ParamId paramid) const;
-  float         get_param         (ParamId paramid);
-  void          set_param         (ParamId paramid, float value);
+  ParamInfoPVec list_params       () const;
+  MaybeParamId  find_param        (const std::string &identifier) const;
+  ParamInfoP    param_info        (ParamId paramid) const;
+  MinMax        param_range       (ParamId paramid) const;
+  double        get_param         (ParamId paramid);
+  void          set_param         (ParamId paramid, double value);
   bool          check_dirty       (ParamId paramid) const;
+  bool          is_initialized    () const;
   // Buses
-  IBusId        find_input_bus    (const std::string &name) const;
-  OBusId        find_output_bus   (const std::string &name) const;
+  IBusId        find_ibus         (const std::string &name) const;
+  OBusId        find_obus         (const std::string &name) const;
   uint          n_ibuses          () const;
   uint          n_obuses          () const;
   uint          n_ichannels       (IBusId busid) const;
@@ -254,6 +292,9 @@ public:
   static ProcessorP    registry_create    (const std::string &uuiduri);
   static uint          registry_enroll    (const std::function<ProcessorP ()> &create,
                                            const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
+  // MT-Safe accessors
+  static double peek_param_mt     (ProcessorP proc, ParamId pid);
+  static void   param_notifies_mt (ProcessorP proc, ParamId pid, bool need_notifies);
 };
 
 /// Timing information around AudioSignal processing.
@@ -353,72 +394,58 @@ private:
 struct Processor::IBus : BusInfo {
   Processor *proc = {};
   OBusId     obusid = {};
-  explicit IBus (const std::string &ident, SpeakerArrangement sa);
+  explicit IBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
 };
 struct Processor::OBus : BusInfo {
   uint fbuffer_concounter = 0;
   uint fbuffer_count = 0;
   uint fbuffer_index = ~0;
-  explicit OBus (const std::string &ident, SpeakerArrangement sa);
+  explicit OBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
 };
 // Processor internal input/output bus book keeping
 union Processor::PBus {
   IBus    ibus;
   OBus    obus;
   BusInfo pbus;
-  explicit PBus (const std::string &ident, SpeakerArrangement sa);
+  explicit PBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
 };
 
 // Processor internal parameter book keeping
 struct Processor::PParam {
-  PParam (ParamId i);
-  PParam (ParamId i, const ParamInfo &pinfo, float *p);
-  bool
-  get_dirty () const
-  {
-    return ptr_ & TAG_MASK;
-  }
-  float
-  get_value_and_clean ()
-  {
-    const float f = *valuep();
-    set_dirty (false);
-    return f;
-  }
+  explicit PParam              (ParamId id);
+  explicit PParam              (ParamId id, const ParamInfo &pinfo);
+  /*copy*/ PParam              (const PParam &);
+  PParam& operator=            (const PParam &);
+  double   get_value_and_clean ()       { clear_dirty(); return value_; }
+  double   peek_value          () const { return value_; }
+  bool     is_dirty            () const { return flags_ & 1; }
+  void     mark_dirty          ()       { flags_ |= 1; }
+  void     clear_dirty         ()       { flags_ &= ~uint32 (1); }
+  bool     has_updated         () const { return flags_ & 2; }
+  void     mark_updated        ()       { flags_ |= 2; }
+  void     clear_updated       ()       { flags_ &= ~uint32 (2); }
+  void     must_notify         (bool n) { if (n) flags_ |= 4; else flags_ &= ~uint32 (4); }
+  bool     must_notify         () const { return flags_ & 4; }
   void
-  set_dirty (bool b)
+  assign (double f)
   {
-    BSE_ASSERT_RETURN (0 == (b & PTR_MASK));
-    ptr_ &= PTR_MASK;
-    ptr_ |= b;
-  }
-  void
-  assign (float f)
-  {
-    const float old = *valuep();
-    if (BSE_ISLIKELY (old != f))
-      {
-        *valuep() = f;
-        set_dirty (true);
-      }
+    const double old = value_;
+    value_ = f;
+    if (BSE_ISLIKELY (old != value_))
+      mark_dirty();
   }
   static int // Helper to keep PParam structures sorted.
   cmp (const PParam &a, const PParam &b)
   {
-    return a.info.id < b.info.id ? -1 : a.info.id > b.info.id;
-  }
-private:
-  uintptr_t ptr_ = 0;
-  static const uintptr_t TAG_MASK = sizeof (float) - 1;
-  static const uintptr_t PTR_MASK = ~TAG_MASK;
-  void set_ptr (float *p);
-  float*
-  valuep () const
-  {
-    return reinterpret_cast<float*> (ptr_ & PTR_MASK);
+    return a.id < b.id ? -1 : a.id > b.id;
   }
 public:
-  ParamInfo info;
+  ParamId             id = {};  ///< Tag to identify parameter in APIs.
+private:
+  std::atomic<uint32> flags_ = 0;
+  std::atomic<double> value_ = 0;
+public:
+  ParamInfoP          info;
 };
 
 /// Number of channels described by `speakers`.
@@ -479,27 +506,23 @@ Processor::n_ochannels (OBusId busid) const
   return obus.n_channels();
 }
 
-/// Set parameter `id` to `value`.
-inline void
-Processor::set_param (ParamId paramid, float value)
+// Find parameter for internal access.
+inline Processor::PParam*
+Processor::find_pparam (ParamId paramid)
 {
-  // fast path for sequential ids
+  // fast path via sequential ids
   const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
-    params_[idx].assign (value);
-  return set_param_ (paramid, value);
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
+    return &params_[idx];
+  return find_pparam_ (paramid);
 }
 
 /// Fetch `value` of parameter `id` and clear its `dirty` flag.
-inline float
+inline double
 Processor::get_param (ParamId paramid)
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
-    return params_[idx].get_value_and_clean();
-  // lookup id with gaps
-  return get_param_ (paramid);
+  PParam *pparam = find_pparam (paramid);
+  return BSE_ISLIKELY (pparam) ? pparam->get_value_and_clean() : FP_NAN;
 }
 
 /// Check if the parameter `dirty` flag is set.
@@ -507,12 +530,8 @@ Processor::get_param (ParamId paramid)
 inline bool
 Processor::check_dirty (ParamId paramid) const
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
-    return params_[idx].get_dirty();
-  // lookup id with gaps
-  return check_dirty_ (paramid);
+  PParam *param = const_cast<Processor*> (this)->find_pparam (paramid);
+  return BSE_ISLIKELY (param) ? param->is_dirty() : false;
 }
 
 /// Access readonly float buffer of input bus `b`, channel `c`, see also ofloats().
@@ -577,5 +596,24 @@ enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
 }
 
 } // Bse
+
+namespace std {
+template<>
+struct hash<::Bse::AudioSignal::ParamInfo> {
+  /// Hash value for Bse::AudioSignal::ParamInfo.
+  size_t
+  operator() (const ::Bse::AudioSignal::ParamInfo &pi) const
+  {
+    size_t h = ::std::hash<::Bse::CString>() (pi.ident);
+    // h ^= ::std::hash (pi.label);
+    // h ^= ::std::hash (pi.nick);
+    // h ^= ::std::hash (pi.description);
+    h ^= ::std::hash<::Bse::CString>() (pi.unit);
+    h ^= ::std::hash<::Bse::CString>() (pi.hints);
+    // min, max, step
+    return h;
+  }
+};
+} // std
 
 #endif // __BSE_PROCESSOR_HH__

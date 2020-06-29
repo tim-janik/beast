@@ -6,6 +6,28 @@
 
 #define PDEBUG(...)     Bse::debug ("processor", __VA_ARGS__)
 
+// == Helpers ==
+static std::string
+canonify_identifier (const std::string &input)
+{
+  static const std::string validset = Bse::string_set_a2z() + "0123456789" + "_-";
+  const std::string lowered = Bse::string_tolower (input);
+  return Bse::string_canonify (lowered, validset, "-");
+}
+
+static std::string
+feature_add (std::string featurelist, const std::string feature)
+{
+  if ("" == Bse::feature_toggle_find (featurelist, feature, ""))
+    {
+      if (!featurelist.empty() && featurelist.back() != ':')
+        featurelist += ":" + feature;
+      else
+        featurelist += feature;
+    }
+  return featurelist;
+}
+
 namespace Bse {
 
 /** This namespace provides the components for all audio signal processing modules.
@@ -93,6 +115,19 @@ speaker_arrangement_desc (SpeakerArrangement spa)
   return s;
 }
 
+// == ChoiceDetails ==
+ChoiceDetails::ChoiceDetails (CString label_, CString subject_) :
+  ident (canonify_identifier (label_)), label (label_), subject (subject_)
+{
+  assert_return (ident.empty() == false);
+}
+
+ChoiceDetails::ChoiceDetails (IconStr icon_, CString label_, CString subject_) :
+  ident (canonify_identifier (label_)), label (label_), subject (subject_), icon (icon_)
+{
+  assert_return (ident.empty() == false);
+}
+
 // == ChoiceEntries ==
 ChoiceEntries&
 ChoiceEntries::operator+= (const ChoiceDetails &ce)
@@ -105,21 +140,46 @@ ChoiceEntries::operator+= (const ChoiceDetails &ce)
 static constexpr uint PTAG_FLOATS = 1;
 static constexpr uint PTAG_CENTRIES = 2;
 
-ParamInfo::ParamInfo() :
-  id (ParamId (0)), union_tag (0)
+ParamInfo::ParamInfo (ParamId pid) :
+  id (pid), union_tag (0)
 {
   memset (&u, 0, sizeof (u));
-}
-
-ParamInfo::ParamInfo (const ParamInfo &src) :
-  id (ParamId (0))
-{
-  *this = src;
 }
 
 ParamInfo::~ParamInfo()
 {
   release();
+  while (!notifiers_.empty())
+    {
+      Callback *c = notifiers_.back();
+      notifiers_.pop_back();
+      delete c;
+    }
+  assert_return (next_notifier_ == MAX_NOTIFIER); // notifies should *not* be running
+}
+
+void
+ParamInfo::copy_fields (const ParamInfo &src)
+{
+  ident = src.ident;
+  label = src.label;
+  nick = src.nick;
+  unit = src.unit;
+  hints = src.hints;
+  group = src.group;
+  blurb = src.blurb;
+  description = src.description;
+  switch (src.union_tag)
+    {
+    case PTAG_FLOATS:
+      set_range (src.u.fmin, src.u.fmax, src.u.fstep);
+      break;
+    case PTAG_CENTRIES:
+      set_choices (*src.u.centries());
+      break;
+    }
+  assert_return (notifiers_.empty());
+  assert_return (next_notifier_ == MAX_NOTIFIER);
 }
 
 void
@@ -131,42 +191,34 @@ ParamInfo::release()
     u.centries()->~ChoiceEntries();
 }
 
-ParamInfo&
-ParamInfo::operator= (const ParamInfo &src)
-{
-  id = src.id;
-  identifier = src.identifier;
-  display_name = src.display_name;
-  short_name = src.short_name;
-  description = src.description;
-  unit = src.unit;
-  hints = src.hints;
-  group = src.group;
-  switch (src.union_tag)
-    {
-    case PTAG_FLOATS:
-      set_range (src.u.fmin, src.u.fmax, src.u.fstep);
-      break;
-    case PTAG_CENTRIES:
-      set_choices (*src.u.centries());
-      break;
-    }
-  return *this;
-}
-
 /// Clear all ParamInfo fields.
 void
 ParamInfo::clear ()
 {
-  id = ParamId (0);
-  identifier = "";
-  display_name = "";
-  short_name = "";
-  description = "";
+  ident = "";
+  label = "";
+  nick = "";
   unit = "";
   hints = "";
   group = "";
+  blurb = "";
+  description = "";
   release();
+}
+
+/// Get parameter stepping or 0 if not quantized.
+double
+ParamInfo::get_stepping () const
+{
+  switch (union_tag)
+    {
+    case PTAG_FLOATS:
+      return u.fstep;
+    case PTAG_CENTRIES:
+      return 1;
+    default:
+      return 0;
+    }
 }
 
 /// Get parameter range minimum and maximum.
@@ -178,7 +230,8 @@ ParamInfo::get_minmax () const
     case PTAG_FLOATS:
       return { u.fmin, u.fmax };
     case PTAG_CENTRIES:
-      return { 0, u.centries()->size() };
+      return { (u.centries()->size() - 1) * -0.5,
+               (u.centries()->size() - 1) * +0.5 };
     default:
       return { NAN, NAN };
     }
@@ -186,7 +239,7 @@ ParamInfo::get_minmax () const
 
 /// Get parameter range properties.
 void
-ParamInfo::get_range (float &fmin, float &fmax, float &fstep) const
+ParamInfo::get_range (double &fmin, double &fmax, double &fstep) const
 {
   switch (union_tag)
     {
@@ -196,8 +249,11 @@ ParamInfo::get_range (float &fmin, float &fmax, float &fstep) const
       fstep = u.fstep;
       break;
     case PTAG_CENTRIES:
-      fmin = 0;
-      fmax = u.centries()->size();
+      {
+        auto mm = get_minmax ();
+        fmin = mm.first;
+        fmax = mm.second;
+      }
       fstep = 1;
       break;
     default:
@@ -210,7 +266,7 @@ ParamInfo::get_range (float &fmin, float &fmax, float &fstep) const
 
 /// Assign range properties to parameter.
 void
-ParamInfo::set_range (float fmin, float fmax, float fstep)
+ParamInfo::set_range (double fmin, double fmax, double fstep)
 {
   release();
   union_tag = PTAG_FLOATS;
@@ -245,28 +301,84 @@ ParamInfo::set_choices (const ChoiceEntries &centries)
   set_choices (ChoiceEntries (centries));
 }
 
+size_t
+ParamInfo::add_notify (ProcessorP proc, const std::function<void()> &callback)
+{
+  assert_return (this_thread_is_bse(), -1);
+  assert_return (callback, -1);
+  assert_return (proc, -1);
+  assert_return (proc->is_initialized(), -1);
+  if (notifiers_.empty())
+    Processor::param_notifies_mt (proc, id, true);
+  notifiers_.push_back (new Callback (callback));
+  return size_t (notifiers_.back());
+}
+
+bool
+ParamInfo::del_notify (ProcessorP proc, size_t callbackid)
+{
+  assert_return (this_thread_is_bse(), false);
+  assert_return (proc, false);
+  for (size_t i = 0; i < notifiers_.size(); ++i)
+    {
+      Callback *c = notifiers_[i];
+      static_assert (sizeof (size_t) == sizeof (c));
+      if (size_t (c) != callbackid)
+        continue;
+      if (next_notifier_ != MAX_NOTIFIER && next_notifier_ > i)
+        next_notifier_ -= 1;
+      notifiers_.erase (notifiers_.begin() + i);
+      delete c;
+      if (notifiers_.empty())
+        Processor::param_notifies_mt (proc, id, false);
+      return true;
+    }
+  return false;
+}
+
+void
+ParamInfo::call_notify ()
+{
+  assert_return (this_thread_is_bse());
+  if (next_notifier_ != MAX_NOTIFIER)
+    {
+      next_notifier_ = 0; // restart notifications
+      return;
+    }
+  next_notifier_ = 0;
+  while (next_notifier_ < notifiers_.size())
+    {
+      Callback *c = notifiers_[next_notifier_];
+      next_notifier_ += 1;
+      (*c) (); // may change next_notifier_
+    }
+  next_notifier_ = MAX_NOTIFIER;
+}
+
 // == PBus ==
-Processor::PBus::PBus (const std::string &ident, SpeakerArrangement sa) :
-  ibus (ident, sa)
+Processor::PBus::PBus (const std::string &ident, const std::string &uilabel, SpeakerArrangement sa) :
+  ibus (ident, uilabel, sa)
 {}
 
-Processor::IBus::IBus (const std::string &ident, SpeakerArrangement sa)
+Processor::IBus::IBus (const std::string &identifier, const std::string &uilabel, SpeakerArrangement sa)
 {
+  ident = identifier;
+  label = uilabel;
   speakers = sa;
   proc = nullptr;
   obusid = {};
-  identifier = ident;
-  assert_return (identifier != "");
+  assert_return (ident != "");
 }
 
-Processor::OBus::OBus (const std::string &ident, SpeakerArrangement sa)
+Processor::OBus::OBus (const std::string &identifier, const std::string &uilabel, SpeakerArrangement sa)
 {
+  ident = identifier;
+  label = uilabel;
   speakers = sa;
   fbuffer_concounter = 0;
   fbuffer_count = 0;
   fbuffer_index = ~0;
-  identifier = ident;
-  assert_return (identifier != "");
+  assert_return (ident != "");
 }
 
 // == RenderSetup ==
@@ -287,17 +399,6 @@ Processor::Processor ()
 Processor::~Processor ()
 {
   release_iobufs();
-  while (float_blocks_.size())
-    {
-      const FloatBlock fb = float_blocks_.back();
-      float_blocks_.pop_back();
-      SharedBlock sb;
-      sb.mem_start = fb.floats;
-      sb.mem_length = fb.total * sizeof (float);
-      sb.mem_offset = ServerImpl::instance().shared_block_offset (sb.mem_start);
-      assert_return (sb.mem_offset != -1);
-      ServerImpl::instance().release_shared_block (sb);
-    }
 }
 
 const Processor::FloatBuffer&
@@ -314,7 +415,7 @@ Processor::iobus (OBusId obusid)
   const size_t busindex = size_t (obusid) - 1;
   if (BSE_ISLIKELY (busindex < n_obuses()))
     return iobuses_[output_offset_ + busindex].obus;
-  static const OBus dummy { "?", {} };
+  static const OBus dummy { "?", "", {} };
   assert_return (busindex < n_obuses(), const_cast<OBus&> (dummy));
   return const_cast<OBus&> (dummy);
 }
@@ -326,7 +427,7 @@ Processor::iobus (IBusId ibusid)
   const size_t busindex = size_t (ibusid) - 1;
   if (BSE_ISLIKELY (busindex < n_ibuses()))
     return iobuses_[busindex].ibus;
-  static const IBus dummy { "?", {} };
+  static const IBus dummy { "?", "", {} };
   assert_return (busindex < n_ibuses(), const_cast<IBus&> (dummy));
   return const_cast<IBus&> (dummy);
 }
@@ -372,21 +473,6 @@ Processor::assign_iobufs ()
     fbuffers_ = nullptr;
 }
 
-// Allocate a single float value from cache-line aligned float_blocks_ to avoid false sharing
-float*
-Processor::alloc_float ()
-{
-  if (float_blocks_.size() == 0 || float_blocks_.back().next >= float_blocks_.back().total)
-    {
-      const SharedBlock sb = ServerImpl::instance().allocate_shared_block (sizeof (float) * 8);
-      const uint total = sb.mem_length / sizeof (float);
-      FloatBlock fb { total, 0, (float*) sb.mem_start };
-      float_blocks_.push_back (fb);
-    }
-  FloatBlock &fb = float_blocks_.back();
-  return &fb.floats[fb.next++];
-}
-
 static __thread CString tls_param_group;
 
 /// Introduce a `ParamInfo.group` to be used for the following add_param() calls.
@@ -399,138 +485,214 @@ Processor::start_param_group (const std::string &groupname) const
 /// Add a new parameter with unique `ParamInfo.identifier`.
 /// The returned `ParamId` is forced to match `id` (and must be unique).
 ParamId
-Processor::add_param (ParamId id, const ParamInfo &pinfo, float value)
+Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 {
-  assert_return (pinfo.identifier != "", {});
-  PParam param { id, ParamInfo (pinfo), alloc_float() };
-  if (param.info.group.empty())
-    param.info.group = tls_param_group;
+  assert_return (!is_initialized(), {});
+  assert_return (infotmpl.label != "", {});
+  if (params_.size())
+    assert_return (infotmpl.label != params_.back().info->label, {}); // easy CnP error
+  PParam param { id, infotmpl };
+  if (param.info->ident == "")
+    param.info->ident = canonify_identifier (param.info->label);
+  if (params_.size())
+    assert_return (param.info->ident != params_.back().info->ident, {}); // easy CnP error
+  if (param.info->group.empty())
+    param.info->group = tls_param_group;
   using P = decltype (params_);
   std::pair<P::iterator, bool> existing_parameter_position =
     binary_lookup_insertion_pos (params_.begin(), params_.end(), PParam::cmp, param);
   assert_return (existing_parameter_position.second == false, {});
   params_.insert (existing_parameter_position.first, std::move (param));
-  set_param (param.info.id, value); // forces dirty
-  return param.info.id;
+  set_param (param.id, value); // forces dirty
+  return param.id;
 }
 
 /// Add new range parameter with most `ParamInfo` fields as inlined arguments.
 /// The returned `ParamId` is newly assigned and increases with the number of parameters added.
+/// The `clabel` is the canonical, non-translated name for this parameter, its
+/// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &identifier, const std::string &display_name,
-                      const std::string &short_name, float pmin, float pmax,
-                      const std::string &hints, float value, const std::string &unit)
+Processor::add_param (const std::string &clabel,
+                      const std::string &nickname, double pmin, double pmax,
+                      const std::string &hints, double value, const std::string &unit,
+                      const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
-  info.identifier = identifier;
-  info.display_name = display_name;
-  info.short_name = short_name;
+  info.ident = canonify_identifier (clabel);
+  info.label = clabel;
+  info.nick = nickname;
   info.hints = hints;
   info.unit = unit;
+  info.blurb = blurb;
+  info.description = description;
   info.set_range (pmin, pmax);
-  return add_param (ParamId (1 + params_.size()), info, value);
+  ParamId id = ParamId (1 + params_.size());
+  return add_param (id, info, value);
 }
 
 /// Add new choice parameter with most `ParamInfo` fields as inlined arguments.
+/// The returned `ParamId` is newly assigned and increases with the number of parameters added.
+/// The `clabel` is the canonical, non-translated name for this parameter, its
+/// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &identifier, const std::string &display_name,
-                      const std::string &short_name, ChoiceEntries &&centries,
-                      const std::string &hints, float value, const std::string &unit)
+Processor::add_param (const std::string &clabel,
+                      const std::string &nickname, ChoiceEntries &&centries,
+                      const std::string &hints, double value,
+                      const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
-  info.identifier = identifier;
-  info.display_name = display_name;
-  info.short_name = short_name;
-  info.hints = hints;
-  info.unit = unit;
+  info.ident = canonify_identifier (clabel);
+  info.label = clabel;
+  info.nick = nickname;
+  info.blurb = blurb;
+  info.description = description;
   info.set_choices (std::move (centries));
-  return add_param (ParamId (1 + params_.size()), info, value);
+  if ("" == feature_toggle_find (info.hints, "choice", ""))
+    info.hints = feature_add (hints, "choice");
+  else
+    info.hints = hints;
+  ParamId id = ParamId (1 + params_.size());
+  return add_param (id, info, value);
+}
+
+/// Add new toggle parameter with most `ParamInfo` fields as inlined arguments.
+/// The returned `ParamId` is newly assigned and increases with the number of parameters added.
+/// The `clabel` is the canonical, non-translated name for this parameter, its
+/// hyphenated lower case version is used for serialization.
+ParamId
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      const std::string &hints, bool boolvalue,
+                      const std::string &blurb, const std::string &description)
+{
+  ParamInfo info;
+  info.ident = canonify_identifier (clabel);
+  info.label = clabel;
+  info.nick = nickname;
+  info.blurb = blurb;
+  info.description = description;
+  static const ChoiceEntries centries { { "Off" }, { "On" } };
+  info.set_choices (centries);
+  if ("" == feature_toggle_find (info.hints, "toggle", ""))
+    info.hints = feature_add (hints, "toggle");
+  else
+    info.hints = hints;
+  const ParamId id = ParamId (1 + params_.size());
+  const auto rid = add_param (id, info, boolvalue);
+  assert_return (rid == id, rid);
+  PParam *param = find_pparam (id);
+  assert_return (param && param->peek_value() == (boolvalue ? +0.5 : -0.5), rid);
+  return rid;
+}
+
+/// List all Processor parameters.
+auto
+Processor::list_params() const -> ParamInfoPVec
+{
+  assert_return (is_initialized(), {});
+  ParamInfoPVec iv;
+  iv.reserve (params_.size());
+  for (const PParam &p : params_)
+    iv.push_back (p.info);
+  return iv;
 }
 
 /// Return the ParamId for parameter `identifier` or else 0.
-ParamId
-Processor::find_param (const std::string &identifier) const
+auto
+Processor::find_param (const std::string &identifier) const -> MaybeParamId
 {
   auto ident = CString::lookup (identifier);
   if (!ident.empty())
     for (const PParam &p : params_)
-      if (p.info.identifier == ident)
-        return p.info.id;
-  return ParamId (0);
+      if (p.info->ident == ident)
+        return std::make_pair (p.id, true);
+  return std::make_pair (ParamId (0), false);
+}
+
+// Non-fastpath implementation of find_param().
+Processor::PParam*
+Processor::find_pparam_ (ParamId paramid)
+{
+  // lookup id with gaps
+  const PParam key { paramid };
+  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, key);
+  const bool found_paramid = iter != params_.end();
+  if (ISLIKELY (found_paramid))
+    return &*iter;
+  assert_return (found_paramid == true, nullptr);
+  return nullptr;
+}
+
+/// Set parameter `id` to `value`.
+void
+Processor::set_param (ParamId paramid, const double value)
+{
+  PParam *pparam = find_pparam (paramid);
+  return_unless (pparam);
+  ParamInfo *info = pparam->info.get();
+  double v = value;
+  if (info)
+    {
+      const auto mm = info->get_minmax();
+      v = CLAMP (v, mm.first, mm.second);
+      const double stepping = info->get_stepping();
+      if (stepping > 0)
+        {
+          // round halfway cases down, so:
+          // 0 -> -0.5…+0.5 yields -0.5
+          // 1 -> -0.5…+0.5 yields +0.5
+          constexpr const auto nearintoffset = 0.5 - BSE_DOUBLE_EPSILON; // round halfway case down
+          v = stepping * uint64_t ((v - mm.first) / stepping + nearintoffset);
+          v = CLAMP (mm.first + v, mm.first, mm.second);
+        }
+    }
+  pparam->assign (v);
 }
 
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
-ParamInfo
+ParamInfoP
 Processor::param_info (ParamId paramid) const
 {
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].info.id == paramid))
-    return params_[idx].info;
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  if (ISLIKELY (iter != params_.end()))
-    return iter->info;
-  return {};
+  PParam *param = const_cast<Processor*> (this)->find_pparam (paramid);
+  return BSE_ISLIKELY (param) ? param->info : nullptr;
 }
 
-// Non-fastpath implementation of set_param().
+/// Fetch the current parameter value of a Processor from any thread.
+/// This function is MT-Safe after proper Processor initialization.
+double
+Processor::peek_param_mt (ProcessorP proc, ParamId pid)
+{
+  assert_return (proc, FP_NAN);
+  assert_return (proc->is_initialized(), FP_NAN);
+  PParam *param = proc->find_pparam (pid);
+  return BSE_ISLIKELY (param) ? param->peek_value() : FP_NAN;
+}
+
+/// Enable/disable notification sending for a Processor parameter.
+/// This function is MT-Safe after proper Processor initialization.
 void
-Processor::set_param_ (ParamId paramid, float value)
+Processor::param_notifies_mt (ProcessorP proc, ParamId pid, bool need_notifies)
 {
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  const bool found_paramid = iter != params_.end();
-  if (ISLIKELY (found_paramid))
-    iter->assign (value);
-  assert_return (found_paramid == true);
+  assert_return (proc);
+  assert_return (proc->is_initialized());
+  PParam *param = proc->find_pparam (pid);
+  if (BSE_ISLIKELY (param))
+    param->must_notify (need_notifies);
 }
 
-// Non-fastpath implementation of get_param().
-float
-Processor::get_param_ (ParamId paramid)
-{
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  const bool found_paramid = iter != params_.end();
-  if (ISLIKELY (found_paramid))
-    return iter->get_value_and_clean();
-  assert_return (found_paramid == true, 0);
-  return 0;
-}
-
-// Non-fastpath implementation of check_dirty().
+/// Check if Processor has been properly intiialized (so the set parameters is fixed).
 bool
-Processor::check_dirty_ (ParamId paramid) const
+Processor::is_initialized () const
 {
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), PParam::cmp, param);
-  if (ISLIKELY (iter != params_.end()))
-    return iter->get_dirty();
-  return 0;
+  return flags_ & INITIALIZED;
 }
 
-#if 0
+/// Retrieve the minimum / maximum values for a parameter.
 Processor::MinMax
 Processor::param_range (ParamId paramid) const
 {
-  using MinMax = std::pair<float,float>;
-  // fast path for sequential ids
-  const size_t idx = size_t (paramid - 1);
-  if (ISLIKELY (idx < params_.size()) && ISLIKELY (params_[idx].id == paramid))
-    return { params_[idx].fmin, params_[idx].fmax };
-  // lookup id with gaps
-  const PParam param { paramid };
-  auto iter = binary_lookup (params_.begin(), params_.end(), pparams_cmp, param);
-  if (ISLIKELY (iter != params_.end()))
-    return { iter->fmin, iter->fmax };
-  return { NAN, NAN };
+  ParamInfo *info = param_info (paramid).get();
+  return info ? info->get_minmax() : MinMax { FP_NAN, FP_NAN };
 }
-#endif
 
 String
 Processor::debug_name () const
@@ -563,59 +725,65 @@ Processor::configure (uint n_ibuses, const SpeakerArrangement *ibuses,
                       uint n_obuses, const SpeakerArrangement *obuses)
 {}
 
-/// Add an input bus with `name` and channels configured via `speakerarrangement`.
+/// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
 IBusId
-Processor::add_input_bus (CString name, SpeakerArrangement speakerarrangement)
+Processor::add_input_bus (CString uilabel, SpeakerArrangement speakerarrangement,
+                          const std::string &hints, const std::string &blurb)
 {
   const IBusId zero {0};
-  assert_return (name != "", zero);
+  assert_return (uilabel != "", zero);
   assert_return (uint64_t (speaker_arrangement_channels (speakerarrangement)) > 0, zero);
   assert_return (iobuses_.size() < 65535, zero);
   if (n_ibuses())
-    assert_return (name != iobus (IBusId (n_ibuses())).identifier, zero); // easy CnP error
-  PBus pbus { name, speakerarrangement };
+    assert_return (uilabel != iobus (IBusId (n_ibuses())).label, zero); // easy CnP error
+  PBus pbus { canonify_identifier (uilabel), uilabel, speakerarrangement };
+  pbus.pbus.hints = hints;
+  pbus.pbus.blurb = blurb;
   iobuses_.insert (iobuses_.begin() + output_offset_, pbus);
   output_offset_ += 1;
   const IBusId id = IBusId (n_ibuses());
   return id; // 1 + index
 }
 
-/// Add an output bus with `name` and channels configured via `speakerarrangement`.
+/// Add an output bus with `uilabel` and channels configured via `speakerarrangement`.
 OBusId
-Processor::add_output_bus (CString name, SpeakerArrangement speakerarrangement)
+Processor::add_output_bus (CString uilabel, SpeakerArrangement speakerarrangement,
+                           const std::string &hints, const std::string &blurb)
 {
   const OBusId zero {0};
-  assert_return (name != "", zero);
+  assert_return (uilabel != "", zero);
   assert_return (uint64_t (speaker_arrangement_channels (speakerarrangement)) > 0, zero);
   assert_return (iobuses_.size() < 65535, zero);
   if (n_obuses())
-    assert_return (name != iobus (OBusId (n_obuses())).identifier, zero); // easy CnP error
-  PBus pbus { name, speakerarrangement };
+    assert_return (uilabel != iobus (OBusId (n_obuses())).label, zero); // easy CnP error
+  PBus pbus { canonify_identifier (uilabel), uilabel, speakerarrangement };
+  pbus.pbus.hints = hints;
+  pbus.pbus.blurb = blurb;
   iobuses_.push_back (pbus);
   const OBusId id = OBusId (n_obuses());
   return id; // 1 + index
 }
 
-/// Return the IBusId for input bus `name` or else 0.
+/// Return the IBusId for input bus `uilabel` or else 0.
 IBusId
-Processor::find_input_bus (const std::string &name) const
+Processor::find_ibus (const std::string &uilabel) const
 {
-  auto ident = CString::lookup (name);
+  auto ident = CString::lookup (uilabel);
   if (!ident.empty())
     for (IBusId ib = IBusId (1); size_t (ib) <= n_ibuses(); ib = IBusId (size_t (ib) + 1))
-      if (iobus (ib).identifier == ident)
+      if (iobus (ib).ident == ident)
         return ib;
   return IBusId (0);
 }
 
-/// Return the OBusId for output bus `name` or else 0.
+/// Return the OBusId for output bus `uilabel` or else 0.
 OBusId
-Processor::find_output_bus (const std::string &name) const
+Processor::find_obus (const std::string &uilabel) const
 {
-  auto ident = CString::lookup (name);
+  auto ident = CString::lookup (uilabel);
   if (!ident.empty())
     for (OBusId ob = OBusId (1); size_t (ob) <= n_obuses(); ob = OBusId (size_t (ob) + 1))
-      if (iobus (ob).identifier == ident)
+      if (iobus (ob).ident == ident)
         return ob;
   return OBusId (0);
 }
@@ -764,6 +932,25 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   oproc.outputs_.push_back ({ this, ibusid });
 }
 
+/// Ensure `Processor::initialize()` has been called, so the parameters are fixed.
+void
+Processor::ensure_initialized()
+{
+  if (!is_initialized())
+    {
+      tls_param_group = "";
+      initialize();
+      tls_param_group = "";
+      flags_ |= INITIALIZED;
+      const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
+      const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
+      configure (1, &ibuses, 1, &obuses);
+      if (n_ibuses() + n_obuses() == 0)
+        throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
+      assign_iobufs();
+    }
+}
+
 /// Reset internal states.
 /// This method is called to assign the sample rate and
 /// to switch between realtime and offline rendering.
@@ -775,18 +962,8 @@ Processor::reset_state (const RenderSetup &rs)
   assert_return (rs.mix_freq == samplerate);
   assert_return (0 == (samplerate & 3));
   sample_rate_ = samplerate;
-  if (n_ibuses() + n_obuses() == 0)
-    {
-      tls_param_group = "";
-      initialize();
-      tls_param_group = "";
-      const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
-      const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
-      configure (1, &ibuses, 1, &obuses);
-      if (n_ibuses() + n_obuses() == 0)
-        throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
-      assign_iobufs();
-    }
+  ensure_initialized();
+  flags_ |= HAS_RESET;
   reset (rs);
 }
 
@@ -1039,6 +1216,7 @@ Chain::at (uint nth)
 void
 Chain::render_frames (uint n_frames)
 {
+  assert_return (flags_ & HAS_RESET);
   while (n_frames)
     {
       const uint blocksize = std::min (n_frames, MAX_RENDER_BLOCK_SIZE);
@@ -1257,9 +1435,14 @@ Processor::registry_create (const std::string &uuiduri)
     if (it != processor_registry_table->end())
       rentry = it->second;
   }
+  ProcessorP procp;
   if (rentry.uri != "")
-    return rentry.create();
-  return nullptr;
+    {
+      procp = rentry.create();
+      if (procp)
+        procp->ensure_initialized();
+    }
+  return procp;
 }
 
 /// List the registry entries of all known Processor types.
@@ -1276,25 +1459,29 @@ Processor::registry_list()
 }
 
 // == Processor::PParam ==
-Processor::PParam::PParam (ParamId i, const ParamInfo &pinfo, float *p) :
-  info (pinfo)
+Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo) :
+  id (_id), info (std::make_shared<ParamInfo> (_id))
 {
-  info.id = i;
-  if (p)
-    set_ptr (p);
+  info->copy_fields (pinfo);
 }
 
-Processor::PParam::PParam (ParamId i)
+Processor::PParam::PParam (ParamId _id) :
+  id (_id)
+{}
+
+Processor::PParam::PParam (const PParam &src)
 {
-  info.id = i;
+  *this = src;
 }
 
-void
-Processor::PParam::set_ptr (float *p)
+Processor::PParam&
+Processor::PParam::operator= (const PParam &src)
 {
-  BSE_ASSERT_RETURN (0 == (reinterpret_cast<uintptr_t> (p) & TAG_MASK));
-  ptr_ &= TAG_MASK;
-  ptr_ |= uintptr_t (p);
+  id = src.id;
+  flags_ = src.flags_.load();
+  value_ = src.value_.load();
+  info = src.info;
+  return *this;
 }
 
 // == FloatBuffer ==

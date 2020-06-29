@@ -98,23 +98,27 @@ struct TaskStatus {
 
 /// The task registry keeps track of runtime threads for profiling and statistical purposes.
 class TaskRegistry {
+  static std::thread::id bsethread_id;
 public:
   typedef std::vector<Bse::TaskStatus> List;
-  static void  add     (const std::string &name, int pid,
-                        int tid = -1);  ///< Add process/thread to registry for runtime profiling.
-  static bool  remove  (int tid);       ///< Remove process/thread based on thread_id.
-  static void  update  ();              ///< Issue TaskStatus.update on all tasks in registry.
-  static List  list    ();              ///< Retrieve a copy to the list of all tasks in registry.
+  static void  add      (const std::string &name, int pid,
+                         int tid = -1);  ///< Add process/thread to registry for runtime profiling.
+  static bool  remove   (int tid);       ///< Remove process/thread based on thread_id.
+  static void  update   ();              ///< Issue TaskStatus.update on all tasks in registry.
+  static List  list     ();              ///< Retrieve a copy to the list of all tasks in registry.
+  static void  setupbse ();
+  static bool  is_bse   () { return std::this_thread::get_id() == bsethread_id; }
 };
 
 // == Thread Info ==
 using ThreadId = std::thread::id;
-ThreadId this_thread_self        ();
-void     this_thread_set_name    (const String &name16chars);
-String   this_thread_get_name    ();
-int      this_thread_getpid      ();
-int      this_thread_gettid      ();
-int      this_thread_online_cpus ();
+ThreadId    this_thread_self        ();
+void        this_thread_set_name    (const String &name16chars);
+String      this_thread_get_name    ();
+int         this_thread_getpid      ();
+int         this_thread_gettid      ();
+int         this_thread_online_cpus ();
+inline bool this_thread_is_bse      () { return TaskRegistry::is_bse(); }
 
 // == Debugging Aids ==
 extern inline void breakpoint               () BSE_ALWAYS_INLINE;       ///< Cause a debugging breakpoint, for development only.
