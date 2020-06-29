@@ -3,7 +3,7 @@ include $(wildcard $>/ebeast/*.d)
 ebeast/cleandirs ::= $(wildcard $>/ebeast/ $>/electron/ $>/app/)
 CLEANDIRS         += $(ebeast/cleandirs)
 ALL_TARGETS       += ebeast/all
-ebeast/all: $>/app/package.json
+ebeast/all: $>/app/index.html
 
 # This Makefile creates $>/electron/ebeast and builds the ebeast web UI in $>/app/.
 
@@ -115,29 +115,28 @@ $>/ebeast/index-mjs.list: $(ebeast/b/vue.inputs) ebeast/index.html | $>/ebeast/
 	$Q mv $@.tmp $@
 
 # == app ==
-$>/app/package.json: $>/electron/ebeast $>/ebeast/lint.done
-$>/app/package.json: $(ebeast/copy.targets) $(app/generated) $(app/assets.copies)
-$>/app/package.json: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done ebeast/eknob.svg $>/ebeast/index-mjs.list
+$>/app/index.html: $>/electron/ebeast $>/ebeast/lint.done $(ebeast/copy.targets) $(app/generated) $(app/assets.copies)
+$>/app/index.html: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done ebeast/eknob.svg $>/ebeast/index-mjs.list
 	$(QGEN)
-	$Q echo -e '{ "name": "ebeast",'				> $@.tmp
-	$Q echo -e '  "productName": "EBeast",'				>>$@.tmp
-	$Q echo -e '  "version": "$(VERSION_M.M.M)",'			>>$@.tmp
-	$Q echo -e '  "config": {'					>>$@.tmp
-	$Q echo -e '    "version": "$(VERSION_M.M.M)",'			>>$@.tmp
-	$Q echo -e '    "revdate": "$(shell ./version.sh -d)",'		>>$@.tmp
-	$Q echo -e '    "revision": "$(shell ./version.sh -l)",'	>>$@.tmp
-	$Q echo -e '    "debug": "$(if $(findstring $(MODE), debug quick),true,false)" },' >>$@.tmp
-	$Q echo -e '  "main": "main.js" }'				>>$@.tmp
-	@: # Embed package.json in index.html, using record-separator \036 in sed
-	$Q sed -r \
-		-e "/<script type='application\/json' id='--EMBEDD-package_json'>/ r $@.tmp" \
-		-e "/<!--EMBEDD='index-mjs\.list'-->/ r $(abspath $>/ebeast/index-mjs.list)" \
-		-e "/<!--EMBEDD='eknob\.svg'-->/ r ebeast/eknob.svg" \
-		< ebeast/index.html	>$>/app/index.html
 	$Q ln -f -s ../doc $>/app/doc
 	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/vue.mjs
 	$Q $(CP) -a $>/ebeast/node_modules/vue-runtime-helpers/dist/index.mjs $>/app/vue-runtime-helpers.mjs \
 	  && sed 's|^//# sourceMappingURL=index\.mjs\.map$$||' -i $>/app/vue-runtime-helpers.mjs
+	$Q echo -e '{ "name": "ebeast",'				> $>/app/package.json
+	$Q echo -e '  "productName": "EBeast",'				>>$>/app/package.json
+	$Q echo -e '  "version": "$(VERSION_M.M.M)",'			>>$>/app/package.json
+	$Q echo -e '  "config": {'					>>$>/app/package.json
+	$Q echo -e '    "version": "$(VERSION_M.M.M)",'			>>$>/app/package.json
+	$Q echo -e '    "revdate": "$(shell ./version.sh -d)",'		>>$>/app/package.json
+	$Q echo -e '    "revision": "$(shell ./version.sh -l)",'	>>$>/app/package.json
+	$Q echo -e '    "debug": "$(if $(findstring $(MODE), debug quick),true,false)" },' >>$>/app/package.json
+	$Q echo -e '  "main": "main.js" }'				>>$>/app/package.json
+	@: # Embed package.json in index.html, using record-separator \036 in sed
+	$Q sed -r \
+		-e "/<script type='application\/json' id='--EMBEDD-package_json'>/ r $>/app/package.json" \
+		-e "/<!--EMBEDD='index-mjs\.list'-->/ r $>/ebeast/index-mjs.list" \
+		-e "/<!--EMBEDD='eknob\.svg'-->/ r ebeast/eknob.svg" \
+		< ebeast/index.html	> $@.tmp
 	$Q mv $@.tmp $@
 
 # == &>/app/markdown-it.esm.js ==
@@ -155,7 +154,7 @@ $>/app/markdown-it.esm.js: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/np
 		< $>/ebeast/markdown-it.esm1.js \
 		> $>/ebeast/markdown-it.esm2.js
 	$Q cp $>/ebeast/markdown-it.esm2.js $@
-$>/app/package.json: $>/app/markdown-it.esm.js
+$>/app/index.html: $>/app/markdown-it.esm.js
 
 # == $>/app/b/%.mjs ==
 ebeast/targets.vuebundles.mjs ::= $(patsubst %, $>/app/b/%.mjs, $(ebeast/b/vue.stems))
@@ -167,7 +166,7 @@ $>/app/b/%.mjs: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/ebeast
 	$Q mv $>/ebeast/b/$(@F).css $(@:.mjs=.css)
 	$Q mv $>/ebeast/b/$(@F) $(@D)/
 $>/app/b/%.css: $>/app/b/%.mjs ;
-$>/app/package.json: $(ebeast/targets.vuebundles.mjs) $(ebeast/targets.vuebundles.css)
+$>/app/index.html: $(ebeast/targets.vuebundles.mjs) $(ebeast/targets.vuebundles.css)
 
 # == $>/ebeast/b.*.lint ==
 ebeast/targets.lint ::= $(patsubst %, $>/ebeast/b/%.lint, $(ebeast/b/vue.stems))
@@ -175,7 +174,7 @@ $>/ebeast/b/%.lint: ebeast/b/%.vue	| $>/ebeast/b/ $>/ebeast/node_modules/npm.don
 	$(QGEN)
 	$Q $(NODE_MODULES.bin)/eslint --no-eslintrc -c $>/ebeast/.eslintrc.js -f unix --cache --cache-location $(@:%=%.cache) $<
 	$Q echo >$@
-$>/app/package.json: $(ebeast/targets.lint)
+$>/app/index.html: $(ebeast/targets.lint)
 
 # == $>/app/assets/ ==
 $(app/assets.copies): $>/app/assets/%: ebeast/%		| $>/app/assets/
@@ -261,7 +260,7 @@ check-ebeast: FORCE
 check-x11: check-ebeast
 
 # == installation ==
-ebeast/install: $>/app/package.json FORCE
+ebeast/install: $>/app/index.html FORCE
 	@$(QECHO) INSTALL '$(DESTDIR)$(pkglibdir)/{app|electron}'
 	$Q rm -f -r $(DESTDIR)$(pkglibdir)/electron $(DESTDIR)$(pkglibdir)/app
 	$Q $(CP) -a $>/electron $>/app $(DESTDIR)$(pkglibdir)/
@@ -274,7 +273,7 @@ ebeast/uninstall: FORCE
 uninstall: ebeast/uninstall
 
 # == ebeast/run ==
-ebeast/run: $>/app/package.json $>/doc/beast-manual.html
+ebeast/run: $>/app/index.html $>/doc/beast-manual.html
 	test -f /usr/share/themes/Ambiance/gtk-2.0/gtkrc && export GTK2_RC_FILES='/usr/share/themes/Ambiance/gtk-2.0/gtkrc' ; \
 	export ELECTRON_ENABLE_LOGGING=1 ; \
 	$>/electron/ebeast
