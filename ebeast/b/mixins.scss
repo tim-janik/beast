@@ -1,10 +1,10 @@
 // This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 // == Scss Theme Basics ==
-@import '../variables.scss';
+@import '../theme.scss';
 
 // == Variables ==
-// Only put *!default* definitions here, so `variables.scss` takes precedence.
+// Only put *!default* definitions here, so `theme.scss` takes precedence.
 
 // theme basics
 $b-theme-font-family:		$b-main-font-family;

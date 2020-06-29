@@ -19,14 +19,19 @@ export default {
       // normalizeComponent needs ./node_modules/vue-runtime-helpers/dist/index.mjs import
       normalizer: "globalThis['vue-runtime-helpers'].normalizeComponent",
       // data: { css: '/* globals... */', }, // increases line numbers in source maps
+      style: { preprocessOptions: {
+	scss: {
+	  sass: require ('node-sass'),           // supports custom functions
+	  // https://github.com/sass/node-sass#options
+	  sourceMapEmbed: true,
+	  outputStyle: 'nested',                 // nested, expanded, compact, compressed
+	  sourceComments: false,
+	  functions: require ("chromatic-sass"), // provide node-sass color functions
+	},
+      }, },
     }),
+    scss (),
     babel(),
-    scss ({
-      // https://github.com/thgh/rollup-plugin-scss#options https://github.com/sass/node-sass#options
-      sourceMapEmbed: true,
-      sourceComments: true,
-      outputStyle: 'nested', // nested, expanded, compact, compressed
-    }),
     resolve(),
   ],
   external: [ './jsbse.js', ],
