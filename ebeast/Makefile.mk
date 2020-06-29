@@ -109,8 +109,8 @@ $>/electron/ebeast:						| $>/
 $>/ebeast/index-mjs.list: $(ebeast/b/vue.inputs) ebeast/index.html | $>/ebeast/
 	$(QGEN)
 	$Q for C in $(ebeast/b/vue.stems) ; do \
-	  echo '    <link rel="stylesheet"    href="./b/'"$$C"'.bundle.css">' || break ; \
-	  echo '    <link rel="modulepreload" href="./b/'"$$C"'.bundle.js" data-autoload>' || break ; \
+	  echo '    <link rel="stylesheet"    href="./b/'"$$C"'.css">' || break ; \
+	  echo '    <link rel="modulepreload" href="./b/'"$$C"'.mjs" data-autoload>' || break ; \
 	done >$@.tmp
 	$Q mv $@.tmp $@
 
@@ -157,16 +157,17 @@ $>/app/markdown-it.esm.js: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/np
 	$Q cp $>/ebeast/markdown-it.esm2.js $@
 $>/app/package.json: $>/app/markdown-it.esm.js
 
-# == $>/app/b/%.bundle.js ==
-ebeast/targets.vuebundles.js  ::= $(patsubst %, $>/app/b/%.bundle.js,  $(ebeast/b/vue.stems))
-ebeast/targets.vuebundles.css ::= $(patsubst %, $>/app/b/%.bundle.css, $(ebeast/b/vue.stems))
-# $>/app/b/%.bundle.js: $(ebeast/app.scss.d)
-$>/app/b/%.bundle.js: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/ebeast/b/ $>/ebeast/node_modules/npm.done
+# == $>/app/b/%.mjs ==
+ebeast/targets.vuebundles.mjs ::= $(patsubst %, $>/app/b/%.mjs, $(ebeast/b/vue.stems))
+ebeast/targets.vuebundles.css ::= $(patsubst %, $>/app/b/%.css, $(ebeast/b/vue.stems))
+$>/app/b/%.mjs: $(ebeast/app.scss.d)
+$>/app/b/%.mjs: ebeast/b/%.vue $(ebeast/copy.tool.targets)	| $>/app/b/ $>/ebeast/b/ $>/ebeast/node_modules/npm.done
 	$(QGEN)
 	$Q cd $>/ebeast/ && $(abspath $(NODE_MODULES.bin)/rollup) -c ./vue.rollup.js -i $(abspath $<) -o $(abspath $>/ebeast/b/$(@F))
-	$Q mv $>/ebeast/b/$(@F) $>/ebeast/b/$(@F:.js=.css) $(@D)
-$>/app/b/%.bundle.css: $>/app/b/%.bundle.js ;
-$>/app/package.json: $(ebeast/targets.vuebundles.js) $(ebeast/targets.vuebundles.css)
+	$Q mv $>/ebeast/b/$(@F).css $(@:.mjs=.css)
+	$Q mv $>/ebeast/b/$(@F) $(@D)/
+$>/app/b/%.css: $>/app/b/%.mjs ;
+$>/app/package.json: $(ebeast/targets.vuebundles.mjs) $(ebeast/targets.vuebundles.css)
 
 # == $>/ebeast/b.*.lint ==
 ebeast/targets.lint ::= $(patsubst %, $>/ebeast/b/%.lint, $(ebeast/b/vue.stems))
