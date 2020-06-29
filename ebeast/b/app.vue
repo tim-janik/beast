@@ -27,6 +27,41 @@ const bootlog = debug || (() => undefined);
 // Vue mounting and dynamic import() calls to control module loading side-effects
 async function bootup() {
   bootlog ("App bootup");
+  // Setup global CONFIG
+  const packagejson = JSON.parse (document.getElementById ('--EMBEDD-package_json').innerHTML);
+  const mainconfig = globalThis.Electron?.getCurrentWindow()?.MAINCONFIG || {
+    // defaults for non-Electron runtimes
+    MAXINT: 2147483647, MAXUINT: 4294967295, mainjs: false,
+    dpr_movement: false, // Chrome bug, movementX *should* match screenX units
+    files: [], p: '', m: '', norc: false, uiscript: '',
+  };
+  Object.assign (CONFIG, packagejson.config, mainconfig);
+  // Chrome Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1092358 https://github.com/w3c/pointerlock/issues/42
+  const chrome_major = parseInt (( /\bChrome\/([0-9]+)\./.exec (navigator.userAgent) || [0,0] )[1]);
+  CONFIG.dpr_movement = chrome_major >= 37 && chrome_major <= 83;
+  console.assert (chrome_major <= 83, `WARNING: Chrome/${chrome_major} has not been tested for the movementX devicePixelRatio bug`);
+  if (CONFIG.dpr_movement)
+    bootlog ("Detected Chrome bug #1092358...");
+  // Electron specifics
+  if (globalThis.Electron)
+    {
+      bootlog ("Configure Electron...");
+      const navigate_external = (ev, url) => {
+	if (ev.defaultPrevented) // <- main.js causes prevention
+	  {
+	    debug ("NAVIGATE-EXTERNAL:", url);
+	    Electron.shell.openExternal (url);
+	  }
+      };
+      const win = Electron.getCurrentWindow();
+      win.webContents.addListener ('will-navigate', navigate_external);
+      win.webContents.addListener ('new-window', navigate_external);
+      if (CONFIG.debug) // show DevTools on hotkey
+	document.addEventListener ("keydown", (event) => {
+	  if (event.shiftKey && event.ctrlKey && event.keyCode == 73) // Shift+Ctrl+I
+	    Electron.getCurrentWindow().toggleDevTools();
+	});
+    }
   // Add helpers for device specific CSS
   document.body.parentNode.style.setProperty ('--device-pixel-ratio', window.devicePixelRatio);
   // Add helpers for browser specific CSS (needs document.body to exists)
@@ -106,14 +141,12 @@ async function bootup() {
     _: globalThis._,
   });
   // Menus - import if Electron is present
-  if (window.Electron)
+  if (globalThis.Electron)
     {
       const menus = await import ('/menus.js');
       await menus.setup_app_menu();
-      bootlog ("Loaded Menus...");
+      bootlog ("Loaded Electron.Menus...");
     }
-  else
-    bootlog ("Skipping Electron Menus...");
   // SFC - import list of b/ Vue components and register with Vue
   bootlog ("Importing MJS components...");
   for (const link of document.querySelectorAll ('head link[data-autoload][href]'))
@@ -143,10 +176,13 @@ async function bootup() {
     vue_update (vue_root);
   };
   // Load external BSE plugins
-  bootlog ("Loading LADSPA plugins...");
-  await Bse.server.load_ladspa();
+  if (CONFIG.mainjs)
+    {
+      bootlog ("Loading LADSPA plugins...");
+      await Bse.server.load_ladspa();
+    }
   // UI-Script
-  if (window.CONFIG.uiscript)
+  if (CONFIG.mainjs && CONFIG.uiscript)
     {
       bootlog ("Loading '" + window.CONFIG.uiscript + "'...");
       window.uiscript = await import (window.CONFIG.uiscript);
@@ -159,7 +195,7 @@ async function bootup() {
       }
     }
   // Load command line files
-  if (window.CONFIG.files.length)
+  if (CONFIG.mainjs && CONFIG.files.length)
     {
       bootlog ("Loading", window.CONFIG.files.length, "command line files...");
       for (let arg of window.CONFIG.files)
@@ -170,7 +206,7 @@ async function bootup() {
 	}
     }
   // Clear temporary files if *not* in script mode
-  if (!window.CONFIG.uiscript)
+  if (CONFIG.mainjs && !CONFIG.uiscript)
     {
       const ms = 2000;
       bootlog ("Will clean Bse cachedirs in", ms + "ms...");
