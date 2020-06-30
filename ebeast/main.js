@@ -42,6 +42,7 @@ function create_window ()
     autoHideMenuBar:			false,
     webPreferences: {
       nodeIntegration:			true,
+      enableRemoteModule:		true,
       devTools:				CONFIG.debug,
       defaultEncoding:			'UTF-8',
       defaultFontSize:			parseInt (defaultFontSize),
