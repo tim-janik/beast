@@ -19,13 +19,15 @@
 
   <b-button-bar
       class="b-playcontrols" >
-    <b-button hotkey="KeyL"  @click="pcall ('...Last')"      ><b-icon fw lg fa="fast-backward" /></b-button>
-    <b-button hotkey="KeyB"  @click="pcall ('...Backwards')" ><b-icon fw lg fa="backward"      /></b-button>
-    <b-button hotkey="KeyS"  @click="pcall ('stop')"         ><b-icon fw lg fa="stop"          /></b-button>
-    <b-button hotkey="Space" @click="toggle_play()"          ><b-icon fw lg fa="play"          /></b-button>
-    <b-button hotkey="KeyR"  @click="pcall ('...Record')"    ><b-icon fw lg fa="circle"        /></b-button>
-    <b-button hotkey="KeyF"  @click="pcall ('...Forwards')"  ><b-icon fw lg fa="forward"       /></b-button>
-    <b-button hotkey="KeyN"  @click="pcall ('...Next')"      ><b-icon fw lg fa="fast-forward"  /></b-button>
+    <b-button disabled @click="pcall ('...Last')"      ><b-icon fw lg fa="fast-backward" /></b-button>
+    <b-button disabled @click="pcall ('...Backwards')" ><b-icon fw lg fa="backward"      /></b-button>
+    <b-button @click="pcall ('stop')"		hotkey="KeyS" data-kbd="S"
+	      data-tip="**CLICK** Stop playback" >		<b-icon fw lg fa="stop"          /></b-button>
+    <b-button @click="toggle_play()"		hotkey="Space" data-kbd="Space"
+	      data-tip="**CLICK** Start/stop playback" >	<b-icon fw lg fa="play"          /></b-button>
+    <b-button disabled @click="pcall ('...Record')"    ><b-icon fw lg fa="circle"        /></b-button>
+    <b-button disabled @click="pcall ('...Forwards')"  ><b-icon fw lg fa="forward"       /></b-button>
+    <b-button disabled @click="pcall ('...Next')"      ><b-icon fw lg fa="fast-forward"  /></b-button>
   </b-button-bar>
 
 </template>

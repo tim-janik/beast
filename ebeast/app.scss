@@ -151,36 +151,6 @@ plaintext, listing, xmp,
 .shrink8       { flex-shrink: 8; }
 .shrink9       { flex-shrink: 9; }
 
-/* == Bubbles == */
-// Tooltips via CSS, using the data-bubble="" attribute
-.data-bubble {
-  position: absolute; z-index: 9999999999; pointer-events: none;
-  display: flex; max-width: 95vw;
-  margin: 0; padding: 0 0 8px 0; /* make room for triangle: 5px + 3px */
-  transition: visibility 0.1s, opacity 0.09s ease-in-out;
-  visibility: hidden; opacity: 0;
-  .data-bubble-inner {
-    display: flex; overflow: hidden; position: relative;
-    white-space: normal; margin: 0;
-    max-width: 40em;
-    border-radius: 1px; border: dppx(2) solid #a59900; color: #fff133; padding: 2px 3px;
-    background: #1a1800; background-image: linear-gradient(to bottom right, #0d0c00, #2a2700);
-    font-variant-numeric: tabular-nums;
-  }
-  &.data-bubble-visible {
-    visibility: visible; opacity: 0.78;
-  }
-
-  &:after {	/* tooltip bubble triangle */
-    position: absolute; bottom: 5px; /* room below triangle: 5px */
-    left: calc(50% - 3px); width: 0; height: 0; content: "";
-    border-top: 3px solid #a59900;
-    border-left: 3px solid transparent;
-    border-right: 3px solid transparent;
-  }
-
-}
-
 /* == NoteBoard == */
 div.note-board {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -224,11 +194,6 @@ div.note-board {
   }
   // markdown styling for notes
   .note-board-markdown {
-    h1,h2,h3,h4,h5,h6 { font-size: inherit; padding: 0; margin: 0; }
-    p { margin: 0.5em 0; }
-    ul { padding-left: 1em; }
-    h1 { color: #09b; }
-    h2 { color: #090; }
-    h3 { color: #a00; }
+    @include b-markdown-it-inlined;
   }
 }

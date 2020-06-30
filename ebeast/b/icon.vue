@@ -22,24 +22,34 @@
   : Apply fixed-width sizing.
   *lg*
   : Make the icon 33% larger than its container.
+  *hflip*
+  : Flip the icon horizontally.
+  *vflip*
+  : Flip the icon vertically.
 </docs>
 
 <style lang="scss">
   @import 'mixins.scss';
   .b-icon {
+    display: inline-flex;
     margin: 0; padding: 0; text-align: center;
-    &.b-icon-dfl { height: 1em; width: 1em; }
-    &.b-icon-fw	 { height: 1em; width: 1.28571429em; text-align: center; }
-    &.b-icon-lg	 { font-size: 1.33333333em; }
-    &.material-icons.b-icon-dfl { font-size: 1em; }
+    .b-icon-dfl { height: 1em; width: 1em; }
+    .b-icon-fw	 { height: 1em; width: 1.28571429em; text-align: center; }
+    .b-icon-lg	 { font-size: 1.33333333em; }
+    .material-icons.b-icon-dfl { font-size: 1em; }
+    .b-icon-hflip { transform: scaleX(-1); }
+    .b-icon-vflip { transform: scaleY(-1); }
+    .b-icon-hflip.b-icon-vflip { transform: scaleX(-1) scaleY(-1); }
   }
 </style>
 
 <template>
-  <span    v-if="uc_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true">{{ uc_ }}</span>
-  <i  v-else-if="fa_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true"></i>
-  <i  v-else-if="mi_" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true">{{ mi_ }}</i>
-  <span v-else-if="1" class="b-icon" :class="iconclasses" role="icon" aria-hidden="true"><slot /></span>
+  <span class="b-icon">
+    <span    v-if="uc_" :class="iconclasses" role="icon" aria-hidden="true">{{ uc_ }}</span>
+    <i  v-else-if="fa_" :class="iconclasses" role="icon" aria-hidden="true"></i>
+    <i  v-else-if="mi_" :class="iconclasses" role="icon" aria-hidden="true">{{ mi_ }}</i>
+    <span v-else-if="1" :class="iconclasses" role="icon" aria-hidden="true"><slot /></span>
+  </span>
 </template>
 <!-- SVG-1.1 notation: <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="...svg"></use> -->
 
@@ -48,7 +58,8 @@ const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-icon',
   props: { iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR,
-	   'nosize': undefined, 'fw': undefined, 'lg': undefined },
+	   nosize: undefined, fw: undefined, lg: undefined,
+	   hflip: undefined, vflip: undefined },
   computed: {
     mi_() { return this.ic.startsWith ('mi-') ? this.ic.substr (3) : this.mi; },
     uc_() { return this.ic.startsWith ('uc-') ? this.ic.substr (3) : this.uc; },
@@ -62,12 +73,21 @@ export default {
       if (this.lg || this.lg == '')
 	classes.push ('b-icon-lg');
       if (this.mi_)
-	classes.push ('material-icons');
-      if (this.fa_)
+	{
+	  classes.push ('mi');
+	  classes.push ('material-icons');
+	}
+      else if (this.fa_)
 	{
 	  classes.push ('fa');
 	  classes.push ('fa-' + this.fa_);
 	}
+      else
+	classes.push ('uc');
+      if (this.hflip || this.hflip == '')
+	classes.push ('b-icon-hflip');
+      if (this.vflip || this.vflip == '')
+	classes.push ('b-icon-vflip');
       return classes.join (' ');
     },
   },

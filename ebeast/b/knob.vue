@@ -44,7 +44,8 @@
 <!-- NOTE: This implementation assumes the HTML embeds eknob.svg -->
 
 <template>
-  <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick" >
+  <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick"
+	  data-tip="**DRAG** Adjust Value **DBLCLICK** Reset Value" >
     <svg  class="b-knob-base"               :style="style()" :viewBox="viewbox()" >
       <use href="#eknob-base" />
     </svg>
@@ -95,7 +96,7 @@ export default {
   mounted() {
     this.$el.onwheel = this.wheel_event;
     if (HOVER_BUBBLE)
-      Util.data_bubble_callback (this.$el, this.bubble);
+      App.data_bubble.callback (this.$el, this.bubble);
   },
   beforeDestroy () {
     if (document.pointerLockElement === this.$el)
@@ -156,10 +157,13 @@ export default {
 	gran = gran * 2;            // bi-directional knobs cover twice the value range
       return gran;
     },
-    dblclick () {
+    dblclick (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
       this.emit_value (0);
+      return this.drag_stop();
     },
-    drag_start (ev, override_offset) {
+    drag_start (ev) {
       // allow only primary button press
       if (ev.buttons != 1)
 	return this.drag_stop();
@@ -168,12 +172,13 @@ export default {
       this.uncapture_wheel = Util.capture_event ('wheel', this.wheel_event);
       this.$el.onpointermove = this.drag_move;
       this.$el.onpointerup = this.drag_stop;
-      this.$el.setPointerCapture (ev.pointerId);
+      this.captureid_ = ev.pointerId;
+      this.$el.setPointerCapture (this.captureid_);
       if (USE_PTRLOCK)
 	this.$el.requestPointerLock();
       // display data-bubble during drag and monitor movement distance
-      Util.data_bubble_callback (this.$el, this.bubble);
-      Util.data_bubble_force (this.$el);
+      App.data_bubble.callback (this.$el, this.bubble);
+      App.data_bubble.force (this.$el);
       this.last = { x: ev.pageX, y: ev.pageY };
       this.drag = USE_PTRLOCK ? { x: 0, y: 0 } : { x: ev.pageX, y: ev.pageY };
       ev.preventDefault();
@@ -186,14 +191,16 @@ export default {
       this.uncapture_wheel = this.uncapture_wheel?. ();
       this.$el.onpointermove = null;
       this.$el.onpointerup = null;
-      this.$el.releasePointerCapture (ev.pointerId);
+      if (this.captureid_ !== undefined)
+	this.$el.releasePointerCapture (this.captureid_);
+      this.captureid_ = undefined;
       if (document.pointerLockElement === this.$el)
 	document.exitPointerLock();
-      Util.data_bubble_clear (this.$el);
+      App.data_bubble.clear (this.$el);
       this.last = null;
       this.drag = null;
       if (HOVER_BUBBLE)
-	Util.data_bubble_callback (this.$el, this.bubble);
+	App.data_bubble.callback (this.$el, this.bubble);
       if (!ev)
 	return;
       ev.preventDefault();
@@ -309,7 +316,7 @@ export default {
 	}
       // to reduce CPU load, update data-bubble on demand only
       if (this.$el.data_bubble_active)
-	Util.data_bubble_update (this.$el);
+	App.data_bubble.update (this.$el);
     },
   },
 };

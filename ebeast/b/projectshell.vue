@@ -8,47 +8,16 @@
   : Implicit *Bse.Project*, using App.bse_project().
 </docs>
 
-<template>
-  <b-vflex class="b-projectshell" style="width: 100%; height: 100%" >
-    <b-hflex center style="margin: 5px">
-      <b-playcontrols :project="project"> </b-playcontrols>
-      <span style="width: 3em"><!-- spacer --></span>
-      <b-positionview :song="song"> </b-positionview>
-    </b-hflex>
-
-    <b-hflex grow1 style="overflow-y: hidden">
-      <b-vflex grow1 shrink1>
-	<b-hflex class="b-projectshell-track-area" style="height: 50%">
-	  <b-track-list class="grow1" :song="song"></b-track-list>
-	</b-hflex>
-	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
-	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="panel2 == 0" ></b-piano-roll>
-	  <b-vflex v-show="panel2 == 1" style="flex-grow: 1" >
-	    Device Panel
-	    <b-devicepanel :track="current_track" />
-	  </b-vflex>
-	</b-hflex>
-      </b-vflex>
-
-      <b-hflex ref="sidebarcontainer" style="width:15%" >
-	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
-	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
-	  <b-treeselector :tree="o.filetree"></b-treeselector>
-	</b-vflex>
-      </b-hflex>
-    </b-hflex>
-
-    <b-aboutdialog v-model="show_about_dialog" />
-    <b-preferencesdialog v-model="show_preferences_dialog" />
-  </b-vflex>
-</template>
-
 <style lang="scss">
   @import 'mixins.scss';
+
   .b-projectshell {
-    border: 5px solid #322;
     --b-resize-handle-thickness: #{$b-resize-handle-thickness};
     --b-transition-fast-slide: #{$b-transition-fast-slide};
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-items: stretch;
   }
   .b-projectshell-part-area {
     background-color: $b-button-border;
@@ -70,6 +39,52 @@
     * { cursor: col-resize !important; user-select: none !important; }
   }
 </style>
+
+<template>
+  <b-vflex class="b-projectshell" >
+
+    <!-- play controls, time display -->
+    <b-hflex center style="margin: 5px">
+      <b-playcontrols :project="project"> </b-playcontrols>
+      <span style="width: 3em"><!-- spacer --></span>
+      <b-positionview :song="song"> </b-positionview>
+    </b-hflex>
+
+    <b-hflex grow1 style="overflow-y: hidden">
+      <b-vflex grow1 shrink1>
+	<!-- upper main area -->
+	<b-hflex class="b-projectshell-track-area" style="height: 50%">
+	  <b-track-list class="grow1" :song="song"></b-track-list>
+	</b-hflex>
+	<!-- lower main area -->
+	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
+	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="App.panel2 == 'p'" ></b-piano-roll>
+	  <b-vflex v-show="App.panel2 == 'd'" style="flex-grow: 1" >
+	    Device Panel
+	    <b-devicepanel :track="current_track" />
+	  </b-vflex>
+	</b-hflex>
+      </b-vflex>
+
+      <!-- browser -->
+      <b-hflex ref="sidebarcontainer" style="width:15%" >
+	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
+	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
+	  <b-treeselector :tree="o.filetree" v-show="App.panel3 == 'b'" ></b-treeselector>
+	  <span v-show="App.panel3 == 'i'" >Info Panel</span>
+	</b-vflex>
+      </b-hflex>
+    </b-hflex>
+
+    <!-- status bar -->
+    <b-statusbar />
+
+    <!-- popup dialogs -->
+    <b-aboutdialog v-model="show_about_dialog" />
+    <b-preferencesdialog v-model="show_preferences_dialog" />
+
+  </b-vflex>
+</template>
 
 <script>
 async function list_sample_files() {
@@ -99,7 +114,6 @@ export default {
     show_preferences_dialog: false,
     song: undefined,
     notifynameclear: () => 0,
-    panel2: 0,
   }; },
   watch: {
     show_about_dialog:       function (newval) { if (newval && this.show_preferences_dialog) this.show_preferences_dialog = false; },
@@ -120,17 +134,18 @@ export default {
     // load_project() also forces an update with new Shell properties in place
   },
   mounted() {
+    this.switch_panel2 = App.switch_panel2.bind (App);
     Util.add_hotkey ('Backquote', this.switch_panel2);
+    this.switch_panel3 = App.switch_panel3.bind (App);
+    Util.add_hotkey ('KeyI', this.switch_panel3);
   },
   destroyed() {
     Util.remove_hotkey ('Backquote', this.switch_panel2);
+    Util.remove_hotkey ('KeyI', this.switch_panel3);
     this.notifynameclear();
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
-    switch_panel2() {
-      this.panel2 = (this.panel2 + 1) % 2;
-    },
     sidebar_mouse (e) {
       const sidebar = this.$refs.sidebarcontainer;
       console.assert (sidebar);

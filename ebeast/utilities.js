@@ -2,7 +2,6 @@
 'use strict';
 
 const AUTOTEST = true;
-const UNSET = Symbol ('UNSET');
 
 // == Compat fixes ==
 class FallbackResizeObserver {
@@ -402,6 +401,21 @@ vue_directives['inlineblur'] = {
       }
   }
 };
+
+/** Automatically add `$attrs['data-*']` to `$el`. */
+vue_mixins.autodataattrs = {
+  mounted: function () {
+    autodataattrs_apply.call (this);
+  },
+  updated: function () {
+    autodataattrs_apply.call (this);
+  },
+};
+function autodataattrs_apply () {
+  for (let datakey in this.$attrs)
+    if (datakey.startsWith ('data-'))
+      this.$el.setAttribute (datakey, this.$attrs[datakey]);
+}
 
 /** This Vue mixin sets up reactive `data` from `data_tmpl` and non-reactive data from `priv_tmpl` */
 vue_mixins.data_tmpl = {
@@ -1768,7 +1782,7 @@ function hotkey_handler (event) {
 	return true;
       }
   // activate elements with data-hotkey=""
-  const hotkey_elements = document.querySelectorAll ('[data-hotkey]');
+  const hotkey_elements = document.querySelectorAll ('[data-hotkey]:not([disabled])');
   for (const el of hotkey_elements)
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
@@ -1891,191 +1905,8 @@ export function markdown_to_html (element, markdown_text) {
   };
   // render HTML
   const html = md.render (markdown_text);
-  element.classList.add ('markdown-it-outer');
+  element.classList.add ('b-markdown-it-outer');
   element.innerHTML = html;
-}
-
-/** A mechanism to display data-bubble="" tooltip popups */
-class DataBubble {
-  constructor() {
-    // create one toplevel div.data-bubble element to deal with all popups
-    this.bubble = document.createElement ('div');
-    this.bubble.classList.add ('data-bubble');
-    this.bubblediv = document.createElement ('div');
-    this.bubblediv.classList.add ('data-bubble-inner');
-    this.bubble.appendChild (this.bubblediv);
-    document.body.appendChild (this.bubble);
-    this.current = null; // current element showing a data-bubble
-    this.stack = []; // element stack to force bubble
-    this.lasttext = "";
-    this.last_event = null;
-    this.buttonsdown = 0;
-    this.coords = {};
-    // milliseconds to wait to detect idle time after mouse moves
-    const IDLE_DELAY = 115;
-    // trigger popup handling after mouse rests
-    this.restart_bubble_timer = debounce (() => this.check_showtime (true),
-					  { restart: true, wait: IDLE_DELAY });
-    this.debounced_check = debounce (this.check_showtime);
-    this.queue_update = debounce (this.update_now);
-    const recheck_event = (ev, newmove) => {
-      this.last_event = ev;
-      this.debounced_check();
-    };
-    document.addEventListener ("mousemove", recheck_event, { capture: true, passive: true });
-    document.addEventListener ("mousedown", recheck_event, { capture: true, passive: true });
-    document.addEventListener ("mouseleave",
-			       ev => (ev.target === this.current) && this.debounced_check(),
-			       { capture: true, passive: true });
-    this.resizeob = new ResizeObserver (() => !!this.current && this.debounced_check());
-  }
-  shutdown() {
-    console.assert (!this.current);
-    this.resizeob.disconnect();
-    document.removeEventListener ("mousemove", this.mousemove);
-    document.removeEventListener ("mousedown", this.mousemove);
-    document.removeEventListener ("mouseleave", this.mousemove);
-  }
-  check_showtime (showtime = false) {
-    if (this.last_event)
-      {
-	const coords = { x: this.last_event.screenX, y: this.last_event.screenY };
-	this.buttonsdown = !!this.last_event.buttons;
-	if (!this.buttonsdown && !this.stack.length &&
-	    !equals_recursively (coords, this.coords) &&
-	    this.last_event.type === "mousemove")
-	  this.restart_bubble_timer();
-	this.coords = coords; // needed to ignore 0-distance moves
-	this.last_event = null;
-      }
-    if (this.stack.length) // stack takes precedence over events
-      {
-	const next = this.stack[0];
-	if (next != this.current)
-	  {
-	    this.hide();
-	    this.restart_bubble_timer.cancel();
-	  }
-	if (!this.current)
-	  this.show (next);
-	return;
-      }
-    if (this.buttonsdown)
-      {
-	this.hide();
-	this.restart_bubble_timer.cancel();
-	return;
-      }
-    if (!showtime && !this.current)
-      return;
-    const els = document.body.querySelectorAll ('*:hover[data-bubble]');
-    const next = els.length ? els[els.length - 1] : null;
-    if (next != this.current)
-      this.hide();
-    if (next && showtime && !this.current)
-      this.show (next);
-  }
-  hide() {
-    if (this.current)
-      {
-	delete this.current.data_bubble_active;
-	this.current = null;
-	this.resizeob.disconnect();
-	this.bubble.classList.remove ('data-bubble-visible');
-      }
-    // keep textContent for fade-outs
-  }
-  update_now() {
-    if (this.current)
-      {
-	let cbtext;
-	if (this.current.data_bubble_callback)
-	  {
-	    cbtext = this.current.data_bubble_callback();
-	    this.current.setAttribute ('data-bubble', cbtext);
-	  }
-	const newtext = cbtext || this.current.getAttribute ('data-bubble');
-	if (!newtext)
-	  this.hide();
-	else if (newtext != this.lasttext)
-	  {
-	    this.lasttext = newtext;
-	    this.bubblediv.textContent = this.lasttext;
-	  }
-      }
-  }
-  show (element) {
-    console.assert (!this.current);
-    this.current = element;
-    this.current.data_bubble_active = true;
-    this.resizeob.observe (this.current);
-    this.bubble.classList.add ('data-bubble-visible');
-    this.update_now(); // might hide()
-    if (this.current) // resizing
-      {
-	document.body.appendChild (this.bubble); // restack the bubble
-	const viewport = {
-	  width:  Math.max (document.documentElement.clientWidth || 0, window.innerWidth || 0),
-	  height: Math.max (document.documentElement.clientHeight || 0, window.innerHeight || 0),
-	};
-	// request ideal layout
-	const r = this.current.getBoundingClientRect();
-	this.bubble.style.top = '0px';
-	this.bubble.style.right = '0px';
-	let s = this.bubble.getBoundingClientRect();
-	let top = Math.max (0, r.y - s.height);
-	let right = Math.max (0, viewport.width - (r.x + r.width / 2 + s.width / 2));
-	this.bubble.style.top = top + 'px';
-	this.bubble.style.right = right + 'px';
-	s = this.bubble.getBoundingClientRect();
-	// constrain layout
-	if (s.left < 0)
-	  {
-	    right += s.left;
-	    right = Math.max (0, right);
-	    this.bubble.style.right = right + 'px';
-	  }
-      }
-  }
-}
-const global_data_bubble = new DataBubble();
-
-/** Set the `data-bubble` attribute of `element` to `text` or force its callback */
-export function data_bubble_update (element, text = UNSET) {
-  if (text !== UNSET && !element.data_bubble_callback)
-    {
-      if (text)
-	element.setAttribute ('data-bubble', text);
-      else
-	element.removeAttribute ('data-bubble');
-    }
-  global_data_bubble.queue_update();
-}
-
-/** Assign a callback function to fetch the `data-bubble` attribute of `element` */
-export function data_bubble_callback (element, callback) {
-  element.data_bubble_callback = callback;
-  if (callback)
-    element.setAttribute ('data-bubble', "");	// [data-bubble] selector needs existing attribute
-  global_data_bubble.queue_update();
-}
-
-/** Force `data-bubble` to be shown for `element` */
-export function data_bubble_force (element) {
-  global_data_bubble.stack.unshift (element);
-  global_data_bubble.debounced_check();
-}
-
-/** Reset the `data-bubble` attribute, its callback and cancel a forced bubble */
-export function data_bubble_clear (element) {
-  if (global_data_bubble.stack.length)
-    array_remove (global_data_bubble.stack, element);
-  if (element.data_bubble_active)
-    global_data_bubble.hide();
-  if (element.data_bubble_callback)
-    element.data_bubble_callback = undefined;
-  element.removeAttribute ('data-bubble');
-  global_data_bubble.debounced_check();
 }
 
 /** Assign `map[key] = cleaner`, while awaiting and calling any previously existing cleanup function */
@@ -2127,7 +1958,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   const getter_cleanups = {};
   const notify_cleanups = {};
   let add_functions = false;
-  let odata; // Vue.observable
+  let odata; // Vue.reactive
   for (const key in tmpl)
     {
       if (tmpl[key] instanceof Function)
@@ -2168,7 +1999,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       tmpl[key] = default_value;
     }
   // make all fields observable
-  odata = Vue.observable (tmpl);
+  odata = Vue.reactive (tmpl);
   // cleanup notifiers and getter results on `destroyed`
   const run_cleanups = () => {
     for (const key in notify_cleanups)
@@ -2178,7 +2009,7 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
   };
   this.$once ('hook:destroyed', run_cleanups);
   // create trigger for forced updates
-  const ucount = Vue.observable ({ c: 1 }); // reactive update counter
+  const ucount = Vue.reactive ({ c: 1 }); // reactive update counter
   const updater = function () { ucount.c += 1; }; // forces observable update
   // the $watch callback updates monitoring getters once `predicate` or `ucount`
   // changes, but `predicate` needs wrapping to allow Promise returns

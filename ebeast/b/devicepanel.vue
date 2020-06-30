@@ -21,10 +21,12 @@
 <template>
   <b-hflex class="b-devicepanel" style="width: 100%; height: 100%" >
     <template v-for="device in devices" >
-      <b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id" />
+      <b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id"
+	      data-tip="**CLICK** Add New Elements" />
       <b-deviceeditor :device="device" center style="margin: 5px" :key="'deviceeditor' + device.$id" />
     </template>
-    <b-more @click.native.stop="menuopen" :sibling="null" />
+    <b-more @click.native.stop="menuopen" :sibling="null"
+	    data-tip="**CLICK** Add New Elements" />
     <b-contextmenu ref="cmenu" @click="menuactivation" yscale="1.6" >
       <b-menutitle> Device </b-menutitle>
       <b-menuitem fa="plus-circle"      uri="EBeast:add-device" >      Add Device		</b-menuitem>

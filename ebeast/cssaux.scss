@@ -56,6 +56,13 @@ $device-pixel-ratio: var(--device-pixel-ratio);
   @return $f;
 }
 
+/// Construct color from hue and relative luminance
+/// [WCAG relative luminance](https://www.w3.org/TR/WCAG20/#relativeluminancedef)
+@function color($h, $l: 50%, $s: 100%) {
+  $base: chromatic-hsv($h, asfactor($s), 1);
+  @return chromatic-color-luminance($base, asfactor($l));
+}
+
 /// Reduce luminance by a percentage
 @function darker($col, $f: 10%) {
   // decrease luminance by a percentage, also work around luminance==0 -> 0

@@ -72,7 +72,9 @@ $b-piano-roll-note-focus-border: #fff !default;
 $b-piano-roll-key-length:	88px !default;
 $b-piano-roll-buttons-font:	normal 9px $b-theme-font-family !default;	// size must fit into b-piano-roll-key-length
 
-// == Mixins ==
+@mixin b-popup-box-shadow()	{ box-shadow: 0 2px 8px $b-boxshadow-color; }
+
+// == Glossy Buttons ==
 @mixin b-buttonframe() 	{ border: 1px solid $b-button-border; }
 @mixin b-buttonshade() 	{ background-image: $b-button-lg;
 				  border-top: 1px solid $b-button-light; border-left: 1px solid $b-button-light;
@@ -81,4 +83,14 @@ $b-piano-roll-buttons-font:	normal 9px $b-theme-font-family !default;	// size mu
 @mixin b-buttonactive()	{ box-shadow: inset 500px 500px $b-button-active;
 				  background-image: $b-button-active-lg;
 				  border-color: $b-button-active-border; }
-@mixin b-popup-box-shadow()	{ box-shadow: 0 2px 8px $b-boxshadow-color; }
+
+// == Markdown Styling ==
+@mixin b-markdown-it-inlined($maywrap: true)	{
+  // avoid all margins and padding, make elements suitable for 'inline' layouts
+  h1,h2,h3,h4,h5,h6 { font-size: inherit; padding: 0; margin: 0; }
+  h1 { color: #09b; }
+  h2 { color: #090; }
+  h3 { color: #a00; }
+  p { margin: 0; }
+  ul { padding-left: 1em; }
+}
