@@ -16,6 +16,7 @@
     display: flex; justify-content: flex-end;
     .b-pro-input-ldiv[class]:before { content: "\200b"; /* zero width character to force line height */ }
     .b-pro-input-knob { height: 2em; }
+    .b-pro-input-toggle { height: 2em; }
     .b-pro-input-span {
       pointer-events: none; user-select: none;
       max-width: 100%;
@@ -33,6 +34,8 @@
   <b-vflex class="b-pro-input tabular-nums" :data-bubble="bubble()" >
     <b-knob class="b-pro-input-knob" v-if="type=='knob'" :hscroll="false"
 	    :value="get_num()" @input="set_num ($event)" />
+    <b-toggle class="b-pro-input-toggle" v-if="type=='toggle'" label=""
+	      :value="get_num()" @input="set_num ($event)" />
     <span   class="b-pro-input-span" v-if="labeled && !!nick">{{ nick }}</span>
   </b-vflex>
 </template>
@@ -50,7 +53,6 @@ function pro_input_data () {
     blurb:	{ default: '', getter: async c => await this.prop.blurb(), },
     vmin:       { getter: async c => await this.prop.get_min(), },
     vmax:       { getter: async c => await this.prop.get_max(), },
-    vstep:      { getter: async c => await this.prop.get_step(), },
     vnum:       { getter: async c => await this.prop.get_num(),
 		  notify: n => this.n=n /*this.prop.on ("change", n)*/, },
   };
@@ -67,7 +69,14 @@ export default {
   data() { return pro_input_data.call (this); },
   computed: {
     type () {
-      return this.is_numeric ? 'knob' : '';
+      if (this.is_numeric)
+	{
+	  const hints = ':' + this.hints + ':';
+	  if (hints.search (/:toggle:/) >= 0)
+	    return 'toggle';
+	  return 'knob';
+	}
+      return '';
     },
   },
   methods: {
@@ -96,16 +105,9 @@ export default {
       this.n (); // FIXME : need real notification
     },
     get_num() {
-      if (this.vnum === undefined)
+      if (this.vnum === undefined || this.vmin === undefined || this.vmax === undefined)
 	return 0;
-      let v;
-      if (this.vstep)
-	v = this.vstep * Math.round (this.vnum / this.vstep);
-      else
-	v = this.vnum;
-      if (this.vmin !== undefined && this.vmax !== undefined)
-	v = (Util.clamp (v, this.vmin, this.vmax) - this.vmin) / (this.vmax - this.vmin);
-      return v;
+      return (this.vnum - this.vmin) / (this.vmax - this.vmin);
     },
   },
 };
