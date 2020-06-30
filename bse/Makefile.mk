@@ -247,6 +247,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/bsewaveosc.cc		\
 	bse/bsewaverepo.cc		\
 	bse/datalist.cc			\
+	bse/debugdsp.cc			\
 	bse/devicecrawler.cc		\
 	bse/driver-alsa.cc		\
 	bse/driver.cc			\
