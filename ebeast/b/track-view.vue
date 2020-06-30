@@ -196,7 +196,7 @@ export default {
       // setup level gradient based on mindb..maxdb
       const levelbg = this.$refs['levelbg'];
       levelbg.style.setProperty ('--db-zpc', -mindb * 100.0 / (maxdb - mindb) + '%');
-      // cache level width in pxiels to avoid expensive recalculations in fps handler
+      // cache level width in pixels to avoid expensive recalculations in fps handler
       this.level_width = levelbg.getBoundingClientRect().width;
       // update async data, fetched from track
       this.dom_trigger_animate_playback (false);

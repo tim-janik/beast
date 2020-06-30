@@ -88,9 +88,6 @@ $b-piano-roll-buttons-font:	normal 9px $b-theme-font-family !default;	// size mu
 @mixin b-markdown-it-inlined($maywrap: true)	{
   // avoid all margins and padding, make elements suitable for 'inline' layouts
   h1,h2,h3,h4,h5,h6 { font-size: inherit; padding: 0; margin: 0; }
-  h1 { color: #09b; }
-  h2 { color: #090; }
-  h3 { color: #a00; }
   p { margin: 0; }
   ul { padding-left: 1em; }
 }

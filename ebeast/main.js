@@ -100,7 +100,7 @@ function create_beast_sound_engine (datacb, errorcb) {
   if (withgdb)
     {
       console.log ('DEBUGGING:\n  gdb --pid', bse_proc.pid, '#', beastsoundengine);
-      spawnSync ('/usr/bin/sleep', [ 3 ]);
+      spawnSync ('/usr/bin/sleep', [ 5 ]);
     }
   bse_proc.stdio[3].once ('data', (bytes) => datacb (bytes.toString()));
   if (errorcb)

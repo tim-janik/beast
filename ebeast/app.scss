@@ -159,14 +159,14 @@ div.note-board {
   pointer-events: none; user-select: none;
   --note-board-padding: 12px;
   padding: var(--note-board-padding) var(--note-board-padding) 0 0;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   .note-board-note {
     position: relative; width: 25em; min-height: 5em;
     color: #111; background: #eef; opacity: 0.95;
     pointer-events: all;
     padding: var(--note-board-padding); margin: 0 0 var(--note-board-padding) var(--note-board-padding);
     border-radius: calc(var(--note-board-padding) / 2);
-    transition: all 0.333s ease-in-out; // see Util.NoteBoard.FADING
+    transition: all 0.233s ease-in-out; // see Util.NoteBoard.FADING
     overflow: hidden; max-height: 100vh;
     &.note-board-fadein {
       transform: translateY(100vh);
@@ -181,7 +181,7 @@ div.note-board {
       color: transparent;           // hide text reflow artefacts
       z-index: -1;                  // transition *behind* siblings
       transform: translateY(-33vh); // visual slide-up effect
-      transition: all 0.283s ease-out 0.05s, transform 0.333s ease-in; // see Util.NoteBoard.FADING
+      transition: all 0.283s ease-out 0.05s, transform 0.233s ease-in; // see Util.NoteBoard.FADING
     }
     // style close button
     .note-board-note-close {
@@ -195,5 +195,10 @@ div.note-board {
   // markdown styling for notes
   .note-board-markdown {
     @include b-markdown-it-inlined;
+    h1 { color: #09b; }
+    h2 { color: #090; }
+    h3 { color: #a00; }
+    h4 { color: #a40; }
+    p { margin-top: 0.5em; }
   }
 }

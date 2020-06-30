@@ -24,14 +24,14 @@
     visibility: hidden; opacity: 0;
 
     .b-data-bubble-inner {
-      display: flex; overflow: hidden; position: relative;
+      display: block; overflow: hidden; position: relative;
       white-space: normal; margin: 0;
       max-width: 40em; border-radius: 3px;
       // border: dppx(2) solid lighter($b-data-bubble-bg2, 5%);
       box-shadow:
       0 0 0 1px change-color($b-data-bubble-br, $alpha: 0.8),
       0px 0px 2px 1px black;
-      color: $b-data-bubble-fg; padding: 2px 3px;
+      color: $b-data-bubble-fg; padding: 0.5em 0.5em 0.4em;
       background: $b-data-bubble-bg;
       background-image: chromatic-gradient(to bottom right, $b-data-bubble-bg, $b-data-bubble-bg2);
       font-variant-numeric: tabular-nums;
@@ -51,6 +51,13 @@
     /* markdown styling for data-bubble */
     .b-markdown-it-outer {
       @include b-markdown-it-inlined;
+      $fsf: 1.05; //* font size factor */
+      h1 { font-size: ipow($fsf, 6) * 1em; }
+      h2 { font-size: ipow($fsf, 5) * 1em; }
+      h3 { font-size: ipow($fsf, 4) * 1em; }
+      h4 { font-size: ipow($fsf, 3) * 1em; }
+      h5 { font-size: ipow($fsf, 2) * 1em; }
+      h6 { font-size: ipow($fsf, 1) * 1em; }
     }
   }
 </style>
@@ -73,7 +80,7 @@ class DataBubbleImpl {
     this.lasttext = "";
     this.last_event = null;
     this.buttonsdown = 0;
-    this.coords = {};
+    this.coords = null;
     // milliseconds to wait to detect idle time after mouse moves
     const IDLE_DELAY = 115;
     // trigger popup handling after mouse rests
@@ -97,8 +104,8 @@ class DataBubbleImpl {
       {
 	const coords = { x: this.last_event.screenX, y: this.last_event.screenY };
 	this.buttonsdown = !!this.last_event.buttons;
-	if (!this.buttonsdown && !this.stack.length &&
-	    !Util.equals_recursively (coords, this.coords) &&
+	if (!this.buttonsdown && !this.stack.length && this.coords &&
+	    (this.coords.x != coords.x || this.coords.y != coords.y) &&
 	    this.last_event.type === "mousemove")
 	  {
 	    this.restart_bubble_timer();
@@ -136,6 +143,9 @@ class DataBubbleImpl {
       this.show (next);
   }
   hide() {
+    // ignore the next 0-distance move
+    this.coords = null;
+    // hide bubble if any
     if (this.current)
       {
 	delete this.current.data_bubble_active;
