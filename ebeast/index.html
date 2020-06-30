@@ -169,7 +169,7 @@
 	  this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
       },
       panel2_types: [ 'd' /*devices*/, 'p' /*pianoroll*/ ],
-      panel2: 'p',
+      panel2: 'd',
       switch_panel2 (n) {
 	const a = this.panel2_types;
 	if ('string' == typeof n)
@@ -237,6 +237,14 @@
       data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
     });
     console.assert (vue_root); // Vue.$root
+    App.$forceUpdate = () => {
+      function vue_update (component) {
+	component.$forceUpdate();
+	for (let child of component.$children)
+	  vue_update (child);
+      };
+      vue_update (vue_root);
+    };
     // Load external BSE plugins
     $log ("Loading LADSPA plugins...");
     await Bse.server.load_ladspa();

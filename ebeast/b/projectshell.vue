@@ -19,9 +19,16 @@
     justify-content: space-between;
     align-items: stretch;
   }
-  .b-projectshell-part-area {
-    background-color: $b-button-border;
-    padding: $b-focus-outline-width; }
+  .b-projectshell-panel1 {
+    flex-grow: 1;
+  }
+  .b-projectshell-panel2 {
+    color: $b-panel-foreground;
+    background: $b-panel-background; //* $b-panel-focus */
+    border: $b-panel-border; border-radius: $b-panel-radius;
+    height: 19em; overflow: hidden;
+    margin-left: 3px;
+  }
   .b-projectshell-sidebar {
     padding: 3px;
     overflow: hidden scroll;
@@ -53,16 +60,13 @@
     <b-hflex grow1 style="overflow: hidden">
       <b-vflex grow1 shrink1>
 	<!-- upper main area -->
-	<b-hflex class="b-projectshell-track-area" style="height: 50%">
+	<b-hflex class="b-projectshell-panel1" >
 	  <b-track-list class="grow1" :song="song"></b-track-list>
 	</b-hflex>
 	<!-- lower main area -->
-	<b-hflex class="b-projectshell-part-area" style="height: 50%" >
+	<b-hflex class="b-projectshell-panel2" >
 	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="App.panel2 == 'p'" ></b-piano-roll>
-	  <b-vflex v-show="App.panel2 == 'd'" style="flex-grow: 1" >
-	    Device Panel
-	    <b-devicepanel :track="current_track" />
-	  </b-vflex>
+	  <b-devicepanel v-show="App.panel2 == 'd'" :track="current_track" />
 	</b-hflex>
       </b-vflex>
 

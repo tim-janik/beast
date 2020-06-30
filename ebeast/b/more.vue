@@ -11,6 +11,7 @@
     display: flex;
     height: 90%;
     align-items: center;
+    justify-content: space-evenly;
     padding: 0 0.2em;
     margin: 0 0.2em;
     border-radius: 3px;

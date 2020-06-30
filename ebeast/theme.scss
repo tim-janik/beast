@@ -5,8 +5,20 @@
 
 // == Color Theme ==
 $b-main-foreground: 	#f3f1f5;
-$b-main-background: 	#222222;
+$b-main-background: 	lgrey(13%);
 $b-color-active:	#00e5ea; // #ff8811;
+$b-panel-foreground:	$b-main-foreground;
+$b-panel-background:	lgrey(36%); // also panel border
+$b-panel-focus:		lgrey(50%); // focused panel border
+$b-panel-borderwidth:	3px;
+$b-panel-border:	$b-panel-borderwidth solid $b-panel-background;
+$b-panel-radius:	3px;
+$b-devicepanel-bg:	lgrey(3%);
+$b-device-radius:	3px;
+$b-device-bg:		$b-panel-background;
+$b-device-handle:	lgrey(26%); // or, device-handle
+$b-device-area1:	lgrey(24%);
+$b-device-area2:	lgrey(28%);
 
 // == Status Bar ==
 $b-statusbar-bg: $b-main-background;

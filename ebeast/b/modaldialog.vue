@@ -59,6 +59,7 @@
   .b-modaldialog-header {
     font-size: 1.5em; font-weight: bold;
     padding: 1rem 0 1.1rem;
+    justify-content: space-evenly;
   }
   .b-modaldialog-header, .b-modaldialog-footer {
     width: 100%; align-items: center; text-align: center;
@@ -66,6 +67,7 @@
   }
   .b-modaldialog-footer {
     padding: 1.2rem 0 1rem;
+    justify-content: space-evenly;
   }
   .b-modaldialog-body {
     padding: 1.5em 2em;

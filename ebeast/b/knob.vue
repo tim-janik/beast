@@ -13,6 +13,12 @@
   : Float, the knob value to be displayed, the value range is `0…+1` if *bidir* is `false`.
   *label*
   : String, format specification for popup bubbles, containinig a number for the peak amplitude.
+  *hscroll*
+  : Boolean, adjust value with horizontal scrolling (without dragging).
+  *vscroll*
+  : Boolean, adjust value with vertical scrolling (without dragging).
+  *width4height*
+  : Automatically determine width from externally specified height (default), otherwise determines height.
   ## Events:
   *input (value)*
   : Value change notification event, the first argument is the new value.
@@ -31,12 +37,14 @@
   .b-knob {
     display: flex; position: relative;
     margin: 0; padding: 0; text-align: center;
-    svg { position: absolute; height: 100%; }
+    &.b-knob-h4w svg { position: absolute; width:  100%; } //* height for width */
+    &.b-knob-w4h svg { position: absolute; height: 100%; } //* width for height */
     .b-knob-trf {
       will-change: transform; /* request GPU texture for fast transforms */
     }
-    .b-knob-base {
-      position: relative;
+    & svg.b-knob-sizer {
+      //* empty SVG element, used by .b-knob to determine width from height from viewBox */
+      position: relative; //* participate in layout space allocation */
     }
   }
 </style>
@@ -44,8 +52,10 @@
 <!-- NOTE: This implementation assumes the HTML embeds eknob.svg -->
 
 <template>
-  <div    class="b-knob" ref="bknob" :style="style (1)" @pointerdown="drag_start" @dblclick="dblclick"
+  <div    class="b-knob" :class="width4height ? 'b-knob-w4h' : 'b-knob-h4w'" ref="bknob"
+	  @pointerdown="drag_start" @dblclick="dblclick"
 	  data-tip="**DRAG** Adjust Value **DBLCLICK** Reset Value" >
+    <svg  class="b-knob-sizer" :viewBox="viewbox()" />
     <svg  class="b-knob-base"               :style="style()" :viewBox="viewbox()" >
       <use href="#eknob-base" />
     </svg>
@@ -89,7 +99,10 @@ export default {
   name: 'b-knob',
   props: { bidir: { default: false },
 	   value: { default: 0 },
-	   label: { default: "100 %" }, },
+	   label: { default: "100 %" },
+	   hscroll: { type: Boolean, default: true },
+	   vscroll: { type: Boolean, default: true },
+	   width4height: { type: Boolean, default: true }, },
   data: () => ({
     scalar_: 0,
   }),
@@ -99,17 +112,14 @@ export default {
       App.data_bubble.callback (this.$el, this.bubble);
   },
   beforeDestroy () {
-    if (document.pointerLockElement === this.$el)
-      document.exitPointerLock();
+    this.unlock_pointer = this.unlock_pointer?. ();
+    this.uncapture_wheel = this.uncapture_wheel?. ();
     if (this.pending_change)
       this.pending_change = cancelAnimationFrame (this.pending_change);
-    this.uncapture_wheel = this.uncapture_wheel?. ();
   },
   methods: {
     style (div = 0) {
       const sz = { w: eknob.viewBox.baseVal.width, h: eknob.viewBox.baseVal.height };
-      if (div)
-	return ""; "width:" + sz.w + "px; height:" + sz.h + "px;";
       const origin = eknob_origin.x / sz.w * 100 + '% ' + eknob_origin.y / sz.h * 100 + '%';
       return "transform-origin:" + origin;
     },
@@ -158,24 +168,35 @@ export default {
       return gran;
     },
     dblclick (ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      this.emit_value (0);
-      return this.drag_stop();
+      this.drag_stop (ev);
+      /* Avoid spurious dblclick restes that are delivered at the
+       * falling edge of a drag operation. That is likely to
+       * happen on touchpads with sometimes bouncing clicks.
+       */
+      if (this.allow_dblclick)
+	this.emit_value (0);
     },
     drag_start (ev) {
       // allow only primary button press
-      if (ev.buttons != 1)
-	return this.drag_stop();
+      if (ev.buttons != 1 || this.captureid_ !== undefined)
+	{
+	  this.drag_stop (ev);
+	  return;
+	}
       // setup drag mode
-      window.focus(); // FF requires document focus for requestPointerLock
-      this.uncapture_wheel = Util.capture_event ('wheel', this.wheel_event);
+      try {
+	this.$el.setPointerCapture (ev.pointerId);
+	this.captureid_ = ev.pointerId;
+      } catch (e) {
+	// something went wrong, bail out the drag
+	console.warn ('knob.vue:drag_start:', e.message);
+	return this.drag_stop (ev);
+      }
       this.$el.onpointermove = this.drag_move;
       this.$el.onpointerup = this.drag_stop;
-      this.captureid_ = ev.pointerId;
-      this.$el.setPointerCapture (this.captureid_);
-      if (USE_PTRLOCK)
-	this.$el.requestPointerLock();
+      if (USE_PTRLOCK && this.captureid_ !== undefined)
+	this.unlock_pointer = Util.request_pointer_lock (this.$el);
+      this.uncapture_wheel = Util.capture_event ('wheel', this.wheel_event);
       // display data-bubble during drag and monitor movement distance
       App.data_bubble.callback (this.$el, this.bubble);
       App.data_bubble.force (this.$el);
@@ -183,19 +204,19 @@ export default {
       this.drag = USE_PTRLOCK ? { x: 0, y: 0 } : { x: ev.pageX, y: ev.pageY };
       ev.preventDefault();
       ev.stopPropagation();
+      this.allow_dblclick = true;
     },
     drag_stop (ev) {
       // unset drag mode
-      if (this.pending_change)
-	this.pending_change = cancelAnimationFrame (this.pending_change);
+      this.unlock_pointer = this.unlock_pointer?. ();
       this.uncapture_wheel = this.uncapture_wheel?. ();
-      this.$el.onpointermove = null;
-      this.$el.onpointerup = null;
       if (this.captureid_ !== undefined)
 	this.$el.releasePointerCapture (this.captureid_);
+      if (this.pending_change)
+	this.pending_change = cancelAnimationFrame (this.pending_change);
+      this.$el.onpointermove = null;
+      this.$el.onpointerup = null;
       this.captureid_ = undefined;
-      if (document.pointerLockElement === this.$el)
-	document.exitPointerLock();
       App.data_bubble.clear (this.$el);
       this.last = null;
       this.drag = null;
@@ -235,9 +256,14 @@ export default {
       else
 	this.last = { x: this.drag.x, y: this.drag.y };
       this.emit_value (this.point_);
+      this.allow_dblclick = false;
     },
     wheel_event (ev) {
       const p = Util.wheel_delta (ev);
+      if (this.captureid_ === undefined && // not dragging
+	  ((!this.hscroll && p.x != 0) ||
+	   (!this.vscroll && p.y != 0)))
+	return;	// only consume scroll events if enabled
       const delta = -p.y || p.x;
       const min = this.bidi_ ? -1 : 0;
       if ((delta > 0 && this.value_ < 1) || (delta < 0 && this.value_ > min))
@@ -248,6 +274,7 @@ export default {
 	}
       ev.preventDefault();
       ev.stopPropagation();
+      this.allow_dblclick = false;
     },
     bubble() {
       if (!this.scalar_)
