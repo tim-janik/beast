@@ -1285,7 +1285,7 @@ export function popup_position (element, opts = { origin: undefined, x: undefine
   // Scroll offset, needed to convert viewport relative to document relative
   const sx = window.pageXOffset, sy = window.pageYOffset;
   // Element area, relative to the viewport.
-  const r = element.getBoundingClientRect();
+  const b = element.getBoundingClientRect(), r = b;
   if (opts.xscale > 0)
     r.width *= opts.xscale;
   if (opts.yscale > 0)
@@ -1316,9 +1316,13 @@ export function popup_position (element, opts = { origin: undefined, x: undefine
   // Shift left if neccessary
   if (vx + r.width + p > vw)
     vx = vw - r.width - p;
-  // Shift up if neccessary
+  // Put above or shift up if neccessary
   if (vy + r.height + p > vh)
-    vy = Math.min (vh - r.height - p, o.y);
+    {
+      vy = o.y - b.height; // place above origin
+      if (vy < 0 + p) // place below, but shift up
+	vy = Math.min (vh - r.height - p, o.y);
+    }
   return { x: sx + Math.max (0, vx), y: sy + Math.max (0, vy) }; // viewport coords to document coords
 }
 
