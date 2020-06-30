@@ -109,8 +109,8 @@ $>/electron/ebeast:						| $>/
 $>/ebeast/index-mjs.list: $(ebeast/b/vue.inputs) ebeast/index.html | $>/ebeast/
 	$(QGEN)
 	$Q for C in $(ebeast/b/vue.stems) ; do \
-	  echo '    <link rel="stylesheet"    href="./b/'"$$C"'.css">' || break ; \
-	  echo '    <link rel="modulepreload" href="./b/'"$$C"'.mjs" data-autoload>' || break ; \
+	  echo '    <link rel="stylesheet"    href="/b/'"$$C"'.css">' || break ; \
+	  echo '    <link rel="modulepreload" href="/b/'"$$C"'.mjs" data-autoload>' || break ; \
 	done >$@.tmp
 	$Q mv $@.tmp $@
 
@@ -139,9 +139,9 @@ $>/app/index.html: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_mod
 		< ebeast/index.html	> $@.tmp
 	$Q mv $@.tmp $@
 
-# == &>/app/markdown-it.esm.js ==
+# == &>/app/markdown-it.mjs ==
 # rollup for import+require is tricky: https://github.com/rollup/rollup/issues/1058#issuecomment-254187433
-$>/app/markdown-it.esm.js: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/npm.done	| $>/app/
+$>/app/markdown-it.mjs: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/npm.done	| $>/app/
 	$(QGEN)
 	@: # rollup markdown-it with all dependencies
 	$Q cd $>/ebeast/ && \
@@ -154,7 +154,7 @@ $>/app/markdown-it.esm.js: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/np
 		< $>/ebeast/markdown-it.esm1.js \
 		> $>/ebeast/markdown-it.esm2.js
 	$Q cp $>/ebeast/markdown-it.esm2.js $@
-$>/app/index.html: $>/app/markdown-it.esm.js
+$>/app/index.html: $>/app/markdown-it.mjs
 
 # == $>/app/b/%.mjs ==
 ebeast/targets.vuebundles.mjs ::= $(patsubst %, $>/app/b/%.mjs, $(ebeast/b/vue.stems))

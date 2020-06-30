@@ -4,300 +4,50 @@
 
   <title>Beast - Music Synthesizer and Composer</title>
 
-  <!-- Preload resources -->
-  <link rel="stylesheet" href="assets/stylesheets.css">
-  <link rel="stylesheet" href="assets/material-icons.css">
-  <link rel="stylesheet" href="assets/forkawesome-webfont.css">
-  <link rel="preload" href="assets/Inter-Medium.woff2"        as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/material-icons.woff2"      as="font" type="font/woff2" crossorigin>
-  <link rel="modulepreload" href="./jsbse.js">
-  <link rel="modulepreload" href="./bseapi_jsonipc.js">
-  <link rel="modulepreload" href="./vue.mjs">
-  <link rel="modulepreload" href="./vue-runtime-helpers.mjs">
-  <link rel="modulepreload" href="./markdown-it.esm.js">
-  <link rel="modulepreload" href="./util.js">
-  <!-- Avoid preloading conditional module "./menus.js" -->
+  <!-- Preload CSS, fonts and JS modules -->
+  <link rel="stylesheet"    href="/assets/stylesheets.css">
+  <link rel="stylesheet"    href="/assets/material-icons.css">
+  <link rel="stylesheet"    href="/assets/forkawesome-webfont.css">
+  <link rel="preload"       href="/assets/Inter-Medium.woff2"        as="font" type="font/woff2" crossorigin>
+  <link rel="preload"       href="/assets/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload"       href="/assets/material-icons.woff2"      as="font" type="font/woff2" crossorigin>
+  <link rel="modulepreload" href="/jsbse.js">
+  <link rel="modulepreload" href="/bseapi_jsonipc.js">
+  <link rel="modulepreload" href="/vue.mjs">
+  <link rel="modulepreload" href="/vue-runtime-helpers.mjs">
+  <link rel="modulepreload" href="/markdown-it.mjs">
+  <link rel="modulepreload" href="/util.js">
+  <!-- Avoid preloading conditional module "/menus.js" -->
 
   <!-- Embedd package.json -->
   <script type='application/json' id='--EMBEDD-package_json'>
   </script>
 
+  <!-- Preload SFC files -->
   <!--EMBEDD='index-mjs.list'-->
+  <script type="module">
+  ( async _ => Object.defineProperty (globalThis, 'Vue-Runtime', { value: await import ('./vue-runtime-helpers.mjs') }) ) ();
+  </script> <!-- Vue-Runtime.normalizeComponent is needed for SFC imports, see vue.rollup.js -->
 
-  <!-- Early setup of .CONFIG and .Electron globals -->
-  <script>
-    'use strict';
-    if (window)
-      {
-	// Global configuration
-	const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295,              // plus delayed package.json values
-			 dpr_movement: false, // Chrome bug, movementX *should* match screenX units
-			 files: [], p: '', m: '', norc: false, uiscript: '' }; // defaults for non-Electron connections
-	// Add package.json build info
-	const packagejson = JSON.parse (document.getElementById ('--EMBEDD-package_json').innerHTML);
-	Object.assign (CONFIG, packagejson.config);
-	if (typeof module === 'object')
-	  {
-	    const Electron = require ('electron').remote;
-	    if (Electron) // When running inside Electron, provide 'Electron' globally
-	      {
-		Object.defineProperty (window, 'Electron', { value: Electron });
-		const win = Electron.getCurrentWindow();
-		Object.assign (CONFIG, win.MAINCONFIG);
-		const navigate_external = (ev, url) => {
-		  if (ev.defaultPrevented) // <- main.js causes prevention
-		    {
-		      console.log ("NAVIGATE-EXTERNAL:", url);
-		      Electron.shell.openExternal (url);
-		    }
-		};
-		win.webContents.addListener ('will-navigate', navigate_external);
-		win.webContents.addListener ('new-window', navigate_external);
-		if (CONFIG.debug) // show DevTools on hotkey
-		  document.addEventListener ("keydown", (event) => {
-		    // Shift+Ctrl+I
-		    if (event.shiftKey && event.ctrlKey && event.keyCode == 73)
-		      Electron.getCurrentWindow().toggleDevTools();
-		  });
-	      }
-	  }
-	// Detect Chrome Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1092358 https://github.com/w3c/pointerlock/issues/42
-	const chrome_major = parseInt (( /\bChrome\/([0-9]+)\./.exec (navigator.userAgent) || [0,0] )[1]);
-	CONFIG.dpr_movement = chrome_major >= 37 && chrome_major <= 83;
-	console.assert (chrome_major <= 83, `WARNING: Chrome/${chrome_major} has not been tested for the movementX devicePixelRatio bug`);
-	// Provide globals: CONFIG, debug()
-	Object.defineProperty (window, 'CONFIG', { value: CONFIG });
-	Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
-      }
-  </script>
-
-  <!-- End of static index.html -->
-</head>
-<body style="min-width: 320px; min-height: 320px">
-
-  <!-- Load and bootup status display -->
-  <div id="body-load-status" style="position: fixed; margin: 0 auto; left: 0; right: 0; z-index: 101;
-				    padding: 1em; background: #222f; color: #8f8; width: 40em; height: 100%; ">
-    <p>
-      Loading single page application...
-      <br />
-      <small class="load-status" style="white-space: pre-line">
-      </small>
-    </p>
-  </div>
-
-  <!-- Main application mountpoint -->
-  <div id="vue-mountpoint" class="b-root" style="display: flex; width: 100%; height: 100%">
-    <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
-  </div>
-
-  <!-- Speed-up, asynchronously pre-import modules wihtout side-effects or dependencies -->
-  <script type="module" src="./jsbse.js"></script>
-  <script type="module" src="./vue-runtime-helpers.mjs"></script>
-
-  <!-- Bootup and Vue mounting -->
+  <!-- Globals: CONFIG, debug(), Electron -->
   <script>
   'use strict';
-  // Use dynamic import() calls to control module loading side-effects
-  (async () => {
-    // Allow async onload synchronization
-    const onload = new Promise (resolve => window.addEventListener ("load", resolve, { once: true }));
-    // Allow $log() as console shortcuts and loadstatus display
-    if (!window.$log) {
-      window.$log = (...textargs) => {
-	console.log (...textargs);
-	if (window.$log.loadstatus)
-	  window.$log.loadstatus.innerText += Array (...textargs).join (' ') + '\n';
-      };
-      window.$log.loadstatus = document.querySelector ("#body-load-status .load-status");
-      $log ("Executing "+'<'+"body/"+'> scripts...');
-    }
-    // Prepare to dismiss startup messages
-    const remove_load_status = async (ms = 450) => {
-      const bodyloadstatus = document.querySelector ("#body-load-status");
-      if (bodyloadstatus)
-	{
-	  await new Promise (r => setTimeout (() => r(), ms));
-	  bodyloadstatus.parentElement.removeChild (bodyloadstatus);
-	  window.$log.loadstatus = null; // end bootup logging
-	}
-    };
-    // Add helpers for device specific CSS
-    document.body.parentNode.style.setProperty ('--device-pixel-ratio', window.devicePixelRatio);
-    // Add helpers for browser specific CSS (needs document.body to exists)
-    document.body.parentElement.toggleAttribute ('gecko', navigator.userAgent.indexOf ('Gecko/') >= 0);
-    document.body.parentElement.toggleAttribute ('chrome', navigator.userAgent.indexOf ('Chrome/') >= 0);
-    $log ("Enable "+'<'+"html/"+'>'+" UA attributes:",
-	  [ document.body.parentElement.hasAttribute ('gecko') ? 'gecko' : '',
-	    document.body.parentElement.hasAttribute ('chrome') ? 'chrome' : '' ].join (' '));
-    // Bse - import Jsonipc based libbse bindings
-    $log ("Importing Bse...");
-    Object.defineProperty (globalThis, 'Bse', {
-      value: await import ('./jsbse.js') });
-    $log ("Connecting to Bse.server...");
-    await Bse.server['$promise'];
-    console.assert (Bse.server['$id'] > 0);
-    $log ("Retrieved Bse.server...");
-    // Vue - import and configure
-    $log ("Importing Vue...");
-    Object.defineProperty (globalThis, 'Vue', {
-      value: (await import ('./vue.mjs')).default });
-    Object.assign (Vue.config, {
-      productionTip: false,
-      devtools: false,	// prevent warning about VUEJS_DEVTOOLS missing
-      silent: !CONFIG.debug,
-      performance: false,
-    });
-    Object.assign (Vue.options, {
-      inheritAttrs: false, // Add non-props attributes to $attrs (default in Vue-3)
-    });
-    console.assert (!Vue.reactive); // provided by Vue-3
-    Vue.reactive = Vue.observable;  // rename by Vue-3
-    // Vue-runtime-helpers - import rollup-plugin-vue helper, see also vue.rollup.js
-    $log ("Importing vue-runtime-helpers...");
-    Object.defineProperty (globalThis, 'vue-runtime-helpers', {
-      value: await import ('./vue-runtime-helpers.mjs') });
-    // Setup global App object
-    const app_tmpl = {
-      data_bubble: null,
-      onpointermoves: [],
-      panel3_types: [ 'i' /*info*/, 'b' /*browser*/ ],
-      panel3: 'i',
-      switch_panel3 (n) {
-	const a = this.panel3_types;
-	if ('string' == typeof n)
-	  this.panel3 = n;
-	else
-	  this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
-      },
-      panel2_types: [ 'd' /*devices*/, 'p' /*pianoroll*/ ],
-      panel2: 'd',
-      switch_panel2 (n) {
-	const a = this.panel2_types;
-	if ('string' == typeof n)
-	  this.panel2 = n;
-	else
-	  this.panel2 = a[(a.indexOf (this.panel2) + 1) % a.length];
-      }
-    };
-    Object.defineProperty (globalThis, 'App', { value: Vue.reactive (app_tmpl) });
-    // MarkdownIt - import MarkdownIt ESM wrapper, needed by Util
-    $log ("Importing Markdown...");
-    Object.defineProperty (globalThis, 'MarkdownIt', {
-      value: (await import ('./markdown-it.esm.js')).default });
-    // Util - import, depends on Vue and MarkdownIt
-    $log ("Importing Util...");
-    Object.defineProperty (globalThis, 'Util', {
-      value: await import ('./util.js') });
-    Object.defineProperty (globalThis, 'EQ', {
-      value: Util.equals_recursively });
-    // Setup Vue utilities and shortcuts inside Vue component handlers
-    for (let directivename in Util.vue_directives) // register all utility directives
-      Vue.directive (directivename, Util.vue_directives[directivename]);
-    Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
-    Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
-    Vue.mixin (Util.vue_mixins.autodataattrs); // Auto apply data-* props to this.$el
-    Object.assign (Vue.prototype, {
-      CONFIG: CONFIG,
-      console: console,
-      $log: console.log.bind (console),
-      debug: debug,
-      EQ: Util.equals_recursively,
-      Util: Util,
-      App: App,
-      observable_from_getters: Util.vue_observable_from_getters,
-    });
-    // _() - add translation indicator
-    $log ("Configure i18n...");
-    window._ = txtstring => txtstring; // Bse.server.gettext (txtstring);
-    Vue.prototype._ = window._;
-    // Menus - import if Electron is present
-    if (window.Electron)
-      {
-	const menus = await import ('./menus.js');
-	await menus.setup_app_menu();
-	$log ("Loaded Menus...");
-      }
-    else
-      $log ("Skipped Menus...");
-    // Bundle.imports - import list of b/ Vue components, bundled via b/bundle.js and self registering
-    $log ("Importing MJS components...");
-    for (const link of document.querySelectorAll ('head link[data-autoload][href]'))
-      {
-	const exports = await import (link.getAttribute ('href'));
-	if (exports.default && exports.default.name)
-	  Vue.component (exports.default.name, exports.default);
-      }
-    // Fonts - wait for fonts before Vue components are mounted and compute sizes
-    await document.fonts.ready;
-    $log ("Loaded Fonts...");
-    // Onload - wait until all resources have been loaded
-    await onload;
-    $log ("Loaded DOM...");
-    // Shell will inject itself into all Vue components, make it global
-    Object.defineProperty (window, 'Shell', { get: () => Vue.prototype.Shell, });
-    // Mount Vue components, this creates b-projectshell as Vue.Shell
-    $log ("Mounting Vue...");
-    const vue_root = new Vue ({
-      el:   '#vue-mountpoint',
-      data: { Shell: { Shell_placeholder: true, }, },	// flag causing replacement later on
-    });
-    console.assert (vue_root); // Vue.$root
-    App.$forceUpdate = () => {
-      function vue_update (component) {
-	component.$forceUpdate();
-	for (let child of component.$children)
-	  vue_update (child);
-      }
-      vue_update (vue_root);
-    };
-    // Load external BSE plugins
-    $log ("Loading LADSPA plugins...");
-    await Bse.server.load_ladspa();
-    // UI-Script
-    if (window.CONFIG.uiscript)
-      {
-	$log ("Loading '" + window.CONFIG.uiscript + "'...");
-	window.uiscript = await import (window.CONFIG.uiscript);
-	await remove_load_status (17 * 2);
-	try {
-	  await window.uiscript.run();
-	} catch (e) {
-	  console.error (e.stack ? e.stack : e.message ? e.message : e, '\n',
-			 'UIScript failed, aborting...');
-	  Electron.app.exit (123);
-	}
-      }
-    // Load command line files
-    if (window.CONFIG.files.length)
-      {
-	$log ("Loading", window.CONFIG.files.length, "command line files...");
-	for (let arg of window.CONFIG.files)
-	  {
-	    const error = await Shell.load_project (arg);
-	    if (error != Bse.Error.NONE)
-	      console.error ('Failed to load:', arg + ":", error);
-	  }
-      }
-    // Clear temporary files if *not* in script mode
-    if (!window.CONFIG.uiscript)
-      {
-	const ms = 2000;
-	$log ("Will clean Bse cachedirs in", ms + "ms...");
-	setTimeout (async () => {
-	  await Bse.server.purge_stale_cachedirs();
-	  $log ("Cleaned Bse cachedirs...");
-	}, ms);
-      }
-    // Dismiss startup messages
-    $log ("Finished bootup.\n");
-    await remove_load_status ();
-  }) ();
+  Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true } });
+  Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
+  if (typeof module === 'object' && require ('electron'))
+    Object.defineProperty (globalThis, 'Electron', { value: require ('electron').remote });
   </script>
 
+</head>
+<body style="min-width: 200px; min-height: 200px"
+      onload="(async _=> (await import ('./b/app.mjs')).default.bootup()) ()" >
+
+  <!-- Application Vue-mountpoint -->
+  <b-app id="b-app"></b-app>
+
   <!-- Embedded SVGs, hide but keep 'defs' element valid by not using display:none -->
-  <div id='ebeast-embedded-svgs' style="position: fixed !important; width: 0 !important; height: 0 !important">
+  <div id='ebeast-embedded-svgs'
+       style="position: fixed !important; width: 0 !important; height: 0 !important; overflow: hidden !important">
     <!--EMBEDD='eknob.svg'-->
   </div>
 

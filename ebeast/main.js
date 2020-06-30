@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 // Build time configuration, substituted in Javascript file headers by Makefile.mk
-const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295,              // plus delayed package.json values
+const CONFIG = { MAXINT: 2147483647, MAXUINT: 4294967295, mainjs: true,
 		 files: [], p: '', m: '', norc: false, uiscript: '' };
 Object.assign (CONFIG, require ('./package.json').config);
 
