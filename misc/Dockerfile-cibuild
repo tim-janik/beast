@@ -6,6 +6,10 @@ FROM $DIST
 
 WORKDIR /usr/src/beast
 
+RUN : && \
+  retry apt-get update && \
+  retry eatmydata apt-get install -y libgbm1
+
 # make sure getpwuid() works, and ~/ is writable, otherwise many tools break
 ARG USERGROUP
 RUN : && \
