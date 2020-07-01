@@ -5,37 +5,57 @@
   <title>Beast - Music Synthesizer and Composer</title>
 
   <!-- Preload CSS, fonts and JS modules -->
+  <link rel="modulepreload" href="/vue.mjs">
+  <link rel="modulepreload" href="/vue-runtime-helpers.mjs">
+  <link rel="modulepreload" href="/util.js">
+  <link rel="modulepreload" href="/markdown-it.mjs">
+  <link rel="modulepreload" href="/jsbse.js">
+  <link rel="modulepreload" href="/bseapi_jsonipc.js">
+  <link rel="maybe-preload" href="/menus.js">
   <link rel="stylesheet"    href="/assets/stylesheets.css">
   <link rel="stylesheet"    href="/assets/material-icons.css">
   <link rel="stylesheet"    href="/assets/forkawesome-webfont.css">
   <link rel="preload"       href="/assets/Inter-Medium.woff2"        as="font" type="font/woff2" crossorigin>
   <link rel="preload"       href="/assets/forkawesome-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload"       href="/assets/material-icons.woff2"      as="font" type="font/woff2" crossorigin>
-  <link rel="modulepreload" href="/jsbse.js">
-  <link rel="modulepreload" href="/bseapi_jsonipc.js">
-  <link rel="modulepreload" href="/vue.mjs">
-  <link rel="modulepreload" href="/vue-runtime-helpers.mjs">
-  <link rel="modulepreload" href="/markdown-it.mjs">
-  <link rel="modulepreload" href="/util.js">
-  <!-- Avoid preloading conditional module "/menus.js" -->
 
   <!-- Embedd package.json -->
   <script type='application/json' id='--EMBEDD-package_json'>
   </script>
 
-  <!-- Preload SFC files -->
-  <!--EMBEDD='index-mjs.list'-->
-  <script type="module">
-  ( async _ => Object.defineProperty (globalThis, 'Vue-Runtime', { value: await import ('./vue-runtime-helpers.mjs') }) ) ();
-  </script> <!-- Vue-Runtime.normalizeComponent is needed for SFC imports, see vue.rollup.js -->
-
-  <!-- Globals: CONFIG, debug(), Electron -->
+  <!-- Globals: CONFIG, debug(), bootlog(), Electron -->
   <script>
   'use strict';
   Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true } });
   Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
-  if (typeof module === 'object' && require ('electron'))
+  Object.defineProperty (globalThis, 'bootlog', { value: debug || (() => undefined), });
+  if (typeof module === 'object' && require ('electron')) {
     Object.defineProperty (globalThis, 'Electron', { value: require ('electron').remote });
+    document.head.querySelector ('[href="/menus.js"]').setAttribute ('rel', 'modulepreload');
+  }
+  // Electron.getCurrentWindow().toggleDevTools();
+  </script>
+
+  <!-- Preload SFC files -->
+  <!--EMBEDD='index-mjs.list'-->
+
+  <!-- Load Vue, Util -->
+  <script type="module">
+  bootlog ("Importing Vue...");
+  // Vue-Runtime.normalizeComponent is needed for SFC imports, see vue.rollup.js
+  import * as VueRuntime from '/vue-runtime-helpers.mjs';
+  Object.defineProperty (globalThis, 'Vue-Runtime', { value: VueRuntime });
+  // Configure Vue to avoid useless warnings
+  import Vue from "/vue.mjs";
+  Object.assign (Vue.config, { productionTip: false, devtools: false, performance: false, silent: !CONFIG.debug });
+  Object.assign (Vue.options, { inheritAttrs: false }); // Add non-props attributes to $attrs (default in Vue-3)
+  Object.defineProperty (globalThis, 'Vue', { value: Vue });
+  console.assert (!Vue.reactive); // provided by Vue-3
+  Vue.__proto__.reactive = Vue.observable;  // rename by Vue-3
+  // Import Util globally
+  bootlog ("Importing Util...");
+  import * as Util from "/util.js";
+  Object.defineProperty (globalThis, 'Util', { value: Util });
   </script>
 
 </head>
