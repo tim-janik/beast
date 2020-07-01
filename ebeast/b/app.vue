@@ -3,6 +3,12 @@
 <docs>
   # B-APP
   Global application instance for Beast.
+  ## Public Exports:
+  *zmovehooks*
+  : An array of callbacks to be notified on pointer moves.
+  *zmove (event)*
+  : Trigger the callback list `zmovehooks`, passing `event` along. This is useful to get debounced
+  notifications for pointer movements, including 0-distance moves after significant UI changes.
 </docs>
 
 <style lang="scss">
@@ -16,12 +22,23 @@
 </template>
 
 <script>
-export default {
-  name: 'b-app',
-  bootup,
-};
-
-const bootlog = debug || (() => undefined);
+// == zmove() ==
+class ZMove {
+  static
+  zmove (ev) {
+    if (ev && ev.screenX && ev.screenY &&
+	ev.timeStamp > (ZMove.last_event?.timeStamp || 0))
+      ZMove.last_event = ev;
+    ZMove.trigger();
+  }
+  static
+  trigger_hooks() {
+    if (ZMove.last_event)
+      for (const hook of export_default.zmovehooks)
+        hook (ZMove.last_event);
+  }
+  static trigger = Util.debounce (ZMove.trigger_hooks);
+}
 
 // == Bootup ==
 // Vue mounting and dynamic import() calls to control module loading side-effects
@@ -76,52 +93,9 @@ async function bootup() {
   bootlog ("Connecting to Bse.server...");
   await Bse.server['$promise'];
   console.assert (Bse.server['$id'] > 0);
-  // Vue - import and configure
-  bootlog ("Importing Vue...");
-  const vue_config = {
-    productionTip: false,
-    devtools: false,	// prevent warning about VUEJS_DEVTOOLS missing
-    silent: !CONFIG.debug,
-    performance: false,
-  };
-  const vue_options = {
-    inheritAttrs: false, // Add non-props attributes to $attrs (default in Vue-3)
-  };
-  Object.defineProperty (globalThis, 'Vue', { value: (await import ('/vue.mjs')).default });
-  Object.assign (Vue.config, vue_config);
-  Object.assign (Vue.options, vue_options);
-  console.assert (!Vue.reactive); // provided by Vue-3
-  Vue.reactive = Vue.observable;  // rename by Vue-3
-  // Setup global App object
-  const app_tmpl = {
-    data_bubble: null,
-    onpointermoves: [],
-    panel3_types: [ 'i' /*info*/, 'b' /*browser*/ ],
-    panel3: 'i',
-    switch_panel3 (n) {
-      const a = this.panel3_types;
-      if ('string' == typeof n)
-	this.panel3 = n;
-      else
-	this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
-    },
-    panel2_types: [ 'd' /*devices*/, 'p' /*pianoroll*/ ],
-    panel2: 'd',
-    switch_panel2 (n) {
-      const a = this.panel2_types;
-      if ('string' == typeof n)
-	this.panel2 = n;
-      else
-	this.panel2 = a[(a.indexOf (this.panel2) + 1) % a.length];
-    }
-  };
-  Object.defineProperty (globalThis, 'App', { value: Vue.reactive (app_tmpl) });
   // MarkdownIt - import MarkdownIt ESM wrapper, needed by Util
   bootlog ("Importing Markdown...");
   Object.defineProperty (globalThis, 'MarkdownIt', { value: (await import ('/markdown-it.mjs')).default });
-  // Util - import, depends on Vue and MarkdownIt
-  bootlog ("Importing Util...");
-  Object.defineProperty (globalThis, 'Util', { value: await import ('/util.js') });
   // _() - add translation indicator
   bootlog ("Configure i18n...");
   // globalThis._ = Bse.server.gettext (txtstring);
@@ -218,5 +192,39 @@ async function bootup() {
   // Dismiss startup messages
   bootlog ("Finished bootup.\n");
 }
+
+// == App Globals ==
+class App {
+  data_bubble = null;
+  panel3_types = [ 'i' /*info*/, 'b' /*browser*/ ];
+  panel3 = 'i';
+  switch_panel3 (n) {
+    const a = this.panel3_types;
+    if ('string' == typeof n)
+      this.panel3 = n;
+    else
+      this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
+  }
+  panel2_types = [ 'd' /*devices*/, 'p' /*pianoroll*/ ];
+  panel2 = 'd';
+  switch_panel2 (n) {
+    const a = this.panel2_types;
+    if ('string' == typeof n)
+      this.panel2 = n;
+    else
+      this.panel2 = a[(a.indexOf (this.panel2) + 1) % a.length];
+  }
+}
+
+// == export default ==
+const export_default = {
+  name: 'b-app',
+  bootup,
+  zmove: ZMove.zmove.bind (ZMove),
+  zmovehooks: [],
+  __proto__: Vue.reactive (new App),
+};
+export default export_default;
+Object.defineProperty (globalThis, 'App', { value: export_default });
 
 </script>

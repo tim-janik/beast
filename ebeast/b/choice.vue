@@ -92,6 +92,7 @@ export default {
 	}
     },
     bubbletip() {
+      App.zmove(); // force changes to be picked up
       const n = this.value >>> 0;
       if (!this.choices || n >= this.choices.length)
 	return "";
@@ -116,7 +117,6 @@ export default {
     menuactivation (uri) {
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      debug("emit", uri >>> 0);
       this.$emit ('input', uri >>> 0);
     },
     pointerdown (ev) {

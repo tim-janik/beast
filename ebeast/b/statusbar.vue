@@ -95,24 +95,23 @@ export default {
   name: 'b-statusbar',
   data: () => ({ kbd_: '' }),
   mounted() {
-    App.onpointermoves.push (this.seen_move);
+    App.zmovehooks.push (this.seen_move);
   },
   destroyed() {
-    Util.array_remove (App.onpointermoves, this.seen_move);
+    Util.array_remove (App.zmovehooks, this.seen_move);
   },
   methods: {
     seen_move (ev) {
-      const coords = this.coords || { x: -1, y: -1 };
-      this.coords = { x: ev.screenX, y: ev.screenY };
-      if (ev.buttons || (coords.x == this.coords.x && coords.y == this.coords.y))
-	return;
-      const els = document.body.querySelectorAll ('*:hover[data-tip]');
-      const rawmsg = els.length ? els[0].getAttribute ('data-tip') : '';
-      if (rawmsg != this.status_)
-	Util.markdown_to_html (this.$refs['b-statusbar-text'], this.status_ = rawmsg);
-      const rawkbd = els.length ? els[0].getAttribute ('data-kbd') : '';
-      if (rawkbd != this.kbd_)
-	this.kbd_ = rawkbd;
+      if (!ev.buttons)
+	{
+          const els = document.body.querySelectorAll ('*:hover[data-tip]');
+          const rawmsg = els.length ? els[els.length - 1].getAttribute ('data-tip') : '';
+          if (rawmsg != this.status_)
+            Util.markdown_to_html (this.$refs['b-statusbar-text'], this.status_ = rawmsg);
+          const rawkbd = els.length ? els[0].getAttribute ('data-kbd') : '';
+          if (rawkbd != this.kbd_)
+            this.kbd_ = rawkbd;
+	}
     },
   },
 };

@@ -109,8 +109,7 @@ class DataBubbleImpl {
 	    this.last_event.type === "mousemove")
 	  {
 	    this.restart_bubble_timer();
-	    for (let i = 0; i < App.onpointermoves.length; i += 1)
-	      App.onpointermoves[i] (this.last_event);
+	    App.zmove (this.last_event);
 	  }
 	this.coords = coords; // needed to ignore 0-distance moves
 	this.last_event = null;

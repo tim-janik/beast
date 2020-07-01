@@ -16,7 +16,7 @@ export default {
       css: false,
       needMap: false,
       // normalizeComponent needs ./node_modules/vue-runtime-helpers/dist/index.mjs import
-      normalizer: "globalThis['Vue-Runtime'].normalizeComponent", // see index.html for globalThis['Vue-Runtime']
+      normalizer: "Vue.__vue_normalize__", // see index.html for vue-runtime-helpers.mjs
       // use node-sass, dart-sass has no support for { functions:... }
       style: { preprocessOptions: {
 	scss: {

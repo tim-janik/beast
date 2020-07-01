@@ -26,6 +26,7 @@ module.exports = {
     "_": false,
     "assert": false,
     "debug": false,
+    "bootlog": false,
     "globalThis": false,
   },
   "rules": {
