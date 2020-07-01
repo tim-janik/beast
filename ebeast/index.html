@@ -29,7 +29,9 @@
   Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true } });
   Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
   Object.defineProperty (globalThis, 'bootlog', { value: debug || (() => undefined), });
+  bootlog ("Setup CONFIG...");
   if (typeof module === 'object' && require ('electron')) {
+    bootlog ("Preloading Electron resources...");
     Object.defineProperty (globalThis, 'Electron', { value: require ('electron').remote });
     document.head.querySelector ('[href="/menus.js"]').setAttribute ('rel', 'modulepreload');
   }
@@ -42,9 +44,6 @@
   <!-- Load Vue, Util -->
   <script type="module">
   bootlog ("Importing Vue...");
-  // Vue-Runtime.normalizeComponent is needed for SFC imports, see vue.rollup.js
-  import * as VueRuntime from '/vue-runtime-helpers.mjs';
-  Object.defineProperty (globalThis, 'Vue-Runtime', { value: VueRuntime });
   // Configure Vue to avoid useless warnings
   import Vue from "/vue.mjs";
   Object.assign (Vue.config, { productionTip: false, devtools: false, performance: false, silent: !CONFIG.debug });
@@ -52,6 +51,9 @@
   Object.defineProperty (globalThis, 'Vue', { value: Vue });
   console.assert (!Vue.reactive); // provided by Vue-3
   Vue.__proto__.reactive = Vue.observable;  // rename by Vue-3
+  // Vue-Runtime.normalizeComponent is needed for SFC imports, see vue.rollup.js
+  import * as VueRuntime from '/vue-runtime-helpers.mjs';
+  Vue.__proto__.__vue_normalize__ = VueRuntime.normalizeComponent;
   // Import Util globally
   bootlog ("Importing Util...");
   import * as Util from "/util.js";
