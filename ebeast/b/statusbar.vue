@@ -95,10 +95,10 @@ export default {
   name: 'b-statusbar',
   data: () => ({ kbd_: '' }),
   mounted() {
-    App.onpointermoves.push (this.seen_move);
+    App.zmovehooks.push (this.seen_move);
   },
   destroyed() {
-    Util.array_remove (App.onpointermoves, this.seen_move);
+    Util.array_remove (App.zmovehooks, this.seen_move);
   },
   methods: {
     seen_move (ev) {

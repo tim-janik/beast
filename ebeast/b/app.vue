@@ -3,6 +3,12 @@
 <docs>
   # B-APP
   Global application instance for Beast.
+  ## Public Exports:
+  *zmovehooks*
+  : An array of callbacks to be notified on pointer moves.
+  *zmove (event)*
+  : Trigger the callback list `zmovehooks`, passing `event` along. This is useful to get debounced
+  notifications for pointer movements, including 0-distance moves after significant UI changes.
 </docs>
 
 <style lang="scss">
@@ -16,6 +22,24 @@
 </template>
 
 <script>
+// == zmove() ==
+class ZMove {
+  static
+  zmove (ev) {
+    if (ev && ev.screenX && ev.screenY &&
+	ev.timeStamp > (ZMove.last_event?.timeStamp || 0))
+      ZMove.last_event = ev;
+    ZMove.trigger();
+  }
+  static
+  trigger_hooks() {
+    if (ZMove.last_event)
+      for (const hook of export_default.zmovehooks)
+        hook (ZMove.last_event);
+  }
+  static trigger = Util.debounce (ZMove.trigger_hooks);
+}
+
 // == Bootup ==
 // Vue mounting and dynamic import() calls to control module loading side-effects
 async function bootup() {
@@ -196,7 +220,8 @@ class App {
 const export_default = {
   name: 'b-app',
   bootup,
-  onpointermoves: [],
+  zmove: ZMove.zmove.bind (ZMove),
+  zmovehooks: [],
   __proto__: Vue.reactive (new App),
 };
 export default export_default;
