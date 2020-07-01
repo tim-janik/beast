@@ -85,6 +85,7 @@ export default {
 	b += '\n';
       if (this.blurb)
 	b += this.blurb;
+      App.zmove(); // force changes to be picked up
       return b;
     },
     type () {
