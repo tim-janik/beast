@@ -7,13 +7,15 @@
 
 namespace Bse {
 
-class Driver {
+class Driver : public std::enable_shared_from_this<Driver> {
 protected:
   struct Flags { enum { OPENED = 1, READABLE = 2, WRITABLE = 4, }; };
   const String       devid_;
   size_t             flags_ = 0;
   explicit           Driver     (const String &devid);
   virtual           ~Driver     ();
+  template<class Derived> std::shared_ptr<Derived>
+  /**/               shared_from_base () { return std::static_pointer_cast<Derived> (shared_from_this()); }
 public:
   enum {
     JACK     = 0x01 << 24,
