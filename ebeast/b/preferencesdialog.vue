@@ -31,7 +31,7 @@
 </template>
 
 <script>
-function drivers2picklist (e) {
+function drivers2picklist (hint, e) {
   let noticeclass = '';
   if (e.notice.startsWith ("Warning:"))
     noticeclass = "b-preferencesdialog-warning";
@@ -39,7 +39,7 @@ function drivers2picklist (e) {
     noticeclass = "b-preferencesdialog-notice";
   const item = {
     uri:  e.devid,
-    icon:  this.driver_icon (e),
+    icon:  this.driver_icon (e, hint),
     label: e.device_name,
     line1: e.capabilities,
     line2: e.device_info,
@@ -56,12 +56,12 @@ async function fetch_current_config (addcleanup) {
 	'pcm_driver.picklistitems': () => {
 	  if (this.pcmrefresh)  // Bse provides no notification for list_pcm_drivers
 	    this.pcmrefresh();  // so we poll it when necessary
-	  return this.pcmlist.map (drivers2picklist.bind (this));
+	  return this.pcmlist.map (drivers2picklist.bind (this, 'pcm'));
 	},
 	'midi_driver.picklistitems': () => {
 	  if (this.midirefresh) // Bse provides no notification for list_midi_drivers
 	    this.midirefresh(); // so we poll it when necessary
-	  return this.midilist.map (drivers2picklist.bind (this));
+	  return this.midilist.map (drivers2picklist.bind (this, 'midi'));
 	},
       };
     }
@@ -91,7 +91,10 @@ export default {
     value (vnew, vold) { if (vnew && this.prefrefresh) this.prefrefresh(); },
   },
   methods: {
-    driver_icon (entry, is_midi = false) {
+    driver_icon (entry, hint) {
+      const is_midi = hint == 'midi';
+      const is_pcm = hint == 'pcm';
+      const is_usb = entry.device_name.match (/^USB /) || entry.device_info.match (/ at usb-/);
       if (entry.devid.startsWith ("jack="))
 	return "mi-graphic_eq";
       if (entry.devid.startsWith ("alsa=pulse"))
@@ -104,12 +107,14 @@ export default {
 	return "fa-tv";
       if (entry.device_name.match (/\bMIDI\W*$/))
 	return 'fa-music';
-      if (!is_midi && (entry.device_name.match (/^USB /) || entry.device_info.match (/at usb-/)))
+      if (is_usb && is_midi)
+	return 'uc-🎘';
+      if (is_usb)
 	return "fa-usb";
-      if (entry.devid.match (/^alsa=.*:CARD=/))
+      if (is_midi)
+	return 'fa-music';
+      if (is_pcm)
 	{
-	  if (is_midi)
-	    return 'fa-music';
 	  if (entry.modem)
 	    return "uc-☎ ";
 	  if (entry.readonly)
