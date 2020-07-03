@@ -97,7 +97,7 @@ init_lib_alsa()
 }
 
 static void
-list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
+list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_rawmidi)
 {
   init_lib_alsa();
   // discover virtual (non-hw) devices
@@ -201,9 +201,9 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           ADEBUG ("DISCOVER: PCM: %s - %s", entry.devid, entry.device_name);
         }
       // discover MIDI hardware
-      snd_rawmidi_info_t *minfo = !need_midi ? nullptr : alsa_alloca0 (snd_rawmidi_info);
+      snd_rawmidi_info_t *minfo = !need_rawmidi ? nullptr : alsa_alloca0 (snd_rawmidi_info);
       dindex = -1;
-      while (need_midi && snd_ctl_rawmidi_next_device (chandle, &dindex) == 0 && dindex >= 0)
+      while (need_rawmidi && snd_ctl_rawmidi_next_device (chandle, &dindex) == 0 && dindex >= 0)
         {
           snd_rawmidi_info_set_device (minfo, dindex);
           uint total_subdevs = 0;
@@ -247,7 +247,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
               entry.writeonly = !readable;
               entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
               entries.push_back (entry);
-              ADEBUG ("DISCOVER: MIDI: %s - %s", entry.devid, entry.device_name);
+              ADEBUG ("DISCOVER: RawMIDI: %s - %s", entry.devid, entry.device_name);
             }
         }
       snd_ctl_close (chandle);
@@ -633,8 +633,8 @@ static const String alsa_pcm_driverid = PcmDriver::register_driver ("alsa",
                                                                       list_alsa_drivers (entries, true, false);
                                                                     });
 
-// == AlsaMidiDriver ==
-class AlsaMidiDriver : public MidiDriver {
+// == AlsaRawMidiDriver ==
+class AlsaRawMidiDriver : public MidiDriver {
   snd_rawmidi_t  *read_handle_ = nullptr;
   snd_rawmidi_t  *write_handle_ = nullptr;
   BseMidiDecoder *midi_decoder_ = nullptr;
@@ -643,16 +643,16 @@ public:
   static MidiDriverP
   create (const String &devid)
   {
-    auto mdriverp = std::make_shared<AlsaMidiDriver> (devid);
+    auto mdriverp = std::make_shared<AlsaRawMidiDriver> (devid);
     return mdriverp;
   }
   explicit
-  AlsaMidiDriver (const String &devid) :
+  AlsaRawMidiDriver (const String &devid) :
     MidiDriver (devid)
   {
     midi_decoder_ = bse_midi_decoder_new (TRUE, FALSE, MusicalTuning::OD_12_TET);
   }
-  ~AlsaMidiDriver()
+  ~AlsaRawMidiDriver()
   {
     bse_midi_decoder_destroy (midi_decoder_);
     if (read_handle_)
@@ -698,7 +698,7 @@ public:
   static gboolean // called from Sequencer thread
   midi_io_handler_func (void *thisdata, uint n_pfds, GPollFD *pfds)
   {
-    AlsaMidiDriver *thisp = static_cast<AlsaMidiDriver*> (thisdata);
+    AlsaRawMidiDriver *thisp = static_cast<AlsaRawMidiDriver*> (thisdata);
     return thisp->midi_io_handler (n_pfds, pfds);
   }
   virtual Error
@@ -725,7 +725,7 @@ public:
         if (snd_rawmidi_params_current (read_handle_, mparams) < 0)
           error = Error::FILE_OPEN_FAILED;
         else
-          ADEBUG ("MIDI: %s: readable: buffer=%d active_sensing=%d min_avail=%d\n",
+          ADEBUG ("RawMIDI: %s: readable: buffer=%d active_sensing=%d min_avail=%d\n",
                   devid_, snd_rawmidi_params_get_buffer_size (mparams),
                   !snd_rawmidi_params_get_no_active_sensing (mparams),
                   snd_rawmidi_params_get_avail_min (mparams));
@@ -735,7 +735,7 @@ public:
         if (snd_rawmidi_params_current (write_handle_, mparams) < 0)
           error = Error::FILE_OPEN_FAILED;
         else
-          ADEBUG ("MIDI: %s: writable: buffer=%d active_sensing=%d min_avail=%d\n",
+          ADEBUG ("RawMIDI: %s: writable: buffer=%d active_sensing=%d min_avail=%d\n",
                   devid_, snd_rawmidi_params_get_buffer_size (mparams),
                   !snd_rawmidi_params_get_no_active_sensing (mparams),
                   snd_rawmidi_params_get_avail_min (mparams));
@@ -778,16 +778,16 @@ public:
           snd_rawmidi_close (write_handle_);
         write_handle_ = nullptr;
       }
-    ADEBUG ("MIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    ADEBUG ("RawMIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
 };
 
-static const String alsa_midi_driverid = MidiDriver::register_driver ("alsa",
-                                                                      AlsaMidiDriver::create,
-                                                                      [] (Driver::EntryVec &entries) {
-                                                                        list_alsa_drivers (entries, false, true);
-                                                                      });
+static const String alsa_rawmidi_driverid = MidiDriver::register_driver ("alsarawmidi",
+                                                                         AlsaRawMidiDriver::create,
+                                                                         [] (Driver::EntryVec &entries) {
+                                                                           list_alsa_drivers (entries, false, true);
+                                                                         });
 
 } // Bse
 
