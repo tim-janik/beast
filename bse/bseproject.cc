@@ -159,6 +159,7 @@ bse_project_init (BseProject *self,
   self->items = NULL;
   self->in_undo = FALSE;
   self->in_redo = FALSE;
+  self->may_auto_stop = true;
   self->undo_stack = bse_undo_stack_new (self, undo_notify);
   self->redo_stack = bse_undo_stack_new (self, redo_notify);
   self->deactivate_usecs = 3 * 1000000;
@@ -846,7 +847,7 @@ bse_project_check_auto_stop (BseProject *self)
 {
   assert_return (BSE_IS_PROJECT (self));
 
-  if (self->state == Bse::ProjectState::PLAYING)
+  if (self->state == Bse::ProjectState::PLAYING && self->may_auto_stop)
     {
       GSList *slist;
       for (slist = self->supers; slist; slist = slist->next)
@@ -1077,6 +1078,13 @@ ProjectImpl::stop ()
 {
   BseProject *self = as<BseProject*>();
   bse_project_deactivate (self);
+}
+
+void
+ProjectImpl::auto_stop (bool maystop)
+{
+  BseProject *self = as<BseProject*>();
+  self->may_auto_stop = maystop;
 }
 
 void
