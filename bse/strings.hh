@@ -28,7 +28,7 @@ String                          string_set_ascii_alnum   ();
 String  			string_tolower           (const String &str);
 String  			string_toupper           (const String &str);
 String  			string_totitle           (const String &str);
-String                          string_capitalize        (const String &str, size_t maxn = size_t (-1));
+String                          string_capitalize        (const String &str, size_t maxn = size_t (-1), bool rest_tolower = true);
 StringVector 			string_split             (const String &string, const String &splitter = "", size_t maxn = size_t (-1));
 StringVector 			string_split_any         (const String &string, const String &splitchars = "", size_t maxn = size_t (-1));
 String  			string_join              (const String &junctor, const StringVector &strvec);
