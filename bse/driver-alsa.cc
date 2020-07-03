@@ -786,7 +786,8 @@ public:
 static const String alsa_rawmidi_driverid = MidiDriver::register_driver ("alsarawmidi",
                                                                          AlsaRawMidiDriver::create,
                                                                          [] (Driver::EntryVec &entries) {
-                                                                           list_alsa_drivers (entries, false, true);
+                                                                           if (false)
+                                                                             list_alsa_drivers (entries, false, true);
                                                                          });
 
 // == AlsaSeqMidiDriver ==
