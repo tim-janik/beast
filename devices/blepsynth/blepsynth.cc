@@ -197,6 +197,10 @@ class BlepSynth : public AudioSignal::Processor {
 
   struct OscParams {
     ParamId shape;
+    ParamId pulse_width;
+    ParamId sub;
+    ParamId sub_width;
+    ParamId sync;
 
     ParamId unison_voices;
     ParamId unison_detune;
@@ -259,6 +263,10 @@ class BlepSynth : public AudioSignal::Processor {
       {
         start_param_group (string_format ("Oscillator %d", o + 1));
         osc_params[o].shape = add_param (string_format ("Osc %d Shape", o + 1), "Shape", -100, 100, "G:big", 0, "%");
+        osc_params[o].pulse_width = add_param (string_format ("Osc %d Pulse Width", o + 1), "P.W", 0, 100, "G:big", 50, "%");
+        osc_params[o].sub = add_param (string_format ("Osc %d Subharmonic", o + 1), "Sub", 0, 100, "G:big", 0, "%");
+        osc_params[o].sub_width = add_param (string_format ("Osc %d Subharmonic Width", o + 1), "Sub.W", 0, 100, "G:big", 50, "%");
+        osc_params[o].sync = add_param (string_format ("Osc %d Sync Slave", o + 1), "Sync", 0, 60, "G:big", 0, "semitones");
 
         /* TODO: unison_voices property should be an integer property, range 1-16, default 1 */
         osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 0, 100, "G:big", 0, "%");
@@ -271,9 +279,9 @@ class BlepSynth : public AudioSignal::Processor {
 
     start_param_group ("Volume Envelope");
     pid_attack_ = add_param ("Attack", "A", 0, 100, "G:big", 11.0, "%");
-    pid_decay_ = add_param ("Decay", "D", 0, 100, "G:big", 11.0, "%");
-    pid_sustain_ = add_param ("Sustain", "S", 0, 100, "G:big", 11.0, "%");
-    pid_release_ = add_param ("Release", "R", 0, 100, "G:big", 11.0, "%");
+    pid_decay_  = add_param ("Decay", "D", 0, 100, "G:big", 20.0, "%");
+    pid_sustain_ = add_param ("Sustain", "S", 0, 100, "G:big", 50.0, "%");
+    pid_release_ = add_param ("Release", "R", 0, 100, "G:big", 30.0, "%");
   }
   void
   set_max_voices (uint n_voices)
@@ -344,30 +352,18 @@ class BlepSynth : public AudioSignal::Processor {
     osc.frequency_base = freq;
     osc.set_rate (sample_rate());
 #if 0
-3      osc.frequency_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose) * bse_cent_tune_fast (properties->fine_tune);
-
-       osc.freq_mod_octaves  = properties->freq_mod_octaves;
-
-       osc.shape_base        = properties->shape / 100;
-       osc.shape_mod         = properties->shape_mod / 100;
-
-       osc.sub_base          = properties->sub / 100;
-       osc.sub_mod           = properties->sub_mod / 100;
-
-       osc.sub_width_base    = properties->sub_width / 100;
-       osc.sub_width_mod     = properties->sub_width_mod / 100;
-
-       osc.sync_base         = properties->sync;
-       osc.sync_mod          = properties->sync_mod;
-
-       osc.pulse_width_base  = properties->pulse_width / 100;
-       osc.pulse_width_mod   = properties->pulse_width_mod / 100;
+    osc.frequency_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose) * bse_cent_tune_fast (properties->fine_tune);
+    osc.freq_mod_octaves  = properties->freq_mod_octaves;
 #endif
   }
   void
   update_osc (BlepUtils::OscImpl& osc, const OscParams& params)
   {
-    osc.shape_base = get_param (params.shape) * 0.01;
+    osc.shape_base          = get_param (params.shape) * 0.01;
+    osc.pulse_width_base    = get_param (params.pulse_width) * 0.01;
+    osc.sub_base            = get_param (params.sub) * 0.01;
+    osc.sub_width_base      = get_param (params.sub_width) * 0.01;
+    osc.sync_base           = get_param (params.sync);
 
     int unison_voices = bse_ftoi (get_param (params.unison_voices) * 0.01 * 15 + 1);
     unison_voices = CLAMP (unison_voices, 1, 16);
