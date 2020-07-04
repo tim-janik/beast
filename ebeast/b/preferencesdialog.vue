@@ -43,6 +43,7 @@ function drivers2picklist (hint, e) {
     label: e.device_name,
     line1: e.capabilities,
     line2: e.device_info,
+    // line8: 'Priority: ' + e.priority.toString (16),
     line9: e.notice, line9class: noticeclass,
   };
   return item;

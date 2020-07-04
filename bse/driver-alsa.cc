@@ -196,7 +196,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_rawmidi)
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.modem = pcmclass == SND_PCM_CLASS_MODEM;
-          entry.priority = (is_usb ? Driver::ALSA_USB : Driver::ALSA) + Driver::WCARD * cindex + Driver::WDEV * dindex;
+          entry.priority = (is_usb ? Driver::ALSA_USB : Driver::ALSA_KERN) + Driver::WCARD * cindex + Driver::WDEV * dindex;
           entries.push_back (entry);
           ADEBUG ("DISCOVER: PCM: %s - %s", entry.devid, entry.device_name);
         }
@@ -245,7 +245,7 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_rawmidi)
               entry.capabilities = (readable ? "MIDI Input" : "") + joiner + (writable ? "MIDI Output" : "");
               entry.readonly = !writable;
               entry.writeonly = !readable;
-              entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
+              entry.priority = Driver::ALSA_KERN + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
               entries.push_back (entry);
               ADEBUG ("DISCOVER: RawMIDI: %s - %s", entry.devid, entry.device_name);
             }
