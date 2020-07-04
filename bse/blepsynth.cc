@@ -2,6 +2,7 @@
 #include <bse/processor.hh>
 #include <bse/signalmath.hh>
 #include <bse/bsenote.hh>
+#include <bse/bleposc.hh>
 #include "bse/internal.hh"
 
 #define DDEBUG(...)     Bse::debug ("debugdsp", __VA_ARGS__)
@@ -194,6 +195,12 @@ class BlepSynth : public AudioSignal::Processor {
   ParamId pid_c_, pid_d_, pid_e_, pid_f_, pid_g_;
   bool    old_c_, old_d_, old_e_, old_f_, old_g_;
 
+  struct OscParams {
+    ParamId shape;
+  };
+  OscParams osc_params[2];
+  ParamId pid_mix_;
+
   ParamId pid_attack_;
   ParamId pid_decay_;
   ParamId pid_sustain_;
@@ -215,7 +222,9 @@ class BlepSynth : public AudioSignal::Processor {
     int          midi_note_   = -1;
     //int        channel_
     double       freq_        = 0;
-    double       phase_       = 0;
+
+    BlepUtils::OscImpl osc1_;
+    BlepUtils::OscImpl osc2_;
   };
   std::vector<Voice>    voices_;
   std::vector<Voice *>  active_voices_;
@@ -240,6 +249,15 @@ class BlepSynth : public AudioSignal::Processor {
     pid_f_ = add_param ("Main Input  4",  "F", "G:big", false);
     pid_g_ = add_param ("Main Input  5",  "G", "G:big", false);
     old_c_ = old_d_ = old_e_ = old_f_ = old_g_ = false;
+
+    start_param_group ("OSC1");
+    osc_params[0].shape = add_param ("Shape1", "Shape", -100, 100, "G:big", 0, "%");
+
+    start_param_group ("OSC2");
+    osc_params[1].shape = add_param ("Shape2", "Shape", -100, 100, "G:big", 0, "%");
+
+    start_param_group ("Mix");
+    pid_mix_ = add_param ("Mix", "Mix", 0, 100, "G:big", 0, "%");
 
     start_param_group ("Volume Envelope");
     pid_attack_ = add_param ("Attack", "A", 0, 100, "G:big", 11.0, "%");
@@ -311,13 +329,45 @@ class BlepSynth : public AudioSignal::Processor {
   {
   }
   void
+  init_osc (BlepUtils::OscImpl& osc, float freq)
+  {
+    osc.frequency_base = freq;
+    osc.set_rate (sample_rate());
+#if 0
+3      osc.frequency_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose) * bse_cent_tune_fast (properties->fine_tune);
+
+       osc.freq_mod_octaves  = properties->freq_mod_octaves;
+
+       osc.shape_base        = properties->shape / 100;
+       osc.shape_mod         = properties->shape_mod / 100;
+
+       osc.sub_base          = properties->sub / 100;
+       osc.sub_mod           = properties->sub_mod / 100;
+
+       osc.sub_width_base    = properties->sub_width / 100;
+       osc.sub_width_mod     = properties->sub_width_mod / 100;
+
+       osc.sync_base         = properties->sync;
+       osc.sync_mod          = properties->sync_mod;
+
+       osc.pulse_width_base  = properties->pulse_width / 100;
+       osc.pulse_width_mod   = properties->pulse_width_mod / 100;
+
+       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
+#endif
+  }
+  void
+  update_osc (BlepUtils::OscImpl& osc, const OscParams& params)
+  {
+    osc.shape_base = get_param (params.shape) * 0.01;
+  }
+  void
   note_on (int midi_note, int vel)
   {
     Voice *voice = alloc_voice();
     if (voice)
       {
         voice->freq_ = bse_note_to_freq (Bse::MusicalTuning::OD_12_TET, midi_note);
-        voice->phase_ = 0;
         voice->state_ = Voice::ON;
         voice->midi_note_ = midi_note;
 
@@ -330,6 +380,9 @@ class BlepSynth : public AudioSignal::Processor {
         voice->envelope_.set_sustain (get_param (pid_sustain_));        /* percent */
         voice->envelope_.set_release (get_param (pid_release_) * 0.01); /* time in seconds */
         voice->envelope_.start (sample_rate());
+
+        init_osc (voice->osc1_, voice->freq_);
+        init_osc (voice->osc2_, voice->freq_);
       }
   }
   void
@@ -369,20 +422,33 @@ class BlepSynth : public AudioSignal::Processor {
 
     assert_return (n_ochannels (stereout_) == 2);
     bool   need_free = false;
-    float *left = oblock (stereout_, 0);
-    float *right = oblock (stereout_, 1);
+    float *left_out = oblock (stereout_, 0);
+    float *right_out = oblock (stereout_, 1);
 
-    floatfill (left, 0.f, n_frames);
-    floatfill (right, 0.f, n_frames);
+    floatfill (left_out, 0.f, n_frames);
+    floatfill (right_out, 0.f, n_frames);
 
     for (auto& voice : active_voices_)
       {
+        float osc1_left_out[n_frames];
+        float osc1_right_out[n_frames];
+        float osc2_left_out[n_frames];
+        float osc2_right_out[n_frames];
+
+        update_osc (voice->osc1_, osc_params[0]);
+        update_osc (voice->osc2_, osc_params[1]);
+        voice->osc1_.process_sample_stereo (osc1_left_out, osc1_right_out, n_frames);
+        voice->osc2_.process_sample_stereo (osc2_left_out, osc2_right_out, n_frames);
+
+        // apply volume envelope & mix
+        const float mix_norm = get_param (pid_mix_) * 0.01;
+        const float v1 = 1 - mix_norm;
+        const float v2 = mix_norm;
         for (uint i = 0; i < n_frames; i++)
           {
-            float scale = 0.25 * voice->envelope_.get_next();
-            left[i] +=  sin (voice->freq_ * voice->phase_ * 2 * M_PI / sample_rate()) * scale;
-            right[i] += sin (voice->freq_ * voice->phase_ * 2 * M_PI / sample_rate()) * scale;
-            voice->phase_++;
+            float amp = 0.25 * voice->envelope_.get_next();
+            left_out[i] += (osc1_left_out[i] * v1 + osc2_left_out[i] * v2) * amp;
+            right_out[i] += (osc1_right_out[i] * v1 + osc2_right_out[i] * v2) * amp;
           }
         if (voice->envelope_.done())
           {

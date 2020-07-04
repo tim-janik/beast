@@ -9,6 +9,7 @@ CHECK_TARGETS  += bse/check
 bse/libbse.bseonly.headers = $(filter bse/bse%, $(bse/libbse.headers))
 bse/libbse.headers ::= $(strip		\
 	bse/bcore.hh			\
+	bse/bleposc.hh			\
 	bse/blob.hh			\
 	bse/bse.hh			\
 	bse/bsebiquadfilter.hh		\
@@ -157,6 +158,7 @@ bse/libbse.headers ::= $(strip		\
 )
 bse/libbse.sources ::= $(strip		\
 	bse/bcore.cc			\
+	bse/bleposcdata.cc		\
 	bse/blepsynth.cc		\
 	bse/blob.cc			\
 	bse/bsebasics.cc		\
