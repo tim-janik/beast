@@ -197,6 +197,10 @@ class BlepSynth : public AudioSignal::Processor {
 
   struct OscParams {
     ParamId shape;
+
+    ParamId unison_voices;
+    ParamId unison_detune;
+    ParamId unison_stereo;
   };
   OscParams osc_params[2];
   ParamId pid_mix_;
@@ -250,11 +254,17 @@ class BlepSynth : public AudioSignal::Processor {
     pid_g_ = add_param ("Main Input  5",  "G", "G:big", false);
     old_c_ = old_d_ = old_e_ = old_f_ = old_g_ = false;
 
-    start_param_group ("OSC1");
-    osc_params[0].shape = add_param ("Shape1", "Shape", -100, 100, "G:big", 0, "%");
 
-    start_param_group ("OSC2");
-    osc_params[1].shape = add_param ("Shape2", "Shape", -100, 100, "G:big", 0, "%");
+    for (int o = 0; o < 2; o++)
+      {
+        start_param_group (string_format ("Oscillator %d", o + 1));
+        osc_params[o].shape = add_param (string_format ("Osc %d Shape", o + 1), "Shape", -100, 100, "G:big", 0, "%");
+
+        /* TODO: unison_voices property should be an integer property, range 1-16, default 1 */
+        osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 0, 100, "G:big", 0, "%");
+        osc_params[o].unison_detune = add_param (string_format ("Osc %d Unison Detune", o + 1), "Detune", 0.5, 50, "G:big", 6, "%");
+        osc_params[o].unison_stereo = add_param (string_format ("Osc %d Unison Stereo", o + 1), "Stereo", 0, 100, "G:big", 0, "%");
+      }
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, "G:big", 0, "%");
@@ -352,14 +362,16 @@ class BlepSynth : public AudioSignal::Processor {
 
        osc.pulse_width_base  = properties->pulse_width / 100;
        osc.pulse_width_mod   = properties->pulse_width_mod / 100;
-
-       osc.set_unison (properties->unison_voices, properties->unison_detune, properties->unison_stereo / 100);
 #endif
   }
   void
   update_osc (BlepUtils::OscImpl& osc, const OscParams& params)
   {
     osc.shape_base = get_param (params.shape) * 0.01;
+
+    int unison_voices = bse_ftoi (get_param (params.unison_voices) * 0.01 * 15 + 1);
+    unison_voices = CLAMP (unison_voices, 1, 16);
+    osc.set_unison (unison_voices, get_param (params.unison_detune), get_param (params.unison_stereo) * 0.01);
   }
   void
   note_on (int midi_note, int vel)
