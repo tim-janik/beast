@@ -157,6 +157,7 @@ bse/libbse.headers ::= $(strip		\
 )
 bse/libbse.sources ::= $(strip		\
 	bse/bcore.cc			\
+	bse/blepsynth.cc		\
 	bse/blob.cc			\
 	bse/bsebasics.cc		\
 	bse/bsebiquadfilter.cc		\
