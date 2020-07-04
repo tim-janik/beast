@@ -121,6 +121,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/gslwaveosc.hh		\
 	bse/internal.hh			\
 	bse/ladspa.hh			\
+	bse/laddervcf.hh		\
 	bse/magic.hh			\
 	bse/memory.hh			\
 	bse/module.hh			\

@@ -3,6 +3,7 @@
 #include <bse/signalmath.hh>
 #include <bse/bsenote.hh>
 #include <bse/bleposc.hh>
+#include <bse/laddervcf.hh>
 #include "bse/internal.hh"
 
 #define DDEBUG(...)     Bse::debug ("debugdsp", __VA_ARGS__)
@@ -209,6 +210,10 @@ class BlepSynth : public AudioSignal::Processor {
   OscParams osc_params[2];
   ParamId pid_mix_;
 
+  ParamId pid_cutoff_;
+  ParamId pid_resonance_;
+  ParamId pid_mode_;
+
   ParamId pid_attack_;
   ParamId pid_decay_;
   ParamId pid_sustain_;
@@ -233,6 +238,7 @@ class BlepSynth : public AudioSignal::Processor {
 
     BlepUtils::OscImpl osc1_;
     BlepUtils::OscImpl osc2_;
+    LadderVCFNonLinear vcf_;
   };
   std::vector<Voice>    voices_;
   std::vector<Voice *>  active_voices_;
@@ -276,6 +282,18 @@ class BlepSynth : public AudioSignal::Processor {
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, "G:big", 0, "%");
+
+    start_param_group ("Filter");
+    /* TODO: cutoff property should have logarithmic scaling */
+    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, "G:big", 1000, "Hz");
+    pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, "G:big", 25.0, "%");
+    ChoiceEntries centries;
+    centries += { "L4", "4 pole lowpass, 24db/octave" };
+    centries += { "L3", "3 pole lowpass, 18db/octave" };
+    centries += { "L2", "2 pole lowpass, 12db/octave" };
+    centries += { "L1", "1 pole lowpass, 6db/octave" };
+    centries += { "None", "disable filter" };
+    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), "G:dropdown", 0, "Ladder Filter Mode to be used");
 
     start_param_group ("Volume Envelope");
     pid_attack_ = add_param ("Attack", "A", 0, 100, "G:big", 11.0, "%");
@@ -391,6 +409,10 @@ class BlepSynth : public AudioSignal::Processor {
 
         init_osc (voice->osc1_, voice->freq_);
         init_osc (voice->osc2_, voice->freq_);
+
+        voice->osc1_.reset();
+        voice->osc2_.reset();
+        voice->vcf_.reset();
       }
   }
   void
@@ -449,14 +471,47 @@ class BlepSynth : public AudioSignal::Processor {
         voice->osc2_.process_sample_stereo (osc2_left_out, osc2_right_out, n_frames);
 
         // apply volume envelope & mix
+        float mix_left_out[n_frames];
+        float mix_right_out[n_frames];
         const float mix_norm = get_param (pid_mix_) * 0.01;
         const float v1 = 1 - mix_norm;
         const float v2 = mix_norm;
         for (uint i = 0; i < n_frames; i++)
           {
+            mix_left_out[i]  = osc1_left_out[i] * v1 + osc2_left_out[i] * v2;
+            mix_right_out[i] = osc1_right_out[i] * v1 + osc2_right_out[i] * v2;
+          }
+        /* TODO: should be easier to get choice value */
+        bool run_filter = true;
+        switch (bse_ftoi (get_param (pid_mode_)))
+          {
+            case -2: voice->vcf_.set_mode (LadderVCFMode::LP4);
+                     break;
+            case -1: voice->vcf_.set_mode (LadderVCFMode::LP3);
+                     break;
+            case 0: voice->vcf_.set_mode (LadderVCFMode::LP2);
+                    break;
+            case 1: voice->vcf_.set_mode (LadderVCFMode::LP1);
+                    break;
+            default: run_filter = false;
+          }
+        /* run ladder filter - processing in place is ok */
+        if (run_filter)
+          {
+            /* TODO: under some conditions we could enable SSE in LadderVCF (alignment and block_size) */
+            const float *inputs[2]  = { mix_left_out, mix_right_out };
+            float       *outputs[2] = { mix_left_out, mix_right_out };
+            double cutoff = get_param (pid_cutoff_) / (sample_rate() * 0.5);
+            double resonance = get_param (pid_resonance_) * 0.01;
+            voice->vcf_.run_block (n_frames, cutoff, resonance, inputs, outputs, true, true, nullptr, nullptr, nullptr, nullptr);
+          }
+
+        // apply volume envelope
+        for (uint i = 0; i < n_frames; i++)
+          {
             float amp = 0.25 * voice->envelope_.get_next();
-            left_out[i] += (osc1_left_out[i] * v1 + osc2_left_out[i] * v2) * amp;
-            right_out[i] += (osc1_right_out[i] * v1 + osc2_right_out[i] * v2) * amp;
+            left_out[i] += mix_left_out[i] * amp;
+            right_out[i] += mix_right_out[i] * amp;
           }
         if (voice->envelope_.done())
           {
