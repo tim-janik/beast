@@ -233,7 +233,7 @@ class BlepSynth : public AudioSignal::Processor {
     Envelope     envelope_;
     State        state_       = IDLE;
     int          midi_note_   = -1;
-    //int        channel_
+    int          channel_     = 0;
     double       freq_        = 0;
 
     BlepUtils::OscImpl osc1_;
@@ -388,13 +388,14 @@ class BlepSynth : public AudioSignal::Processor {
     osc.set_unison (unison_voices, get_param (params.unison_detune), get_param (params.unison_stereo) * 0.01);
   }
   void
-  note_on (int midi_note, int vel)
+  note_on (int channel, int midi_note, int vel)
   {
     Voice *voice = alloc_voice();
     if (voice)
       {
         voice->freq_ = bse_note_to_freq (Bse::MusicalTuning::OD_12_TET, midi_note);
         voice->state_ = Voice::ON;
+        voice->channel_ = channel;
         voice->midi_note_ = midi_note;
 
         // Volume Envelope
@@ -416,11 +417,11 @@ class BlepSynth : public AudioSignal::Processor {
       }
   }
   void
-  note_off (int midi_note)
+  note_off (int channel, int midi_note)
   {
     for (auto voice : active_voices_)
       {
-        if (voice->state_ == Voice::ON && voice->midi_note_ == midi_note)
+        if (voice->state_ == Voice::ON && voice->midi_note_ == midi_note && voice->channel_ == channel)
           {
             voice->state_ = Voice::RELEASE;
             voice->envelope_.stop();
@@ -433,10 +434,11 @@ class BlepSynth : public AudioSignal::Processor {
     bool value = get_param (pid) > 0.0;
     if (value != old_value)
       {
+        constexpr int channel = 0;
         if (value)
-          note_on (note, 100);
+          note_on (channel, note, 100);
         else
-          note_off (note);
+          note_off (channel, note);
         old_value = value;
       }
   }
