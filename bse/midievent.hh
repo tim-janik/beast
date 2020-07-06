@@ -61,15 +61,15 @@ Event make_pitch_bend (uint16 chnl, float val);
 
 /// A stream of writable Event structures.
 class EventStream {
-  using EventVectorP = std::shared_ptr<std::vector<Event> >;
-  EventVectorP events_; // TODO: use O(1) allocator
+  std::vector<Event> events_; // TODO: use O(1) allocator
   friend class EventRange;
 public:
   explicit     EventStream ();
   void         append      (int8_t frame, const Event &event);
-  const Event* begin       () const     { return events_ ? &*events_->begin() : (const Event*) nullptr; }
-  const Event* end         () const     { return events_ ? &*events_->end() : (const Event*) nullptr; }
-  size_t       size        () const     { return events_ ? events_->size() : 0; }
+  const Event* begin       () const     { return &*events_.begin(); }
+  const Event* end         () const     { return &*events_.end(); }
+  size_t       size        () const     { return events_.size(); }
+  void         clear       () noexcept  { events_.clear(); }
 };
 
 /// A readonly view and iterator into an EventStream.

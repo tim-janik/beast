@@ -153,15 +153,12 @@ EventStream::EventStream ()
 void
 EventStream::append (int8_t frame, const Event &event)
 {
-  if (!events_)
-    {
-      events_ = std::make_shared<std::vector<Event> >();
-      events_->reserve (16);
-    }
-  else if (!events_->empty())
-    assert_return (frame >= events_->back().frame);
-  events_->push_back (event);
-  events_->back().frame = frame;
+  if (events_.empty())
+    events_.reserve (16);
+  else
+    assert_return (frame >= events_.back().frame);
+  events_.push_back (event);
+  events_.back().frame = frame;
 }
 
 // == EventRange ==
