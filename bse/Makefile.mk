@@ -122,6 +122,7 @@ bse/libbse.headers ::= $(strip		\
 	bse/ladspa.hh			\
 	bse/magic.hh			\
 	bse/memory.hh			\
+	bse/midievent.hh		\
 	bse/module.hh			\
 	bse/device.hh			\
 	bse/monitor.hh			\
@@ -269,6 +270,7 @@ bse/libbse.sources ::= $(strip		\
 	bse/gslwaveosc.cc		\
 	bse/magic.cc			\
 	bse/memory.cc			\
+	bse/midievent.cc		\
 	bse/minizip.c			\
 	bse/module.cc			\
 	bse/device.cc			\
