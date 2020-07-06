@@ -112,6 +112,7 @@ class DbgParameterizer : public AudioSignal::Processor {
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
   {
     remove_all_buses();
+    prepare_event_input();
     stereoin = add_input_bus  ("Stereo In",  SpeakerArrangement::STEREO);
     auxin    = add_input_bus  ("Aux In",     SpeakerArrangement::STEREO);
     stereout = add_output_bus ("Stereo Out", SpeakerArrangement::STEREO);
@@ -133,7 +134,6 @@ class DbgParameterizer : public AudioSignal::Processor {
     assert_return (n_ochannels (stereout) == 2);
 
     EventRange erange = get_event_input();
-    printerr ("DbgParameterizer: events_pending=%d\n", erange.events_pending());
     for (const auto &ev : erange)
       printerr ("DbgParameterizer: %s\n", ev.to_string());
 
