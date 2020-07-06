@@ -1418,6 +1418,7 @@ TrackImpl::device_container()
       DeviceContainerImplP device_container = std::dynamic_pointer_cast<DeviceContainerImpl> (devicep);
       assert_return (device_container != nullptr, nullptr);
       device_container_ = device_container;
+      BSE_SERVER.assign_event_source (*device_container_->processor());
     }
   return device_container_;
 }
