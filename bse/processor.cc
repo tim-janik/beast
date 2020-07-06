@@ -1024,8 +1024,9 @@ Processor::ensure_initialized()
       const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
       const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
       configure (1, &ibuses, 1, &obuses);
-      if (n_ibuses() + n_obuses() == 0)
-        throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
+      if (n_ibuses() + n_obuses() == 0 &&
+          (!estreams_ || (!estreams_->has_event_input && !estreams_->has_event_output)))
+        warning ("Processor::%s: failed to setup any input/output facilities for: %s", __func__, debug_name());
       assign_iobufs();
     }
 }
