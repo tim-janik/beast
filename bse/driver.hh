@@ -2,7 +2,7 @@
 #ifndef __BSE_DRIVER_HH__
 #define __BSE_DRIVER_HH__
 
-#include <bse/bseutils.hh>
+#include <bse/midievent.hh>
 #include <functional>
 
 namespace Bse {
@@ -52,6 +52,8 @@ protected:
 public:
   typedef std::shared_ptr<MidiDriver> MidiDriverP;
   static MidiDriverP open            (const String &devid, IODir iodir, Bse::Error *ep);
+  virtual bool       has_events      () = 0;
+  virtual uint       fetch_events    (AudioSignal::EventStream &estream, double samplerate) = 0;
   static EntryVec    list_drivers    ();
   static String      register_driver (const String &driverid,
                                       const std::function<MidiDriverP (const String&)> &create,

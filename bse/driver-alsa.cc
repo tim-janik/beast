@@ -781,6 +781,9 @@ public:
     ADEBUG ("RawMIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
   }
+  bool has_events   () override                 { return false; } // rawmidi only supports old API
+  uint fetch_events (AudioSignal::EventStream&,
+                     double) override           { return 0; }     // rawmidi only supports old API
 };
 
 static const String alsa_rawmidi_driverid = MidiDriver::register_driver ("alsarawmidi",
@@ -1168,122 +1171,13 @@ public:
   pollin_func (void *data, uint n_values, long *timeout_p, uint n_fds, const GPollFD *fds, gboolean revents_filled)
   {
     AlsaSeqMidiDriver *thisp = (AlsaSeqMidiDriver*) data;
-    // FIXME: instead of all this, do: get_pollfds(); get_events (&evstack);
-    if (revents_filled && fds->revents)
-      thisp->get_events();
-    return false;
-  }
-  void
-  get_events()
-  {
-    assert_return (!!evparser_);
-    // receive
-    const bool pull_fifo = true;
-    double now = -1;
-    uint8_t mebuf[1024];
-    while (snd_seq_event_input_pending (seq_, pull_fifo) > 0)
+    // test event retrieval
+    if (snd_seq_event_input_pending (thisp->seq_, true /* poll FIFO */) > 0)
       {
-        snd_seq_event_t *ev = nullptr;
-        int r = snd_seq_event_input (seq_, &ev);
-        while (r > 0)
-          {
-            if (now < 0)
-              now = queue_now();
-            switch (ev->type)
-              {
-                // decide if decoding is worth it
-              }
-            r = snd_midi_event_decode (evparser_, mebuf, sizeof (mebuf), ev);
-            const double t = ev->time.time.tv_sec + 1e-9 * ev->time.time.tv_nsec;
-            const char *et = nullptr;
-            if (r > 0)
-              switch (ev->type)
-                {
-                case SND_SEQ_EVENT_NOTE:            if (!et) et = "NOTE";
-                case SND_SEQ_EVENT_NOTEON:          if (!et) et = "NOTEON";
-                case SND_SEQ_EVENT_NOTEOFF:         if (!et) et = "NOTEOFF";
-                case SND_SEQ_EVENT_KEYPRESS:        if (!et) et = "KEYPRESS";
-                  printf ("%5.6f: %s: ch=%d note=%d vel=%d off=%d dur=%d\n",
-                          now - t, et,
-                          ev->data.note.channel,
-                          ev->data.note.note,
-                          ev->data.note.velocity,
-                          ev->data.note.off_velocity,
-                          ev->data.note.duration);
-                  break;
-                case SND_SEQ_EVENT_CONTROLLER:	if (!et) et = "CONTROLLER";
-                case SND_SEQ_EVENT_PGMCHANGE:	if (!et) et = "PGMCHANGE";
-                case SND_SEQ_EVENT_CHANPRESS:	if (!et) et = "CHANPRESS";
-                case SND_SEQ_EVENT_PITCHBEND:	if (!et) et = "PITCHBEND";
-                case SND_SEQ_EVENT_CONTROL14:	if (!et) et = "CONTROL14";
-                case SND_SEQ_EVENT_NONREGPARAM:	if (!et) et = "NONREGPARAM";
-                case SND_SEQ_EVENT_REGPARAM:	if (!et) et = "REGPARAM";
-                case SND_SEQ_EVENT_SONGPOS:		if (!et) et = "SONGPOS";
-                case SND_SEQ_EVENT_SONGSEL:		if (!et) et = "SONGSEL";
-                case SND_SEQ_EVENT_QFRAME:		if (!et) et = "QFRAME";
-                case SND_SEQ_EVENT_TIMESIGN:	if (!et) et = "TIMESIGN";
-                case SND_SEQ_EVENT_KEYSIGN:		if (!et) et = "KEYSIGN";
-                  printf ("%5.6f: %s: ch=%d param=%d val=%d\n",
-                          now - t, et,
-                          ev->data.control.channel,
-                          ev->data.control.param,
-                          ev->data.control.value);
-                  break;
-                case SND_SEQ_EVENT_START:           if (!et) et = "START";
-                case SND_SEQ_EVENT_CONTINUE:        if (!et) et = "CONTINUE";
-                case SND_SEQ_EVENT_STOP:            if (!et) et = "STOP";
-                case SND_SEQ_EVENT_SETPOS_TICK:     if (!et) et = "SETPOS_TICK";
-                case SND_SEQ_EVENT_SETPOS_TIME:     if (!et) et = "SETPOS_TIME";
-                case SND_SEQ_EVENT_TEMPO:           if (!et) et = "";
-                case SND_SEQ_EVENT_CLOCK:           if (!et) et = "CLOCK";
-                case SND_SEQ_EVENT_TICK:            if (!et) et = "TICK";
-                case SND_SEQ_EVENT_QUEUE_SKEW:      if (!et) et = "QUEUE_SKEW";
-                case SND_SEQ_EVENT_SYNC_POS:        if (!et) et = "SYNC_POS";
-                  printf ("%5.6f: %s: q=%d param=%d t=%.5f pos=%d skew=%d,%d\n",
-                          now - t, et,
-                          ev->data.queue.queue,
-                          ev->data.queue.param.value,
-                          ev->data.queue.param.time.time.tv_sec +
-                          1e-9 * ev->data.queue.param.time.time.tv_nsec,
-                          ev->data.queue.param.position,
-                          ev->data.queue.param.skew.value,
-                          ev->data.queue.param.skew.base);
-                  break;
-                case SND_SEQ_EVENT_SYSEX:		if (!et) et = "SYSEX";
-                  printf ("%5.6f: %s: LEN=%d",
-                          now - t, et, ev->data.ext.len);
-                  for (size_t i = 0; i < ev->data.ext.len; i++)
-                    {
-                      printf (" %02x", ((const uint8_t*) ev->data.ext.ptr)[i]);
-                      if (i >= 8)
-                        {
-                          if (ev->data.ext.len > 8)
-                            printf (" …");
-                          break;
-                        }
-                    }
-                  printf ("\n");
-                  break;
-                default:
-                  printf ("%5.6f: SEQEVENT: type=%d\n",
-                          now - t, ev->type);
-                  break;
-                }
-            else if (r < 0)
-              {
-                errno = -r;
-                perror ("snd_midi_event_decode");
-              }
-            // DEPRECATED: snd_seq_free_event (ev);
-            r = snd_seq_event_input (seq_, &ev);
-          }
-        if (r < 0 && r != -EAGAIN) // -ENOSPC - sequencer FIFO overran
-          {
-            errno = -r;
-            perror ("snd_seq_event_input");
-            info ("ALSA: SeqMIDI: %s: sequencer FIFO error: %s\n", devid_, snd_strerror (r));
-          }
+        AudioSignal::EventStream es;
+        thisp->fetch_events (es, 48000);
       }
+    return false;
   }
   double
   queue_now ()
@@ -1298,6 +1192,88 @@ public:
         return rt->tv_sec + 1e-9 * rt->tv_nsec;
       }
     return NAN;
+  }
+  bool
+  has_events () override
+  {
+    assert_return (opened(), false);
+    const bool pull_fifo = true;
+    return snd_seq_event_input_pending (seq_, pull_fifo) > 0;
+  }
+  uint
+  fetch_events (AudioSignal::EventStream &estream, double samplerate) override
+  {
+    using namespace AudioSignal;
+    assert_return (!!evparser_, 0);
+    const size_t old_size = estream.size();
+    // receive
+    snd_seq_event_t *ev = nullptr;
+    const double now = queue_now();
+    const auto mkid = [] (uint note, uint channel) {
+      return (channel + 1) * 128 + note;
+    };
+    const auto add = [&] (AudioSignal::EventStream &estream, const Event &event) {
+      const double t = ev->time.time.tv_sec + 1e-9 * ev->time.time.tv_nsec;
+      const double diff = t - now;
+      const int frames = diff * samplerate;
+      int8_t frame_delay = CLAMP (frames, -128, 0); // we only need to account for delays
+      estream.append (frame_delay, event);
+    };
+    int r;
+    while (r = snd_seq_event_input (seq_, &ev), r >= 0)
+      switch (ev->type)
+        {
+        case SND_SEQ_EVENT_NOTEON:
+          add (estream,
+               make_note_on (ev->data.note.channel, ev->data.note.note,
+                             ev->data.note.velocity * (1.0 / 127.0), 0,
+                             mkid (ev->data.note.note, ev->data.note.channel)));
+          break;
+        case SND_SEQ_EVENT_NOTEOFF:
+          add (estream,
+               make_note_off (ev->data.note.channel, ev->data.note.note,
+                              ev->data.note.velocity * (1.0 / 127.0), 0,
+                              mkid (ev->data.note.note, ev->data.note.channel)));
+          break;
+        case SND_SEQ_EVENT_KEYPRESS:
+          add (estream,
+               make_aftertouch (ev->data.note.channel, ev->data.note.note,
+                                ev->data.note.velocity * (1.0 / 127.0), 0,
+                                mkid (ev->data.note.note, ev->data.note.channel)));
+          break;
+        case SND_SEQ_EVENT_CONTROLLER:
+          add (estream,
+               make_control8 (ev->data.control.channel, ev->data.control.param,
+                              ev->data.control.value));
+          break;
+        case SND_SEQ_EVENT_PGMCHANGE:
+          add (estream,
+               make_program (ev->data.control.channel, ev->data.control.value));
+          break;
+        case SND_SEQ_EVENT_CHANPRESS:
+          add (estream,
+               make_pressure (ev->data.control.channel, ev->data.control.value * (1.0 / 127.0)));
+          break;
+        case SND_SEQ_EVENT_PITCHBEND:
+          add (estream,
+               make_pitch_bend (ev->data.control.channel,
+                                ev->data.control.value *
+                                (ev->data.control.value < 0 ? 1.0 / 8192.0 : 1.0 / 8191.0)));
+          break;
+        case SND_SEQ_EVENT_CONTROL14:
+        case SND_SEQ_EVENT_NONREGPARAM:
+        case SND_SEQ_EVENT_REGPARAM:
+        case SND_SEQ_EVENT_NOTE:  // unhandled, duration usually too long for Event.frame
+        case SND_SEQ_EVENT_SYSEX:
+        default:
+          break;
+          // DEPRECATED: snd_seq_free_event (ev);
+        }
+    if (r < 0 && r != -EAGAIN) // -ENOSPC - sequencer FIFO overran
+      ADEBUG ("SeqMIDI: %s: snd_seq_event_input: %s", devid_, snd_strerror (r));
+    for (size_t i = old_size; i < estream.size(); i++)
+      printerr ("SeqMIDI: %s\n", (estream.begin() + i)->to_string());
+    return estream.size() - old_size;
   }
 };
 
