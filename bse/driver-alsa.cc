@@ -7,6 +7,9 @@
 #include "bsemididecoder.hh"
 
 #define ADEBUG(...)             Bse::debug ("alsa", __VA_ARGS__)
+
+#define WITH_MIDI_POLL  0
+
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
 #define return_error(reason, ERRMEMB) do {      \
   ADEBUG ("PCM: %s: %s: %s",                    \
@@ -1102,8 +1105,10 @@ public:
               {
                 static_assert (sizeof (struct pollfd) == sizeof (GPollFD));
                 BseTrans *trans = bse_trans_open ();
+#if WITH_MIDI_POLL
                 BseJob *job = bse_job_add_poll (pollin_func, (void*) this, pollfree_func, total_fds_, (const GPollFD*) pfds);
                 bse_trans_add (trans, job);
+#endif
                 bse_trans_commit (trans);
               }
             else
@@ -1124,8 +1129,10 @@ public:
       {
         total_fds_ = 0;
         BseTrans *trans = bse_trans_open ();
+#if WITH_MIDI_POLL
         BseJob *job = bse_job_remove_poll (pollin_func, (void*) this);
         bse_trans_add (trans, job);
+#endif
         bse_trans_commit (trans);
       }
     if (evparser_)
@@ -1171,11 +1178,10 @@ public:
   pollin_func (void *data, uint n_values, long *timeout_p, uint n_fds, const GPollFD *fds, gboolean revents_filled)
   {
     AlsaSeqMidiDriver *thisp = (AlsaSeqMidiDriver*) data;
-    // test event retrieval
+    // clear revents with event retrieval
     if (snd_seq_event_input_pending (thisp->seq_, true /* poll FIFO */) > 0)
       {
-        AudioSignal::EventStream es;
-        thisp->fetch_events (es, 48000);
+        // queue events...
       }
     return false;
   }
@@ -1271,8 +1277,6 @@ public:
         }
     if (r < 0 && r != -EAGAIN) // -ENOSPC - sequencer FIFO overran
       ADEBUG ("SeqMIDI: %s: snd_seq_event_input: %s", devid_, snd_strerror (r));
-    for (size_t i = old_size; i < estream.size(); i++)
-      printerr ("SeqMIDI: %s\n", (estream.begin() + i)->to_string());
     return estream.size() - old_size;
   }
 };
