@@ -131,6 +131,12 @@ class DbgParameterizer : public AudioSignal::Processor {
     assert_return (n_ichannels (stereoin) == 2);
     assert_return (n_ichannels (auxin) == 2);
     assert_return (n_ochannels (stereout) == 2);
+
+    EventRange erange = get_event_input();
+    printerr ("DbgParameterizer: events_pending=%d\n", erange.events_pending());
+    for (const auto &ev : erange)
+      printerr ("DbgParameterizer: %s\n", ev.to_string());
+
     for (uint ch = 0; ch < 2; ch++)
       {
         const float *stinf = ifloats (stereoin, ch);
