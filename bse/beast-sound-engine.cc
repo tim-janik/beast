@@ -550,6 +550,8 @@ main (int argc, char *argv[])
   dispatcher->add_method ("Bse/EventHub/connect", &EventHub::connect);
   dispatcher->add_method ("Bse/EventHub/disconnect", &EventHub::disconnect);
   dispatcher->set_exception_handler ([] (const std::exception &exc) {
+    // relaying to Javascript is almost always an error
+    throw;
     return exc.what();
   });
 
