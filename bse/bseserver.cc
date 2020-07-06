@@ -53,6 +53,8 @@ static void	iowatch_add			(BseServer	   *server,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
 static void	main_thread_source_setup	(BseServer	   *self);
+static void                    set_server_midi_input (AudioSignal::ProcessorP proc, MidiDriverP midi_driver);
+static AudioSignal::ProcessorP create_server_midi_input ();
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
@@ -343,6 +345,7 @@ void
 bse_server_shutdown (BseServer *self)
 {
   assert_return (BSE_IS_SERVER (self));
+  auto impl = self->as<Bse::ServerImpl*>();
   // projects in playback can hold an open device use count
   for (auto project : ProjectImpl::project_list())
     {
@@ -351,6 +354,7 @@ bse_server_shutdown (BseServer *self)
     }
   while (self->dev_use_count)
     bse_server_close_devices (self);
+  impl->shutdown_();
 
   // uninstall PCM IO modules
   assert_return (self->pcm_imodule && self->pcm_omodule);
@@ -1259,8 +1263,28 @@ ServerImpl::get_ipc_handler ()
 }
 
 void
+ServerImpl::shutdown_ ()
+{
+  if (midi_proc_)
+    {
+      auto midi_proc = midi_proc_;
+      commit_job ([midi_proc] () {
+        set_server_midi_input (midi_proc, nullptr);
+      });
+    }
+  midi_proc_ = nullptr;
+}
+
+void
 ServerImpl::close_midi_driver()
 {
+  if (midi_proc_)
+    {
+      auto midi_proc = midi_proc_;
+      commit_job ([midi_proc] () {
+        set_server_midi_input (midi_proc, nullptr);
+      });
+    }
   if (midi_driver_)
     {
       midi_driver_->close();
@@ -1286,6 +1310,13 @@ ServerImpl::open_midi_driver()
       send_user_message (umsg);
       midi_driver_ = MidiDriver::open ("null", Driver::READONLY, &error);
     }
+  if (!midi_proc_)
+    midi_proc_ = create_server_midi_input();
+  auto midi_proc = midi_proc_;
+  auto midi_driver = midi_driver_;
+  commit_job ([midi_proc, midi_driver] () {
+    set_server_midi_input (midi_proc, midi_driver);
+  });
   return midi_driver_ ? Error::NONE : error;
 }
 
@@ -1389,6 +1420,16 @@ ServerImpl::test_counter_set (int v)
 }
 
 void
+ServerImpl::assign_event_source (AudioSignal::Processor &proc)
+{
+  AudioSignal::Chain *container = dynamic_cast<AudioSignal::Chain*> (&proc);
+  assert_return (container != nullptr);
+  if (!midi_proc_)
+    midi_proc_ = create_server_midi_input();
+  container->set_event_source (midi_proc_);
+}
+
+void
 ServerImpl::add_pcm_output_processor (AudioSignal::ProcessorP procp)
 {
   BseServer *self = this->as<BseServer*>();
@@ -1405,6 +1446,58 @@ ServerImpl::del_pcm_output_processor (AudioSignal::ProcessorP procp)
 }
 
 } // Bse
+
+// == MidiInput ==
+// Processor providing MIDI device events
+class ServerMidiInput : public AudioSignal::Processor {
+  void
+  query_info (ProcessorInfo &info) override
+  {
+    info.uri = "Bse.AudioSignal.Server.MidiInput";
+    info.version = "0";
+    info.label = "Server.MidiInput";
+    // leave unlisted: info.category = "Input & Output";
+  }
+  void
+  initialize () override
+  {
+    prepare_event_output();
+  }
+  void configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override {}
+  void adjust_param (ParamId tag) {}
+  void reset (const RenderSetup &rs) override {}
+  void
+  render (const RenderSetup &rs, uint n_frames) override
+  {
+    if (midi_driver_)
+      midi_driver_->fetch_events (get_event_output(), sample_rate());
+  }
+  MidiDriverP midi_driver_;
+public:
+  void
+  set_midi_driver (MidiDriverP mididriver)
+  {
+    midi_driver_ = mididriver;
+  }
+};
+static auto servermidiinput = Bse::enroll_asp<ServerMidiInput>();
+
+static void
+set_server_midi_input (AudioSignal::ProcessorP proc, MidiDriverP midi_driver)
+{
+  ServerMidiInput *midiproc = dynamic_cast<ServerMidiInput*> (&*proc);
+  if (midiproc)
+    midiproc->set_midi_driver (midi_driver);
+}
+
+static AudioSignal::ProcessorP
+create_server_midi_input()
+{
+  AudioSignal::ProcessorP proc = AudioSignal::Processor::registry_create ("Bse.AudioSignal.Server.MidiInput");
+  ServerMidiInput *midiproc = dynamic_cast<ServerMidiInput*> (&*proc);
+  assert_return (midiproc, {});
+  return proc;
+}
 
 // == Allocator Tests ==
 namespace { // Anon

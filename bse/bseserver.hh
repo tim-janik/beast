@@ -57,10 +57,12 @@ class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   bool               pcm_input_checked_ = false;
   PcmDriverP         pcm_driver_;
   MidiDriverP        midi_driver_;
+  AudioSignal::ProcessorP midi_proc_;
 protected:
   virtual            ~ServerImpl            ();
 public:
   void                enginechange          (bool active);
+  void                shutdown_             ();
   void                commit_job            (const std::function<void()> &lambda);
   SharedBlock         allocate_shared_block (int64 length);
   void                release_shared_block  (const SharedBlock &block);
@@ -75,6 +77,7 @@ public:
   void                close_pcm_driver      ();
   void                add_pcm_output_processor (AudioSignal::ProcessorP procp);
   void                del_pcm_output_processor (AudioSignal::ProcessorP procp);
+  void                assign_event_source      (AudioSignal::Processor &proc);
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;
