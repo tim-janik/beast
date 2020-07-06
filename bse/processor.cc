@@ -1112,6 +1112,17 @@ Processor::reconfigure (IBusId ibusid, SpeakerArrangement ipatch, OBusId obusid,
   assign_iobufs();
 }
 
+// == ProcessorManager ==
+auto
+ProcessorManager::pm_render (Processor &p, const RenderSetup &r, uint n)
+{
+  // TODO: introduce rendering engine
+  // This is supposed to be just a trampoline, but the only single hook into renderig atm
+  if (BSE_UNLIKELY (p.estreams_) && !BSE_ISLIKELY (p.estreams_->estream.empty()))
+    p.estreams_->estream.clear();
+  return p.render (r, n);
+}
+
 // == LogState ==
 enum LogState { MSG, HAVE, REQUEST, MATCH, MISS };
 static const char*
@@ -1267,8 +1278,11 @@ Chain::render (const RenderSetup &rs, uint n_frames)
 {
   constexpr OBusId OUT1 = OBusId (1);
   render_setup_ = &rs;
+  // make sure event source is rendered
+  if (eproc_)
+    pm_render (*eproc_, *render_setup_, n_frames);
   // render inlet and all processors in chain
-  inlet_->render (*render_setup_, n_frames);
+  pm_render (*inlet_, *render_setup_, n_frames);
   Processor *last = nullptr;
   for (size_t i = 0; i < processors_.size(); i++)
     {
@@ -1312,7 +1326,7 @@ Chain::render_frames (uint n_frames)
   while (n_frames)
     {
       const uint blocksize = std::min (n_frames, MAX_RENDER_BLOCK_SIZE);
-      render (*render_setup_, blocksize);
+      pm_render (*this, *render_setup_, blocksize);
       n_frames -= blocksize;
     }
 }

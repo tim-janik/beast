@@ -349,8 +349,7 @@ protected:
   static auto pm_remove_all_buses  (Processor &p)       { return p.remove_all_buses(); }
   static auto pm_disconnect_ibuses (Processor &p)       { return p.disconnect_ibuses(); }
   static auto pm_disconnect_obuses (Processor &p)       { return p.disconnect_obuses(); }
-  static auto pm_render            (Processor &p, const RenderSetup &r, uint n)
-                                   { return p.render (r, n); }
+  static auto pm_render            (Processor &p, const RenderSetup &r, uint n);
   static auto pm_connect           (Processor &p, IBusId i, Processor &d, OBusId o)
                                    { return p.connect (i, d, o); }
   static auto pm_connect_events    (Processor &oproc, Processor &iproc)
