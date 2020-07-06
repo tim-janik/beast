@@ -398,7 +398,7 @@ Processor::Processor ()
 /// The destructor is called when the last std::shared_ptr<> reference drops.
 Processor::~Processor ()
 {
-  release_iobufs();
+  remove_all_buses();
 }
 
 const Processor::FloatBuffer&
@@ -725,6 +725,75 @@ Processor::configure (uint n_ibuses, const SpeakerArrangement *ibuses,
                       uint n_obuses, const SpeakerArrangement *obuses)
 {}
 
+/// Prepare the Processor to receive Event objects during render() via get_event_input().
+/// Note, remove_all_buses() will remove the Event input created by this function.
+void
+Processor::prepare_event_input ()
+{
+  if (!estreams_)
+    estreams_ = new EventStreams();
+  assert_return (estreams_->has_event_input == false);
+  estreams_->has_event_input = true;
+}
+
+static const EventStream empty_event_stream; // dummy
+
+/// Access the current input EventRange during render(), needs prepare_event_input().
+EventRange
+Processor::get_event_input ()
+{
+  assert_return (estreams_ && estreams_->has_event_input, EventRange (empty_event_stream));
+  if (estreams_ && estreams_->oproc && estreams_->oproc->estreams_)
+    return EventRange (estreams_->oproc->estreams_->estream);
+  return EventRange (empty_event_stream);
+}
+
+/// Prepare the Processor to produce Event objects during render() via get_event_output().
+/// Note, remove_all_buses() will remove the Event output created by this function.
+void
+Processor::prepare_event_output ()
+{
+  if (!estreams_)
+    estreams_ = new EventStreams();
+  assert_return (estreams_->has_event_output == false);
+  estreams_->has_event_output = true;
+}
+
+/// Access the current output EventStream during render(), needs prepare_event_input().
+EventStream&
+Processor::get_event_output ()
+{
+  assert_return (estreams_ != nullptr, const_cast<EventStream&> (empty_event_stream));
+  return estreams_->estream;
+}
+
+/// Disconnect event input if a connection is present.
+void
+Processor::disconnect_event_input()
+{
+  if (estreams_ && estreams_->oproc)
+    {
+      Processor &oproc = *estreams_->oproc;
+      assert_return (oproc.estreams_);
+      const bool backlink = vector_erase_element (oproc.outputs_, { this, EventStreams::EVENT_ISTREAM });
+      estreams_->oproc = nullptr;
+      assert_return (backlink == true);
+    }
+}
+
+/// Connect event input to event output of Processor `oproc`.
+void
+Processor::connect_event_input (Processor &oproc)
+{
+  assert_return (has_event_input());
+  assert_return (oproc.has_event_output());
+  if (estreams_ && estreams_->oproc)
+    disconnect_event_input();
+  estreams_->oproc = &oproc;
+  // register backlink
+  oproc.outputs_.push_back ({ this, EventStreams::EVENT_ISTREAM });
+}
+
 /// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
 IBusId
 Processor::add_input_bus (CString uilabel, SpeakerArrangement speakerarrangement,
@@ -865,12 +934,19 @@ Processor::remove_all_buses ()
   release_iobufs();
   iobuses_.clear();
   output_offset_ = 0;
+  if (estreams_)
+    {
+      assert_return (!estreams_->oproc && outputs_.empty());
+      delete estreams_; // must be disconnected beforehand
+      estreams_ = nullptr;
+    }
 }
 
 /// Reset input bus buffer data.
 void
 Processor::disconnect_ibuses()
 {
+  disconnect (EventStreams::EVENT_ISTREAM);
   for (size_t i = 0; i < n_ibuses(); i++)
     disconnect (IBusId (1 + i));
 }
@@ -891,6 +967,8 @@ Processor::disconnect_obuses()
 void
 Processor::disconnect (IBusId ibusid)
 {
+  if (EventStreams::EVENT_ISTREAM == ibusid)
+    return disconnect_event_input();
   const size_t ibusindex = size_t (ibusid) - 1;
   assert_return (ibusindex < n_ibuses());
   IBus &ibus = iobus (ibusid);
@@ -928,6 +1006,7 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   // connect
   ibus.proc = &oproc;
   ibus.obusid = obusid;
+  // register backlink
   obus.fbuffer_concounter += 1; // conection counter
   oproc.outputs_.push_back ({ this, ibusid });
 }
@@ -964,6 +1043,8 @@ Processor::reset_state (const RenderSetup &rs)
   sample_rate_ = samplerate;
   ensure_initialized();
   flags_ |= HAS_RESET;
+  if (estreams_)
+    estreams_->estream.clear();
   reset (rs);
 }
 
@@ -1130,13 +1211,14 @@ Chain::Chain (SpeakerArrangement iobuses) :
   ispeakers_ (iobuses), ospeakers_ (iobuses)
 {
   assert_return (speaker_arrangement_count_channels (iobuses) > 0);
-  inlet = std::make_shared<Inlet> (*this);
+  inlet_ = std::make_shared<Inlet> (*this);
 }
 
 Chain::~Chain()
 {
-  pm_remove_all_buses (*inlet);
-  inlet = nullptr;
+  pm_remove_all_buses (*inlet_);
+  inlet_ = nullptr;
+  eproc_ = nullptr;
 }
 
 void
@@ -1146,6 +1228,15 @@ Chain::query_info (ProcessorInfo &info)
   info.label = "Bse::AudioSignal::Chain";
 }
 static auto bseaudiosignalchain = Bse::enroll_asp<AudioSignal::Chain>();
+
+/// Assign event source for future auto-connections of chld processors.
+void
+Chain::set_event_source (ProcessorP eproc)
+{
+  if (eproc)
+    assert_return (eproc->has_event_output());
+  eproc_ = eproc;
+}
 
 void
 Chain::initialize ()
@@ -1165,7 +1256,7 @@ void
 Chain::reset (const RenderSetup &rs)
 {
   render_setup_ = &rs;
-  inlet->reset_state (*render_setup_);
+  inlet_->reset_state (*render_setup_);
   for (size_t i = 0; i < processors_.size(); i++)
     processors_[i]->reset_state (*render_setup_);
 }
@@ -1176,7 +1267,7 @@ Chain::render (const RenderSetup &rs, uint n_frames)
   constexpr OBusId OUT1 = OBusId (1);
   render_setup_ = &rs;
   // render inlet and all processors in chain
-  inlet->render (*render_setup_, n_frames);
+  inlet_->render (*render_setup_, n_frames);
   Processor *last = nullptr;
   for (size_t i = 0; i < processors_.size(); i++)
     {
@@ -1272,7 +1363,7 @@ Chain::reconnect (size_t start)
     pm_disconnect_ibuses (*processors_[i]);
   // reconnect pairwise
   for (size_t i = start; i < processors_.size(); i++)
-    chain_up (*(i ? processors_[i - 1] : inlet), *processors_[i]);
+    chain_up (*(i ? processors_[i - 1] : inlet_), *processors_[i]);
 }
 
 /// Connect the main audio input of `next` to audio output of `prev`.
@@ -1331,6 +1422,14 @@ Chain::chain_up (Processor &prev, Processor &next)
     }
   else
     logstate (MISS, &prev, obusid, &ospa, &next, ibusid, &ispa);
+  // assign event source
+  if (eproc_)
+    {
+      if (prev.has_event_input())
+        pm_connect_events (*eproc_, prev);
+      if (next.has_event_input())
+        pm_connect_events (*eproc_, next);
+    }
   return n_connected;
 }
 

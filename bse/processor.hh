@@ -2,6 +2,7 @@
 #ifndef __BSE_PROCESSOR_HH__
 #define __BSE_PROCESSOR_HH__
 
+#include <bse/midievent.hh>
 #include <bse/floatutils.hh>
 
 namespace Bse {
@@ -168,6 +169,7 @@ struct RenderSetup;
 class Processor : public std::enable_shared_from_this<Processor>, public FastMemory::NewDeleteBase {
   struct IBus;
   struct OBus;
+  struct EventStreams;
   union  PBus;
   struct PParam;
   class FloatBuffer;
@@ -183,6 +185,7 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   std::vector<PBus>        iobuses_;
   std::vector<PParam>      params_;
   std::vector<OConnection> outputs_;
+  EventStreams            *estreams_ = nullptr;
 protected:
   enum { INITIALIZED = 1, HAS_RESET = 2, };
   std::atomic<uint32>      flags_ = 0;
@@ -252,6 +255,13 @@ protected:
   float*        oblock            (OBusId b, uint c);
   void          assign_oblock     (OBusId b, uint c, float val);
   void          redirect_oblock   (OBusId b, uint c, const float *block);
+  // event stream handling
+  void          prepare_event_input    ();
+  EventRange    get_event_input        ();
+  void          prepare_event_output   ();
+  EventStream&  get_event_output       ();
+  void          connect_event_input    (Processor &oproc);
+  void          disconnect_event_input ();
 public:
   struct RegistryEntry;
   using RegistryList = std::vector<RegistryEntry>;
@@ -286,6 +296,8 @@ public:
   const float*  ifloats           (IBusId b, uint c) const;
   const float*  ofloats           (OBusId b, uint c) const;
   static uint64 timestamp         ();
+  bool          has_event_input   ();
+  bool          has_event_output  ();
   // Registration and factory
   static RegistryList  registry_list      ();
   static RegistryEntry registry_lookup    (const std::string &uuiduri);
@@ -303,18 +315,11 @@ struct AudioTiming {
   uint64 frame_stamp = ~uint64 (0);     ///< Number of sample frames processed since playback start.
 };
 
-/// An (almost) endless stream of incoming or outgoing events.
-struct EventStream {
-  // struct Event { uint offset; /* in n_frames */ union Data { ... }; };
-};
-
 /// Processor configuration and setup for event and audio calculations.
 struct RenderSetup {
   const double       mix_freq;    ///< Same as `sample_rate` cast to double.
   const uint         sample_rate; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
   const AudioTiming &timing;
-  EventStream        input_events;
-  EventStream        output_events;
   explicit RenderSetup (uint32 samplerate, AudioTiming &atiming);
 };
 
@@ -347,6 +352,8 @@ protected:
                                    { return p.render (r, n); }
   static auto pm_connect           (Processor &p, IBusId i, Processor &d, OBusId o)
                                    { return p.connect (i, d, o); }
+  static auto pm_connect_events    (Processor &oproc, Processor &iproc)
+                                   { return iproc.connect_event_input (oproc); }
   static auto pm_reconfigure       (Processor &p, IBusId i, SpeakerArrangement ip, OBusId o, SpeakerArrangement op)
                                    { return p.reconfigure (i, ip, o, op); }
 };
@@ -356,7 +363,8 @@ protected:
 class Chain : public Processor, ProcessorManager {
   class Inlet;
   using InletP = std::shared_ptr<Inlet>;
-  InletP inlet;
+  InletP inlet_;
+  ProcessorP eproc_;
   vector<ProcessorP> processors_;
   const RenderSetup *render_setup_ = nullptr;
   const SpeakerArrangement ispeakers_ = SpeakerArrangement (0);
@@ -376,6 +384,7 @@ public:
   ProcessorP at             (uint nth);
   size_t     size           ();
   void       render_frames  (uint n_frames);
+  void       set_event_source (ProcessorP eproc);
 };
 using ChainP = std::shared_ptr<Chain>;
 
@@ -408,6 +417,15 @@ union Processor::PBus {
   OBus    obus;
   BusInfo pbus;
   explicit PBus (const std::string &ident, const std::string &label, SpeakerArrangement sa);
+};
+
+// Processor internal input/output event stream book keeping
+struct Processor::EventStreams {
+  static constexpr auto EVENT_ISTREAM = IBusId (0xff01); // *not* an input bus, ID is used for OConnection
+  Processor  *oproc = nullptr;
+  EventStream estream;
+  bool        has_event_input = false;
+  bool        has_event_output = false;
 };
 
 // Processor internal parameter book keeping
@@ -460,6 +478,20 @@ inline uint
 Processor::sample_rate () const
 {
   return sample_rate_;
+}
+
+/// Returns `true` if this Processor has an event input stream.
+inline bool
+Processor::has_event_input()
+{
+  return estreams_ && estreams_->has_event_input;
+}
+
+/// Returns `true` if this Processor has an event output stream.
+inline bool
+Processor::has_event_output()
+{
+  return estreams_ && estreams_->has_event_output;
 }
 
 /// Number of input buses configured for this Processor.
