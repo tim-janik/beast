@@ -1385,9 +1385,11 @@ struct IpcDispatcher {
     std::string *errorp = NULL;
     try {
       errorp = (*closure) (cbi);
-    }
-    catch (const std::exception &exc) {
-      errorp = new std::string (CallbackInfo::application_error + std::string (": ") + exc.what());
+    } catch (const std::exception &exc) {
+      if (!exception_handler_)
+        throw; // unhandled, rethrow
+      const std::string excstr = exception_handler_ (exc);
+      errorp = new std::string (CallbackInfo::application_error + std::string (": ") + excstr);
     }
     if (errorp)
       {
@@ -1405,8 +1407,19 @@ struct IpcDispatcher {
       }
     return create_reply (id, cbi.get_result(), !cbi.have_result(), cbi.document());
   }
+  using ExceptionHandler = std::function<std::string (const std::exception&)>;
+  /// Swap out a previously set exception handler.
+  /// Setting an exception handler allows turning user code exceptions into `error -32500` replies.
+  ExceptionHandler
+  set_exception_handler (const ExceptionHandler &handler)
+  {
+    ExceptionHandler old = exception_handler_;
+    exception_handler_ = handler;
+    return old;
+  }
 private:
   std::map<std::string, Closure> extra_methods;
+  ExceptionHandler exception_handler_;
   std::string
   create_reply (size_t id, JsonValue &result, bool skip_result, rapidjson::Document &d)
   {
