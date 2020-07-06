@@ -67,6 +67,7 @@ std::string        speaker_arrangement_desc           (SpeakerArrangement spa);
 /// Detailed information and common properties of Processor subclasses.
 struct ProcessorInfo {
   CString uri;          ///< Unique identifier for de-/serialization.
+  CString version;      ///< Version identifier for de-/serialization.
   CString label;        ///< Preferred user interface name.
   CString category;     ///< Category to allow grouping for processors of similar function.
   CString blurb;        ///< Short description for overviews.
