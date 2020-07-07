@@ -455,14 +455,20 @@ class BlepSynth : public AudioSignal::Processor {
 
     EventRange erange = get_event_input();
     for (const auto &ev : erange)
-      switch (ev.type)
+      switch (ev.message())
         {
-        case Event::NOTE_OFF:
+        case Message::NOTE_OFF:
           note_off (ev.channel, ev.pitch);
           break;
-        case Event::NOTE_ON:
+        case Message::NOTE_ON:
           note_on (ev.channel, ev.pitch, ev.velocity);
           break;
+        case Message::ALL_NOTES_OFF:
+          for (auto voice : active_voices_)
+            if (voice->state_ == Voice::ON && voice->channel_ == ev.channel)
+              note_off (voice->channel_, voice->midi_note_);
+          break;
+        default: ;
         }
 
     assert_return (n_ochannels (stereout_) == 2);
