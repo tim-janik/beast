@@ -1389,6 +1389,15 @@ Chain::chain_up (Processor &prev, Processor &next)
   assert_return (this != &next, 0);
   const uint ni = next.n_ibuses();
   const uint no = prev.n_obuses();
+  // assign event source
+  if (eproc_)
+    {
+      if (prev.has_event_input())
+        pm_connect_events (*eproc_, prev);
+      if (next.has_event_input())
+        pm_connect_events (*eproc_, next);
+    }
+  // check need for audio connections
   if (ni == 0 || no == 0)
     {
       logstate (MISS, &prev, OBusId (no ? 1 : 0), nullptr, &next, IBusId (ni ? 1 : 0), nullptr);
@@ -1437,14 +1446,6 @@ Chain::chain_up (Processor &prev, Processor &next)
     }
   else
     logstate (MISS, &prev, obusid, &ospa, &next, ibusid, &ispa);
-  // assign event source
-  if (eproc_)
-    {
-      if (prev.has_event_input())
-        pm_connect_events (*eproc_, prev);
-      if (next.has_event_input())
-        pm_connect_events (*eproc_, next);
-    }
   return n_connected;
 }
 
