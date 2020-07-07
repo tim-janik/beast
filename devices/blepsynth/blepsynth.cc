@@ -352,6 +352,7 @@ class BlepSynth : public AudioSignal::Processor {
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
   {
     remove_all_buses();
+    prepare_event_input();
     stereout_ = add_output_bus ("Stereo Out", SpeakerArrangement::STEREO);
     assert_return (bus_info (stereout_).ident == "stereo-out");
   }
@@ -449,6 +450,18 @@ class BlepSynth : public AudioSignal::Processor {
     check_note (pid_e_, old_e_, 64);
     check_note (pid_f_, old_f_, 65);
     check_note (pid_g_, old_g_, 67);
+
+    EventRange erange = get_event_input();
+    for (const auto &ev : erange)
+      switch (ev.type)
+        {
+        case Event::NOTE_OFF:
+          note_off (ev.channel, ev.pitch);
+          break;
+        case Event::NOTE_ON:
+          note_on (ev.channel, ev.pitch, ev.velocity);
+          break;
+        }
 
     assert_return (n_ochannels (stereout_) == 2);
     bool   need_free = false;
