@@ -7,6 +7,7 @@
 #include "bsemididecoder.hh"
 
 #define ADEBUG(...)             Bse::debug ("alsa", __VA_ARGS__)
+#define MDEBUG(...)             Bse::debug ("midievent", __VA_ARGS__)
 
 #define WITH_MIDI_POLL  0
 
@@ -803,6 +804,7 @@ class AlsaSeqMidiDriver : public MidiDriver {
   int               queue_ = -1, iport_ = -1, total_fds_ = 0;
   snd_midi_event_t *evparser_ = nullptr;
   PortSubscribe     subs_;
+  bool              mdebug_ = false;
   PortSubscribe
   make_port_subscribe (snd_seq_port_subscribe_t *other = nullptr)
   {
@@ -1120,6 +1122,8 @@ public:
     ADEBUG ("SeqMIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     if (error != Error::NONE)
       cleanup();
+    else
+      mdebug_ = debug_key_enabled ("midievent");
     return error;
   }
   void
@@ -1168,6 +1172,7 @@ public:
     cleanup();
     ADEBUG ("SeqMIDI: %s: CLOSE: r=%d w=%d", devid_, readable(), writable());
     flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+    mdebug_ = false;
   }
   static void
   pollfree_func (void *data)
@@ -1277,6 +1282,9 @@ public:
         }
     if (r < 0 && r != -EAGAIN) // -ENOSPC - sequencer FIFO overran
       ADEBUG ("SeqMIDI: %s: snd_seq_event_input: %s", devid_, snd_strerror (r));
+    if (BSE_UNLIKELY (mdebug_))
+      for (size_t i = old_size; i < estream.size(); i++)
+        MDEBUG ("%s", (estream.begin() + i)->to_string());
     return estream.size() - old_size;
   }
 };
