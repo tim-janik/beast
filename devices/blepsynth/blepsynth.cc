@@ -360,9 +360,8 @@ class BlepSynth : public AudioSignal::Processor {
   {
   }
   void
-  reset (const RenderSetup &rs) override
-  {
-  }
+  reset () override
+  {}
   void
   init_osc (BlepUtils::OscImpl& osc, float freq)
   {
@@ -442,7 +441,7 @@ class BlepSynth : public AudioSignal::Processor {
       }
   }
   void
-  render (const RenderSetup &rs, uint n_frames) override
+  render (uint n_frames) override
   {
     /* TODO: replace this with true midi input */
     check_note (pid_c_, old_c_, 60);
