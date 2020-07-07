@@ -55,22 +55,22 @@ Event::to_string () const
     case NOTE_OFF:        if (!et) et = "NOTE_OFF";
     case NOTE_ON:         if (!et) et = "NOTE_ON";
     case AFTERTOUCH:      if (!et) et = "AFTERTOUCH";
-      return string_format ("%+3d %s ch=%u pitch=%d vel=%f tune=%f id=%x",
-                            frame, et, channel, pitch, velocity, tuning, noteid);
+      return string_format ("%+4d ch=%-2u %s pitch=%d vel=%f tune=%f id=%x",
+                            frame, channel, et, pitch, velocity, tuning, noteid);
     case CONTROL_CHANGE:        if (!et) et = "CONTROL_CHANGE";
-      return string_format ("%+3d %s ch=%u control=%d value=%f (%02x)",
-                            frame, et, channel, param, value, cval);
+      return string_format ("%+4d ch=%-2u %s control=%d value=%f (%02x)",
+                            frame, channel, et, param, value, cval);
     case PROGRAM_CHANGE:        if (!et) et = "PROGRAM_CHANGE";
-      return string_format ("%+3d %s ch=%u program=%d",
-                            frame, et, channel, param);
+      return string_format ("%+4d ch=%-2u %s program=%d",
+                            frame, channel, et, param);
     case CHANNEL_PRESSURE:      if (!et) et = "CHANNEL_PRESSURE";
     case PITCH_BEND:            if (!et) et = "PITCH_BEND";
-      return string_format ("%+3d %s ch=%u value=%+f",
-                            frame, et, channel, value);
+      return string_format ("%+4d ch=%-2u %s value=%+f",
+                            frame, channel, et, value);
     case SYSEX:                 if (!et) et = "SYSEX";
-      return string_format ("%+3d %s (unhandled)", frame, et);
+      return string_format ("%+4d %s (unhandled)", frame, et);
     default:
-      return string_format ("%+3d Event-%u (unhandled)", frame, type);
+      return string_format ("%+4d Event-%u (unhandled)", frame, type);
     }
 }
 
