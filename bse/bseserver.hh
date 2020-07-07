@@ -57,18 +57,20 @@ class ServerImpl : public virtual ServerIface, public virtual ContainerImpl {
   bool               pcm_input_checked_ = false;
   PcmDriverP         pcm_driver_;
   MidiDriverP        midi_driver_;
-  AudioSignal::ProcessorP midi_proc_;
+  AudioSignal::Engine     *engine_ = nullptr;
+  AudioSignal::ProcessorP  midi_proc_;
 protected:
-  virtual            ~ServerImpl            ();
+  virtual             ~ServerImpl            ();
 public:
-  void                enginechange          (bool active);
-  void                shutdown_             ();
+  AudioSignal::Engine& global_engine         ();
+  void                 enginechange          (bool active);
+  void                 shutdown_             ();
+  SharedBlock          allocate_shared_block (int64 length);
+  void                 release_shared_block  (const SharedBlock &block);
+  size_t               shared_block_offset   (const void *mem) const;
+  void                 set_ipc_handler       (IpcHandler *ipch);
+  IpcHandler*          get_ipc_handler       ();
   void                commit_job            (const std::function<void()> &lambda);
-  SharedBlock         allocate_shared_block (int64 length);
-  void                release_shared_block  (const SharedBlock &block);
-  size_t              shared_block_offset   (const void *mem) const;
-  void                set_ipc_handler       (IpcHandler *ipch);
-  IpcHandler*         get_ipc_handler       ();
   Error               open_midi_driver      ();
   void                close_midi_driver     ();
   PcmDriverP          pcm_driver            () const { return pcm_driver_; }

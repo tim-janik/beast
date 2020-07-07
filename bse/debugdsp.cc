@@ -124,10 +124,10 @@ class DbgParameterizer : public AudioSignal::Processor {
   adjust_param (ParamId tag)
   {}
   void
-  reset (const RenderSetup &rs) override
+  reset() override
   {}
   void
-  render (const RenderSetup &rs, uint n_frames) override
+  render (uint n_frames) override
   {
     assert_return (n_ichannels (stereoin) == 2);
     assert_return (n_ichannels (auxin) == 2);

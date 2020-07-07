@@ -642,12 +642,22 @@ namespace Bse {
 
 ServerImpl::ServerImpl (BseObject *bobj) :
   ContainerImpl (bobj)
-{}
+{
+  auto *audio_timing = new AudioSignal::AudioTiming { 120, 0 };
+  engine_ = new AudioSignal::Engine { bse_engine_sample_freq(), *audio_timing };
+}
 
 ServerImpl::~ServerImpl ()
 {
   close_pcm_driver();
   close_midi_driver();
+  delete engine_;
+}
+
+AudioSignal::Engine&
+ServerImpl::global_engine ()
+{
+  return *engine_;
 }
 
 bool
@@ -1465,9 +1475,9 @@ class ServerMidiInput : public AudioSignal::Processor {
   }
   void configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override {}
   void adjust_param (ParamId tag) {}
-  void reset (const RenderSetup &rs) override {}
+  void reset () override {}
   void
-  render (const RenderSetup &rs, uint n_frames) override
+  render (uint n_frames) override
   {
     if (midi_driver_)
       midi_driver_->fetch_events (get_event_output(), sample_rate());
@@ -1493,7 +1503,7 @@ set_server_midi_input (AudioSignal::ProcessorP proc, MidiDriverP midi_driver)
 static AudioSignal::ProcessorP
 create_server_midi_input()
 {
-  AudioSignal::ProcessorP proc = AudioSignal::Processor::registry_create ("Bse.AudioSignal.Server.MidiInput");
+  AudioSignal::ProcessorP proc = AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), "Bse.AudioSignal.Server.MidiInput");
   ServerMidiInput *midiproc = dynamic_cast<ServerMidiInput*> (&*proc);
   assert_return (midiproc, {});
   return proc;

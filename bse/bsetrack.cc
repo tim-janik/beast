@@ -1068,9 +1068,8 @@ bse_track_prepare (BseSource *source)
 {
   Bse::TrackImpl &self = *source->as<Bse::TrackImplP>();
   auto &devcon = *dynamic_cast<Bse::DeviceContainerImpl*> (&*self.device_container());
-  self.render_setup (true);
   BSE_SOURCE_CLASS (parent_class)->prepare (source); // chain up
-  devcon.processor()->reset_state (self.render_setup());
+  devcon.processor()->reset_state();
   BSE_SERVER.add_pcm_output_processor (devcon.processor());
 }
 
@@ -1421,18 +1420,6 @@ TrackImpl::device_container()
       BSE_SERVER.assign_event_source (*device_container_->processor());
     }
   return device_container_;
-}
-
-AudioSignal::RenderSetup&
-TrackImpl::render_setup (bool needsreset)
-{
-  if (needsreset)
-    {
-      delete render_setup_;
-      static AudioSignal::AudioTiming audio_timing { 120, 0 }; // FIXME
-      render_setup_ = new AudioSignal::RenderSetup (bse_engine_sample_freq(), audio_timing);
-    }
-  return *render_setup_;
 }
 
 } // Bse

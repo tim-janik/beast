@@ -226,7 +226,7 @@ DeviceImplP
 DeviceImpl::create_single_device (const String &uri)
 {
   DeviceImplP devicep;
-  AudioSignal::ProcessorP procp = AudioSignal::Processor::registry_create (uri);
+  AudioSignal::ProcessorP procp = AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), uri);
   AudioSignal::ChainP chainp = std::dynamic_pointer_cast<AudioSignal::Chain> (procp);
   if (chainp) // FIXME: need Processor container interface
     devicep = FriendAllocator<AspDeviceContainerImpl>::make_shared (uri, chainp);
