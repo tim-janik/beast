@@ -33,6 +33,19 @@ Event::operator= (const Event &other)
 Event::~Event ()
 {}
 
+/// Determine extended message type an Event.
+Message
+Event::message () const
+{
+  if (type == Event::CONTROL_CHANGE)
+    {
+      if (param >= uint (Message::ALL_SOUND_OFF) &&
+          param <= uint (Message::POLY_MODE_ON))
+        return Message (param);
+    }
+  return Message (type);
+}
+
 std::string
 Event::to_string () const
 {

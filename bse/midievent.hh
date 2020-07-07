@@ -11,6 +11,27 @@ namespace AudioSignal {
 /// Type of MIDI Events.
 enum class EventType : uint8_t {};
 
+/// Extended type information for Event.
+enum class Message : int32_t {
+  NONE                          = 0,
+  ALL_SOUND_OFF                 = 120,
+  RESET_ALL_CONTROLLERS         = 121,
+  LOCAL_CONTROL                 = 122,
+  ALL_NOTES_OFF                 = 123,
+  OMNI_MODE_OFF                 = 124,
+  OMNI_MODE_ON                  = 125,
+  MONO_MODE_ON                  = 126,
+  POLY_MODE_ON                  = 127,
+  NOTE_OFF                      = 0x80,
+  NOTE_ON                       = 0x90,
+  AFTERTOUCH                    = 0xA0,
+  CONTROL_CHANGE                = 0xB0,
+  PROGRAM_CHANGE                = 0xC0,
+  CHANNEL_PRESSURE              = 0xD0,
+  PITCH_BEND                    = 0xE0,
+  SYSEX                         = 0xF0,
+};
+
 /// MIDI Event data structure.
 struct Event {
   constexpr static EventType NOTE_OFF         = EventType (0x80);
@@ -47,6 +68,7 @@ struct Event {
   /*copy*/ Event     (const Event &other);
   Event&   operator= (const Event &other);
   /*des*/ ~Event     ();
+  Message  message   () const;
   std::string  to_string  () const;
 };
 
