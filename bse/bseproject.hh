@@ -20,6 +20,7 @@ struct BseProject : BseContainer {
   GSList	     *items;
   guint               in_undo : 1;
   guint               in_redo : 1;
+  guint               may_auto_stop : 1;
   BseUndoStack       *undo_stack;
   BseUndoStack       *redo_stack;
   Bse::ProjectState   state;
@@ -89,6 +90,7 @@ public:
   virtual void               stop_playback       () override;
   virtual void               deactivate          () override;
   virtual void               stop                () override;
+  virtual void               auto_stop           (bool maystop) override;
   virtual void               auto_deactivate     (int msec_delay) override;
   virtual int                undo_depth          () override;
   virtual void               undo                () override;

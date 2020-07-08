@@ -7,6 +7,10 @@
 #include "bsemididecoder.hh"
 
 #define ADEBUG(...)             Bse::debug ("alsa", __VA_ARGS__)
+#define MDEBUG(...)             Bse::debug ("midievent", __VA_ARGS__)
+
+#define WITH_MIDI_POLL  0
+
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
 #define return_error(reason, ERRMEMB) do {      \
   ADEBUG ("PCM: %s: %s: %s",                    \
@@ -97,7 +101,7 @@ init_lib_alsa()
 }
 
 static void
-list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
+list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_rawmidi)
 {
   init_lib_alsa();
   // discover virtual (non-hw) devices
@@ -196,14 +200,14 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
           entry.readonly = !writable;
           entry.writeonly = !readable;
           entry.modem = pcmclass == SND_PCM_CLASS_MODEM;
-          entry.priority = (is_usb ? Driver::ALSA_USB : Driver::ALSA) + Driver::WCARD * cindex + Driver::WDEV * dindex;
+          entry.priority = (is_usb ? Driver::ALSA_USB : Driver::ALSA_KERN) + Driver::WCARD * cindex + Driver::WDEV * dindex;
           entries.push_back (entry);
           ADEBUG ("DISCOVER: PCM: %s - %s", entry.devid, entry.device_name);
         }
       // discover MIDI hardware
-      snd_rawmidi_info_t *minfo = !need_midi ? nullptr : alsa_alloca0 (snd_rawmidi_info);
+      snd_rawmidi_info_t *minfo = !need_rawmidi ? nullptr : alsa_alloca0 (snd_rawmidi_info);
       dindex = -1;
-      while (need_midi && snd_ctl_rawmidi_next_device (chandle, &dindex) == 0 && dindex >= 0)
+      while (need_rawmidi && snd_ctl_rawmidi_next_device (chandle, &dindex) == 0 && dindex >= 0)
         {
           snd_rawmidi_info_set_device (minfo, dindex);
           uint total_subdevs = 0;
@@ -245,9 +249,9 @@ list_alsa_drivers (Driver::EntryVec &entries, bool need_pcm, bool need_midi)
               entry.capabilities = (readable ? "MIDI Input" : "") + joiner + (writable ? "MIDI Output" : "");
               entry.readonly = !writable;
               entry.writeonly = !readable;
-              entry.priority = Driver::ALSA + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
+              entry.priority = Driver::ALSA_KERN + Driver::WCARD * cindex + Driver::WDEV * dindex + Driver::WSUB * subdev;
               entries.push_back (entry);
-              ADEBUG ("DISCOVER: MIDI: %s - %s", entry.devid, entry.device_name);
+              ADEBUG ("DISCOVER: RawMIDI: %s - %s", entry.devid, entry.device_name);
             }
         }
       snd_ctl_close (chandle);
@@ -633,8 +637,8 @@ static const String alsa_pcm_driverid = PcmDriver::register_driver ("alsa",
                                                                       list_alsa_drivers (entries, true, false);
                                                                     });
 
-// == AlsaMidiDriver ==
-class AlsaMidiDriver : public MidiDriver {
+// == AlsaRawMidiDriver ==
+class AlsaRawMidiDriver : public MidiDriver {
   snd_rawmidi_t  *read_handle_ = nullptr;
   snd_rawmidi_t  *write_handle_ = nullptr;
   BseMidiDecoder *midi_decoder_ = nullptr;
@@ -643,16 +647,16 @@ public:
   static MidiDriverP
   create (const String &devid)
   {
-    auto mdriverp = std::make_shared<AlsaMidiDriver> (devid);
+    auto mdriverp = std::make_shared<AlsaRawMidiDriver> (devid);
     return mdriverp;
   }
   explicit
-  AlsaMidiDriver (const String &devid) :
+  AlsaRawMidiDriver (const String &devid) :
     MidiDriver (devid)
   {
     midi_decoder_ = bse_midi_decoder_new (TRUE, FALSE, MusicalTuning::OD_12_TET);
   }
-  ~AlsaMidiDriver()
+  ~AlsaRawMidiDriver()
   {
     bse_midi_decoder_destroy (midi_decoder_);
     if (read_handle_)
@@ -698,7 +702,7 @@ public:
   static gboolean // called from Sequencer thread
   midi_io_handler_func (void *thisdata, uint n_pfds, GPollFD *pfds)
   {
-    AlsaMidiDriver *thisp = static_cast<AlsaMidiDriver*> (thisdata);
+    AlsaRawMidiDriver *thisp = static_cast<AlsaRawMidiDriver*> (thisdata);
     return thisp->midi_io_handler (n_pfds, pfds);
   }
   virtual Error
@@ -725,7 +729,7 @@ public:
         if (snd_rawmidi_params_current (read_handle_, mparams) < 0)
           error = Error::FILE_OPEN_FAILED;
         else
-          ADEBUG ("MIDI: %s: readable: buffer=%d active_sensing=%d min_avail=%d\n",
+          ADEBUG ("RawMIDI: %s: readable: buffer=%d active_sensing=%d min_avail=%d\n",
                   devid_, snd_rawmidi_params_get_buffer_size (mparams),
                   !snd_rawmidi_params_get_no_active_sensing (mparams),
                   snd_rawmidi_params_get_avail_min (mparams));
@@ -735,7 +739,7 @@ public:
         if (snd_rawmidi_params_current (write_handle_, mparams) < 0)
           error = Error::FILE_OPEN_FAILED;
         else
-          ADEBUG ("MIDI: %s: writable: buffer=%d active_sensing=%d min_avail=%d\n",
+          ADEBUG ("RawMIDI: %s: writable: buffer=%d active_sensing=%d min_avail=%d\n",
                   devid_, snd_rawmidi_params_get_buffer_size (mparams),
                   !snd_rawmidi_params_get_no_active_sensing (mparams),
                   snd_rawmidi_params_get_avail_min (mparams));
@@ -778,16 +782,516 @@ public:
           snd_rawmidi_close (write_handle_);
         write_handle_ = nullptr;
       }
-    ADEBUG ("MIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    ADEBUG ("RawMIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
     return error;
+  }
+  bool has_events   () override                 { return false; } // rawmidi only supports old API
+  uint fetch_events (AudioSignal::EventStream&,
+                     double) override           { return 0; }     // rawmidi only supports old API
+};
+
+static const String alsa_rawmidi_driverid = MidiDriver::register_driver ("alsarawmidi",
+                                                                         AlsaRawMidiDriver::create,
+                                                                         [] (Driver::EntryVec &entries) {
+                                                                           if (false)
+                                                                             list_alsa_drivers (entries, false, true);
+                                                                         });
+
+// == AlsaSeqMidiDriver ==
+class AlsaSeqMidiDriver : public MidiDriver {
+  using PortSubscribe = std::unique_ptr<snd_seq_port_subscribe_t, decltype (&snd_seq_port_subscribe_free)>;
+  snd_seq_t        *seq_ = nullptr;
+  int               queue_ = -1, iport_ = -1, total_fds_ = 0;
+  snd_midi_event_t *evparser_ = nullptr;
+  PortSubscribe     subs_;
+  bool              mdebug_ = false;
+  PortSubscribe
+  make_port_subscribe (snd_seq_port_subscribe_t *other = nullptr)
+  {
+    snd_seq_port_subscribe_t *subs = nullptr;
+    snd_seq_port_subscribe_malloc (&subs);
+    if (!subs)
+      return { nullptr, snd_seq_port_subscribe_free };
+    if (other)
+      snd_seq_port_subscribe_copy (subs, other);
+    return { subs, snd_seq_port_subscribe_free };
+  }
+public:
+  static MidiDriverP
+  create (const String &devid)
+  {
+    auto mdriverp = std::make_shared<AlsaSeqMidiDriver> (devid);
+    return mdriverp;
+  }
+  explicit
+  AlsaSeqMidiDriver (const String &devid) :
+    MidiDriver (devid), subs_ { nullptr, nullptr }
+  {}
+  ~AlsaSeqMidiDriver()
+  {
+    cleanup();
+  }
+  Error // setup seq_, queue_
+  initialize (const std::string &myname)
+  {
+    // https://www.alsa-project.org/alsa-doc/alsa-lib/seq.html
+    assert_return (seq_ == nullptr, Error::INTERNAL);
+    assert_return (queue_ == -1, Error::INTERNAL);
+    int aerror = 0;
+    if (!aerror)
+      aerror = snd_seq_open (&seq_, "default", SND_SEQ_OPEN_DUPLEX, SND_SEQ_NONBLOCK);
+    if (!aerror)
+      aerror = snd_seq_set_client_name (seq_, myname.c_str());
+    if (!aerror)
+      queue_ = snd_seq_alloc_named_queue (seq_, (myname + " SeqQueue").c_str());
+    snd_seq_queue_tempo_t *qtempo = alsa_alloca0 (snd_seq_queue_tempo);
+    snd_seq_queue_tempo_set_tempo (qtempo, 60 * 1000000 / 480); // 480 BPM in µs
+    snd_seq_queue_tempo_set_ppq (qtempo, 1920); // pulse per quarter note
+    if (!aerror)
+      aerror = snd_seq_set_queue_tempo (seq_, queue_, qtempo);
+    if (!aerror)
+      snd_seq_start_queue (seq_, queue_, nullptr);
+    if (!aerror)
+      aerror = snd_seq_drain_output (seq_);
+    ADEBUG ("SeqMIDI: %s: queue started: %.5f", myname, queue_now());
+    return Error::NONE;
+  }
+  static std::string
+  normalize (const std::string &string)
+  {
+    std::string normalized;
+    auto is_identifier_char = [] (int ch) {
+      return ( (ch >= 'A' && ch <= 'Z') ||
+               (ch >= 'a' && ch <= 'z') ||
+               (ch >= '0' && ch <= '9') ||
+               ch == '_' || ch == '$' );
+    };
+    for (size_t i = 0; i < string.size() && string[i]; ++i)
+      if (is_identifier_char (string[i]))
+        normalized += string[i];
+      else if (normalized.size() && normalized[normalized.size() - 1] != '-')
+        normalized += '-';
+    return normalized;
+  }
+  std::string
+  make_devid (int card, uint type, const std::string &clientname, int client, uint caps)
+  {
+    if (0 == (type & SND_SEQ_PORT_TYPE_MIDI_GENERIC))
+      return ""; // not suitable
+    std::string devid;
+    if ((type & SND_SEQ_PORT_TYPE_SYNTHESIZER) && (type & SND_SEQ_PORT_TYPE_HARDWARE))
+      devid = "hwsynth:";
+    else if ((type & SND_SEQ_PORT_TYPE_SYNTHESIZER) && (type & SND_SEQ_PORT_TYPE_SOFTWARE))
+      devid = "swsynth:";
+    else if (type & SND_SEQ_PORT_TYPE_SYNTHESIZER)
+      devid = "synth:";
+    else if (type & SND_SEQ_PORT_TYPE_APPLICATION)
+      devid = "midiapp:";
+    else if (type & SND_SEQ_PORT_TYPE_HARDWARE)
+      devid = "hwmidi:";
+    else if (type & SND_SEQ_PORT_TYPE_SOFTWARE)
+      devid = "swmidi:";
+    else // MIDI_GENERIC
+      devid = "gmidi:";
+    std::string cardid;
+    if (card >= 0)
+      {
+        snd_ctl_t *chandle = nullptr;
+        const auto sbuf = string_format ("hw:CARD=%u", card);
+        if (snd_ctl_open (&chandle, sbuf.c_str(), SND_CTL_NONBLOCK) >= 0 && chandle)
+          {
+            snd_ctl_card_info_t *cinfo = alsa_alloca0 (snd_ctl_card_info);
+            if (snd_ctl_card_info (chandle, cinfo) >= 0)
+              {
+                const char *cid = snd_ctl_card_info_get_id (cinfo);
+                if (cid)
+                  cardid = cid;
+              }
+            snd_ctl_close (chandle);
+          }
+      }
+    if (!cardid.empty())
+      devid += normalize (cardid);
+    else if (!clientname.empty())
+      devid += normalize (clientname);
+    else // unlikely, ALSA makes up *some* clientname
+      return ""; // not suitable
+    // devid += "."; devid += itos (port);
+    return devid;
+  }
+  bool
+  enumerate (Driver::EntryVec *entries, snd_seq_port_info_t *sinfo = nullptr, const std::string &selector = "", uint need_caps = 0)
+  {
+    assert_return (seq_ != nullptr, false);
+    snd_seq_client_info_t *cinfo = alsa_alloca0 (snd_seq_client_info);
+    snd_seq_client_info_set_client (cinfo, -1);
+    while (snd_seq_query_next_client (seq_, cinfo) == 0)
+      {
+        const int client = snd_seq_client_info_get_client (cinfo);
+        if (client == 0)
+          continue; // System Sequencer
+        snd_seq_port_info_t *pinfo = alsa_alloca0 (snd_seq_port_info);
+        snd_seq_port_info_set_client (pinfo, client);
+        snd_seq_port_info_set_port (pinfo, -1);
+        while (snd_seq_query_next_port (seq_, pinfo) == 0)
+          {
+            const uint tmask = SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+                               SND_SEQ_PORT_TYPE_SYNTHESIZER |
+                               SND_SEQ_PORT_TYPE_APPLICATION;
+            const int type = snd_seq_port_info_get_type (pinfo);
+            if (0 == (type & tmask))
+              continue;
+            const uint cmask = SND_SEQ_PORT_CAP_READ |
+                               SND_SEQ_PORT_CAP_WRITE |
+                               SND_SEQ_PORT_CAP_DUPLEX;
+            const int caps = snd_seq_port_info_get_capability (pinfo);
+            if (0 == (caps & cmask) || need_caps != (need_caps & caps))
+              continue;
+            const int card = snd_seq_client_info_get_card (cinfo);
+            const std::string clientname = snd_seq_client_info_get_name (cinfo);
+            std::string devportid = make_devid (card, type, clientname, client, caps);
+            if (devportid.empty())
+              continue; // device needs to be uniquely identifiable
+            const int cport = snd_seq_port_info_get_port (pinfo);
+            devportid += "." + string_from_int (cport);
+            if (entries)
+              {
+                std::string cardname, longname;
+                if (card >= 0)
+                  {
+                    char *str = nullptr;
+                    if (snd_card_get_longname (card, &str) == 0 && str)
+                      longname = str;
+                    if (str)
+                      free (str);
+                    if (snd_card_get_name (card, &str) == 0 && str)
+                      cardname = str;
+                    if (str)
+                      free (str);
+                  }
+                const bool is_usb = longname.find (" at usb-") != std::string::npos;
+                const bool is_kern = snd_seq_client_info_get_type (cinfo) == SND_SEQ_KERNEL_CLIENT;
+                const bool is_thru = is_kern && clientname == "Midi Through";
+                const std::string devname = string_capitalize (clientname, 1, false);
+                Driver::Entry entry;
+                entry.devid = devportid;
+                entry.device_name = string_capitalize (snd_seq_port_info_get_name (pinfo), 1, false);
+                if (!string_startswith (entry.device_name, devname))
+                  entry.device_name = devname + " " + entry.device_name;
+                if (!cardname.empty())
+                  entry.device_name += " - " + cardname;
+                if (caps & SND_SEQ_PORT_CAP_DUPLEX)
+                  entry.capabilities = "Full-Duplex MIDI";
+                else if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE))
+                  entry.capabilities = "MIDI In-Out";
+                else if (caps & SND_SEQ_PORT_CAP_READ)
+                  entry.capabilities = "MIDI Output";
+                else if (caps & SND_SEQ_PORT_CAP_WRITE)
+                  entry.capabilities = "MIDI Input";
+                if (!string_startswith (longname, cardname + " at "))
+                  entry.device_info = longname;
+                if (type & SND_SEQ_PORT_TYPE_APPLICATION || !is_kern)
+                  entry.notice = "Note: MIDI device is provided by an application";
+                entry.readonly = (caps & SND_SEQ_PORT_CAP_READ) && !(caps & SND_SEQ_PORT_CAP_WRITE);
+                entry.writeonly = (caps & SND_SEQ_PORT_CAP_WRITE) && !(caps & SND_SEQ_PORT_CAP_READ);
+                entry.priority = is_thru ? Driver::ALSA_THRU :
+                                 is_usb ? Driver::ALSA_USB :
+                                 is_kern ? Driver::ALSA_KERN :
+                                 Driver::ALSA_USER;
+                entry.priority += Driver::WCARD * MAX (0, card);
+                entry.priority += Driver::WDEV * client; // priorize HW over software apps
+                entry.priority += Driver::WSUB * cport;
+                entries->push_back (entry);
+                ADEBUG ("DISCOVER: MIDI: %s - %s", entry.devid, entry.device_name);
+              }
+            const bool match = selector == devportid;
+            if (match && sinfo)
+              {
+                snd_seq_port_info_copy (sinfo, pinfo);
+                return true;
+              }
+          }
+      }
+    return false;
+  }
+  static void
+  list_drivers (Driver::EntryVec &entries)
+  {
+    AlsaSeqMidiDriver smd ("?");
+    smd.initialize (program_alias() + " Probing");
+    smd.enumerate (&entries);
+  }
+  virtual Error // setup iport_ subs_ evparser_ total_fds_
+  open (IODir iodir) override
+  {
+    // initial sequencer setup
+    assert_return (iport_ == -1, Error::INTERNAL);
+    assert_return (!subs_, Error::INTERNAL);
+    assert_return (!evparser_, Error::INTERNAL);
+    assert_return (total_fds_ == 0, Error::INTERNAL);
+    PortSubscribe psub = make_port_subscribe();
+    assert_return (!!psub, Error::NO_MEMORY);
+    const std::string myname = program_alias();
+    Error error = seq_ ? Error::NONE : initialize (myname);
+    if (error != Error::NONE)
+      return error;
+    assert_return (queue_ >= -1, Error::INTERNAL);
+    // find devid_
+    const bool require_readable = iodir == READONLY || iodir == READWRITE;
+    const bool require_writable = iodir == WRITEONLY || iodir == READWRITE;
+    const uint caps = require_writable * (SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ) +
+                      require_readable * (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE);
+    snd_seq_port_info_t *pinfo = alsa_alloca0 (snd_seq_port_info);
+    const bool match_devid = enumerate (nullptr, pinfo, devid_, caps);
+    if (!match_devid)
+      return Error::DEVICE_NOT_AVAILABLE;
+    flags_ |= Flags::READABLE * require_readable;
+    flags_ |= Flags::WRITABLE * require_writable;
+    // create port for subscription
+    snd_seq_port_info_t *minfo = alsa_alloca0 (snd_seq_port_info);
+    snd_seq_port_info_set_port (minfo, 0); // desired port number
+    snd_seq_port_info_set_port_specified (minfo, true);
+    snd_seq_port_info_set_name (minfo, (myname + " LSP-0").c_str()); // Local Subscription Port
+    snd_seq_port_info_set_type (minfo, SND_SEQ_PORT_TYPE_MIDI_GENERIC | SND_SEQ_PORT_TYPE_APPLICATION);
+    const int intracaps = SND_SEQ_PORT_CAP_NO_EXPORT | SND_SEQ_PORT_CAP_WRITE;
+    snd_seq_port_info_set_capability (minfo, intracaps);
+    snd_seq_port_info_set_midi_channels (minfo, 16);
+    snd_seq_port_info_set_timestamping (minfo, true);
+    snd_seq_port_info_set_timestamp_real (minfo, true);
+    snd_seq_port_info_set_timestamp_queue (minfo, queue_);
+    int aerror = snd_seq_create_port (seq_, minfo);
+    if (!aerror)
+      {
+        iport_ = snd_seq_port_info_get_port (minfo);
+        if (iport_ < 0)
+          aerror = -ENOMEM;
+      }
+    // subscribe to port
+    snd_seq_addr_t qaddr = {};
+    qaddr.client = snd_seq_port_info_get_client (pinfo);
+    qaddr.port = snd_seq_port_info_get_port (pinfo);
+    snd_seq_port_subscribe_set_sender (&*psub, &qaddr);
+    qaddr.client = snd_seq_client_id (seq_);
+    qaddr.port = iport_; // receiver
+    snd_seq_port_subscribe_set_dest (&*psub, &qaddr);
+    snd_seq_port_subscribe_set_queue (&*psub, queue_);
+    snd_seq_port_subscribe_set_time_update (&*psub, true);
+    snd_seq_port_subscribe_set_time_real (&*psub, true);
+    if (!aerror)
+      aerror = snd_seq_subscribe_port (seq_, &*psub);
+    if (!aerror)
+      {
+        subs_ = make_port_subscribe (&*psub);
+        if (!subs_)
+          aerror = -ENOMEM;
+      }
+    // setup event parser
+    if (!aerror)
+      snd_seq_drain_output (seq_);
+    if (!aerror)
+      aerror = snd_midi_event_new (1024, &evparser_);
+    if (!aerror)
+      {
+        snd_midi_event_init (evparser_);
+        snd_midi_event_no_status (evparser_, true);
+      }
+    // done, cleanup
+    if (!aerror)
+      {
+        // Note, this *only* sets up polling for MIDI reading...
+        total_fds_ = snd_seq_poll_descriptors_count (seq_, POLLIN);
+        if (total_fds_ > 0)
+          {
+            struct pollfd *pfds = (struct pollfd*) alloca (total_fds_ * sizeof (struct pollfd));
+            if (snd_seq_poll_descriptors (seq_, pfds, total_fds_, POLLIN) > 0)
+              {
+                static_assert (sizeof (struct pollfd) == sizeof (GPollFD));
+                BseTrans *trans = bse_trans_open ();
+#if WITH_MIDI_POLL
+                BseJob *job = bse_job_add_poll (pollin_func, (void*) this, pollfree_func, total_fds_, (const GPollFD*) pfds);
+                bse_trans_add (trans, job);
+#endif
+                bse_trans_commit (trans);
+              }
+            else
+              total_fds_ = 0;
+          }
+        flags_ |= Flags::OPENED;
+      }
+    error = !aerror ? Error::NONE : bse_error_from_errno (-aerror, Error::FILE_OPEN_FAILED);
+    ADEBUG ("SeqMIDI: %s: opening readable=%d writable=%d: %s", devid_, readable(), writable(), bse_error_blurb (error));
+    if (error != Error::NONE)
+      cleanup();
+    else
+      mdebug_ = debug_key_enabled ("midievent");
+    return error;
+  }
+  void
+  cleanup()
+  {
+    if (total_fds_ > 0)
+      {
+        total_fds_ = 0;
+        BseTrans *trans = bse_trans_open ();
+#if WITH_MIDI_POLL
+        BseJob *job = bse_job_remove_poll (pollin_func, (void*) this);
+        bse_trans_add (trans, job);
+#endif
+        bse_trans_commit (trans);
+      }
+    if (evparser_)
+      {
+        snd_midi_event_free (evparser_);
+        evparser_ = nullptr;
+      }
+    if (subs_)
+      {
+        snd_seq_unsubscribe_port (seq_, &*subs_);
+        subs_.reset();
+      }
+    if (iport_ >= 0)
+      {
+        snd_seq_delete_port (seq_, iport_);
+        iport_ = -1;
+      }
+    if (queue_ >= 0)
+      {
+        snd_seq_free_queue (seq_, queue_);
+        queue_ = -1;
+      }
+    if (seq_)
+      {
+        snd_seq_close (seq_);
+        seq_ = nullptr;
+      }
+  }
+  virtual void
+  close () override
+  {
+    assert_return (opened());
+    cleanup();
+    ADEBUG ("SeqMIDI: %s: CLOSE: r=%d w=%d", devid_, readable(), writable());
+    flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+    mdebug_ = false;
+  }
+  static void
+  pollfree_func (void *data)
+  {
+    // AlsaSeqMidiDriver *thisp = (AlsaSeqMidiDriver*) data;
+  }
+  static gboolean
+  pollin_func (void *data, uint n_values, long *timeout_p, uint n_fds, const GPollFD *fds, gboolean revents_filled)
+  {
+    AlsaSeqMidiDriver *thisp = (AlsaSeqMidiDriver*) data;
+    // clear revents with event retrieval
+    if (snd_seq_event_input_pending (thisp->seq_, true /* poll FIFO */) > 0)
+      {
+        // queue events...
+      }
+    return false;
+  }
+  double
+  queue_now ()
+  {
+    union { uint64_t u64[16]; char c[1]; } stbuf = {};
+    assert_return (snd_seq_queue_status_sizeof() <= sizeof (stbuf), NAN);
+    snd_seq_queue_status_t *stat = (snd_seq_queue_status_t*) &stbuf;
+    int aerror = snd_seq_get_queue_status (seq_, queue_, stat);
+    if (!aerror)
+      {
+        const snd_seq_real_time_t *rt = snd_seq_queue_status_get_real_time (stat);
+        return rt->tv_sec + 1e-9 * rt->tv_nsec;
+      }
+    return NAN;
+  }
+  bool
+  has_events () override
+  {
+    assert_return (opened(), false);
+    const bool pull_fifo = true;
+    return snd_seq_event_input_pending (seq_, pull_fifo) > 0;
+  }
+  uint
+  fetch_events (AudioSignal::EventStream &estream, double samplerate) override
+  {
+    using namespace AudioSignal;
+    assert_return (!!evparser_, 0);
+    const size_t old_size = estream.size();
+    // receive
+    snd_seq_event_t *ev = nullptr;
+    const double now = queue_now();
+    const auto mkid = [] (uint note, uint channel) {
+      return (channel + 1) * 128 + note;
+    };
+    const auto add = [&] (AudioSignal::EventStream &estream, const Event &event) {
+      const double t = ev->time.time.tv_sec + 1e-9 * ev->time.time.tv_nsec;
+      const double diff = t - now;
+      const int frames = diff * samplerate;
+      int8_t frame_delay = CLAMP (frames, -128, 0); // we only need to account for delays
+      estream.append (frame_delay, event);
+    };
+    int r;
+    while (r = snd_seq_event_input (seq_, &ev), r >= 0)
+      switch (ev->type)
+        {
+        case SND_SEQ_EVENT_NOTEON:
+          add (estream,
+               make_note_on (ev->data.note.channel, ev->data.note.note,
+                             ev->data.note.velocity * (1.0 / 127.0), 0,
+                             mkid (ev->data.note.note, ev->data.note.channel)));
+          break;
+        case SND_SEQ_EVENT_NOTEOFF:
+          add (estream,
+               make_note_off (ev->data.note.channel, ev->data.note.note,
+                              ev->data.note.velocity * (1.0 / 127.0), 0,
+                              mkid (ev->data.note.note, ev->data.note.channel)));
+          break;
+        case SND_SEQ_EVENT_KEYPRESS:
+          add (estream,
+               make_aftertouch (ev->data.note.channel, ev->data.note.note,
+                                ev->data.note.velocity * (1.0 / 127.0), 0,
+                                mkid (ev->data.note.note, ev->data.note.channel)));
+          break;
+        case SND_SEQ_EVENT_CONTROLLER:
+          add (estream,
+               make_control8 (ev->data.control.channel, ev->data.control.param,
+                              ev->data.control.value));
+          break;
+        case SND_SEQ_EVENT_PGMCHANGE:
+          add (estream,
+               make_program (ev->data.control.channel, ev->data.control.value));
+          break;
+        case SND_SEQ_EVENT_CHANPRESS:
+          add (estream,
+               make_pressure (ev->data.control.channel, ev->data.control.value * (1.0 / 127.0)));
+          break;
+        case SND_SEQ_EVENT_PITCHBEND:
+          add (estream,
+               make_pitch_bend (ev->data.control.channel,
+                                ev->data.control.value *
+                                (ev->data.control.value < 0 ? 1.0 / 8192.0 : 1.0 / 8191.0)));
+          break;
+        case SND_SEQ_EVENT_CONTROL14:
+        case SND_SEQ_EVENT_NONREGPARAM:
+        case SND_SEQ_EVENT_REGPARAM:
+        case SND_SEQ_EVENT_NOTE:  // unhandled, duration usually too long for Event.frame
+        case SND_SEQ_EVENT_SYSEX:
+        default:
+          break;
+          // DEPRECATED: snd_seq_free_event (ev);
+        }
+    if (r < 0 && r != -EAGAIN) // -ENOSPC - sequencer FIFO overran
+      ADEBUG ("SeqMIDI: %s: snd_seq_event_input: %s", devid_, snd_strerror (r));
+    if (BSE_UNLIKELY (mdebug_))
+      for (size_t i = old_size; i < estream.size(); i++)
+        MDEBUG ("%s", (estream.begin() + i)->to_string());
+    return estream.size() - old_size;
   }
 };
 
-static const String alsa_midi_driverid = MidiDriver::register_driver ("alsa",
-                                                                      AlsaMidiDriver::create,
-                                                                      [] (Driver::EntryVec &entries) {
-                                                                        list_alsa_drivers (entries, false, true);
-                                                                      });
+static const String alsa_seqmidi_driverid = MidiDriver::register_driver ("alsa",
+                                                                         AlsaSeqMidiDriver::create,
+                                                                         AlsaSeqMidiDriver::list_drivers);
 
 } // Bse
 

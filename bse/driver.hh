@@ -2,31 +2,35 @@
 #ifndef __BSE_DRIVER_HH__
 #define __BSE_DRIVER_HH__
 
-#include <bse/bseutils.hh>
+#include <bse/midievent.hh>
 #include <functional>
 
 namespace Bse {
 
-class Driver {
+class Driver : public std::enable_shared_from_this<Driver> {
 protected:
   struct Flags { enum { OPENED = 1, READABLE = 2, WRITABLE = 4, }; };
   const String       devid_;
   size_t             flags_ = 0;
   explicit           Driver     (const String &devid);
   virtual           ~Driver     ();
+  template<class Derived> std::shared_ptr<Derived>
+  /**/               shared_from_base () { return std::static_pointer_cast<Derived> (shared_from_this()); }
 public:
   enum {
-    JACK     = 0x01 << 24,
-    ALSA_USB = 0x03 << 24,
-    ALSA     = 0x04 << 24,
-    OSS      = 0x07 << 24,
-    PULSE    = 0x08 << 24,
-    PSEUDO   = 0x70 << 24,
-    PAUTO    = 0x74 << 24,
-    PNULL    = 0x77 << 24,
-    WCARD    = 0x01 << 16,
-    WDEV     = 0x01 <<  8,
-    WSUB     = 0x01 <<  0,
+    JACK      = 0x01 << 24,
+    ALSA_THRU = 0x10 << 24,
+    ALSA_USB  = 0x16 << 24,
+    ALSA_KERN = 0x17 << 24,
+    OSS       = 0x20 << 24,
+    PULSE     = 0x40 << 24,
+    ALSA_USER = 0x50 << 24,
+    PSEUDO    = 0x70 << 24,
+    PAUTO     = 0x74 << 24,
+    PNULL     = 0x77 << 24,
+    WCARD     = 0x01 << 16,
+    WDEV      = 0x01 <<  8,
+    WSUB      = 0x01 <<  0,
   };
   enum IODir { READONLY = 1, WRITEONLY = 2, READWRITE = 3 };
   typedef std::shared_ptr<Driver> DriverP;
@@ -48,6 +52,8 @@ protected:
 public:
   typedef std::shared_ptr<MidiDriver> MidiDriverP;
   static MidiDriverP open            (const String &devid, IODir iodir, Bse::Error *ep);
+  virtual bool       has_events      () = 0;
+  virtual uint       fetch_events    (AudioSignal::EventStream &estream, double samplerate) = 0;
   static EntryVec    list_drivers    ();
   static String      register_driver (const String &driverid,
                                       const std::function<MidiDriverP (const String&)> &create,

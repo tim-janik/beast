@@ -333,6 +333,16 @@ public:
     DDEBUG ("NULL-MIDI: opening: %s", bse_error_blurb (Error::NONE));
     return Error::NONE;
   }
+  bool
+  has_events () override
+  {
+    return false;
+  }
+  uint
+  fetch_events (AudioSignal::EventStream&, double) override
+  {
+    return 0;
+  }
   static void
   list_drivers (Driver::EntryVec &entries)
   {

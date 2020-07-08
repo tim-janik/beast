@@ -381,24 +381,30 @@ Processor::OBus::OBus (const std::string &identifier, const std::string &uilabel
   assert_return (ident != "");
 }
 
-// == RenderSetup ==
-RenderSetup::RenderSetup (uint32 samplerate, AudioTiming &atiming) :
+// == Engine ==
+Engine::Engine (uint32 samplerate, AudioTiming &atiming) :
   mix_freq (samplerate), sample_rate (samplerate), timing { atiming }
 {
-  assert_return (sample_rate > 0);
+  assert_return (samplerate > 0);
+  assert_return (mix_freq == samplerate);
+  assert_return (0 == (samplerate & 3));
 }
 
 // == Processor ==
 uint64 __thread Processor::tls_timestamp = 0;
+static __thread Engine *engine_context_for_processor_ctor = nullptr;
 
 /// Constructor for Processor
-Processor::Processor ()
-{}
+Processor::Processor() :
+  engine_ (*engine_context_for_processor_ctor)
+{
+  assert_return (engine_context_for_processor_ctor != nullptr);
+}
 
 /// The destructor is called when the last std::shared_ptr<> reference drops.
 Processor::~Processor ()
 {
-  release_iobufs();
+  remove_all_buses();
 }
 
 const Processor::FloatBuffer&
@@ -725,6 +731,75 @@ Processor::configure (uint n_ibuses, const SpeakerArrangement *ibuses,
                       uint n_obuses, const SpeakerArrangement *obuses)
 {}
 
+/// Prepare the Processor to receive Event objects during render() via get_event_input().
+/// Note, remove_all_buses() will remove the Event input created by this function.
+void
+Processor::prepare_event_input ()
+{
+  if (!estreams_)
+    estreams_ = new EventStreams();
+  assert_return (estreams_->has_event_input == false);
+  estreams_->has_event_input = true;
+}
+
+static const EventStream empty_event_stream; // dummy
+
+/// Access the current input EventRange during render(), needs prepare_event_input().
+EventRange
+Processor::get_event_input ()
+{
+  assert_return (estreams_ && estreams_->has_event_input, EventRange (empty_event_stream));
+  if (estreams_ && estreams_->oproc && estreams_->oproc->estreams_)
+    return EventRange (estreams_->oproc->estreams_->estream);
+  return EventRange (empty_event_stream);
+}
+
+/// Prepare the Processor to produce Event objects during render() via get_event_output().
+/// Note, remove_all_buses() will remove the Event output created by this function.
+void
+Processor::prepare_event_output ()
+{
+  if (!estreams_)
+    estreams_ = new EventStreams();
+  assert_return (estreams_->has_event_output == false);
+  estreams_->has_event_output = true;
+}
+
+/// Access the current output EventStream during render(), needs prepare_event_input().
+EventStream&
+Processor::get_event_output ()
+{
+  assert_return (estreams_ != nullptr, const_cast<EventStream&> (empty_event_stream));
+  return estreams_->estream;
+}
+
+/// Disconnect event input if a connection is present.
+void
+Processor::disconnect_event_input()
+{
+  if (estreams_ && estreams_->oproc)
+    {
+      Processor &oproc = *estreams_->oproc;
+      assert_return (oproc.estreams_);
+      const bool backlink = vector_erase_element (oproc.outputs_, { this, EventStreams::EVENT_ISTREAM });
+      estreams_->oproc = nullptr;
+      assert_return (backlink == true);
+    }
+}
+
+/// Connect event input to event output of Processor `oproc`.
+void
+Processor::connect_event_input (Processor &oproc)
+{
+  assert_return (has_event_input());
+  assert_return (oproc.has_event_output());
+  if (estreams_ && estreams_->oproc)
+    disconnect_event_input();
+  estreams_->oproc = &oproc;
+  // register backlink
+  oproc.outputs_.push_back ({ this, EventStreams::EVENT_ISTREAM });
+}
+
 /// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
 IBusId
 Processor::add_input_bus (CString uilabel, SpeakerArrangement speakerarrangement,
@@ -865,12 +940,19 @@ Processor::remove_all_buses ()
   release_iobufs();
   iobuses_.clear();
   output_offset_ = 0;
+  if (estreams_)
+    {
+      assert_return (!estreams_->oproc && outputs_.empty());
+      delete estreams_; // must be disconnected beforehand
+      estreams_ = nullptr;
+    }
 }
 
 /// Reset input bus buffer data.
 void
 Processor::disconnect_ibuses()
 {
+  disconnect (EventStreams::EVENT_ISTREAM);
   for (size_t i = 0; i < n_ibuses(); i++)
     disconnect (IBusId (1 + i));
 }
@@ -891,6 +973,8 @@ Processor::disconnect_obuses()
 void
 Processor::disconnect (IBusId ibusid)
 {
+  if (EventStreams::EVENT_ISTREAM == ibusid)
+    return disconnect_event_input();
   const size_t ibusindex = size_t (ibusid) - 1;
   assert_return (ibusindex < n_ibuses());
   IBus &ibus = iobus (ibusid);
@@ -928,6 +1012,7 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   // connect
   ibus.proc = &oproc;
   ibus.obusid = obusid;
+  // register backlink
   obus.fbuffer_concounter += 1; // conection counter
   oproc.outputs_.push_back ({ this, ibusid });
 }
@@ -945,8 +1030,9 @@ Processor::ensure_initialized()
       const SpeakerArrangement ibuses = SpeakerArrangement::STEREO;
       const SpeakerArrangement obuses = SpeakerArrangement::STEREO;
       configure (1, &ibuses, 1, &obuses);
-      if (n_ibuses() + n_obuses() == 0)
-        throw std::logic_error (string_format ("Processor::%s: failed to setup input or output bus", __func__));
+      if (n_ibuses() + n_obuses() == 0 &&
+          (!estreams_ || (!estreams_->has_event_input && !estreams_->has_event_output)))
+        warning ("Processor::%s: failed to setup any input/output facilities for: %s", __func__, debug_name());
       assign_iobufs();
     }
 }
@@ -955,21 +1041,18 @@ Processor::ensure_initialized()
 /// This method is called to assign the sample rate and
 /// to switch between realtime and offline rendering.
 void
-Processor::reset_state (const RenderSetup &rs)
+Processor::reset_state()
 {
-  assert_return (rs.mix_freq > 0);
-  const uint samplerate = rs.sample_rate;
-  assert_return (rs.mix_freq == samplerate);
-  assert_return (0 == (samplerate & 3));
-  sample_rate_ = samplerate;
   ensure_initialized();
   flags_ |= HAS_RESET;
-  reset (rs);
+  if (estreams_)
+    estreams_->estream.clear();
+  reset();
 }
 
-/// Reset all state variables and handle `sample_rate()` changes.
+/// Reset all state variables.
 void
-Processor::reset (const RenderSetup &rs)
+Processor::reset()
 {}
 
 /** Method called for every audio buffer to be processed.
@@ -982,7 +1065,7 @@ Processor::reset (const RenderSetup &rs)
  * correspondingly to retrieve input channel values.
  */
 void
-Processor::render (const RenderSetup &rs, uint32 n_frames)
+Processor::render (uint32 n_frames)
 {}
 
 /// Invoke Processor::configure() with `ipatch`/`opatch` applied to the current configuration.
@@ -1028,6 +1111,17 @@ Processor::reconfigure (IBusId ibusid, SpeakerArrangement ipatch, OBusId obusid,
   configure (n_ibuses(), sai, n_obuses(), sao);
   delete[] sai;
   assign_iobufs();
+}
+
+// == ProcessorManager ==
+auto
+ProcessorManager::pm_render (Processor &p, uint n)
+{
+  // TODO: introduce rendering engine
+  // This is supposed to be just a trampoline, but the only single hook into renderig atm
+  if (BSE_UNLIKELY (p.estreams_) && !BSE_ISLIKELY (p.estreams_->estream.empty()))
+    p.estreams_->estream.clear();
+  return p.render (n);
 }
 
 // == LogState ==
@@ -1104,7 +1198,7 @@ public:
   explicit Inlet (Chain &chain) : chain_ (chain) {}
   void query_info (ProcessorInfo &info) override        { info.label = "Bse::AudioSignal::Chain::Inlet"; }
   void initialize () override                           {}
-  void reset      (const RenderSetup &rs) override      {}
+  void reset      () override                           {}
   void
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
   {
@@ -1113,7 +1207,7 @@ public:
     (void) output;
   }
   void
-  render (const RenderSetup &rs, uint n_frames) override
+  render (uint n_frames) override
   {
     const IBusId i1 = IBusId (1);
     const OBusId o1 = OBusId (1);
@@ -1130,13 +1224,14 @@ Chain::Chain (SpeakerArrangement iobuses) :
   ispeakers_ (iobuses), ospeakers_ (iobuses)
 {
   assert_return (speaker_arrangement_count_channels (iobuses) > 0);
-  inlet = std::make_shared<Inlet> (*this);
+  inlet_ = std::make_shared<Inlet> (*this);
 }
 
 Chain::~Chain()
 {
-  pm_remove_all_buses (*inlet);
-  inlet = nullptr;
+  pm_remove_all_buses (*inlet_);
+  inlet_ = nullptr;
+  eproc_ = nullptr;
 }
 
 void
@@ -1146,6 +1241,15 @@ Chain::query_info (ProcessorInfo &info)
   info.label = "Bse::AudioSignal::Chain";
 }
 static auto bseaudiosignalchain = Bse::enroll_asp<AudioSignal::Chain>();
+
+/// Assign event source for future auto-connections of chld processors.
+void
+Chain::set_event_source (ProcessorP eproc)
+{
+  if (eproc)
+    assert_return (eproc->has_event_output());
+  eproc_ = eproc;
+}
 
 void
 Chain::initialize ()
@@ -1162,26 +1266,27 @@ Chain::configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obus
 }
 
 void
-Chain::reset (const RenderSetup &rs)
+Chain::reset()
 {
-  render_setup_ = &rs;
-  inlet->reset_state (*render_setup_);
+  inlet_->reset_state();
   for (size_t i = 0; i < processors_.size(); i++)
-    processors_[i]->reset_state (*render_setup_);
+    processors_[i]->reset_state();
 }
 
 void
-Chain::render (const RenderSetup &rs, uint n_frames)
+Chain::render (uint n_frames)
 {
   constexpr OBusId OUT1 = OBusId (1);
-  render_setup_ = &rs;
+  // make sure event source is rendered
+  if (eproc_)
+    pm_render (*eproc_, n_frames);
   // render inlet and all processors in chain
-  inlet->render (*render_setup_, n_frames);
+  pm_render (*inlet_, n_frames);
   Processor *last = nullptr;
   for (size_t i = 0; i < processors_.size(); i++)
     {
       Processor &proc = *processors_[i];
-      pm_render (proc, *render_setup_, n_frames);
+      pm_render (proc, n_frames);
       if (proc.n_obuses())
         last = &proc;
     }
@@ -1220,7 +1325,7 @@ Chain::render_frames (uint n_frames)
   while (n_frames)
     {
       const uint blocksize = std::min (n_frames, MAX_RENDER_BLOCK_SIZE);
-      render (*render_setup_, blocksize);
+      pm_render (*this, blocksize);
       n_frames -= blocksize;
     }
 }
@@ -1257,8 +1362,7 @@ Chain::insert (ProcessorP proc, size_t pos)
   assert_return (proc != nullptr);
   const size_t index = CLAMP (pos, 0, processors_.size());
   processors_.insert (processors_.begin() + index, proc);
-  if (render_setup_)
-    proc->reset_state (*render_setup_);
+  proc->reset_state();
   // fixup following connections
   reconnect (index);
 }
@@ -1272,7 +1376,7 @@ Chain::reconnect (size_t start)
     pm_disconnect_ibuses (*processors_[i]);
   // reconnect pairwise
   for (size_t i = start; i < processors_.size(); i++)
-    chain_up (*(i ? processors_[i - 1] : inlet), *processors_[i]);
+    chain_up (*(i ? processors_[i - 1] : inlet_), *processors_[i]);
 }
 
 /// Connect the main audio input of `next` to audio output of `prev`.
@@ -1283,6 +1387,15 @@ Chain::chain_up (Processor &prev, Processor &next)
   assert_return (this != &next, 0);
   const uint ni = next.n_ibuses();
   const uint no = prev.n_obuses();
+  // assign event source
+  if (eproc_)
+    {
+      if (prev.has_event_input())
+        pm_connect_events (*eproc_, prev);
+      if (next.has_event_input())
+        pm_connect_events (*eproc_, next);
+    }
+  // check need for audio connections
   if (ni == 0 || no == 0)
     {
       logstate (MISS, &prev, OBusId (no ? 1 : 0), nullptr, &next, IBusId (ni ? 1 : 0), nullptr);
@@ -1318,8 +1431,7 @@ Chain::chain_up (Processor &prev, Processor &next)
       pm_reconfigure (next, ibusid, ospa, OBusId (0), SpeakerArrangement::NONE);
       ispa = speaker_arrangement_channels (next.bus_info (ibusid).speakers);
       logstate (HAVE, &prev, obusid, &ospa, &next, ibusid, &ispa);
-      if (render_setup_)
-        next.reset_state (*render_setup_);
+      next.reset_state();
     }
   if (0 == (uint64_t (ispa) & ~uint64_t (ospa)) || // exact match
       (ospa == SpeakerArrangement::MONO &&         // allow MONO -> STEREO connections
@@ -1376,6 +1488,8 @@ static PersistentStaticInstance<ProcessorRegistryTable> processor_registry_table
 void
 Processor::registry_init()
 {
+  static AudioTiming audio_timing { 120, 1024 * 1024 };
+  static Engine regengine (48000, audio_timing); // used only for registration
   while (processor_registry_hooks)
     {
       std::unique_lock wlock (processor_registry_mutex);
@@ -1389,7 +1503,10 @@ Processor::registry_init()
           Processor::RegistryEntry entry { node->create };
           entry.file = node->file;
           entry.num = uint32_t (node->line); // upper uint32 is 0 for line numbers
+          Engine *const saved = engine_context_for_processor_ctor;
+          engine_context_for_processor_ctor = &regengine;
           ProcessorP testproc = node->create ();
+          engine_context_for_processor_ctor = saved;
           if (testproc)
             {
               testproc->query_info (entry);
@@ -1425,7 +1542,7 @@ Processor::registry_lookup (const std::string &uuiduri)
 
 /// Create a new Processor object of the type specified by `uuiduri`.
 ProcessorP
-Processor::registry_create (const std::string &uuiduri)
+Processor::registry_create (Engine &engine, const std::string &uuiduri)
 {
   registry_init();
   RegistryEntry rentry;
@@ -1438,7 +1555,10 @@ Processor::registry_create (const std::string &uuiduri)
   ProcessorP procp;
   if (rentry.uri != "")
     {
-      procp = rentry.create();
+      Engine *const saved = engine_context_for_processor_ctor;
+      engine_context_for_processor_ctor = &engine;
+      procp = rentry.create ();
+      engine_context_for_processor_ctor = saved;
       if (procp)
         procp->ensure_initialized();
     }

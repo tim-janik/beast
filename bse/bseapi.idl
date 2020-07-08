@@ -1279,6 +1279,7 @@ interface Project : Container {
   void         stop_playback       (); ///< Stop project playback.
   void         deactivate          (); ///< Deactivate the project, automatically stop playback.
   void         stop                (); ///< Stop project playback and deactivate project.
+  void         auto_stop           (bool maystop); ///< Allow project to stop playback at the sequencing end.
   void         auto_deactivate     (int32 msec_delay); ///< Automatically deactivate a few milliseconds after playback stopped.
   int32        undo_depth          (); ///< Check whether a project can perform undo steps.
   void         undo                (); ///< Undo a previous operation in a project.

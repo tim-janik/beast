@@ -89,7 +89,6 @@ using SongImplP = std::shared_ptr<SongImpl>;
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
   DeviceContainerImplP device_container_;
-  AudioSignal::RenderSetup *render_setup_ = nullptr;
 protected:
   virtual             ~TrackImpl         ();
   virtual void         xml_serialize     (SerializationNode &xs) override;
@@ -97,7 +96,6 @@ protected:
 public:
   explicit             TrackImpl         (BseObject*);
   SongImplP            get_song          ();
-  AudioSignal::RenderSetup& render_setup (bool needsreset = false);
   bool                 needs_serialize   ();
   virtual SongTiming   get_timing        (int tick) override;
   virtual PartIfaceP   create_part       (int32 tick) override;

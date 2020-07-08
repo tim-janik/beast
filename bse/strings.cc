@@ -132,7 +132,7 @@ string_totitle (const String &str)
 
 /// Capitalize words, so the first letter is upper case, the rest lower case.
 String
-string_capitalize (const String &str, size_t maxn)
+string_capitalize (const String &str, size_t maxn, bool rest_tolower)
 {
   String s (str);
   bool wasalpha = false;
@@ -146,7 +146,7 @@ string_capitalize (const String &str, size_t maxn)
           s[i] = Unicode::toupper (s[i]);
           maxn--;
         }
-      else
+      else if (rest_tolower)
         s[i] = Unicode::tolower (s[i]);
       wasalpha = atalpha;
     }
