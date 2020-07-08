@@ -181,6 +181,19 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   };
   using OBRange = std::pair<FloatBuffer*,FloatBuffer*>;
 protected:
+#ifndef DOXYGEN
+  // Inherit `AudioSignal` concepts in derived classes from other namespaces
+  using Engine = AudioSignal::Engine;
+  using GroupId = AudioSignal::GroupId;
+  using ParamId = AudioSignal::ParamId;
+  using ParamInfo = AudioSignal::ParamInfo;
+  using ChoiceEntries = AudioSignal::ChoiceEntries;
+  using IBusId = AudioSignal::IBusId;
+  using OBusId = AudioSignal::OBusId;
+  using SpeakerArrangement = AudioSignal::SpeakerArrangement;
+  using ProcessorInfo = AudioSignal::ProcessorInfo;
+  using MinMax = std::pair<double,double>;
+#endif
   enum { INITIALIZED = 1, HAS_RESET = 2, };
   std::atomic<uint32>      flags_ = 0;
 private:
@@ -206,19 +219,6 @@ private:
   /*copy*/    Processor       (const Processor&) = delete;
 protected:
   explicit    Processor       ();
-#ifndef DOXYGEN
-  // Inherit `AudioSignal` concepts in derived classes from other namespaces
-  using Engine = AudioSignal::Engine;
-  using GroupId = AudioSignal::GroupId;
-  using ParamId = AudioSignal::ParamId;
-  using ParamInfo = AudioSignal::ParamInfo;
-  using ChoiceEntries = AudioSignal::ChoiceEntries;
-  using IBusId = AudioSignal::IBusId;
-  using OBusId = AudioSignal::OBusId;
-  using SpeakerArrangement = AudioSignal::SpeakerArrangement;
-  using ProcessorInfo = AudioSignal::ProcessorInfo;
-  using MinMax = std::pair<double,double>;
-#endif
   virtual      ~Processor         ();
   virtual void  initialize        ();
   virtual void  configure         (uint n_ibuses, const SpeakerArrangement *ibuses,
