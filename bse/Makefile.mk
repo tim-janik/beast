@@ -91,6 +91,17 @@ $(call INSTALL_DATA_RULE,			\
 	$(bse/include.headers) $(bse/libbse.deps))
 $(call $(if $(filter production, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
+$(bse/libbse.objects): | $>/bse/check-stray-sources
+$>/bse/check-stray-sources: $(bse/libbse.headers) $(bse/libbse.sources)
+	$(QECHO) CHECK bse/: check stray sources
+	$(Q) test -z "$(DOTGIT)" || { \
+	  git status -s -- $^ | { grep '^?? .*' && \
+		{ echo 'bse/: error: untracked source files present'; exit 3 ; } || :; \
+	  }; }
+	$(Q) echo '$^' > $@
+ifneq ($(bse/libbse.headers) $(bse/libbse.sources), $(shell cat $>/bse/check-stray-sources 2>/dev/null))
+.PHONY: $>/bse/check-stray-sources
+endif
 
 # == libbsejack.so rules ==
 $(bse/libbsejack.objects): $(bse/libbse.deps) $(bse/libbsejack.cc.deps)
