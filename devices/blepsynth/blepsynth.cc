@@ -6,11 +6,8 @@
 #include "devices/blepsynth/laddervcf.hh"
 #include "bse/internal.hh"
 
-#define DDEBUG(...)     Bse::debug ("debugdsp", __VA_ARGS__)
-
 namespace Bse {
 
-/// Namespace used for DSP debugging definitiond.
 using namespace AudioSignal;
 
 // based on liquidsfz envelope.hh
