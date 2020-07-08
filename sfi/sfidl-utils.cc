@@ -139,4 +139,4 @@ symbolToList (const String& symbol)
 
 } // Sfidl
 
-#include "bse/glib-extra.cc" // needed by sfidl
+#include "bse/glib-extra.inc.cc" // needed by sfidl
