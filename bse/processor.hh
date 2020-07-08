@@ -239,6 +239,7 @@ protected:
                                    const std::string &hints, bool boolvalue,
                                    const std::string &blurb = "", const std::string &description = "");
   void          start_param_group (const std::string &groupname) const;
+  virtual void  adjust_param      (ParamId tag) {}
   // Buses
   IBusId        add_input_bus     (CString uilabel, SpeakerArrangement speakerarrangement,
                                    const std::string &hints = "", const std::string &blurb = "");
@@ -276,6 +277,7 @@ public:
   String        debug_name        () const;
   // Parameters
   ParamInfoPVec list_params       () const;
+  void          adjust_params     (bool include_nondirty = false);
   MaybeParamId  find_param        (const std::string &identifier) const;
   ParamInfoP    param_info        (ParamId paramid) const;
   MinMax        param_range       (ParamId paramid) const;
@@ -543,6 +545,15 @@ Processor::n_ochannels (OBusId busid) const
 {
   const OBus &obus = iobus (busid);
   return obus.n_channels();
+}
+
+// Call adjust_param() for all or just dirty parameters.
+inline void
+Processor::adjust_params (bool include_nondirty)
+{
+  for (const PParam &p : params_)
+    if (include_nondirty || p.is_dirty())
+      adjust_param (p.id);
 }
 
 // Find parameter for internal access.
