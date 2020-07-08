@@ -16,7 +16,7 @@ public:
 			void	setbuffer(float *buf, int size);
 	inline  float	process(float inp);
 			void	mute();
-			void	setdamp(float val);
+			void	setdamp(float val, int mode);
 			float	getdamp();
 			void	setfeedback(float val);
 			float	getfeedback();

@@ -24,10 +24,14 @@ void comb::mute()
 		buffer[i]=0;
 }
 
-void comb::setdamp(float val)
+void comb::setdamp(float val, int mode)
 {
-	damp1 = val;
-	damp2 = 1-val;
+        damp1 = val;            // original May 2000 damping
+        damp2 = 1-val;
+	if (mode == -1)         // STK: https://github.com/thestk/stk/blob/master/src/FreeVerb.cpp
+          damp1 = -damp1;
+	else if (mode == 0)     // VLC: https://github.com/videolan/vlc/blob/master/modules/audio_filter/spatializer/comb.hpp#L49
+          damp1 = 0;
 }
 
 float comb::getdamp()

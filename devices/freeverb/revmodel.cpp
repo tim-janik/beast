@@ -46,7 +46,7 @@ revmodel::revmodel()
 	setwet(initialwet);
 	setroomsize(initialroom);
 	setdry(initialdry);
-	setdamp(initialdamp);
+	setdamp(initialdamp, +1);
 	setwidth(initialwidth);
 	setmode(initialmode);
 
@@ -171,8 +171,8 @@ void revmodel::update()
 
 	for(i=0; i<numcombs; i++)
 	{
-		combL[i].setdamp(damp1);
-		combR[i].setdamp(damp1);
+		combL[i].setdamp(damp1, dampmode);
+		combR[i].setdamp(damp1, dampmode);
 	}
 }
 
@@ -192,9 +192,10 @@ float revmodel::getroomsize()
 	return (roomsize-offsetroom)/scaleroom;
 }
 
-void revmodel::setdamp(float value)
+void revmodel::setdamp(float value, int mode)
 {
 	damp = value*scaledamp;
+	dampmode = mode;
 	update();
 }
 

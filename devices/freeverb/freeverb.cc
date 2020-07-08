@@ -27,30 +27,35 @@ class Freeverb : public AudioSignal::Processor {
     info.website_url = "https://beast.testbit.eu";
     info.creator_name = "Jezar at Dreampoint";
   }
-  enum ParamIds { MODE = 1, DRY, WET, ROOMSIZE, DAMPING, WIDTH };
+  enum ParamIds { DRY = 1, WET, ROOMSIZE, WIDTH, DAMPING, MODE };
   void
   initialize () override
   {
     ChoiceEntries centries;
     ParamId tag;
 
-    start_param_group ("Reverberation");
-    centries += { "Freeze", };
-    centries += { "Normal", };
-    tag = add_param ("Mode",  "M", std::move (centries), "G:dropdown", initialmode, "Mode to mute Reverberation");
-    assert_return (ParamIds (tag) == MODE);
+    start_param_group ("Reverb Settings");
     tag = add_param ("Dry level",  "Dry", 0, scaledry, "G:big", scaledry * initialdry, "dB");
     assert_return (ParamIds (tag) == DRY);
+
     tag = add_param ("Wet level",  "Wet", 0, scalewet, "G:big", scalewet * initialwet, "dB");
     assert_return (ParamIds (tag) == WET);
 
     start_param_group ("Room Settings");
     tag = add_param ("Room size",  "RS", offsetroom, offsetroom + scaleroom, "G:big", offsetroom + scaleroom * initialroom, "size");
     assert_return (ParamIds (tag) == ROOMSIZE);
-    tag = add_param ("Damping",  "D", 0, 100, "G:big", 100 * initialdamp, "%");
-    assert_return (ParamIds (tag) == DAMPING);
+
     tag = add_param ("Width",  "W", 0, 100, "G:big", 100 * initialwidth, "%");
     assert_return (ParamIds (tag) == WIDTH);
+
+    tag = add_param ("Damping",  "D", 0, 100, "G:big", 100 * initialdamp, "%");
+    assert_return (ParamIds (tag) == DAMPING);
+
+    centries += { "Normal Damping", "Damping with sign correction as implemented in STK Freeverb" };
+    centries += { "VLC Damping",    "The VLC Freeverb version disables one damping feedback chain" };
+    centries += { "Signflip 2000",  "Preserve May 2000 Freeverb damping sign flip" };
+    tag = add_param ("Mode",  "M", std::move (centries), "G:dropdown", -1, "Damping mode found in different Freeverb variants");
+    assert_return (ParamIds (tag) == MODE);
   }
   void
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
@@ -64,12 +69,13 @@ class Freeverb : public AudioSignal::Processor {
   {
     switch (ParamIds (tag))
       {
-      case MODE:        return model.setmode (get_param (tag));
       case WET:         return model.setwet (get_param (tag) / scalewet);
       case DRY:         return model.setdry (get_param (tag) / scaledry);
       case ROOMSIZE:    return model.setroomsize ((get_param (tag) - offsetroom) / scaleroom);
-      case DAMPING:     return model.setdamp (0.01 * get_param (tag));
       case WIDTH:       return model.setwidth (0.01 * get_param (tag));
+      case MODE:
+      case DAMPING:     return model.setdamp (0.01 * get_param (ParamId (DAMPING)),
+                                              bse_ftoi (get_param (ParamId (MODE))));
       }
   }
   void

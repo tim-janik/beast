@@ -20,7 +20,7 @@ public:
 			void	processreplace(float *inputL, float *inputR, float *outputL, float *outputR, long numsamples, int skip);
 			void	setroomsize(float value);
 			float	getroomsize();
-			void	setdamp(float value);
+			void	setdamp(float value, int mode);
 			float	getdamp();
 			void	setwet(float value);
 			float	getwet();
@@ -36,6 +36,7 @@ private:
 	float	gain;
 	float	roomsize,roomsize1;
 	float	damp,damp1;
+	int     dampmode;
 	float	wet,wet1,wet2;
 	float	dry;
 	float	width;
