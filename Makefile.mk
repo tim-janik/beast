@@ -97,6 +97,7 @@ include data/Makefile.mk
 include media/Makefile.mk
 include sfi/Makefile.mk
 include aidacc/Makefile.mk
+include devices/Makefile.mk
 include bse/Makefile.mk
 include plugins/Makefile.mk
 include tools/Makefile.mk
