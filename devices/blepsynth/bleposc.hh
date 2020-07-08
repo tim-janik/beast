@@ -2,14 +2,6 @@
 #ifndef __BSE_DEVICES_BLEPOSC_HH__
 #define __BSE_DEVICES_BLEPOSC_HH__
 
-#include <vector>
-#include <array>
-
-#include <sys/types.h>
-#include <assert.h>
-#include <math.h>
-#include <glib.h>
-
 #include <bse/bseblockutils.hh>
 #include <bse/bsemathsignal.hh>
 
@@ -685,7 +677,7 @@ public:
   double
   test_seek_to (double phase)
   {
-    assert (osc_impl.unison_voices.size() > 0);
+    BSE_ASSERT_RETURN (osc_impl.unison_voices.size() > 0, 0);
     osc_impl.reset();
     osc_impl.reset_master (osc_impl.unison_voices[0], phase);  // jump to phase
 
