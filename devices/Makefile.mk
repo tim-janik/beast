@@ -14,3 +14,16 @@ devices/libbse.objdirs ::= $(sort $(dir $(devices/libbse.objects)))
 # == devices/ dependencies ==
 # create object directories via explicit object dependency
 $(devices/libbse.objects): | $(devices/libbse.objdirs)
+
+# == devices/ rules ==
+$(devices/libbse.objects): | $>/devices/check-stray-sources
+$>/devices/check-stray-sources: $(devices/libbse.ccfiles)
+	$(QECHO) CHECK devices/: check stray sources
+	$(Q) test -z "$(DOTGIT)" || { \
+	  git status -s -- $^ | { grep '^?? .*' && \
+		{ echo 'devices/: error: untracked source files present'; exit 3 ; } || :; \
+	  }; }
+	$(Q) echo '$^' > $@
+ifneq ($(devices/libbse.ccfiles), $(shell cat $>/devices/check-stray-sources 2>/dev/null))
+.PHONY: $>/devices/check-stray-sources
+endif
