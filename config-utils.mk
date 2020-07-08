@@ -78,3 +78,11 @@ rest   = $(wordlist 2,$(words $1),$1)
 rest2  = $(wordlist 3,$(words $1),$1)
 # $(call foreachpair, func, listofpairs, else) - Call func for each pair in listofpairs, terminate with else
 foreachpair = $(if $2,$(call $1,$(call first,$2),$(call second,$2)) $(call foreachpair,$1,$(call rest2,$2),$3),$3)
+
+# == Recursive Wildcard ==
+# Add a slash to $1 if it is not empty and does not end in a slash
+addslash = $(foreach w,$1,$(if $(filter %/,$w),$w,$w/))
+# Apply $(wildcard) recursively to directory $1 and filter results against pattern list $2
+# Usage for CWD:    $(call rwildcard, , *.cc *.hh)
+# Usage for subdir: $(call rwildcard, subdir/, *.cc *.hh)
+rwildcard = $(strip $(foreach d,$(sort $(wildcard $(call addslash,$1)*)),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d)))

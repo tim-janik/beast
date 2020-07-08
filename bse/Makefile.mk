@@ -333,6 +333,7 @@ bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces
 # == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
 bse/libbse.objects		::= $(call BUILDDIR_O, $(bse/libbse.sources))
+bse/libbse.objects		 += $(devices/libbse.objects)
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 bse/all: $(lib/libbse.so)

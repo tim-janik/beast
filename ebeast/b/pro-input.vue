@@ -108,7 +108,7 @@ export default {
 	  const next = this.vmin + v * (this.vmax - this.vmin);
 	  this.prop.set_num (next);
 	}
-      this.n (); // FIXME : need real notification
+      setTimeout (this.n, 3); // FIXME : need real notification
     },
     get_num() {
       if (this.vnum === undefined || this.vmin === undefined || this.vmax === undefined)
@@ -121,7 +121,7 @@ export default {
 	  const next = this.vmin + v * this.vstep;
 	  this.prop.set_num (next);
 	}
-      this.n (); // FIXME : need real notification
+      setTimeout (this.n, 3); // FIXME : need real notification
     },
     get_index() {
       if (this.vnum === undefined || this.vmin === undefined || this.vstep === undefined)
