@@ -20,7 +20,7 @@ $(devices/libbse.objects): | $>/devices/check-stray-sources
 $>/devices/check-stray-sources: $(devices/libbse.ccfiles)
 	$(QECHO) CHECK devices/: check stray sources
 	$(Q) test -z "$(DOTGIT)" || { \
-	  git status -s -- $^ | { grep '^?? .*' && \
+	  git status -s -u -- $^ | { grep '^?? .*' && \
 		{ echo 'devices/: error: untracked source files present'; exit 3 ; } || :; \
 	  }; }
 	$(Q) echo '$^' > $@
