@@ -95,7 +95,7 @@ $(bse/libbse.objects): | $>/bse/check-stray-sources
 $>/bse/check-stray-sources: $(bse/libbse.headers) $(bse/libbse.sources)
 	$(QECHO) CHECK bse/: check stray sources
 	$(Q) test -z "$(DOTGIT)" || { \
-	  git status -s -- $^ | { grep '^?? .*' && \
+	  git status -s -u -- $^ | { grep '^?? .*' && \
 		{ echo 'bse/: error: untracked source files present'; exit 3 ; } || :; \
 	  }; }
 	$(Q) echo '$^' > $@
