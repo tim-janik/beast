@@ -3,8 +3,7 @@
 
 #include "bse/internal.hh"
 
-#include "bse/glib-extra.cc"
-
+#include "bse/glib-extra.inc.cc"
 
 // == Testing ==
 #include "testing.hh"

@@ -63,7 +63,7 @@ osc_update_pwm_offset (GslOscData *osc,
 #define	OSC_FLAG_PWM_MOD	(64)
 #define	OSC_FLAG_PULSE_OSC	(128)
 
-#include "gsloscillator-aux.cc" // oscillator_process_variants<>()
+#include "gsloscillator.inc.cc" // oscillator_process_variants<>()
 
 /* --- functions --- */
 using OscillatorProcessFunc = void (*) (GslOscData*, uint, const float*, const float*, const float*, const float*, float*, float*);

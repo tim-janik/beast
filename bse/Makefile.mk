@@ -5,307 +5,29 @@ CLEANDIRS      += $(bse/cleandirs)
 ALL_TARGETS    += bse/all
 CHECK_TARGETS  += bse/check
 
-# == bse/ files ==
+# == BeastSoundEngine definitions ==
+lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
+bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
+bse/BeastSoundEngine.headers	::= bse/beast-sound-engine.hh
+bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc bse/jsonipcstubs.cc
+bse/BeastSoundEngine.gensources ::= $>/bse/bse_jsonipc_stub1.cc $>/bse/bse_jsonipc_stub2.cc $>/bse/bse_jsonipc_stub3.cc $>/bse/bse_jsonipc_stub4.cc
+bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources)) $(bse/BeastSoundEngine.gensources:.cc=.o)
+bse/all: $(lib/BeastSoundEngine)
+
+# == libbsejack.so definitions ==
+bse/libbsejack.sources		::= bse/driver-jack.cc
+lib/libbsejack.so		::= $>/lib/libbse-jack-$(VERSION_M.M.M).so
+bse/libbsejack.objects		::= $(call BUILDDIR_O, $(bse/libbsejack.sources))
+ifneq ('','$(BSE_JACK_LIBS)')
+  bse/all: $(lib/libbsejack.so)
+endif
+
+# == libbse.so definitions ==
+bse/libbse.exclude      ::= $(bse/BeastSoundEngine.sources) $(bse/libbsejack.sources)
+bse/libbse.csources     ::= $(sort $(filter-out %.inc.c, $(wildcard bse/*.c)))
+bse/libbse.sources      ::= $(sort $(filter-out $(bse/libbse.exclude) %.inc.cc, $(bse/libbse.csources) $(wildcard bse/*.cc)))
+bse/libbse.headers      ::= $(sort $(filter-out $(bse/BeastSoundEngine.headers) %.inc.hh, $(wildcard bse/*.hh)))
 bse/libbse.bseonly.headers = $(filter bse/bse%, $(bse/libbse.headers))
-bse/libbse.headers ::= $(strip		\
-	bse/bcore.hh			\
-	bse/blob.hh			\
-	bse/bse.hh			\
-	bse/bsebiquadfilter.hh		\
-	bse/bseblockutils.hh		\
-	bse/bsebus.hh			\
-	bse/bsecategories.hh		\
-	bse/bsecompat.hh		\
-	bse/bseconstant.hh		\
-	bse/bseconstvalues.hh		\
-	bse/bsecontainer.hh		\
-	bse/bsecontextmerger.hh		\
-	bse/bsecsynth.hh		\
-	bse/bsecxxarg.hh		\
-	bse/bsecxxbase.hh		\
-	bse/bsecxxmodule.hh		\
-	bse/bsecxxplugin.hh		\
-	bse/bsecxxutils.hh		\
-	bse/bsecxxvalue.hh		\
-	bse/bsedatahandle-flac.hh	\
-	bse/bsedefs.hh			\
-	bse/bseeditablesample.hh	\
-	bse/bseengine.hh		\
-	bse/bseenginemaster.hh		\
-	bse/bseenginenode.hh		\
-	bse/bseengineprivate.hh		\
-	bse/bseengineschedule.hh	\
-	bse/bseengineutils.hh		\
-	bse/bseenums.hh			\
-	bse/bseexports.hh		\
-	bse/bsefilter.hh		\
-	bse/bseglobals.hh		\
-	bse/bseieee754.hh		\
-	bse/bseinstrumentinput.hh	\
-	bse/bseinstrumentoutput.hh	\
-	bse/bseitem.hh			\
-	bse/bseladspa.hh		\
-	bse/bseladspamodule.hh		\
-	bse/bseloader.hh		\
-	bse/bsemain.hh			\
-	bse/bsemath.hh			\
-	bse/bsemathsignal.hh		\
-	bse/bsemidicontroller.hh	\
-	bse/bsemididecoder.hh		\
-	bse/bsemidievent.hh		\
-	bse/bsemidifile.hh		\
-	bse/bsemidiinput.hh		\
-	bse/bsemidireceiver.hh		\
-	bse/bsemidisynth.hh		\
-	bse/bsemidivoice.hh		\
-	bse/bsenote.hh			\
-	bse/bseobject.hh		\
-	bse/bseparam.hh			\
-	bse/bsepart.hh			\
-	bse/bsepcminput.hh		\
-	bse/bsepcmoutput.hh		\
-	bse/bsepcmwriter.hh		\
-	bse/bseplugin.hh		\
-	bse/bseproject.hh		\
-	bse/bseresampler.hh		\
-	bse/bsesequencer.hh		\
-	bse/bseserver.hh		\
-	bse/bsesnet.hh			\
-	bse/bsesong.hh			\
-	bse/bsesoundfont.hh		\
-	bse/bsesoundfontosc.hh		\
-	bse/bsesoundfontpreset.hh	\
-	bse/bsesoundfontrepo.hh		\
-	bse/bsesource.hh		\
-	bse/bsestandardosc.hh		\
-	bse/bsestandardsynths.hh	\
-	bse/bsestartup.hh		\
-	bse/bsestorage.hh		\
-	bse/bsesubiport.hh		\
-	bse/bsesuboport.hh		\
-	bse/bsesubsynth.hh		\
-	bse/bsesuper.hh			\
-	bse/bsetrack.hh			\
-	bse/bsetype.hh			\
-	bse/bseundostack.hh		\
-	bse/bseutils.hh			\
-	bse/bsewave.hh			\
-	bse/bsewaveosc.hh		\
-	bse/bsewaverepo.hh		\
-	bse/cxxaux.hh			\
-	bse/datalist.hh			\
-	bse/devicecrawler.hh		\
-	bse/driver.hh			\
-	bse/effectbase.hh		\
-	bse/entropy.hh			\
-	bse/floatutils.hh		\
-	bse/formatter.hh		\
-	bse/gbsearcharray.hh		\
-	bse/glib-extra.hh		\
-	bse/gslcommon.hh		\
-	bse/gsldatacache.hh		\
-	bse/gsldatahandle-mad.hh	\
-	bse/gsldatahandle-vorbis.hh	\
-	bse/gsldatahandle.hh		\
-	bse/gsldatautils.hh		\
-	bse/gsldefs.hh			\
-	bse/gslfft.hh			\
-	bse/gslfilehash.hh		\
-	bse/gslfilter.hh		\
-	bse/gsloscillator.hh		\
-	bse/gslosctable.hh		\
-	bse/gslvorbis-cutter.hh		\
-	bse/gslvorbis-enc.hh		\
-	bse/gslwavechunk.hh		\
-	bse/gslwaveosc.hh		\
-	bse/internal.hh			\
-	bse/ladspa.hh			\
-	bse/magic.hh			\
-	bse/memory.hh			\
-	bse/midievent.hh		\
-	bse/module.hh			\
-	bse/device.hh			\
-	bse/monitor.hh			\
-	bse/object.hh			\
-	bse/path.hh			\
-	bse/platform.hh			\
-	bse/processor.hh		\
-	bse/property.hh			\
-	bse/pugixml.hh			\
-	bse/randomhash.hh		\
-	bse/regex.hh			\
-	bse/serializable.hh		\
-	bse/signalmath.hh		\
-	bse/storage.hh			\
-	bse/sfi.hh			\
-	bse/sficxx.hh			\
-	bse/sfifilecrawler.hh		\
-	bse/sfimemory.hh		\
-	bse/sfinote.hh			\
-	bse/sfiparams.hh		\
-	bse/sfiprimitives.hh		\
-	bse/sfiring.hh			\
-	bse/sfiserial.hh		\
-	bse/sfistore.hh			\
-	bse/sfitime.hh			\
-	bse/sfitypes.hh			\
-	bse/sfiustore.hh		\
-	bse/sfivalues.hh		\
-	bse/sndfiles.hh			\
-	bse/strings.hh			\
-	bse/testing.hh			\
-	bse/unicode.hh			\
-)
-bse/libbse.sources ::= $(strip		\
-	bse/bcore.cc			\
-	bse/blob.cc			\
-	bse/bsebasics.cc		\
-	bse/bsebiquadfilter.cc		\
-	bse/bseblockutils.cc		\
-	bse/bsebus.cc			\
-	bse/bsebusmodule.cc		\
-	bse/bsecategories.cc		\
-	bse/bsecompat.cc		\
-	bse/bseconstant.cc		\
-	bse/bseconstvalues.cc		\
-	bse/bsecontainer.cc		\
-	bse/bsecontextmerger.cc		\
-	bse/bsecsynth.cc		\
-	bse/bsecxxarg.cc		\
-	bse/bsecxxbase.cc		\
-	bse/bsecxxmodule.cc		\
-	bse/bsecxxplugin.cc		\
-	bse/bsecxxutils.cc		\
-	bse/bsecxxvalue.cc		\
-	bse/bsedatahandle-fir.cc	\
-	bse/bsedatahandle-flac.cc	\
-	bse/bsedatahandle-resample.cc	\
-	bse/bseeditablesample.cc	\
-	bse/bseengine.cc		\
-	bse/bseenginemaster.cc		\
-	bse/bseengineschedule.cc	\
-	bse/bseengineutils.cc		\
-	bse/bseenums.cc			\
-	bse/bsefilter-ellf.cc		\
-	bse/bsefilter.cc		\
-	bse/bseglobals.cc		\
-	bse/bseinstrumentinput.cc	\
-	bse/bseinstrumentoutput.cc	\
-	bse/bseitem.cc			\
-	bse/bseladspa.cc		\
-	bse/bseladspamodule.cc		\
-	bse/bseloader-aiff.cc		\
-	bse/bseloader-bsewave.cc	\
-	bse/bseloader-flac.cc		\
-	bse/bseloader-guspatch.cc	\
-	bse/bseloader-mad.cc		\
-	bse/bseloader-oggvorbis.cc	\
-	bse/bseloader-wav.cc		\
-	bse/bseloader.cc		\
-	bse/bsemain.cc			\
-	bse/bsemath.cc			\
-	bse/bsemathsignal.cc		\
-	bse/bsemidicontroller.cc	\
-	bse/bsemididecoder.cc		\
-	bse/bsemidievent.cc		\
-	bse/bsemidifile.cc		\
-	bse/bsemidiinput.cc		\
-	bse/bsemidireceiver.cc		\
-	bse/bsemidisynth.cc		\
-	bse/bsemidivoice.cc		\
-	bse/bsenote.cc			\
-	bse/bseobject.cc		\
-	bse/bseparam.cc			\
-	bse/bsepart.cc			\
-	bse/bsepcminput.cc		\
-	bse/bsepcmoutput.cc		\
-	bse/bsepcmwriter.cc		\
-	bse/bseplugin.cc		\
-	bse/bseproject.cc		\
-	bse/bseresampler.cc		\
-	bse/bsesequencer.cc		\
-	bse/bseserver.cc		\
-	bse/bsesnet.cc			\
-	bse/bsesong.cc			\
-	bse/bsesoundfont.cc		\
-	bse/bsesoundfontosc.cc		\
-	bse/bsesoundfontpreset.cc	\
-	bse/bsesoundfontrepo.cc		\
-	bse/bsesource.cc		\
-	bse/bsestandardosc.cc		\
-	bse/bsestandardsynths.cc	\
-	bse/bsestartup.cc		\
-	bse/bsestorage.cc		\
-	bse/bsesubiport.cc		\
-	bse/bsesuboport.cc		\
-	bse/bsesubsynth.cc		\
-	bse/bsesuper.cc			\
-	bse/bsetrack.cc			\
-	bse/bsetype.cc			\
-	bse/bseundostack.cc		\
-	bse/bseutils.cc			\
-	bse/bsewave.cc			\
-	bse/bsewaveosc.cc		\
-	bse/bsewaverepo.cc		\
-	bse/datalist.cc			\
-	bse/debugdsp.cc			\
-	bse/devicecrawler.cc		\
-	bse/driver-alsa.cc		\
-	bse/driver.cc			\
-	bse/entropy.cc			\
-	bse/formatter.cc		\
-	bse/gslcommon.cc		\
-	bse/gsldatacache.cc		\
-	bse/gsldatahandle-mad.cc	\
-	bse/gsldatahandle-vorbis.cc	\
-	bse/gsldatahandle.cc		\
-	bse/gsldatautils.cc		\
-	bse/gslfilehash.cc		\
-	bse/gslfilter.cc		\
-	bse/gsloscillator.cc		\
-	bse/gslosctable.cc		\
-	bse/gslvorbis-cutter.cc		\
-	bse/gslvorbis-enc.cc		\
-	bse/gslwavechunk.cc		\
-	bse/gslwaveosc.cc		\
-	bse/magic.cc			\
-	bse/memory.cc			\
-	bse/midievent.cc		\
-	bse/minizip.c			\
-	bse/module.cc			\
-	bse/device.cc			\
-	bse/monitor.cc			\
-	bse/object.cc			\
-	bse/path.cc			\
-	bse/platform.cc			\
-	bse/processor.cc		\
-	bse/property.cc			\
-	bse/pugixml.cc			\
-	bse/randomhash.cc		\
-	bse/regex.cc			\
-	bse/serializable.cc		\
-	bse/storage.cc			\
-	bse/sfifilecrawler.cc		\
-	bse/sfimemory.cc		\
-	bse/sfinote.cc			\
-	bse/sfiparams.cc		\
-	bse/sfiprimitives.cc		\
-	bse/sfiring.cc			\
-	bse/sfiserial.cc		\
-	bse/sfistore.cc			\
-	bse/sfitime.cc			\
-	bse/sfitypes.cc			\
-	bse/sfiustore.cc		\
-	bse/sfivalues.cc		\
-	bse/sndfiles.cc			\
-	bse/strings.cc			\
-	bse/testing.cc			\
-	bse/unicode.cc			\
-	bse/weaksym.cc			\
-)
-bse/libbsejack.sources ::= $(strip	\
-	bse/driver-jack.cc		\
-)
 bse/include.idls ::= $(strip		\
 	bse/bsebasics.idl		\
 	bse/bsebusmodule.idl		\
@@ -329,29 +51,12 @@ bse/libbse.cc.deps  ::= $(strip		\
 	$>/bse/zres.cc			\
 )
 bse/bseapi.idl.outputs		::= $>/bse/bseapi_interfaces.hh $>/bse/bseapi_interfaces.cc
-
-# == libbse.so defs ==
 lib/libbse.so			::= $>/lib/libbse-$(VERSION_MAJOR).so.$(VERSION_MINOR).$(VERSION_MICRO)
 bse/libbse.objects		::= $(call BUILDDIR_O, $(bse/libbse.sources))
 bse/libbse.objects		 += $(devices/libbse.objects)
 bse/include.headerdir		::= $(pkglibdir)/include/bse
 bse/include.headers		::= $(bse/libbse.headers) $(bse/libbse.deps) $(bse/include.idls)
 bse/all: $(lib/libbse.so)
-
-# == libbsejack.so defs ==
-lib/libbsejack.so		::= $>/lib/libbse-jack-$(VERSION_M.M.M).so
-bse/libbsejack.objects		::= $(call BUILDDIR_O, $(bse/libbsejack.sources))
-ifneq ('','$(BSE_JACK_LIBS)')
-  bse/all: $(lib/libbsejack.so)
-endif
-
-# == BeastSoundEngine defs ==
-lib/BeastSoundEngine		::= $>/lib/BeastSoundEngine-$(VERSION_M.M.M)
-bse/BeastSoundEngine.deps	::= $>/bse/bseapi_jsonipc.cc
-bse/BeastSoundEngine.sources	::= bse/beast-sound-engine.cc bse/jsonipcstubs.cc
-bse/BeastSoundEngine.gensources ::= $>/bse/bse_jsonipc_stub1.cc $>/bse/bse_jsonipc_stub2.cc $>/bse/bse_jsonipc_stub3.cc $>/bse/bse_jsonipc_stub4.cc
-bse/BeastSoundEngine.objects	::= $(call BUILDDIR_O, $(bse/BeastSoundEngine.sources)) $(bse/BeastSoundEngine.gensources:.cc=.o)
-bse/all: $(lib/BeastSoundEngine)
 
 # == external/minizip ==
 $>/external/minizip/mz_zip.h:			| $>/external/
@@ -386,6 +91,17 @@ $(call INSTALL_DATA_RULE,			\
 	$(bse/include.headers) $(bse/libbse.deps))
 $(call $(if $(filter production, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XDBG), \
 	lib/libbse, $(DESTDIR)$(pkglibdir)/lib, $(lib/libbse.so))
+$(bse/libbse.objects): | $>/bse/check-stray-sources
+$>/bse/check-stray-sources: $(bse/libbse.headers) $(bse/libbse.sources)
+	$(QECHO) CHECK bse/: check stray sources
+	$(Q) test -z "$(DOTGIT)" || { \
+	  git status -s -- $^ | { grep '^?? .*' && \
+		{ echo 'bse/: error: untracked source files present'; exit 3 ; } || :; \
+	  }; }
+	$(Q) echo '$^' > $@
+ifneq ($(bse/libbse.headers) $(bse/libbse.sources), $(shell cat $>/bse/check-stray-sources 2>/dev/null))
+.PHONY: $>/bse/check-stray-sources
+endif
 
 # == libbsejack.so rules ==
 $(bse/libbsejack.objects): $(bse/libbse.deps) $(bse/libbsejack.cc.deps)
@@ -404,9 +120,9 @@ $(call $(if $(filter production, $(MODE)), INSTALL_BIN_RULE, INSTALL_BIN_RULE_XD
 endif
 
 # == bseapi.idl rules ==
-$(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.hh $(aidacc/aidacc)	| $>/bse/
+$(call MULTIOUTPUT, $(bse/bseapi.idl.outputs)): bse/bseapi.idl	bse/bseapi-inserts.inc.hh $(aidacc/aidacc)	| $>/bse/
 	$(QECHO) GEN $(bse/bseapi.idl.outputs) # aidacc generates %_interfaces.{hh|cc} from %.idl, and the real MULTIOUTPUT target name looks wierd
-	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.hh -o $>/bse $<
+	$Q $(aidacc/aidacc) -x CxxStub -G strip-path=$(abspath .)/ --insertions bse/bseapi-inserts.inc.hh -o $>/bse $<
 	$Q sed '1i#define _(x) x' -i $>/bse/bseapi_interfaces.cc && sed '1i#undef _' -i $>/bse/bseapi_interfaces.cc
 
 # == sfidl rules ==

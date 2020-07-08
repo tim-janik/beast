@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "bsepcmmodule.cc"
+#include "bsepcmmodule.inc.cc"
 
 using namespace Bse;
 
