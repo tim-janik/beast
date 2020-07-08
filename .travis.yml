@@ -26,14 +26,14 @@ jobs:
   include:
 
     # == 'Gcc' Pipeline ==
-    # Build a highly optimized Gcc and upload it.
+    # Build a highly optimized Gcc and upload it. Disabled: appimage bintray
     - stage: Stage1
-      name: "GCC (gcc appimage check bintray)"
+      name: "GCC (release build check)"
       env: PIPELINE=Gcc
       before_install: |
         travis_retry git fetch --unshallow --tags
       script: |
-        misc/cibuild.sh gcc release all appimage check bintray
+        misc/cibuild.sh gcc release all check
 
     # == 'Linting' Pipeline ==
     # Generate all possible source code linting reports,
@@ -65,7 +65,7 @@ jobs:
     # == Stage2 Fedora ==
     # Fedora build tests, runs *after* the 'appimage' succeeded
     - stage: Stage1
-      name: "Fedora-32 (build check appimage)"
+      name: "Fedora-32 (build & check)"
       env: PIPELINE=Fedora-32
       before_install: |
         travis_retry git fetch --unshallow --tags
