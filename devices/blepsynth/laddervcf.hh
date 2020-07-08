@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-//
-#ifndef __BSE_LADDER_VCF_HH__
-#define __BSE_LADDER_VCF_HH__
+#ifndef __BSE_DEVICES_LADDER_VCF_HH__
+#define __BSE_DEVICES_LADDER_VCF_HH__
 
 #include <bse/bseresampler.hh>
 
@@ -333,6 +332,6 @@ typedef LadderVCF<true,  true>  LadderVCFNonLinear;
 // fast non-linear version (no oversampling), may have aliasing
 typedef LadderVCF<false, true>  LadderVCFNonLinearCheap;
 
-}
+} // Bse
 
-#endif
+#endif // __BSE_DEVICES_LADDER_VCF_HH__

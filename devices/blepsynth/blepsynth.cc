@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/processor.hh>
-#include <bse/signalmath.hh>
-#include <bse/bsenote.hh>
-#include <bse/bleposc.hh>
-#include <bse/laddervcf.hh>
+#include "bse/processor.hh"
+#include "bse/signalmath.hh"
+#include "bse/bsenote.hh"
+#include "devices/blepsynth/bleposc.hh"
+#include "devices/blepsynth/laddervcf.hh"
 #include "bse/internal.hh"
 
 #define DDEBUG(...)     Bse::debug ("debugdsp", __VA_ARGS__)
@@ -15,8 +15,7 @@ using namespace AudioSignal;
 
 // based on liquidsfz envelope.hh
 
-namespace
-{
+namespace {
 
 class Envelope
 {
@@ -186,7 +185,7 @@ public:
   }
 };
 
-}
+} // Anon
 
 // == BlepSynth ==
 // subtractive synth based on band limited steps (MinBLEP):

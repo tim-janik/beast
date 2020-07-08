@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
-#ifndef __BSE_BLEPOSC_HH__
-#define __BSE_BLEPOSC_HH__
+#ifndef __BSE_DEVICES_BLEPOSC_HH__
+#define __BSE_DEVICES_BLEPOSC_HH__
 
 #include <vector>
 #include <array>
@@ -717,7 +716,7 @@ public:
   }
 };
 
-}
-}
+} // BlepUtils
+} // Bse
 
-#endif
+#endif // __BSE_DEVICES_BLEPOSC_HH__
