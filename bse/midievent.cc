@@ -16,7 +16,7 @@ Event::Event (const Event &other) :
 
 Event::Event (EventType etype)
 {
-  memset (this, 0, sizeof (*this));
+  memset ((void*) this, 0, sizeof (*this));
   type = etype;
   // one main design consideration is minimized size
   static_assert (sizeof (Event) <= 2 * sizeof (void*));
@@ -26,7 +26,7 @@ Event&
 Event::operator= (const Event &other)
 {
   if (this != &other)
-    memcpy (this, &other, sizeof (*this));
+    memcpy ((void*) this, &other, sizeof (*this));
   return *this;
 }
 
