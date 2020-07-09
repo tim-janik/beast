@@ -259,6 +259,18 @@ public:
 /// REQUIRES<value> - Simplified version of std::enable_if<> to use SFINAE in function templates.
 template<bool value> using REQUIRES = typename ::std::enable_if<value, bool>::type;
 
+/// Helper class for integer IDs up to 32 Bit, possibly of enum type.
+struct Id32 {
+  template<typename T,
+           REQUIRES< (sizeof (T) <= 4 && (std::is_integral<T>::value ||
+                                          std::is_enum<T>::value)) > = true>
+  Id32 (T eid) :
+    id (uint32_t (eid))
+  {}
+  operator uint32_t () { return id; }
+  uint32_t id;
+};
+
 } // Bse
 
 #endif // __BSE_CXXAUX_HH__
