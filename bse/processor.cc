@@ -15,19 +15,6 @@ canonify_identifier (const std::string &input)
   return Bse::string_canonify (lowered, validset, "-");
 }
 
-static std::string
-feature_add (std::string featurelist, const std::string feature)
-{
-  if ("" == Bse::feature_toggle_find (featurelist, feature, ""))
-    {
-      if (!featurelist.empty() && featurelist.back() != ':')
-        featurelist += ":" + feature;
-      else
-        featurelist += feature;
-    }
-  return featurelist;
-}
-
 namespace Bse {
 
 /** This namespace provides the components for all audio signal processing modules.
@@ -488,6 +475,23 @@ Processor::start_param_group (const std::string &groupname) const
   tls_param_group = groupname;
 }
 
+static CString
+construct_hints (std::string hints, double pmin, double pmax, const std::string &more = "")
+{
+  if (hints.empty())
+    hints = Processor::STANDARD;
+  if (hints.back() != ':')
+    hints = hints + ":";
+  for (const auto &s : string_split (more))
+    if (!s.empty() && "" == feature_toggle_find (hints, s, ""))
+      hints += s + ":";
+  if (hints[0] != ':')
+    hints = ":" + hints;
+  if (pmax > 0 && pmax == -pmin)
+    hints += "bidir:";
+  return hints;
+}
+
 /// Add a new parameter with unique `ParamInfo.identifier`.
 /// The returned `ParamId` is forced to match `id` (and must be unique).
 ParamId
@@ -518,16 +522,16 @@ Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 /// The `clabel` is the canonical, non-translated name for this parameter, its
 /// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &clabel,
-                      const std::string &nickname, double pmin, double pmax,
-                      const std::string &hints, double value, const std::string &unit,
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      double pmin, double pmax, double value,
+                      const std::string &unit, std::string hints,
                       const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
   info.ident = canonify_identifier (clabel);
   info.label = clabel;
   info.nick = nickname;
-  info.hints = hints;
+  info.hints = construct_hints (hints, pmin, pmax);
   info.unit = unit;
   info.blurb = blurb;
   info.description = description;
@@ -541,9 +545,8 @@ Processor::add_param (const std::string &clabel,
 /// The `clabel` is the canonical, non-translated name for this parameter, its
 /// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &clabel,
-                      const std::string &nickname, ChoiceEntries &&centries,
-                      const std::string &hints, double value,
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      ChoiceEntries &&centries, double value, std::string hints,
                       const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
@@ -553,10 +556,7 @@ Processor::add_param (const std::string &clabel,
   info.blurb = blurb;
   info.description = description;
   info.set_choices (std::move (centries));
-  if ("" == feature_toggle_find (info.hints, "choice", ""))
-    info.hints = feature_add (hints, "choice");
-  else
-    info.hints = hints;
+  info.hints = construct_hints (hints, 0, centries.size(), "choice");
   ParamId id = ParamId (1 + params_.size());
   return add_param (id, info, value);
 }
@@ -567,7 +567,7 @@ Processor::add_param (const std::string &clabel,
 /// hyphenated lower case version is used for serialization.
 ParamId
 Processor::add_param (const std::string &clabel, const std::string &nickname,
-                      const std::string &hints, bool boolvalue,
+                      bool boolvalue, std::string hints,
                       const std::string &blurb, const std::string &description)
 {
   ParamInfo info;
@@ -578,10 +578,7 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
   info.description = description;
   static const ChoiceEntries centries { { "Off" }, { "On" } };
   info.set_choices (centries);
-  if ("" == feature_toggle_find (info.hints, "toggle", ""))
-    info.hints = feature_add (hints, "toggle");
-  else
-    info.hints = hints;
+  info.hints = construct_hints (hints, false, true, "toggle");
   const ParamId id = ParamId (1 + params_.size());
   const auto rid = add_param (id, info, boolvalue);
   assert_return (rid == id, rid);

@@ -228,15 +228,14 @@ protected:
   // Parameters
   ParamId       add_param         (ParamId id, const ParamInfo &infotmpl, double value);
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
-                                   double pmin, double pmax, const std::string &hints,
-                                   double value, const std::string &unit = "",
+                                   double pmin, double pmax, double value,
+                                   const std::string &unit = "", std::string hints = "",
                                    const std::string &blurb = "", const std::string &description = "");
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
-                                   ChoiceEntries &&centries, const std::string &hints,
-                                   double value,
+                                   ChoiceEntries &&centries, double value, std::string hints = "",
                                    const std::string &blurb = "", const std::string &description = "");
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
-                                   const std::string &hints, bool boolvalue,
+                                   bool boolvalue, std::string hints = "",
                                    const std::string &blurb = "", const std::string &description = "");
   void          start_param_group (const std::string &groupname) const;
   virtual void  adjust_param      (ParamId tag) {}
@@ -269,6 +268,7 @@ public:
   using RegistryList = std::vector<RegistryEntry>;
   using ParamInfoPVec = std::vector<ParamInfoP>;
   using MaybeParamId = std::pair<ParamId,bool>;
+  static constexpr const char *const STANDARD = ":G:S:r:w:"; ///< GUI STORAGE READABLE WRITABLE
   Engine&       engine            () const;
   uint          sample_rate       () const __attribute__ ((__const__));
   double        mix_freq          () const __attribute__ ((__const__));
