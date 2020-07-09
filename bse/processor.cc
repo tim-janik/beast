@@ -492,16 +492,26 @@ construct_hints (std::string hints, double pmin, double pmax, const std::string 
   return hints;
 }
 
+/// Helper for add_param() to generate the sequentially next ParamId.
+ParamId
+Processor::nextid () const
+{
+  const uint pmax = params_.size();
+  const uint last = params_.empty() ? 0 : uint (params_.back().id);
+  return ParamId (MAX (pmax, last) + 1);
+}
+
 /// Add a new parameter with unique `ParamInfo.identifier`.
 /// The returned `ParamId` is forced to match `id` (and must be unique).
 ParamId
-Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
+Processor::add_param (Id32 id, const ParamInfo &infotmpl, double value)
 {
+  assert_return (uint (id) > 0, ParamId (0));
   assert_return (!is_initialized(), {});
   assert_return (infotmpl.label != "", {});
   if (params_.size())
     assert_return (infotmpl.label != params_.back().info->label, {}); // easy CnP error
-  PParam param { id, uint (1 + params_.size()), infotmpl };
+  PParam param { ParamId (id.id), uint (1 + params_.size()), infotmpl };
   if (param.info->ident == "")
     param.info->ident = canonify_identifier (param.info->label);
   if (params_.size())
@@ -522,11 +532,12 @@ Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
 /// The `clabel` is the canonical, non-translated name for this parameter, its
 /// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &clabel, const std::string &nickname,
+Processor::add_param (Id32 id, const std::string &clabel, const std::string &nickname,
                       double pmin, double pmax, double value,
                       const std::string &unit, std::string hints,
                       const std::string &blurb, const std::string &description)
 {
+  assert_return (uint (id) > 0, ParamId (0));
   ParamInfo info;
   info.ident = canonify_identifier (clabel);
   info.label = clabel;
@@ -536,8 +547,17 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
   info.blurb = blurb;
   info.description = description;
   info.set_range (pmin, pmax);
-  ParamId id = ParamId (1 + params_.size());
   return add_param (id, info, value);
+}
+
+/// Variant of Processor::add_param() with sequential `id` generation.
+ParamId
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      double pmin, double pmax, double value,
+                      const std::string &unit, std::string hints,
+                      const std::string &blurb, const std::string &description)
+{
+  return add_param (nextid(), clabel, nickname, pmin, pmax, value, unit, hints, blurb, description);
 }
 
 /// Add new choice parameter with most `ParamInfo` fields as inlined arguments.
@@ -545,10 +565,11 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
 /// The `clabel` is the canonical, non-translated name for this parameter, its
 /// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &clabel, const std::string &nickname,
+Processor::add_param (Id32 id, const std::string &clabel, const std::string &nickname,
                       ChoiceEntries &&centries, double value, std::string hints,
                       const std::string &blurb, const std::string &description)
 {
+  assert_return (uint (id) > 0, ParamId (0));
   ParamInfo info;
   info.ident = canonify_identifier (clabel);
   info.label = clabel;
@@ -557,8 +578,16 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
   info.description = description;
   info.set_choices (std::move (centries));
   info.hints = construct_hints (hints, 0, centries.size(), "choice");
-  ParamId id = ParamId (1 + params_.size());
   return add_param (id, info, value);
+}
+
+/// Variant of Processor::add_param() with sequential `id` generation.
+ParamId
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      ChoiceEntries &&centries, double value, std::string hints,
+                      const std::string &blurb, const std::string &description)
+{
+  return add_param (nextid(), clabel, nickname, std::forward<ChoiceEntries> (centries), value, hints, blurb, description);
 }
 
 /// Add new toggle parameter with most `ParamInfo` fields as inlined arguments.
@@ -566,10 +595,11 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
 /// The `clabel` is the canonical, non-translated name for this parameter, its
 /// hyphenated lower case version is used for serialization.
 ParamId
-Processor::add_param (const std::string &clabel, const std::string &nickname,
+Processor::add_param (Id32 id, const std::string &clabel, const std::string &nickname,
                       bool boolvalue, std::string hints,
                       const std::string &blurb, const std::string &description)
 {
+  assert_return (uint (id) > 0, ParamId (0));
   ParamInfo info;
   info.ident = canonify_identifier (clabel);
   info.label = clabel;
@@ -579,12 +609,20 @@ Processor::add_param (const std::string &clabel, const std::string &nickname,
   static const ChoiceEntries centries { { "Off" }, { "On" } };
   info.set_choices (centries);
   info.hints = construct_hints (hints, false, true, "toggle");
-  const ParamId id = ParamId (1 + params_.size());
   const auto rid = add_param (id, info, boolvalue);
-  assert_return (rid == id, rid);
-  PParam *param = find_pparam (id);
+  assert_return (uint (rid) == id.id, rid);
+  PParam *param = find_pparam (rid);
   assert_return (param && param->peek_value() == (boolvalue ? +0.5 : -0.5), rid);
   return rid;
+}
+
+/// Variant of Processor::add_param() with sequential `id` generation.
+ParamId
+Processor::add_param (const std::string &clabel, const std::string &nickname,
+                      bool boolvalue, std::string hints,
+                      const std::string &blurb, const std::string &description)
+{
+  return add_param (nextid(), clabel, nickname, boolvalue, hints, blurb, description);
 }
 
 /// List all Processor parameters.
@@ -628,9 +666,9 @@ Processor::find_pparam_ (ParamId paramid)
 
 /// Set parameter `id` to `value`.
 void
-Processor::set_param (ParamId paramid, const double value)
+Processor::set_param (Id32 paramid, const double value)
 {
-  PParam *pparam = find_pparam (paramid);
+  PParam *pparam = find_pparam (ParamId (paramid.id));
   return_unless (pparam);
   ParamInfo *info = pparam->info.get();
   double v = value;
@@ -654,31 +692,31 @@ Processor::set_param (ParamId paramid, const double value)
 
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
 ParamInfoP
-Processor::param_info (ParamId paramid) const
+Processor::param_info (Id32 paramid) const
 {
-  PParam *param = const_cast<Processor*> (this)->find_pparam (paramid);
+  PParam *param = const_cast<Processor*> (this)->find_pparam (ParamId (paramid.id));
   return BSE_ISLIKELY (param) ? param->info : nullptr;
 }
 
 /// Fetch the current parameter value of a Processor from any thread.
 /// This function is MT-Safe after proper Processor initialization.
 double
-Processor::peek_param_mt (ProcessorP proc, ParamId pid)
+Processor::peek_param_mt (ProcessorP proc, Id32 paramid)
 {
   assert_return (proc, FP_NAN);
   assert_return (proc->is_initialized(), FP_NAN);
-  PParam *param = proc->find_pparam (pid);
+  PParam *param = proc->find_pparam (ParamId (paramid.id));
   return BSE_ISLIKELY (param) ? param->peek_value() : FP_NAN;
 }
 
 /// Enable/disable notification sending for a Processor parameter.
 /// This function is MT-Safe after proper Processor initialization.
 void
-Processor::param_notifies_mt (ProcessorP proc, ParamId pid, bool need_notifies)
+Processor::param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies)
 {
   assert_return (proc);
   assert_return (proc->is_initialized());
-  PParam *param = proc->find_pparam (pid);
+  PParam *param = proc->find_pparam (ParamId (paramid.id));
   if (BSE_ISLIKELY (param))
     param->must_notify (need_notifies);
 }
@@ -692,7 +730,7 @@ Processor::is_initialized () const
 
 /// Retrieve the minimum / maximum values for a parameter.
 Processor::MinMax
-Processor::param_range (ParamId paramid) const
+Processor::param_range (Id32 paramid) const
 {
   ParamInfo *info = param_info (paramid).get();
   return info ? info->get_minmax() : MinMax { FP_NAN, FP_NAN };

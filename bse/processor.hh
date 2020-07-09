@@ -227,7 +227,20 @@ protected:
   virtual void  reset             () = 0;
   virtual void  render            (uint n_frames) = 0;
   // Parameters
-  ParamId       add_param         (ParamId id, const ParamInfo &infotmpl, double value);
+  ParamId       nextid            () const;
+  ParamId       add_param         (Id32 id, const ParamInfo &infotmpl, double value);
+  ParamId       add_param         (Id32 id, const std::string &clabel, const std::string &nickname,
+                                   double pmin, double pmax, double value,
+                                   const std::string &unit = "", std::string hints = "",
+                                   const std::string &blurb = "", const std::string &description = "");
+  ParamId       add_param         (Id32 id, const std::string &clabel, const std::string &nickname,
+                                   ChoiceEntries &&centries, double value, std::string hints = "",
+                                   const std::string &blurb = "", const std::string &description = "");
+  ParamId       add_param         (Id32 id, const std::string &clabel, const std::string &nickname,
+                                   bool boolvalue, std::string hints = "",
+                                   const std::string &blurb = "", const std::string &description = "");
+  void          start_param_group (const std::string &groupname) const;
+  virtual void  adjust_param      (Id32 tag) {}
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
                                    double pmin, double pmax, double value,
                                    const std::string &unit = "", std::string hints = "",
@@ -238,8 +251,6 @@ protected:
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
                                    bool boolvalue, std::string hints = "",
                                    const std::string &blurb = "", const std::string &description = "");
-  void          start_param_group (const std::string &groupname) const;
-  virtual void  adjust_param      (ParamId tag) {}
   // Buses
   IBusId        add_input_bus     (CString uilabel, SpeakerArrangement speakerarrangement,
                                    const std::string &hints = "", const std::string &blurb = "");
@@ -280,11 +291,11 @@ public:
   ParamInfoPVec list_params       () const;
   void          adjust_params     (bool include_nondirty = false);
   MaybeParamId  find_param        (const std::string &identifier) const;
-  ParamInfoP    param_info        (ParamId paramid) const;
-  MinMax        param_range       (ParamId paramid) const;
-  double        get_param         (ParamId paramid);
-  void          set_param         (ParamId paramid, double value);
-  bool          check_dirty       (ParamId paramid) const;
+  ParamInfoP    param_info        (Id32 paramid) const;
+  MinMax        param_range       (Id32 paramid) const;
+  double        get_param         (Id32 paramid);
+  void          set_param         (Id32 paramid, double value);
+  bool          check_dirty       (Id32 paramid) const;
   bool          is_initialized    () const;
   // Buses
   IBusId        find_ibus         (const std::string &name) const;
@@ -310,8 +321,8 @@ public:
   static uint          registry_enroll    (const std::function<ProcessorP ()> &create,
                                            const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
   // MT-Safe accessors
-  static double peek_param_mt     (ProcessorP proc, ParamId pid);
-  static void   param_notifies_mt (ProcessorP proc, ParamId pid, bool need_notifies);
+  static double peek_param_mt     (ProcessorP proc, Id32 paramid);
+  static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
 };
 
 /// Timing information around AudioSignal processing.
@@ -570,18 +581,18 @@ Processor::find_pparam (ParamId paramid)
 
 /// Fetch `value` of parameter `id` and clear its `dirty` flag.
 inline double
-Processor::get_param (ParamId paramid)
+Processor::get_param (Id32 paramid)
 {
-  PParam *pparam = find_pparam (paramid);
+  PParam *pparam = find_pparam (ParamId (paramid.id));
   return BSE_ISLIKELY (pparam) ? pparam->get_value_and_clean() : FP_NAN;
 }
 
 /// Check if the parameter `dirty` flag is set.
 /// Return `true` if set_param() changed the parameter value since the last get_param() call.
 inline bool
-Processor::check_dirty (ParamId paramid) const
+Processor::check_dirty (Id32 paramid) const
 {
-  PParam *param = const_cast<Processor*> (this)->find_pparam (paramid);
+  PParam *param = const_cast<Processor*> (this)->find_pparam (ParamId (paramid.id));
   return BSE_ISLIKELY (param) ? param->is_dirty() : false;
 }
 
