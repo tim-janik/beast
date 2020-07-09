@@ -256,6 +256,9 @@ public:
   explicit     operator bool () const                        { return ptr_ != nullptr; }
 };
 
+/// REQUIRES<value> - Simplified version of std::enable_if<> to use SFINAE in function templates.
+template<bool value> using REQUIRES = typename ::std::enable_if<value, bool>::type;
+
 } // Bse
 
 #endif // __BSE_CXXAUX_HH__
