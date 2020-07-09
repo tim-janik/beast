@@ -133,13 +133,14 @@ struct ParamInfo {
   ChoiceEntries
   const&     get_choices () const;
   void       copy_fields (const ParamInfo &src);
-  /*ctor*/   ParamInfo   (ParamId pid = ParamId (0));
+  /*ctor*/   ParamInfo   (ParamId pid = ParamId (0), uint porder = 0);
   virtual   ~ParamInfo   ();
   // BSE thread accessors
   size_t     add_notify  (ProcessorP proc, const std::function<void()> &callback);
   bool       del_notify  (ProcessorP proc, size_t callbackid);
   void       call_notify ();
   const ParamId id;
+  const uint    order;
 private:
   uint union_tag = 0;
   union {
@@ -433,7 +434,7 @@ struct Processor::EventStreams {
 // Processor internal parameter book keeping
 struct Processor::PParam {
   explicit PParam              (ParamId id);
-  explicit PParam              (ParamId id, const ParamInfo &pinfo);
+  explicit PParam              (ParamId id, uint order, const ParamInfo &pinfo);
   /*copy*/ PParam              (const PParam &);
   PParam& operator=            (const PParam &);
   double   get_value_and_clean ()       { clear_dirty(); return value_; }

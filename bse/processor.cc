@@ -127,8 +127,8 @@ ChoiceEntries::operator+= (const ChoiceDetails &ce)
 static constexpr uint PTAG_FLOATS = 1;
 static constexpr uint PTAG_CENTRIES = 2;
 
-ParamInfo::ParamInfo (ParamId pid) :
-  id (pid), union_tag (0)
+ParamInfo::ParamInfo (ParamId pid, uint porder) :
+  id (pid), order (porder), union_tag (0)
 {
   memset (&u, 0, sizeof (u));
 }
@@ -501,7 +501,7 @@ Processor::add_param (ParamId id, const ParamInfo &infotmpl, double value)
   assert_return (infotmpl.label != "", {});
   if (params_.size())
     assert_return (infotmpl.label != params_.back().info->label, {}); // easy CnP error
-  PParam param { id, infotmpl };
+  PParam param { id, uint (1 + params_.size()), infotmpl };
   if (param.info->ident == "")
     param.info->ident = canonify_identifier (param.info->label);
   if (params_.size())
@@ -596,6 +596,7 @@ Processor::list_params() const -> ParamInfoPVec
   iv.reserve (params_.size());
   for (const PParam &p : params_)
     iv.push_back (p.info);
+  std::sort (iv.begin(), iv.end(), [] (auto a, auto b) { return a->order < b->order; });
   return iv;
 }
 
@@ -1576,8 +1577,8 @@ Processor::registry_list()
 }
 
 // == Processor::PParam ==
-Processor::PParam::PParam (ParamId _id, const ParamInfo &pinfo) :
-  id (_id), info (std::make_shared<ParamInfo> (_id))
+Processor::PParam::PParam (ParamId _id, uint order, const ParamInfo &pinfo) :
+  id (_id), info (std::make_shared<ParamInfo> (_id, order))
 {
   info->copy_fields (pinfo);
 }
@@ -1586,7 +1587,8 @@ Processor::PParam::PParam (ParamId _id) :
   id (_id)
 {}
 
-Processor::PParam::PParam (const PParam &src)
+Processor::PParam::PParam (const PParam &src) :
+  id (src.id)
 {
   *this = src;
 }
