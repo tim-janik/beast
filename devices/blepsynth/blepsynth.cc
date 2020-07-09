@@ -356,10 +356,6 @@ class BlepSynth : public AudioSignal::Processor {
     assert_return (bus_info (stereout_).ident == "stereo-out");
   }
   void
-  adjust_param (ParamId tag)
-  {
-  }
-  void
   reset () override
   {}
   void
