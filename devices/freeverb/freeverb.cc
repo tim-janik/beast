@@ -35,26 +35,26 @@ class Freeverb : public AudioSignal::Processor {
     ParamId tag;
 
     start_param_group ("Reverb Settings");
-    tag = add_param ("Dry level",  "Dry", 0, scaledry, "G:big", scaledry * initialdry, "dB");
+    tag = add_param ("Dry level",  "Dry", 0, scaledry, scaledry * initialdry, "dB");
     assert_return (ParamIds (tag) == DRY);
 
-    tag = add_param ("Wet level",  "Wet", 0, scalewet, "G:big", scalewet * initialwet, "dB");
+    tag = add_param ("Wet level",  "Wet", 0, scalewet, scalewet * initialwet, "dB");
     assert_return (ParamIds (tag) == WET);
 
     start_param_group ("Room Settings");
-    tag = add_param ("Room size",  "RS", offsetroom, offsetroom + scaleroom, "G:big", offsetroom + scaleroom * initialroom, "size");
+    tag = add_param ("Room size",  "RS", offsetroom, offsetroom + scaleroom, offsetroom + scaleroom * initialroom, "size");
     assert_return (ParamIds (tag) == ROOMSIZE);
 
-    tag = add_param ("Width",  "W", 0, 100, "G:big", 100 * initialwidth, "%");
+    tag = add_param ("Width",  "W", 0, 100, 100 * initialwidth, "%");
     assert_return (ParamIds (tag) == WIDTH);
 
-    tag = add_param ("Damping",  "D", 0, 100, "G:big", 100 * initialdamp, "%");
+    tag = add_param ("Damping",  "D", 0, 100, 100 * initialdamp, "%");
     assert_return (ParamIds (tag) == DAMPING);
 
     centries += { "Normal Damping", "Damping with sign correction as implemented in STK Freeverb" };
     centries += { "VLC Damping",    "The VLC Freeverb version disables one damping feedback chain" };
     centries += { "Signflip 2000",  "Preserve May 2000 Freeverb damping sign flip" };
-    tag = add_param ("Mode",  "M", std::move (centries), "G:dropdown", -1, "Damping mode found in different Freeverb variants");
+    tag = add_param ("Mode",  "M", std::move (centries), -1, "", "Damping mode found in different Freeverb variants");
     assert_return (ParamIds (tag) == MODE);
   }
   void
