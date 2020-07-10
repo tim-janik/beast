@@ -29,8 +29,8 @@ protected:
   virtual double      get_num          () = 0;
   virtual bool        set_num          (double v) = 0;
   virtual void        get_range        (double *min, double *max, double *step) = 0;
-  virtual std::string get_string       () = 0;
-  virtual bool        set_string       (const std::string &v) = 0;
+  virtual std::string get_text         () = 0;
+  virtual bool        set_text         (const std::string &v) = 0;
   friend class PropertyImpl;
 };
 using PropertyWrapperP = std::unique_ptr<PropertyWrapper>;
@@ -41,8 +41,8 @@ public:
   virtual ChoiceSeq    choices      () override                     { return wrapper_->choices(); }
   virtual double       get_num      () override                     { return wrapper_->get_num(); }
   virtual bool         set_num      (double v) override             { return wrapper_->set_num (v); }
-  virtual std::string  get_string   () override                     { return wrapper_->get_string(); }
-  virtual bool         set_string   (const std::string &v) override { return wrapper_->set_string (v); }
+  virtual std::string  get_text     () override                     { return wrapper_->get_text(); }
+  virtual bool         set_text     (const std::string &v) override { return wrapper_->set_text (v); }
   virtual std::string  identifier   () override { return wrapper_->get_tag (PropertyWrapper::IDENTIFIER); }
   virtual std::string  label        () override { return wrapper_->get_tag (PropertyWrapper::LABEL); }
   virtual std::string  nick         () override { return wrapper_->get_tag (PropertyWrapper::NICK); }

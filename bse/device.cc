@@ -56,8 +56,8 @@ public:
   virtual void        get_range        (double *min, double *max, double *step) override;
   virtual double      get_num          () override;
   virtual bool        set_num          (double v) override;
-  virtual std::string get_string       () override;
-  virtual bool        set_string       (const std::string &v) override;
+  virtual std::string get_text         () override;
+  virtual bool        set_text         (const std::string &v) override;
   virtual bool        is_numeric       () override;
   virtual ChoiceSeq   choices          () override;
   explicit DevicePropertyWrapper (DeviceImplP device, AudioSignal::ParamInfoP param_);
@@ -99,7 +99,7 @@ DevicePropertyWrapper::get_num ()
   return_unless (device, FP_NAN);
   AudioSignal::ProcessorP proc = device->processor();
   return_unless (proc, FP_NAN);
-  return AudioSignal::Processor::peek_param_mt (proc, info_->id);
+  return AudioSignal::Processor::param_peek_mt (proc, info_->id);
 }
 
 bool
@@ -112,6 +112,31 @@ DevicePropertyWrapper::set_num (double v)
   const AudioSignal::ParamId pid = info_->id;
   auto lambda = [proc, pid, v] () {
     proc->set_param (pid, v);
+  };
+  BSE_SERVER.commit_job (lambda);
+  return true;
+}
+
+std::string
+DevicePropertyWrapper::get_text ()
+{
+  DeviceImplP device = device_.lock();
+  return_unless (device, "");
+  AudioSignal::ProcessorP proc = device->processor();
+  return_unless (proc, "");
+  return proc->param_to_text_mt (info_->id);
+}
+
+bool
+DevicePropertyWrapper::set_text (const std::string &v)
+{
+  DeviceImplP device = device_.lock();
+  return_unless (device, false);
+  AudioSignal::ProcessorP proc = device->processor();
+  return_unless (proc, false);
+  const AudioSignal::ParamId pid = info_->id;
+  auto lambda = [proc, pid, v] () {
+    proc->param_assign_text (pid, v);
   };
   BSE_SERVER.commit_job (lambda);
   return true;
@@ -140,20 +165,6 @@ DevicePropertyWrapper::choices ()
       cs.push_back (c);
     }
   return cs;
-}
-
-std::string
-DevicePropertyWrapper::get_string ()
-{
-  // TODO: we have yet to implement non-numeric Processor parameters
-  return {};
-}
-
-bool
-DevicePropertyWrapper::set_string (const std::string &v)
-{
-  // TODO: we have yet to implement non-numeric Processor parameters
-  return false;
 }
 
 // == DeviceImpl ==
