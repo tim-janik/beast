@@ -267,8 +267,12 @@ struct Id32 {
   Id32 (T eid) :
     id (uint32_t (eid))
   {}
-  operator uint32_t () { return id; }
   uint32_t id;
+  operator uint32_t () { return id; }
+  bool        operator== (int64_t i) const noexcept     { return id == i; }
+  bool        operator!= (int64_t i) const noexcept     { return id != i; }
+  friend bool operator== (int64_t i, const Id32 &id)    { return id.operator== (i); }
+  friend bool operator!= (int64_t i, const Id32 &id)    { return id.operator!= (i); }
 };
 
 } // Bse
