@@ -2,13 +2,13 @@
 #include "bse/processor.hh"
 #include "bse/bseieee754.hh"
 #include "bse/internal.hh"
-#include "revmodel.hpp"
 
+namespace {
+
+#include "revmodel.hpp"
 #include "revmodel.cpp"
 #include "allpass.cpp"
 #include "comb.cpp"
-
-namespace {
 
 using namespace Bse;
 using namespace AudioSignal;

@@ -27,3 +27,6 @@ $>/devices/check-stray-sources: $(devices/libbse.ccfiles)
 ifneq ($(devices/libbse.ccfiles), $(shell cat $>/devices/check-stray-sources 2>/dev/null))
 .PHONY: $>/devices/check-stray-sources
 endif
+
+# == Device Specifics ==
+$>/devices/freeverb/freeverb.o: EXTRA_FLAGS ::= -Wno-unused-function
