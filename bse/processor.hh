@@ -207,8 +207,8 @@ private:
   EventStreams            *estreams_ = nullptr;
   static __thread uint64   tls_timestamp;
   static void registry_init   ();
-  PParam*     find_pparam     (ParamId paramid);
-  PParam*     find_pparam_    (ParamId paramid);
+  const PParam* find_pparam   (ParamId paramid) const;
+  const PParam* find_pparam_  (ParamId paramid) const;
   void        assign_iobufs   ();
   void        release_iobufs  ();
   void        reconfigure     (IBusId ibus, SpeakerArrangement ipatch, OBusId obus, SpeakerArrangement opatch);
@@ -227,6 +227,7 @@ protected:
   virtual void  reset             () = 0;
   virtual void  render            (uint n_frames) = 0;
   // Parameters
+  virtual void        adjust_param   (Id32 tag) {}
   ParamId       nextid            () const;
   ParamId       add_param         (Id32 id, const ParamInfo &infotmpl, double value);
   ParamId       add_param         (Id32 id, const std::string &clabel, const std::string &nickname,
@@ -240,7 +241,6 @@ protected:
                                    bool boolvalue, std::string hints = "",
                                    const std::string &blurb = "", const std::string &description = "");
   void          start_param_group (const std::string &groupname) const;
-  virtual void  adjust_param      (Id32 tag) {}
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
                                    double pmin, double pmax, double value,
                                    const std::string &unit = "", std::string hints = "",
@@ -251,6 +251,7 @@ protected:
   ParamId       add_param         (const std::string &clabel, const std::string &nickname,
                                    bool boolvalue, std::string hints = "",
                                    const std::string &blurb = "", const std::string &description = "");
+  double        peek_param_mt     (Id32 paramid) const;
   // Buses
   IBusId        add_input_bus     (CString uilabel, SpeakerArrangement speakerarrangement,
                                    const std::string &hints = "", const std::string &blurb = "");
@@ -288,6 +289,8 @@ public:
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
   // Parameters
+  virtual std::string param_to_text_mt  (Id32 paramid) const;
+  virtual void        param_assign_text (Id32 paramid, const std::string &text);
   ParamInfoPVec list_params       () const;
   void          adjust_params     (bool include_nondirty = false);
   MaybeParamId  find_param        (const std::string &identifier) const;
@@ -321,7 +324,7 @@ public:
   static uint          registry_enroll    (const std::function<ProcessorP ()> &create,
                                            const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
   // MT-Safe accessors
-  static double peek_param_mt     (ProcessorP proc, Id32 paramid);
+  static double param_peek_mt     (const ProcessorP proc, Id32 paramid);
   static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
 };
 
@@ -456,7 +459,7 @@ struct Processor::PParam {
   bool     has_updated         () const { return flags_ & 2; }
   void     mark_updated        ()       { flags_ |= 2; }
   void     clear_updated       ()       { flags_ &= ~uint32 (2); }
-  void     must_notify         (bool n) { if (n) flags_ |= 4; else flags_ &= ~uint32 (4); }
+  void     must_notify_mt      (bool n) { if (n) flags_ |= 4; else flags_ &= ~uint32 (4); }
   bool     must_notify         () const { return flags_ & 4; }
   void
   assign (double f)
@@ -569,8 +572,8 @@ Processor::adjust_params (bool include_nondirty)
 }
 
 // Find parameter for internal access.
-inline Processor::PParam*
-Processor::find_pparam (ParamId paramid)
+inline const Processor::PParam*
+Processor::find_pparam (ParamId paramid) const
 {
   // fast path via sequential ids
   const size_t idx = size_t (paramid) - 1;
@@ -583,8 +586,8 @@ Processor::find_pparam (ParamId paramid)
 inline double
 Processor::get_param (Id32 paramid)
 {
-  PParam *pparam = find_pparam (ParamId (paramid.id));
-  return BSE_ISLIKELY (pparam) ? pparam->get_value_and_clean() : FP_NAN;
+  const PParam *pparam = find_pparam (ParamId (paramid.id));
+  return BSE_ISLIKELY (pparam) ? const_cast<PParam*> (pparam)->get_value_and_clean() : FP_NAN;
 }
 
 /// Check if the parameter `dirty` flag is set.
@@ -592,7 +595,7 @@ Processor::get_param (Id32 paramid)
 inline bool
 Processor::check_dirty (Id32 paramid) const
 {
-  PParam *param = const_cast<Processor*> (this)->find_pparam (ParamId (paramid.id));
+  const PParam *param = this->find_pparam (ParamId (paramid.id));
   return BSE_ISLIKELY (param) ? param->is_dirty() : false;
 }
 

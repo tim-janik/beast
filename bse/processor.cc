@@ -611,7 +611,7 @@ Processor::add_param (Id32 id, const std::string &clabel, const std::string &nic
   info.hints = construct_hints (hints, false, true, "toggle");
   const auto rid = add_param (id, info, boolvalue);
   assert_return (uint (rid) == id.id, rid);
-  PParam *param = find_pparam (rid);
+  const PParam *param = find_pparam (rid);
   assert_return (param && param->peek_value() == (boolvalue ? +0.5 : -0.5), rid);
   return rid;
 }
@@ -651,8 +651,8 @@ Processor::find_param (const std::string &identifier) const -> MaybeParamId
 }
 
 // Non-fastpath implementation of find_param().
-Processor::PParam*
-Processor::find_pparam_ (ParamId paramid)
+const Processor::PParam*
+Processor::find_pparam_ (ParamId paramid) const
 {
   // lookup id with gaps
   const PParam key { paramid };
@@ -668,9 +668,9 @@ Processor::find_pparam_ (ParamId paramid)
 void
 Processor::set_param (Id32 paramid, const double value)
 {
-  PParam *pparam = find_pparam (ParamId (paramid.id));
+  const PParam *pparam = find_pparam (ParamId (paramid.id));
   return_unless (pparam);
-  ParamInfo *info = pparam->info.get();
+  const ParamInfo *info = pparam->info.get();
   double v = value;
   if (info)
     {
@@ -687,26 +687,36 @@ Processor::set_param (Id32 paramid, const double value)
           v = CLAMP (mm.first + v, mm.first, mm.second);
         }
     }
-  pparam->assign (v);
+  const_cast<PParam*> (pparam)->assign (v);
 }
 
 /// Retrieve supplemental information for parameters, usually to enhance the user interface.
 ParamInfoP
 Processor::param_info (Id32 paramid) const
 {
-  PParam *param = const_cast<Processor*> (this)->find_pparam (ParamId (paramid.id));
+  const PParam *param = this->find_pparam (ParamId (paramid.id));
   return BSE_ISLIKELY (param) ? param->info : nullptr;
+}
+
+/// Fetch the current parameter value of a Processor.
+/// This function does not modify the parameter `dirty` flag.
+/// This function is MT-Safe after proper Processor initialization.
+double
+Processor::peek_param_mt (Id32 paramid) const
+{
+  assert_return (is_initialized(), FP_NAN);
+  const PParam *param = find_pparam (ParamId (paramid.id));
+  return BSE_ISLIKELY (param) ? param->peek_value() : FP_NAN;
 }
 
 /// Fetch the current parameter value of a Processor from any thread.
 /// This function is MT-Safe after proper Processor initialization.
 double
-Processor::peek_param_mt (ProcessorP proc, Id32 paramid)
+Processor::param_peek_mt (const ProcessorP proc, Id32 paramid)
 {
   assert_return (proc, FP_NAN);
   assert_return (proc->is_initialized(), FP_NAN);
-  PParam *param = proc->find_pparam (ParamId (paramid.id));
-  return BSE_ISLIKELY (param) ? param->peek_value() : FP_NAN;
+  return proc->peek_param_mt (paramid);
 }
 
 /// Enable/disable notification sending for a Processor parameter.
@@ -716,9 +726,36 @@ Processor::param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies)
 {
   assert_return (proc);
   assert_return (proc->is_initialized());
-  PParam *param = proc->find_pparam (ParamId (paramid.id));
+  const PParam *param = proc->find_pparam (ParamId (paramid.id));
   if (BSE_ISLIKELY (param))
-    param->must_notify (need_notifies);
+    const_cast<PParam*> (param)->must_notify_mt (need_notifies);
+}
+
+/** Format the value of parameter `paramid` as text string.
+ * This function does not modify the parameter `dirty` flag.
+ * Overriding this method for plugin specific functionality must
+ * ensure that that it is callable while other threads also
+ * operate on `this`. Implementations can retrive parameter
+ * values with the peek_param_mt() method.
+ * This function is MT-Safe after proper Processor initialization.
+ */
+std::string
+Processor::param_to_text_mt (Id32 paramid) const
+{
+  const PParam *pparam = find_pparam (ParamId (paramid.id));
+  if (!pparam || !pparam->info)
+    return "";
+  const ParamInfo &info = *pparam->info;
+  const bool need_sign = info.get_minmax().first < 0;
+  const double value = peek_param_mt (paramid);
+  return need_sign ? string_format ("%+f", value) : string_format ("%f", value);
+}
+
+/// Assign the value of parameter `paramid` from `text` string.
+void
+Processor::param_assign_text (Id32 paramid, const std::string &text)
+{
+  set_param (paramid, string_to_double (text));
 }
 
 /// Check if Processor has been properly intiialized (so the set parameters is fixed).
