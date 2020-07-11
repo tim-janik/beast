@@ -59,7 +59,9 @@ function pro_input_data () {
     vmax:       { getter: async c => await this.prop.get_max(), },
     vstep:      { getter: async c => await this.prop.get_step(), },
     vnum:       { getter: async c => await this.prop.get_num(),
-		  notify: n => this.n=n /*this.prop.on ("change", n)*/, },
+		  notify: n => this.n1=n /*this.prop.on ("change", n)*/, },
+    vtext:      { getter: async c => await this.prop.get_text(),
+		  notify: n => this.n2=n /*this.prop.on ("change", n)*/, },
   };
   return this.observable_from_getters (data, () => this.prop);
 }
@@ -110,7 +112,8 @@ export default {
 	  const next = this.vmin + v * (this.vmax - this.vmin);
 	  this.prop.set_num (next);
 	}
-      setTimeout (this.n, 3); // FIXME : need real notification
+      setTimeout (this.n1, 15); // FIXME : need real notification
+      setTimeout (this.n2, 15); // FIXME : need real notification
     },
     get_num() {
       if (this.vnum === undefined || this.vmin === undefined || this.vmax === undefined)
@@ -126,7 +129,8 @@ export default {
 	  const next = this.vmin + v * this.vstep;
 	  this.prop.set_num (next);
 	}
-      setTimeout (this.n, 3); // FIXME : need real notification
+      setTimeout (this.n1, 15); // FIXME : need real notification
+      setTimeout (this.n2, 15); // FIXME : need real notification
     },
     get_index() {
       if (this.vnum === undefined || this.vmin === undefined || this.vstep === undefined)
