@@ -250,7 +250,7 @@ class BlepSynth : public AudioSignal::Processor {
   void
   initialize () override
   {
-    set_max_voices (64);
+    set_max_voices (32);
 
     auto oscparams = [&] (int o) {
       start_param_group (string_format ("Oscillator %d", o + 1));
@@ -357,7 +357,10 @@ class BlepSynth : public AudioSignal::Processor {
   }
   void
   reset () override
-  {}
+  {
+    set_max_voices (0);
+    set_max_voices (32);
+  }
   void
   init_osc (BlepUtils::OscImpl& osc, float freq)
   {
