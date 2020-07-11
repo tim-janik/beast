@@ -749,7 +749,7 @@ Processor::param_to_text_mt (Id32 paramid) const
   const ParamInfo &info = *pparam->info;
   const bool need_sign = info.get_minmax().first < 0;
   const double value = peek_param_mt (paramid);
-  return need_sign ? string_format ("%+f", value) : string_format ("%f", value);
+  return need_sign ? string_format ("%+.2f", value) : string_format ("%.2f", value);
 }
 
 /// Assign the value of parameter `paramid` from `text` string.
