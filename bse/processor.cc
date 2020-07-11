@@ -378,6 +378,7 @@ Engine::Engine (uint32 samplerate, AudioTiming &atiming) :
 }
 
 // == Processor ==
+const std::string Processor::STANDARD = ":G:S:r:w:"; ///< GUI STORAGE READABLE WRITABLE
 uint64 __thread Processor::tls_timestamp = 0;
 static __thread Engine *engine_context_for_processor_ctor = nullptr;
 

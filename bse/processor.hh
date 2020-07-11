@@ -281,7 +281,7 @@ public:
   using RegistryList = std::vector<RegistryEntry>;
   using ParamInfoPVec = std::vector<ParamInfoP>;
   using MaybeParamId = std::pair<ParamId,bool>;
-  static constexpr const char *const STANDARD = ":G:S:r:w:"; ///< GUI STORAGE READABLE WRITABLE
+  static const std::string STANDARD; ///< ":G:S:r:w:" - GUI STORAGE READABLE WRITABLE
   Engine&       engine            () const;
   uint          sample_rate       () const __attribute__ ((__const__));
   double        mix_freq          () const __attribute__ ((__const__));
