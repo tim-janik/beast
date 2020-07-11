@@ -477,8 +477,8 @@ struct Processor::PParam {
 public:
   ParamId             id = {};  ///< Tag to identify parameter in APIs.
 private:
-  std::atomic<uint32> flags_ = 0;
-  std::atomic<double> value_ = 0;
+  std::atomic<uint32> flags_ = 1;
+  std::atomic<double> value_ = FP_NAN;
 public:
   ParamInfoP          info;
 };
