@@ -984,8 +984,8 @@ interface Property : Object {
   float64   get_step    ();             ///< Get the property value stepping, converted to float64.
   float64   get_num     ();             ///< Get the current property value, converted to float64.
   bool      set_num     (float64 v);    ///< Set the current property value as float64.
-  String    get_string  ();             ///< Get the current property value, converted to String.
-  bool      set_string  (String v);     ///< Set the current property value as String.
+  String    get_text    ();             ///< Get the current property value, converted to a text String.
+  bool      set_text    (String v);     ///< Set the current property value as a text String.
   bool      is_numeric  ();             ///< Whether the property settings can be represented as a floating point number.
   ChoiceSeq choices     ();             ///< Enumerate choices for choosable properties.
 };

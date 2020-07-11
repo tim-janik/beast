@@ -34,7 +34,7 @@
 <template>
   <b-vflex class="b-pro-input tabular-nums" :data-bubble="bubble()" >
     <b-knob class="b-pro-input-knob" v-if="type() == 'knob'" :hscroll="false"
-	    :value="get_num()" @input="set_num ($event)" />
+	    :value="get_num()" :label="vtext" :bidir="is_bidir()" @input="set_num ($event)" />
     <b-toggle class="b-pro-input-toggle" v-if="type() == 'toggle'" label=""
 	      :value="get_num()" @input="set_num ($event)" />
     <b-choice class="b-pro-input-choice" v-if="type() == 'choice'" :choices="choices"
@@ -59,7 +59,9 @@ function pro_input_data () {
     vmax:       { getter: async c => await this.prop.get_max(), },
     vstep:      { getter: async c => await this.prop.get_step(), },
     vnum:       { getter: async c => await this.prop.get_num(),
-		  notify: n => this.n=n /*this.prop.on ("change", n)*/, },
+		  notify: n => this.n1=n /*this.prop.on ("change", n)*/, },
+    vtext:      { getter: async c => await this.prop.get_text(),
+		  notify: n => this.n2=n /*this.prop.on ("change", n)*/, },
   };
   return this.observable_from_getters (data, () => this.prop);
 }
@@ -103,17 +105,80 @@ export default {
     set_num (v) {
       if (this.readonly)
 	return;
+      this.update_hints();
       if (this.vmin !== undefined && this.vmax !== undefined)
 	{
-	  const next = this.vmin + v * (this.vmax - this.vmin);
+	  if (this.bidir_)
+	    v = (v + 1) * 0.5;
+	  const next = this.scale (v);
 	  this.prop.set_num (next);
 	}
-      setTimeout (this.n, 3); // FIXME : need real notification
+      setTimeout (this.n1, 15); // FIXME : need real notification
+      setTimeout (this.n2, 15); // FIXME : need real notification
     },
     get_num() {
       if (this.vnum === undefined || this.vmin === undefined || this.vmax === undefined)
 	return 0;
-      return (this.vnum - this.vmin) / (this.vmax - this.vmin);
+      this.update_hints();
+      let v = this.iscale (this.vnum);
+      if (this.bidir_)
+	v = 2 * v - 1;
+      return v;
+    },
+    update_hints()
+    {
+      if (this.hints == this.hints_ &&
+	  this.vmin == this.vmin_ &&
+	  this.vmax == this.vmax_)
+	return;
+      this.hints_ = this.hints;
+      this.vmin_ = this.vmin;
+      this.vmax_ = this.vmax;
+      let m = this.hints_.match (/:logcenter=([0-9.]+):/);
+      if (m)
+	{
+	  const center = m[1];
+	  // Determine exponent, so that:
+	  //   begin + pow (0.0, exponent) * (end - begin) == begin  ← exponent is irrelevant here
+	  //   begin + pow (0.5, exponent) * (end - begin) == center
+	  //   begin + pow (1.0, exponent) * (end - begin) == end    ← exponent is irrelevant here
+	  // I.e. desired: log_0.5 ((center - begin) / (end - begin))
+	  this.exp_ = Math.log2 ((this.vmax_ - this.vmin_) / (center - this.vmin_));
+	  /* Example in gnuplot:
+	   * begin=32.7; end=8372; center=523; e=log((end-begin) / (center-begin)) / log(2)
+	   * print e; set logscale y; plot [0:1] begin + x**e * (end-begin), center
+	   */
+	}
+      else
+	this.exp_ = undefined;
+    },
+    scale (v)
+    {
+      // apply logscale if set
+      if (this.exp_)
+	{
+	  // Implements logarithmic mapping (or exponential within [0…1]) as requested by
+	  // @swesterfeld in: https://github.com/tim-janik/beast/issues/5#issuecomment-303974829
+	  // The slope is determined by giving `scenter` at the midpoint within `[nmin … nmax]`.
+	  v = this.vmin + Math.pow (v, this.exp_) * (this.vmax - this.vmin);
+	}
+      else
+	v = this.vmin + v * (this.vmax - this.vmin);
+      return v;
+    },
+    iscale (v)
+    {
+      // invert logscale if set
+      if (this.exp_)
+	{
+	  // @swesterfeld in: https://github.com/tim-janik/beast/issues/5#issuecomment-303974829
+	  // > Using f(x)=x^slope is not only always monotonically increasing and adjustable,
+	  // > it is also trivial to invert (x^(1.0/slope)).
+	  v = Math.pow ((v - this.vmin) / (this.vmax - this.vmin), 1 / this.exp_);
+	}
+      else
+	v = (v - this.vmin) / (this.vmax - this.vmin);
+      return v;
     },
     set_index (v) {
       if (this.vmin !== undefined && this.vstep !== undefined)
@@ -121,12 +186,17 @@ export default {
 	  const next = this.vmin + v * this.vstep;
 	  this.prop.set_num (next);
 	}
-      setTimeout (this.n, 3); // FIXME : need real notification
+      setTimeout (this.n1, 15); // FIXME : need real notification
+      setTimeout (this.n2, 15); // FIXME : need real notification
     },
     get_index() {
       if (this.vnum === undefined || this.vmin === undefined || this.vstep === undefined)
 	return 0;
       return (this.vnum - this.vmin) / this.vstep;
+    },
+    is_bidir() {
+      this.bidir_ = this.hints.search (/:bidir:/) >= 0;
+      return this.bidir_;
     },
   },
 };

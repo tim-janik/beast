@@ -250,53 +250,53 @@ class BlepSynth : public AudioSignal::Processor {
   void
   initialize () override
   {
-    set_max_voices (64);
+    set_max_voices (32);
 
     auto oscparams = [&] (int o) {
       start_param_group (string_format ("Oscillator %d", o + 1));
-      osc_params[o].shape = add_param (string_format ("Osc %d Shape", o + 1), "Shape", -100, 100, "G:big", 0, "%");
-      osc_params[o].pulse_width = add_param (string_format ("Osc %d Pulse Width", o + 1), "P.W", 0, 100, "G:big", 50, "%");
-      osc_params[o].sub = add_param (string_format ("Osc %d Subharmonic", o + 1), "Sub", 0, 100, "G:big", 0, "%");
-      osc_params[o].sub_width = add_param (string_format ("Osc %d Subharmonic Width", o + 1), "Sub.W", 0, 100, "G:big", 50, "%");
-      osc_params[o].sync = add_param (string_format ("Osc %d Sync Slave", o + 1), "Sync", 0, 60, "G:big", 0, "semitones");
+      osc_params[o].shape = add_param (string_format ("Osc %d Shape", o + 1), "Shape", -100, 100, 0, "%");
+      osc_params[o].pulse_width = add_param (string_format ("Osc %d Pulse Width", o + 1), "P.W", 0, 100, 50, "%");
+      osc_params[o].sub = add_param (string_format ("Osc %d Subharmonic", o + 1), "Sub", 0, 100, 0, "%");
+      osc_params[o].sub_width = add_param (string_format ("Osc %d Subharmonic Width", o + 1), "Sub.W", 0, 100, 50, "%");
+      osc_params[o].sync = add_param (string_format ("Osc %d Sync Slave", o + 1), "Sync", 0, 60, 0, "semitones");
 
       /* TODO: unison_voices property should be an integer property, range 1-16, default 1 */
-      osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 0, 100, "G:big", 0, "%");
-      osc_params[o].unison_detune = add_param (string_format ("Osc %d Unison Detune", o + 1), "Detune", 0.5, 50, "G:big", 6, "%");
-      osc_params[o].unison_stereo = add_param (string_format ("Osc %d Unison Stereo", o + 1), "Stereo", 0, 100, "G:big", 0, "%");
+      osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 0, 100, 0, "%");
+      osc_params[o].unison_detune = add_param (string_format ("Osc %d Unison Detune", o + 1), "Detune", 0.5, 50, 6, "%");
+      osc_params[o].unison_stereo = add_param (string_format ("Osc %d Unison Stereo", o + 1), "Stereo", 0, 100, 0, "%");
     };
 
     oscparams (0);
 
     start_param_group ("Filter");
     /* TODO: cutoff property should have logarithmic scaling */
-    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, "G:big", 1000, "Hz");
-    pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, "G:big", 25.0, "%");
+    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, 1000, "Hz", STANDARD + "logcenter=880:");
+    pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
     ChoiceEntries centries;
     centries += { "L4", "4 pole lowpass, 24db/octave" };
     centries += { "L3", "3 pole lowpass, 18db/octave" };
     centries += { "L2", "2 pole lowpass, 12db/octave" };
     centries += { "L1", "1 pole lowpass, 6db/octave" };
     centries += { "None", "disable filter" };
-    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), "G:dropdown", 0, "Ladder Filter Mode to be used");
+    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), 0, "", "Ladder Filter Mode to be used");
 
     oscparams (1);
 
     start_param_group ("Volume Envelope");
-    pid_attack_ = add_param ("Attack", "A", 0, 100, "G:big", 11.0, "%");
-    pid_decay_  = add_param ("Decay", "D", 0, 100, "G:big", 20.0, "%");
-    pid_sustain_ = add_param ("Sustain", "S", 0, 100, "G:big", 50.0, "%");
-    pid_release_ = add_param ("Release", "R", 0, 100, "G:big", 30.0, "%");
+    pid_attack_  = add_param ("Attack",  "A", 0, 8000, 11.0, "ms", STANDARD + "logcenter=1000");
+    pid_decay_   = add_param ("Decay",   "D", 0, 8000, 20.0, "ms", STANDARD + "logcenter=1000");
+    pid_sustain_ = add_param ("Sustain", "S", 0, 100, 50.0, "%");
+    pid_release_ = add_param ("Release", "R", 0, 8000, 30.0, "ms", STANDARD + "logcenter=1000");
 
     start_param_group ("Mix");
-    pid_mix_ = add_param ("Mix", "Mix", 0, 100, "G:big", 0, "%");
+    pid_mix_ = add_param ("Mix", "Mix", 0, 100, 0, "%");
 
     start_param_group ("Keyboard Input");
-    pid_c_ = add_param ("Main Input  1",  "C", "G:big", false);
-    pid_d_ = add_param ("Main Input  2",  "D", "G:big", false);
-    pid_e_ = add_param ("Main Input  3",  "E", "G:big", false);
-    pid_f_ = add_param ("Main Input  4",  "F", "G:big", false);
-    pid_g_ = add_param ("Main Input  5",  "G", "G:big", false);
+    pid_c_ = add_param ("Main Input  1",  "C", false);
+    pid_d_ = add_param ("Main Input  2",  "D", false);
+    pid_e_ = add_param ("Main Input  3",  "E", false);
+    pid_f_ = add_param ("Main Input  4",  "F", false);
+    pid_g_ = add_param ("Main Input  5",  "G", false);
     old_c_ = old_d_ = old_e_ = old_f_ = old_g_ = false;
   }
   void
@@ -356,12 +356,11 @@ class BlepSynth : public AudioSignal::Processor {
     assert_return (bus_info (stereout_).ident == "stereo-out");
   }
   void
-  adjust_param (ParamId tag)
-  {
-  }
-  void
   reset () override
-  {}
+  {
+    set_max_voices (0);
+    set_max_voices (32);
+  }
   void
   init_osc (BlepUtils::OscImpl& osc, float freq)
   {
@@ -399,11 +398,11 @@ class BlepSynth : public AudioSignal::Processor {
         // Volume Envelope
         /* TODO: we need non-linear translation between percent and time/level */
         voice->envelope_.set_delay (0);
-        voice->envelope_.set_attack (get_param (pid_attack_) * 0.01);   /* time in seconds */
+        voice->envelope_.set_attack (get_param (pid_attack_) * 0.001);   /* time in milliseconds */
         voice->envelope_.set_hold (0);
-        voice->envelope_.set_decay (get_param (pid_decay_) * 0.01);     /* time in seconds */
-        voice->envelope_.set_sustain (get_param (pid_sustain_));        /* percent */
-        voice->envelope_.set_release (get_param (pid_release_) * 0.01); /* time in seconds */
+        voice->envelope_.set_decay (get_param (pid_decay_) * 0.001);     /* time in milliseconds */
+        voice->envelope_.set_sustain (get_param (pid_sustain_));         /* percent */
+        voice->envelope_.set_release (get_param (pid_release_) * 0.001); /* time in milliseconds */
         voice->envelope_.start (sample_rate());
 
         init_osc (voice->osc1_, voice->freq_);

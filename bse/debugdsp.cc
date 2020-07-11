@@ -24,72 +24,80 @@ class DbgParameterizer : public AudioSignal::Processor {
     info.label = "DbgParameterizer";
     info.category = "Shaping";
   }
+  enum Params {
+    C1 = 1,
+    G1, G2,
+    E1, E2, E3, E4, E5, E6, E7, E8,
+    V00, V01, V02, V03, V04, V05, V06, V07, V08, V09, V10, V11, V12,
+    A00, A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, A11, A12, A13,
+    M00, M01, M02, M03, M04, M05, M06, M07, M08, M09, M10, M11, M12, M13, M14, M15, M16, M17, M18, M19, M20, M21, M22, M23,
+  };
   void
   initialize () override
   {
     start_param_group ("Main Settings");
-    add_param ("Main Input  1",  "M1", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input  2",  "M2", "G:big", true);
-    add_param ("Main Input  3",  "M3", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input  4",  "M4", "G:big", false);
-    add_param ("Main Input  5",  "M5", "G:big", true);
-    add_param ("Main Input  6",  "M6", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input  7",  "M7", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input  8",  "M8", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input  9",  "M9", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 10", "M10", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 11", "M11", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 12", "M12", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 13", "M13", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 14", "M14", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 15", "M15", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 16", "M16", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 17", "M17", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 18", "M18", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 19", "M19", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 20", "M20", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 21", "M21", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 22", "M22", 0, 100, "G:big", 11.0, "%");
-    add_param ("Main Input 23", "M23", 0, 100, "G:big", 11.0, "%");
+    add_param (M01, "Main Input  1",  "M1", 0, 100, 11.0, "%");
+    add_param (M02, "Main Input  2",  "M2", true);
+    add_param (M03, "Main Input  3",  "M3", 0, 100, 11.0, "%");
+    add_param (M04, "Main Input  4",  "M4", false);
+    add_param (M05, "Main Input  5",  "M5", true);
+    add_param (M06, "Main Input  6",  "M6", 0, 100, 11.0, "%");
+    add_param (M07, "Main Input  7",  "M7", 0, 100, 11.0, "%");
+    add_param (M08, "Main Input  8",  "M8", 0, 100, 11.0, "%");
+    add_param (M09, "Main Input  9",  "M9", 0, 100, 11.0, "%");
+    add_param (M10, "Main Input 10", "M10", 0, 100, 11.0, "%");
+    add_param (M11, "Main Input 11", "M11", 0, 100, 11.0, "%");
+    add_param (M12, "Main Input 12", "M12", 0, 100, 11.0, "%");
+    add_param (M13, "Main Input 13", "M13", 0, 100, 11.0, "%");
+    add_param (M14, "Main Input 14", "M14", 0, 100, 11.0, "%");
+    add_param (M15, "Main Input 15", "M15", 0, 100, 11.0, "%");
+    add_param (M16, "Main Input 16", "M16", 0, 100, 11.0, "%");
+    add_param (M17, "Main Input 17", "M17", 0, 100, 11.0, "%");
+    add_param (M18, "Main Input 18", "M18", 0, 100, 11.0, "%");
+    add_param (M19, "Main Input 19", "M19", 0, 100, 11.0, "%");
+    add_param (M20, "Main Input 20", "M20", 0, 100, 11.0, "%");
+    add_param (M21, "Main Input 21", "M21", 0, 100, 11.0, "%");
+    add_param (M22, "Main Input 22", "M22", 0, 100, 11.0, "%");
+    add_param (M23, "Main Input 23", "M23", 0, 100, 11.0, "%");
 
     start_param_group ("Additional Knobs");
-    add_param ("Additional Input 1",   "A1", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 2",   "A2", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 3",   "A3", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 4",   "A4", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 5",   "A5", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 6",   "A6", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 7",   "A7", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 8"  , "A8", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 9",   "A9", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 10", "A10", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 11", "A11", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 12", "A12", 0, 100, "G:big", 11.0, "%");
-    add_param ("Additional Input 13", "A13", 0, 100, "G:big", 11.0, "%");
+    add_param (A01, "Additional Input 1",   "A1", 0, 100, 11.0, "%");
+    add_param (A02, "Additional Input 2",   "A2", 0, 100, 11.0, "%");
+    add_param (A03, "Additional Input 3",   "A3", 0, 100, 11.0, "%");
+    add_param (A04, "Additional Input 4",   "A4", 0, 100, 11.0, "%");
+    add_param (A05, "Additional Input 5",   "A5", 0, 100, 11.0, "%");
+    add_param (A06, "Additional Input 6",   "A6", 0, 100, 11.0, "%");
+    add_param (A07, "Additional Input 7",   "A7", 0, 100, 11.0, "%");
+    add_param (A08, "Additional Input 8"  , "A8", 0, 100, 11.0, "%");
+    add_param (A09, "Additional Input 9",   "A9", 0, 100, 11.0, "%");
+    add_param (A10, "Additional Input 10", "A10", 0, 100, 11.0, "%");
+    add_param (A11, "Additional Input 11", "A11", 0, 100, 11.0, "%");
+    add_param (A12, "Additional Input 12", "A12", 0, 100, 11.0, "%");
+    add_param (A13, "Additional Input 13", "A13", 0, 100, 11.0, "%");
 
     start_param_group ("Volume");
-    add_param ("Volume1",  "V1", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume2",  "V2", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume3",  "V3", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume4",  "V4", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume5",  "V5", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume6",  "V6", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume7",  "V7", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume8",  "V8", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume9",  "V9", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume10", "V10", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume11", "V11", 0, 100, "G:slider", 33.0, "%");
-    add_param ("Volume12", "V12", 0, 100, "G:slider", 33.0, "%");
+    add_param (V01, "Volume1",  "V1", 0, 100, 33.0, "%");
+    add_param (V02, "Volume2",  "V2", 0, 100, 33.0, "%");
+    add_param (V03, "Volume3",  "V3", 0, 100, 33.0, "%");
+    add_param (V04, "Volume4",  "V4", 0, 100, 33.0, "%");
+    add_param (V05, "Volume5",  "V5", 0, 100, 33.0, "%");
+    add_param (V06, "Volume6",  "V6", 0, 100, 33.0, "%");
+    add_param (V07, "Volume7",  "V7", 0, 100, 33.0, "%");
+    add_param (V08, "Volume8",  "V8", 0, 100, 33.0, "%");
+    add_param (V09, "Volume9",  "V9", 0, 100, 33.0, "%");
+    add_param (V10, "Volume10", "V10", 0, 100, 33.0, "%");
+    add_param (V11, "Volume11", "V11", 0, 100, 33.0, "%");
+    add_param (V12, "Volume12", "V12", 0, 100, 33.0, "%");
 
     start_param_group ("Gain Envelope");
-    add_param ("Env1 Attack", "A", 0, 100, "G:big", 11.0, "%");
-    add_param ("Env1 Decay", "D", 0, 100, "G:big", 11.0, "%");
-    add_param ("Env1 Sustain", "S", 0, 100, "G:big", 11.0, "%");
-    add_param ("Env1 Release", "R", 0, 100, "G:big", 11.0, "%");
+    add_param (E1, "Env1 Attack", "A", 0, 100, 11.0, "%");
+    add_param (E2, "Env1 Decay", "D", 0, 100, 11.0, "%");
+    add_param (E3, "Env1 Sustain", "S", 0, 100, 11.0, "%");
+    add_param (E4, "Env1 Release", "R", 0, 100, 11.0, "%");
 
-    add_param ("Gain", "G", 0, 100, "G:slider", 33.0, "%",
+    add_param (G1, "Gain", "G", 0, 100, 33.0, "%",
                "Amount of amplification for the input signal");
-    add_param ("Gain Reduction", "GR", -96, 12, "G:out:inversemeter", 0.0, "dB",
+    add_param (G2, "Gain Reduction", "GR", -96, 12, 0.0, "dB", "out:inversemeter",
                "Amount of gain reduction");
     ChoiceEntries centries;
     centries += { "Surround", "Usually 5.1 or 7.1 channel configuration" };
@@ -99,14 +107,14 @@ class DbgParameterizer : public AudioSignal::Processor {
     centries += { "Right" };
     centries += { "Left" };
     centries += { "Mono", "Sound configuration with a single speaker" };
-    add_param ("Channel Selection", "Chan", std::move (centries), "G:dropdown", 0,
+    add_param (C1, "Channel Selection", "Chan", std::move (centries), 0, "dropdown",
                "What channels are used for signal processing");
 
     start_param_group ("ADSR Envelope");
-    add_param ("Env2 Attack", "A", 0, 100, "G:big", 11.0, "%");
-    add_param ("Env2 Decay", "D", 0, 100, "G:big", 11.0, "%");
-    add_param ("Env2 Sustain", "S", 0, 100, "G:big", 11.0, "%");
-    add_param ("Env2 Release", "R", 0, 100, "G:big", 11.0, "%");
+    add_param (E5, "Env2 Attack", "A", 0, 100, 11.0, "%");
+    add_param (E6, "Env2 Decay", "D", 0, 100, 11.0, "%");
+    add_param (E7, "Env2 Sustain", "S", 0, 100, 11.0, "%");
+    add_param (E8, "Env2 Release", "R", 0, 100, 11.0, "%");
   }
   void
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
@@ -120,9 +128,6 @@ class DbgParameterizer : public AudioSignal::Processor {
     assert_return (bus_info (auxin   ).ident == "aux-in");
     assert_return (bus_info (stereout).ident == "stereo-out");
   }
-  void
-  adjust_param (ParamId tag)
-  {}
   void
   reset() override
   {}

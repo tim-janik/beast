@@ -11,8 +11,10 @@
   : Boolean, flag indicating bidirectional inputs with value range `-1…+1`.
   *value*
   : Float, the knob value to be displayed, the value range is `0…+1` if *bidir* is `false`.
-  *label*
+  *format*
   : String, format specification for popup bubbles, containinig a number for the peak amplitude.
+  *label*
+  : String, text string for popup bubbles.
   *hscroll*
   : Boolean, adjust value with horizontal scrolling (without dragging).
   *vscroll*
@@ -99,7 +101,8 @@ export default {
   name: 'b-knob',
   props: { bidir: { default: false },
 	   value: { default: 0 },
-	   label: { default: "100 %" },
+	   format: { default: "100 %" },
+	   label:   { type: String },
 	   hscroll: { type: Boolean, default: true },
 	   vscroll: { type: Boolean, default: true },
 	   width4height: { type: Boolean, default: true }, },
@@ -145,7 +148,7 @@ export default {
 	  this.h3dark_  = this.bidi_ ? outer.querySelector ('svg.b-knob-h3dark') : null;
 	  this.h3light_ = this.bidi_ ? outer.querySelector ('svg.b-knob-h3light') : null;
 	}
-      this.assign_label (this.label);
+      this.update_format();
       this.render_value (this.value);
     },
     emit_value (v) {
@@ -277,16 +280,18 @@ export default {
       this.allow_dblclick = false;
     },
     bubble() {
+      if (this.label)
+	return this.label;
       if (!this.scalar_)
 	return "?";
       const num = (this.scalar_ * this.value_).toFixed (this.digits_);
       return this.parts_[0] + num + this.parts_[1];
     },
-    assign_label (label) {
-      if (this.label_ === label)
+    update_format() {
+      if (this.format_ === this.format)
 	return;
-      this.label_ = label;
-      const parts = this.label_?.split (/(-?\d+(?:\.\d+)?)/); // [ prefix, number, rest... ]
+      this.format_ = this.format;
+      const parts = this.format_?.split (/(-?\d+(?:\.\d+)?)/); // [ prefix, number, rest... ]
       if (parts?.length >= 3)
 	{
 	  const prefix = parts.shift();
