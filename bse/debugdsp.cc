@@ -129,9 +129,6 @@ class DbgParameterizer : public AudioSignal::Processor {
     assert_return (bus_info (stereout).ident == "stereo-out");
   }
   void
-  adjust_param (Id32 tag)
-  {}
-  void
   reset() override
   {}
   void

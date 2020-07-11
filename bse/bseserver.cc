@@ -1474,7 +1474,6 @@ class ServerMidiInput : public AudioSignal::Processor {
     prepare_event_output();
   }
   void configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override {}
-  void adjust_param (ParamId tag) {}
   void reset () override {}
   void
   render (uint n_frames) override
