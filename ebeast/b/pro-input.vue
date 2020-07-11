@@ -34,7 +34,7 @@
 <template>
   <b-vflex class="b-pro-input tabular-nums" :data-bubble="bubble()" >
     <b-knob class="b-pro-input-knob" v-if="type() == 'knob'" :hscroll="false"
-	    :value="get_num()" @input="set_num ($event)" />
+	    :value="get_num()" :label="vtext" :bidir="is_bidir()" @input="set_num ($event)" />
     <b-toggle class="b-pro-input-toggle" v-if="type() == 'toggle'" label=""
 	      :value="get_num()" @input="set_num ($event)" />
     <b-choice class="b-pro-input-choice" v-if="type() == 'choice'" :choices="choices"
@@ -105,6 +105,8 @@ export default {
 	return;
       if (this.vmin !== undefined && this.vmax !== undefined)
 	{
+	  if (this.bidir_)
+	    v = (v + 1) * 0.5;
 	  const next = this.vmin + v * (this.vmax - this.vmin);
 	  this.prop.set_num (next);
 	}
@@ -113,7 +115,10 @@ export default {
     get_num() {
       if (this.vnum === undefined || this.vmin === undefined || this.vmax === undefined)
 	return 0;
-      return (this.vnum - this.vmin) / (this.vmax - this.vmin);
+      const v = this.bidir_ ?
+		(this.vnum - this.vmin) * 2 / (this.vmax - this.vmin) - 1 :
+		(this.vnum - this.vmin) / (this.vmax - this.vmin);
+      return v;
     },
     set_index (v) {
       if (this.vmin !== undefined && this.vstep !== undefined)
@@ -127,6 +132,10 @@ export default {
       if (this.vnum === undefined || this.vmin === undefined || this.vstep === undefined)
 	return 0;
       return (this.vnum - this.vmin) / this.vstep;
+    },
+    is_bidir() {
+      this.bidir_ = this.hints.search (/:bidir:/) >= 0;
+      return this.bidir_;
     },
   },
 };
