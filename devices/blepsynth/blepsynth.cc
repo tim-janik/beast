@@ -270,7 +270,7 @@ class BlepSynth : public AudioSignal::Processor {
 
     start_param_group ("Filter");
     /* TODO: cutoff property should have logarithmic scaling */
-    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, 1000, "Hz");
+    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, 1000, "Hz", STANDARD + "logcenter=880:");
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
     ChoiceEntries centries;
     centries += { "L4", "4 pole lowpass, 24db/octave" };
@@ -283,10 +283,10 @@ class BlepSynth : public AudioSignal::Processor {
     oscparams (1);
 
     start_param_group ("Volume Envelope");
-    pid_attack_ = add_param ("Attack", "A", 0, 100, 11.0, "%");
-    pid_decay_  = add_param ("Decay", "D", 0, 100, 20.0, "%");
+    pid_attack_  = add_param ("Attack",  "A", 0, 8000, 11.0, "ms", STANDARD + "logcenter=1000");
+    pid_decay_   = add_param ("Decay",   "D", 0, 8000, 20.0, "ms", STANDARD + "logcenter=1000");
     pid_sustain_ = add_param ("Sustain", "S", 0, 100, 50.0, "%");
-    pid_release_ = add_param ("Release", "R", 0, 100, 30.0, "%");
+    pid_release_ = add_param ("Release", "R", 0, 8000, 30.0, "ms", STANDARD + "logcenter=1000");
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, 0, "%");
@@ -398,11 +398,11 @@ class BlepSynth : public AudioSignal::Processor {
         // Volume Envelope
         /* TODO: we need non-linear translation between percent and time/level */
         voice->envelope_.set_delay (0);
-        voice->envelope_.set_attack (get_param (pid_attack_) * 0.01);   /* time in seconds */
+        voice->envelope_.set_attack (get_param (pid_attack_) * 0.001);   /* time in milliseconds */
         voice->envelope_.set_hold (0);
-        voice->envelope_.set_decay (get_param (pid_decay_) * 0.01);     /* time in seconds */
-        voice->envelope_.set_sustain (get_param (pid_sustain_));        /* percent */
-        voice->envelope_.set_release (get_param (pid_release_) * 0.01); /* time in seconds */
+        voice->envelope_.set_decay (get_param (pid_decay_) * 0.001);     /* time in milliseconds */
+        voice->envelope_.set_sustain (get_param (pid_sustain_));         /* percent */
+        voice->envelope_.set_release (get_param (pid_release_) * 0.001); /* time in milliseconds */
         voice->envelope_.start (sample_rate());
 
         init_osc (voice->osc1_, voice->freq_);
