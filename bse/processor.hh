@@ -13,7 +13,7 @@ namespace AudioSignal {
 constexpr const uint MAX_RENDER_BLOCK_SIZE = 128;
 
 /// Main handle for Processor administration and audio rendering.
-struct Engine;
+class Engine;
 
 /// ID type for Processor parameters, the ID numbers are user assignable.
 enum class ParamId : uint32 {};
@@ -176,6 +176,7 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   struct PParam;
   class FloatBuffer;
   friend class ProcessorManager;
+  friend class Engine;
   struct OConnection {
     Processor *proc = nullptr; IBusId ibusid = {};
     bool operator== (const OConnection &o) const { return proc == o.proc && ibusid == o.ibusid; }
@@ -283,8 +284,9 @@ public:
   using MaybeParamId = std::pair<ParamId,bool>;
   static const std::string STANDARD; ///< ":G:S:r:w:" - GUI STORAGE READABLE WRITABLE
   Engine&       engine            () const;
-  uint          sample_rate       () const __attribute__ ((__const__));
-  double        mix_freq          () const __attribute__ ((__const__));
+  uint          sample_rate       () const BSE_CONST;
+  double        nyquist           () const BSE_CONST;
+  double        inyquist          () const BSE_CONST;
   void          reset_state       ();
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
@@ -335,11 +337,16 @@ struct AudioTiming {
 };
 
 /// Audio processing setup and engine for concurrent rendering.
-struct Engine {
-  const double       mix_freq;    ///< Same as `sample_rate` cast to double.
-  const uint         sample_rate; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
+class Engine {
+  const double       nyquist_;  ///< Half the `sample_rate`.
+  const double       inyquist_; ///< Inverse Nyquist frequency, i.e. 1.0 / nyquist_;
+  const uint         sample_rate_; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
+public:
   const AudioTiming &timing;
-  explicit Engine (uint32 samplerate, AudioTiming &atiming);
+  explicit      Engine          (uint32 samplerate, AudioTiming &atiming);
+  uint          sample_rate     () const BSE_CONST      { return sample_rate_; }
+  double        nyquist         () const BSE_CONST      { return nyquist_; }
+  double        inyquist        () const BSE_CONST      { return inyquist_; }
 };
 
 /// Aggregate structure for input/output buffer state and values in Processor::render().
@@ -494,14 +501,21 @@ BusInfo::n_channels () const
 inline uint
 Processor::sample_rate () const
 {
-  return engine_.sample_rate;
+  return engine_.sample_rate();
 }
 
-/// Mixing frequency / sample rate in Hz as double, used for render().
+/// Half the sample rate in Hz as double, used for render().
 inline double
-Processor::mix_freq () const
+Processor::nyquist () const
 {
-  return engine_.mix_freq;
+  return engine_.nyquist();
+}
+
+/// Inverse Nyquist frequency, i.e. 1.0 / nyquist().
+inline double
+Processor::inyquist () const
+{
+  return engine_.inyquist();
 }
 
 /// Returns `true` if this Processor has an event input stream.

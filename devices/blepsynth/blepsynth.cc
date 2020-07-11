@@ -518,7 +518,7 @@ class BlepSynth : public AudioSignal::Processor {
             /* TODO: under some conditions we could enable SSE in LadderVCF (alignment and block_size) */
             const float *inputs[2]  = { mix_left_out, mix_right_out };
             float       *outputs[2] = { mix_left_out, mix_right_out };
-            double cutoff = get_param (pid_cutoff_) / (sample_rate() * 0.5);
+            double cutoff = get_param (pid_cutoff_) * inyquist();
             double resonance = get_param (pid_resonance_) * 0.01;
             voice->vcf_.run_block (n_frames, cutoff, resonance, inputs, outputs, true, true, nullptr, nullptr, nullptr, nullptr);
           }

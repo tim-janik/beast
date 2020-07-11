@@ -370,10 +370,10 @@ Processor::OBus::OBus (const std::string &identifier, const std::string &uilabel
 
 // == Engine ==
 Engine::Engine (uint32 samplerate, AudioTiming &atiming) :
-  mix_freq (samplerate), sample_rate (samplerate), timing { atiming }
+  nyquist_ (samplerate * 0.5), inyquist_ (1.0 / nyquist_), sample_rate_ (samplerate), timing { atiming }
 {
   assert_return (samplerate > 0);
-  assert_return (mix_freq == samplerate);
+  assert_return (nyquist_ > 0 && nyquist_ == (samplerate >> 1));
   assert_return (0 == (samplerate & 3));
 }
 
