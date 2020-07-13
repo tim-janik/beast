@@ -189,8 +189,6 @@ public:
 // - aliasing-free square/saw and similar sounds including hard sync
 class BlepSynth : public AudioSignal::Processor {
   OBusId stereout_;
-  ParamId pid_c_, pid_d_, pid_e_, pid_f_, pid_g_;
-  bool    old_c_, old_d_, old_e_, old_f_, old_g_;
 
   struct OscParams {
     ParamId shape;
@@ -295,14 +293,6 @@ class BlepSynth : public AudioSignal::Processor {
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, 0, "%");
-
-    start_param_group ("Keyboard Input");
-    pid_c_ = add_param ("Main Input  1",  "C", false);
-    pid_d_ = add_param ("Main Input  2",  "D", false);
-    pid_e_ = add_param ("Main Input  3",  "E", false);
-    pid_f_ = add_param ("Main Input  4",  "F", false);
-    pid_g_ = add_param ("Main Input  5",  "G", false);
-    old_c_ = old_d_ = old_e_ = old_f_ = old_g_ = false;
   }
   void
   set_max_voices (uint n_voices)
@@ -447,13 +437,6 @@ class BlepSynth : public AudioSignal::Processor {
   void
   render (uint n_frames) override
   {
-    /* TODO: replace this with true midi input */
-    check_note (pid_c_, old_c_, 60);
-    check_note (pid_d_, old_d_, 62);
-    check_note (pid_e_, old_e_, 64);
-    check_note (pid_f_, old_f_, 65);
-    check_note (pid_g_, old_g_, 67);
-
     EventRange erange = get_event_input();
     for (const auto &ev : erange)
       switch (ev.message())
