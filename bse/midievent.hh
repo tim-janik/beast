@@ -86,13 +86,16 @@ class EventStream {
   std::vector<Event> events_; // TODO: use O(1) allocator
   friend class EventRange;
 public:
-  explicit     EventStream ();
-  void         append      (int8_t frame, const Event &event);
-  const Event* begin       () const noexcept { return &*events_.begin(); }
-  const Event* end         () const noexcept { return &*events_.end(); }
-  size_t       size        () const noexcept { return events_.size(); }
-  bool         empty       () const noexcept { return events_.empty(); }
-  void         clear       () noexcept       { events_.clear(); }
+  explicit     EventStream     ();
+  void         append          (int8_t frame, const Event &event);
+  const Event* begin           () const noexcept { return &*events_.begin(); }
+  const Event* end             () const noexcept { return &*events_.end(); }
+  size_t       size            () const noexcept { return events_.size(); }
+  bool         empty           () const noexcept { return events_.empty(); }
+  void         clear           () noexcept       { events_.clear(); }
+  bool         append_unsorted (int8_t frame, const Event &event);
+  void         ensure_order    ();
+  int64_t      last_frame      () const BSE_PURE;
 };
 
 /// A readonly view and iterator into an EventStream.

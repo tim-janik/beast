@@ -161,17 +161,43 @@ make_pitch_bend (uint16 chnl, float val)
 
 // == EventStream ==
 EventStream::EventStream ()
-{}
+{
+  events_.reserve (16);
+}
 
+/// Append an Event with conscutive `frame` time stamp.
 void
 EventStream::append (int8_t frame, const Event &event)
 {
-  if (events_.empty())
-    events_.reserve (16);
-  else
-    assert_return (frame >= events_.back().frame);
+  const bool out_of_order_event = append_unsorted (frame, event);
+  assert_return (!out_of_order_event);
+}
+
+/// Dangerous! Append an Event with enforcing sort order, violates constraints.
+/// Returns if ensure_order() must be called due to adding an out-of-order event.
+bool
+EventStream::append_unsorted (int8_t frame, const Event &event)
+{
+  const int64_t last_event_stamp = !events_.empty() ? events_.back().frame : -128;
   events_.push_back (event);
   events_.back().frame = frame;
+  return frame < last_event_stamp;
+}
+
+/// Fix event order after append_unsorted() returned `true`.
+void
+EventStream::ensure_order ()
+{
+  std::stable_sort (events_.begin(), events_.end(), [] (const Event &a, const Event &b) -> bool {
+    return a.frame < b.frame;
+  });
+}
+
+/// Fetch the latest event stamp, can be used to enforce order.
+int64_t
+EventStream::last_frame () const
+{
+  return !events_.empty() ? events_.back().frame : -128;
 }
 
 // == EventRange ==
