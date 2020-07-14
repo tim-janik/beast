@@ -1223,12 +1223,18 @@ public:
     const auto mkid = [] (uint note, uint channel) {
       return (channel + 1) * 128 + note;
     };
+    bool must_sort = false;
     const auto add = [&] (AudioSignal::EventStream &estream, const Event &event) {
       const double t = ev->time.time.tv_sec + 1e-9 * ev->time.time.tv_nsec;
       const double diff = t - now;
-      const int frames = diff * samplerate;
-      int8_t frame_delay = CLAMP (frames, -128, 0); // we only need to account for delays
-      estream.append (frame_delay, event);
+      int64_t frames = diff * samplerate;
+      if (event.type == event.NOTE_OFF)
+        {                                               // guard against devices with out-of-order events
+          const auto last_frame = estream.last_frame();
+          frames = std::max (frames, last_frame);
+        }
+      int8_t frame_delay = CLAMP (frames, -128, 0);     // ignore future scheduling, only account for delays
+      must_sort |= estream.append_unsorted (frame_delay, event);
     };
     int r;
     while (r = snd_seq_event_input (seq_, &ev), r >= 0)
@@ -1285,6 +1291,8 @@ public:
     if (BSE_UNLIKELY (mdebug_))
       for (size_t i = old_size; i < estream.size(); i++)
         MDEBUG ("%s", (estream.begin() + i)->to_string());
+    if (must_sort)              // guard against devices with out-of-order events
+      estream.ensure_order();
     return estream.size() - old_size;
   }
 };
