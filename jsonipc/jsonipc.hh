@@ -1383,14 +1383,15 @@ struct IpcDispatcher {
     if (!closure)
       return create_error (id, -32601, std::string (CallbackInfo::method_not_found) + ": unknown '" + methodname + "'");
     std::string *errorp = NULL;
-    try {
+    if (!exception_handler_)
       errorp = (*closure) (cbi);
-    } catch (const std::exception &exc) {
-      if (!exception_handler_)
-        throw; // unhandled, rethrow
-      const std::string excstr = exception_handler_ (exc);
-      errorp = new std::string (CallbackInfo::application_error + std::string (": ") + excstr);
-    }
+    else // have exception_handler_
+      try {
+        errorp = (*closure) (cbi);
+      } catch (const std::exception &exc) {
+        const std::string excstr = exception_handler_ (exc);
+        errorp = new std::string (CallbackInfo::application_error + std::string (": ") + excstr);
+      }
     if (errorp)
       {
         const std::string error = *errorp;
