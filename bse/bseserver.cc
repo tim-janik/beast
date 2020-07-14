@@ -645,12 +645,17 @@ ServerImpl::ServerImpl (BseObject *bobj) :
 {
   auto *audio_timing = new AudioSignal::AudioTiming { 120, 0 };
   engine_ = new AudioSignal::Engine { bse_engine_sample_freq(), *audio_timing };
+  BseServer *self = const_cast<ServerImpl*> (this)->as<BseServer*>();
+  bse_pcm_module_set_processor_engine (self->pcm_omodule, engine_);
 }
 
 ServerImpl::~ServerImpl ()
 {
+  BseServer *self = const_cast<ServerImpl*> (this)->as<BseServer*>();
   close_pcm_driver();
   close_midi_driver();
+  if (self->pcm_omodule)
+    bse_pcm_module_set_processor_engine (self->pcm_omodule, nullptr);
   delete engine_;
 }
 
@@ -1321,7 +1326,10 @@ ServerImpl::open_midi_driver()
       midi_driver_ = MidiDriver::open ("null", Driver::READONLY, &error);
     }
   if (!midi_proc_)
-    midi_proc_ = create_server_midi_input();
+    {
+      midi_proc_ = create_server_midi_input();
+      engine_->add_root (midi_proc_);
+    }
   auto midi_proc = midi_proc_;
   auto midi_driver = midi_driver_;
   commit_job ([midi_proc, midi_driver] () {

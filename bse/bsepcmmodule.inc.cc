@@ -26,6 +26,7 @@ struct BsePCMModuleData {
   Bse::PcmDriver *pcm_driver = nullptr;
   BsePcmWriter   *pcm_writer = nullptr;
   bool            pcm_input_checked = false;
+  Bse::AudioSignal::Engine *engine = nullptr;
   std::vector<Bse::AudioSignal::ProcessorP> procs;
   explicit BsePCMModuleData (uint nv);
   ~BsePCMModuleData();
@@ -41,12 +42,28 @@ BsePCMModuleData::~BsePCMModuleData()
 }
 
 static void
+bse_pcm_module_set_processor_engine (BseModule *module, Bse::AudioSignal::Engine *engine)
+{
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  assert_return (mdata != nullptr);
+  assert_return (mdata->procs.size() == 0);
+  auto padd = [mdata, engine] () { // keeps ProcessorP alive until lambda destruction in UserThread
+    mdata->engine = engine;
+  };
+  BseTrans *trans = bse_trans_open ();
+  bse_trans_add (trans, bse_job_access (module, padd));
+  bse_trans_commit (trans);
+}
+
+static void
 bse_pcm_module_add_proc (BseModule *module, Bse::AudioSignal::ProcessorP procp)
 {
   assert_return (procp != nullptr);
   assert_return (procp->n_obuses() >= 1);
   BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  assert_return (mdata->engine != nullptr);
   auto padd = [procp, mdata] () { // keeps ProcessorP alive until lambda destruction in UserThread
+    mdata->engine->add_root (procp);
     mdata->procs.push_back (procp);
   };
   BseTrans *trans = bse_trans_open ();
@@ -59,9 +76,12 @@ bse_pcm_module_del_proc (BseModule *module, Bse::AudioSignal::ProcessorP procp)
 {
   assert_return (procp != nullptr);
   BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
+  assert_return (mdata->engine != nullptr);
   auto pdel = [procp, mdata] () { // keeps ProcessorP alive until lambda destruction in UserThread
     const bool audiosignal_processor_deleted = Bse::vector_erase_element (mdata->procs, procp);
     assert_return (audiosignal_processor_deleted == true);
+    const bool audiosignal_processor_unrooted = mdata->engine->del_root (procp);
+    assert_return (audiosignal_processor_unrooted == true);
   };
   BseTrans *trans = bse_trans_open ();
   bse_trans_add (trans, bse_job_access (module, pdel));
@@ -92,12 +112,10 @@ bse_pcm_omodule_process (BseModule *module,
 
   assert_return (n_values <= mdata->max_values / BSE_PCM_MODULE_N_JSTREAMS);
 
-  for (auto p : mdata->procs)
-    {
-      auto chain = dynamic_cast<Bse::AudioSignal::Chain*> (&*p);
-      if (chain)
-        chain->render_frames (n_values);
-    }
+  Bse::AudioSignal::Engine *engine = mdata->engine;
+  engine->make_schedule();
+  engine->render_block();
+  assert_return (n_values == Bse::AudioSignal::MAX_RENDER_BLOCK_SIZE);
 
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
