@@ -732,31 +732,34 @@ Processor::param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies)
     const_cast<PParam*> (param)->must_notify_mt (need_notifies);
 }
 
-/** Format the value of parameter `paramid` as text string.
- * This function does not modify the parameter `dirty` flag.
- * Overriding this method for plugin specific functionality must
- * ensure that that it is callable while other threads also
- * operate on `this`. Implementations can retrive parameter
- * values with the peek_param_mt() method.
- * This function is MT-Safe after proper Processor initialization.
+/** Format a parameter `paramid` value as text string.
+ * Currently, this function may be called from any thread,
+ * so `this` must be treated as `const` (it might be used
+ * concurrently by a different thread).
  */
 std::string
-Processor::param_to_text_mt (Id32 paramid) const
+Processor::param_value_to_text (Id32 paramid, double value) const
 {
   const PParam *pparam = find_pparam (ParamId (paramid.id));
   if (!pparam || !pparam->info)
     return "";
   const ParamInfo &info = *pparam->info;
   const bool need_sign = info.get_minmax().first < 0;
-  const double value = peek_param_mt (paramid);
   return need_sign ? string_format ("%+.2f", value) : string_format ("%.2f", value);
 }
 
-/// Assign the value of parameter `paramid` from `text` string.
-void
-Processor::param_assign_text (Id32 paramid, const std::string &text)
+/** Extract a parameter `paramid` value from a text string.
+ * The string might contain unit information or consist only of
+ * number characters. Non-recognized characters should be ignored,
+ * so a best effort conversion is always undertaken.
+ * Currently, this function may be called from any thread,
+ * so `this` must be treated as `const` (it might be used
+ * concurrently by a different thread).
+ */
+double
+Processor::param_value_from_text (Id32 paramid, const std::string &text) const
 {
-  set_param (paramid, string_to_double (text));
+  return string_to_double (text);
 }
 
 /// Check if Processor has been properly intiialized (so the set parameters is fixed).

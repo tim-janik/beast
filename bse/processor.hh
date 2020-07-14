@@ -228,7 +228,7 @@ protected:
   virtual void  reset             () = 0;
   virtual void  render            (uint n_frames) = 0;
   // Parameters
-  virtual void        adjust_param   (Id32 tag) {}
+  virtual void  adjust_param      (Id32 tag) {}
   ParamId       nextid            () const;
   ParamId       add_param         (Id32 id, const ParamInfo &infotmpl, double value);
   ParamId       add_param         (Id32 id, const std::string &clabel, const std::string &nickname,
@@ -291,8 +291,8 @@ public:
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
   // Parameters
-  virtual std::string param_to_text_mt  (Id32 paramid) const;
-  virtual void        param_assign_text (Id32 paramid, const std::string &text);
+  virtual std::string param_value_to_text   (Id32 paramid, double value) const;
+  virtual double      param_value_from_text (Id32 paramid, const std::string &text) const;
   ParamInfoPVec list_params       () const;
   void          adjust_params     (bool include_nondirty = false);
   MaybeParamId  find_param        (const std::string &identifier) const;
