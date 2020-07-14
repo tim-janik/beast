@@ -124,7 +124,7 @@ DevicePropertyWrapper::get_text ()
   return_unless (device, "");
   AudioSignal::ProcessorP proc = device->processor();
   return_unless (proc, "");
-  return proc->param_to_text_mt (info_->id);
+  return proc->param_value_to_text (info_->id, AudioSignal::Processor::param_peek_mt (proc, info_->id));
 }
 
 bool
@@ -134,9 +134,10 @@ DevicePropertyWrapper::set_text (const std::string &v)
   return_unless (device, false);
   AudioSignal::ProcessorP proc = device->processor();
   return_unless (proc, false);
+  const double value = proc->param_value_from_text (info_->id, v);
   const AudioSignal::ParamId pid = info_->id;
-  auto lambda = [proc, pid, v] () {
-    proc->param_assign_text (pid, v);
+  auto lambda = [proc, pid, value] () {
+    proc->set_param (pid, value);
   };
   BSE_SERVER.commit_job (lambda);
   return true;

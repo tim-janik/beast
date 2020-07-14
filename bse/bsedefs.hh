@@ -143,7 +143,7 @@ using ResourceCrawlerImplP = std::shared_ptr<ResourceCrawlerImpl>;
 
 namespace AudioSignal {
 struct AudioTiming;
-struct Engine;
+class Engine;
 class Processor;
 using ProcessorP = std::shared_ptr<Processor>;
 } // AudioSignal

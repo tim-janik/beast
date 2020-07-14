@@ -4,6 +4,7 @@
 
 #include <bse/midievent.hh>
 #include <bse/floatutils.hh>
+#include <any>
 
 namespace Bse {
 
@@ -13,7 +14,7 @@ namespace AudioSignal {
 constexpr const uint MAX_RENDER_BLOCK_SIZE = 128;
 
 /// Main handle for Processor administration and audio rendering.
-struct Engine;
+class Engine;
 
 /// ID type for Processor parameters, the ID numbers are user assignable.
 enum class ParamId : uint32 {};
@@ -23,6 +24,9 @@ enum class IBusId : uint16 {};
 
 /// ID type for Processor output buses, buses are numbered with increasing index.
 enum class OBusId : uint16 {};
+
+/// ID type for the Processor registry.
+struct RegistryId { struct Entry; const Entry &entry; };
 
 /// Flags to indicate channel arrangements of a bus.
 /// See also: https://en.wikipedia.org/wiki/Surround_sound
@@ -176,6 +180,7 @@ class Processor : public std::enable_shared_from_this<Processor>, public FastMem
   struct PParam;
   class FloatBuffer;
   friend class ProcessorManager;
+  friend class Engine;
   struct OConnection {
     Processor *proc = nullptr; IBusId ibusid = {};
     bool operator== (const OConnection &o) const { return proc == o.proc && ibusid == o.ibusid; }
@@ -195,39 +200,44 @@ protected:
   using ProcessorInfo = AudioSignal::ProcessorInfo;
   using MinMax = std::pair<double,double>;
 #endif
-  enum { INITIALIZED = 1, HAS_RESET = 2, };
+  enum { INITIALIZED = 1, };
   std::atomic<uint32>      flags_ = 0;
 private:
   uint32                   output_offset_ = 0;
   FloatBuffer             *fbuffers_ = nullptr;
-  Engine                  &engine_;
   std::vector<PBus>        iobuses_;
   std::vector<PParam>      params_;
   std::vector<OConnection> outputs_;
   EventStreams            *estreams_ = nullptr;
+  uint64_t                 done_frames_ = 0;
   static __thread uint64   tls_timestamp;
-  static void registry_init   ();
-  const PParam* find_pparam   (ParamId paramid) const;
-  const PParam* find_pparam_  (ParamId paramid) const;
-  void        assign_iobufs   ();
-  void        release_iobufs  ();
-  void        reconfigure     (IBusId ibus, SpeakerArrangement ipatch, OBusId obus, SpeakerArrangement opatch);
-  void        ensure_initialized  ();
-  const FloatBuffer& float_buffer (IBusId busid, uint channelindex) const;
-  FloatBuffer&       float_buffer (OBusId busid, uint channelindex, bool resetptr = false);
+  static void        registry_init      ();
+  const PParam*      find_pparam        (ParamId paramid) const;
+  const PParam*      find_pparam_       (ParamId paramid) const;
+  void               assign_iobufs      ();
+  void               release_iobufs     ();
+  void               reconfigure        (IBusId ibus, SpeakerArrangement ipatch, OBusId obus, SpeakerArrangement opatch);
+  void               ensure_initialized ();
+  const FloatBuffer& float_buffer       (IBusId busid, uint channelindex) const;
+  FloatBuffer&       float_buffer       (OBusId busid, uint channelindex, bool resetptr = false);
   static
-  const FloatBuffer& zero_buffer ();
-  /*copy*/    Processor       (const Processor&) = delete;
+  const FloatBuffer& zero_buffer        ();
+  void               render_block       ();
+  void               reset_state        ();
+  void               enqueue_deps       ();
+  /*copy*/           Processor          (const Processor&) = delete;
+  virtual void       render             (uint n_frames) = 0;
+  virtual void       reset              () = 0;
 protected:
-  explicit    Processor       ();
+  Engine                          &engine_;
+  explicit      Processor         ();
   virtual      ~Processor         ();
   virtual void  initialize        ();
   virtual void  configure         (uint n_ibuses, const SpeakerArrangement *ibuses,
                                    uint n_obuses, const SpeakerArrangement *obuses) = 0;
-  virtual void  reset             () = 0;
-  virtual void  render            (uint n_frames) = 0;
   // Parameters
-  virtual void        adjust_param   (Id32 tag) {}
+  virtual void  adjust_param      (Id32 tag) {}
+  virtual void  enqueue_children  () {}
   ParamId       nextid            () const;
   ParamId       add_param         (Id32 id, const ParamInfo &infotmpl, double value);
   ParamId       add_param         (Id32 id, const std::string &clabel, const std::string &nickname,
@@ -277,20 +287,20 @@ protected:
   void          connect_event_input    (Processor &oproc);
   void          disconnect_event_input ();
 public:
-  struct RegistryEntry;
-  using RegistryList = std::vector<RegistryEntry>;
+  using RegistryList = std::vector<ProcessorInfo>;
+  using MakeProcessor = ProcessorP (*) (const std::any*);
   using ParamInfoPVec = std::vector<ParamInfoP>;
   using MaybeParamId = std::pair<ParamId,bool>;
   static const std::string STANDARD; ///< ":G:S:r:w:" - GUI STORAGE READABLE WRITABLE
   Engine&       engine            () const;
-  uint          sample_rate       () const __attribute__ ((__const__));
-  double        mix_freq          () const __attribute__ ((__const__));
-  void          reset_state       ();
+  uint          sample_rate       () const BSE_CONST;
+  double        nyquist           () const BSE_CONST;
+  double        inyquist          () const BSE_CONST;
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
   // Parameters
-  virtual std::string param_to_text_mt  (Id32 paramid) const;
-  virtual void        param_assign_text (Id32 paramid, const std::string &text);
+  virtual std::string param_value_to_text   (Id32 paramid, double value) const;
+  virtual double      param_value_from_text (Id32 paramid, const std::string &text) const;
   ParamInfoPVec list_params       () const;
   void          adjust_params     (bool include_nondirty = false);
   MaybeParamId  find_param        (const std::string &identifier) const;
@@ -319,10 +329,9 @@ public:
   bool          has_event_output  ();
   // Registration and factory
   static RegistryList  registry_list      ();
-  static RegistryEntry registry_lookup    (const std::string &uuiduri);
   static ProcessorP    registry_create    (Engine &engine, const std::string &uuiduri);
-  static uint          registry_enroll    (const std::function<ProcessorP ()> &create,
-                                           const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
+  static ProcessorP    registry_create    (Engine &engine, RegistryId rid, const std::any &any);
+  static RegistryId    registry_enroll    (MakeProcessor create, const char *bfile = __builtin_FILE(), int bline = __builtin_LINE());
   // MT-Safe accessors
   static double param_peek_mt     (const ProcessorP proc, Id32 paramid);
   static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
@@ -335,11 +344,30 @@ struct AudioTiming {
 };
 
 /// Audio processing setup and engine for concurrent rendering.
-struct Engine {
-  const double       mix_freq;    ///< Same as `sample_rate` cast to double.
-  const uint         sample_rate; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
+class Engine {
+  const double       nyquist_;  ///< Half the `sample_rate`.
+  const double       inyquist_; ///< Inverse Nyquist frequency, i.e. 1.0 / nyquist_;
+  const uint         sample_rate_; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
+  uint64_t           frame_counter_;
+  uint               flags_;
+  uint               scheduler_depth_;
+  std::vector<Processor*> schedule_;
+  std::vector<ProcessorP> roots_;
+  std::mutex              mutex_;
+public:
   const AudioTiming &timing;
-  explicit Engine (uint32 samplerate, AudioTiming &atiming);
+  explicit      Engine           (uint32 samplerate, AudioTiming &atiming);
+  uint          sample_rate      () const BSE_CONST      { return sample_rate_; }
+  double        nyquist          () const BSE_CONST      { return nyquist_; }
+  double        inyquist         () const BSE_CONST      { return inyquist_; }
+  uint64_t      frame_counter    () const                { return frame_counter_; }
+  void          add_root         (ProcessorP rootproc);
+  bool          del_root         (ProcessorP rootproc);
+  bool          in_schedule      (Processor &proc);
+  void          enqueue          (Processor &proc);
+  void          reschedule       ();
+  void          make_schedule    ();
+  void          render_block     ();
 };
 
 /// Aggregate structure for input/output buffer state and values in Processor::render().
@@ -367,7 +395,6 @@ protected:
   static auto pm_remove_all_buses  (Processor &p)       { return p.remove_all_buses(); }
   static auto pm_disconnect_ibuses (Processor &p)       { return p.disconnect_ibuses(); }
   static auto pm_disconnect_obuses (Processor &p)       { return p.disconnect_obuses(); }
-  static auto pm_render            (Processor &p, uint n);
   static auto pm_connect           (Processor &p, IBusId i, Processor &d, OBusId o)
                                    { return p.connect (i, d, o); }
   static auto pm_connect_events    (Processor &oproc, Processor &iproc)
@@ -384,37 +411,28 @@ class Chain : public Processor, ProcessorManager {
   InletP inlet_;
   ProcessorP eproc_;
   vector<ProcessorP> processors_;
+  Processor *last_output_ = nullptr;
   const SpeakerArrangement ispeakers_ = SpeakerArrangement (0);
   const SpeakerArrangement ospeakers_ = SpeakerArrangement (0);
-  void   initialize () override;
-  void   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override;
-  void   reset     () override;
-  void   render    (uint n_frames) override;
-  uint   chain_up  (Processor &pfirst, Processor &psecond);
-  void   reconnect (size_t start);
+protected:
+  void       initialize       () override;
+  void       configure        (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override;
+  void       reset            () override;
+  void       render           (uint n_frames) override;
+  uint       chain_up         (Processor &pfirst, Processor &psecond);
+  void       reconnect        (size_t start);
+  void       enqueue_children () override;
 public:
-  explicit   Chain          (SpeakerArrangement iobuses = SpeakerArrangement::STEREO);
-  virtual   ~Chain          ();
-  void       query_info     (ProcessorInfo &info) override;
-  void       insert         (ProcessorP proc, size_t pos = ~size_t (0));
-  bool       remove         (Processor &proc);
-  ProcessorP at             (uint nth);
-  size_t     size           ();
-  void       render_frames  (uint n_frames);
+  explicit   Chain            (SpeakerArrangement iobuses = SpeakerArrangement::STEREO);
+  virtual    ~Chain           ();
+  void       query_info       (ProcessorInfo &info) override;
+  void       insert           (ProcessorP proc, size_t pos = ~size_t (0));
+  bool       remove           (Processor &proc);
+  ProcessorP at               (uint nth);
+  size_t     size             ();
   void       set_event_source (ProcessorP eproc);
 };
 using ChainP = std::shared_ptr<Chain>;
-
-// == RegistryEntry ==
-struct Processor::RegistryEntry : ProcessorInfo {
-  CString file;
-  uint64  num = 0;
-  RegistryEntry () = default;
-private:
-  RegistryEntry (const std::function<ProcessorP ()>&);
-  std::function<ProcessorP ()> create;
-  friend class Processor;
-};
 
 // == Inlined Internals ==
 struct Processor::IBus : BusInfo {
@@ -494,14 +512,21 @@ BusInfo::n_channels () const
 inline uint
 Processor::sample_rate () const
 {
-  return engine_.sample_rate;
+  return engine_.sample_rate();
 }
 
-/// Mixing frequency / sample rate in Hz as double, used for render().
+/// Half the sample rate in Hz as double, used for render().
 inline double
-Processor::mix_freq () const
+Processor::nyquist () const
 {
-  return engine_.mix_freq;
+  return engine_.nyquist();
+}
+
+/// Inverse Nyquist frequency, i.e. 1.0 / nyquist().
+inline double
+Processor::inyquist () const
+{
+  return engine_.inyquist();
 }
 
 /// Returns `true` if this Processor has an event input stream.
@@ -653,11 +678,23 @@ Processor::FloatBuffer::speaker_arrangement () const
 
 } // AudioSignal
 
-template<typename Class> extern inline uint
+template<typename Class> extern inline AudioSignal::RegistryId
 enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
 {
-  auto new_asp = [] () { return std::make_shared<Class>(); };
-  return AudioSignal::Processor::registry_enroll (new_asp, bfile, bline);
+  AudioSignal::Processor::MakeProcessor makeasp = nullptr;
+  if constexpr (std::is_constructible<Class>::value)
+    {
+      makeasp = [] (const std::any*) -> AudioSignal::ProcessorP {
+        return std::make_shared<Class>();
+      };
+    }
+  else
+    {
+      makeasp = [] (const std::any *any) -> AudioSignal::ProcessorP {
+        return any ? std::make_shared<Class> (*any) : nullptr;
+      };
+    }
+  return AudioSignal::Processor::registry_enroll (makeasp, bfile, bline);
 }
 
 } // Bse

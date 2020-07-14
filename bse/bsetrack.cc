@@ -1069,7 +1069,6 @@ bse_track_prepare (BseSource *source)
   Bse::TrackImpl &self = *source->as<Bse::TrackImplP>();
   auto &devcon = *dynamic_cast<Bse::DeviceContainerImpl*> (&*self.device_container());
   BSE_SOURCE_CLASS (parent_class)->prepare (source); // chain up
-  devcon.processor()->reset_state();
   BSE_SERVER.add_pcm_output_processor (devcon.processor());
 }
 
