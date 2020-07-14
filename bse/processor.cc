@@ -369,24 +369,121 @@ Processor::OBus::OBus (const std::string &identifier, const std::string &uilabel
 }
 
 // == Engine ==
+enum {
+  RESCHEDULE = 1,
+};
 Engine::Engine (uint32 samplerate, AudioTiming &atiming) :
-  nyquist_ (samplerate * 0.5), inyquist_ (1.0 / nyquist_), sample_rate_ (samplerate), timing { atiming }
+  nyquist_ (samplerate * 0.5), inyquist_ (1.0 / nyquist_), sample_rate_ (samplerate),
+  frame_counter_ (MAX_RENDER_BLOCK_SIZE), flags_ (0), scheduler_depth_ (0),
+  timing { atiming }
 {
   assert_return (samplerate > 0);
   assert_return (nyquist_ > 0 && nyquist_ == (samplerate >> 1));
   assert_return (0 == (samplerate & 3));
+  schedule_.reserve (256);
+  reschedule();
+}
+
+void
+Engine::add_root (ProcessorP rootproc)
+{
+  assert_return (rootproc);
+  std::lock_guard<std::mutex> locker (mutex_);
+  auto pos = std::find (roots_.begin(), roots_.end(), rootproc);
+  bool was_root = pos != roots_.end();
+  assert_return (!was_root);
+  roots_.push_back (rootproc);
+  reschedule();
+}
+
+bool
+Engine::del_root (ProcessorP rootproc)
+{
+  assert_return (rootproc, false);
+  std::lock_guard<std::mutex> locker (mutex_);
+  const bool was_root = vector_erase_element (roots_, rootproc);
+  reschedule();
+  return was_root;
+}
+
+// Cause the engine to re-schedule Processors before the next process() cycle.
+void
+Engine::reschedule()
+{
+  flags_ |= RESCHEDULE;
+}
+
+bool
+Engine::in_schedule (Processor &proc)
+{
+  // TODO: this can be optimized via unsorted_set when profiled
+  for (auto procp : schedule_)
+    if (procp == &proc)
+      return true;
+  return false;
+}
+
+void
+Engine::make_schedule ()
+{
+  assert_return (scheduler_depth_ == 0);
+  std::lock_guard<std::mutex> locker (mutex_);
+  if (0 == (flags_ & RESCHEDULE))
+    return;
+  flags_ &= ~size_t (RESCHEDULE);
+  schedule_.clear();
+  scheduler_depth_ += 1;
+  for (auto root : roots_)
+    enqueue (*root);
+  scheduler_depth_ -= 1;
+  for (auto proc : schedule_)
+    proc->reset_state();
+}
+
+void
+Engine::enqueue (Processor &proc)
+{
+  assert_return (this == &proc.engine_);
+  assert_return (scheduler_depth_ > 0 && scheduler_depth_ <= 999);
+  scheduler_depth_ += 1;
+  proc.enqueue_deps();
+  scheduler_depth_ -= 1;
+  if (!in_schedule (proc))
+    schedule_.push_back (&proc);
+}
+
+/// Render a block of MAX_RENDER_BLOCK_SIZE in all Processors connected to this Engine.
+void
+Engine::render_block()
+{
+  assert_return (!(flags_ & RESCHEDULE));
+  frame_counter_ += MAX_RENDER_BLOCK_SIZE;
+  for (auto procp : schedule_)
+    procp->render_block();
+  /* TODO: concurrent rendering:
+     - rework schedule_ into a dependency tree, each node reflects a processor and its dependencies
+     - a worker starts on a node, processes dependencies in depth first fashion
+     - per level, 1: process all dependencies that are not yet done and not processing (needs atomic flag)
+     - per level, 2: wait for all nodes (in turn) that are not yet done
+     - per level, 3: process node itself, return
+     - experiment: *also* maintain linear schedule_, have unused workers race over schedule_ concurrently
+   */
 }
 
 // == Processor ==
 const std::string Processor::STANDARD = ":G:S:r:w:"; ///< GUI STORAGE READABLE WRITABLE
 uint64 __thread Processor::tls_timestamp = 0;
-static __thread Engine *engine_context_for_processor_ctor = nullptr;
+struct ProcessorRegistryContext {
+  Engine *engine = nullptr;
+};
+static __thread ProcessorRegistryContext *processor_ctor_registry_context = nullptr;
 
 /// Constructor for Processor
 Processor::Processor() :
-  engine_ (*engine_context_for_processor_ctor)
+  engine_ (*processor_ctor_registry_context->engine)
 {
-  assert_return (engine_context_for_processor_ctor != nullptr);
+  assert_return (processor_ctor_registry_context->engine != nullptr);
+  processor_ctor_registry_context->engine = nullptr; // consumed
 }
 
 /// The destructor is called when the last std::shared_ptr<> reference drops.
@@ -860,6 +957,7 @@ Processor::disconnect_event_input()
       assert_return (oproc.estreams_);
       const bool backlink = vector_erase_element (oproc.outputs_, { this, EventStreams::EVENT_ISTREAM });
       estreams_->oproc = nullptr;
+      engine_.reschedule();
       assert_return (backlink == true);
     }
 }
@@ -875,6 +973,7 @@ Processor::connect_event_input (Processor &oproc)
   estreams_->oproc = &oproc;
   // register backlink
   oproc.outputs_.push_back ({ this, EventStreams::EVENT_ISTREAM });
+  engine_.reschedule();
 }
 
 /// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
@@ -1022,6 +1121,7 @@ Processor::remove_all_buses ()
       assert_return (!estreams_->oproc && outputs_.empty());
       delete estreams_; // must be disconnected beforehand
       estreams_ = nullptr;
+      engine_.reschedule();
     }
 }
 
@@ -1030,6 +1130,8 @@ void
 Processor::disconnect_ibuses()
 {
   disconnect (EventStreams::EVENT_ISTREAM);
+  if (n_ibuses())
+    engine_.reschedule();
   for (size_t i = 0; i < n_ibuses(); i++)
     disconnect (IBusId (1 + i));
 }
@@ -1039,6 +1141,8 @@ void
 Processor::disconnect_obuses()
 {
   return_unless (fbuffers_);
+  if (outputs_.size())
+    engine_.reschedule();
   while (outputs_.size())
     {
       const auto o = outputs_.back();
@@ -1066,6 +1170,7 @@ Processor::disconnect (IBusId ibusid)
   const bool backlink = vector_erase_element (oproc.outputs_, { this, ibusid });
   ibus.proc = nullptr;
   ibus.obusid = {};
+  engine_.reschedule();
   assert_return (backlink == true);
 }
 
@@ -1092,6 +1197,7 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   // register backlink
   obus.fbuffer_concounter += 1; // conection counter
   oproc.outputs_.push_back ({ this, ibusid });
+  engine_.reschedule();
 }
 
 /// Ensure `Processor::initialize()` has been called, so the parameters are fixed.
@@ -1111,26 +1217,42 @@ Processor::ensure_initialized()
           (!estreams_ || (!estreams_->has_event_input && !estreams_->has_event_output)))
         warning ("Processor::%s: failed to setup any input/output facilities for: %s", __func__, debug_name());
       assign_iobufs();
+      reset_state();
     }
 }
 
-/// Reset internal states.
-/// This method is called to assign the sample rate and
-/// to switch between realtime and offline rendering.
+/// Reset all voices, buffers and other internal state
 void
 Processor::reset_state()
 {
-  ensure_initialized();
-  flags_ |= HAS_RESET;
-  if (estreams_)
-    estreams_->estream.clear();
-  reset();
+  if (done_frames_ != engine_.frame_counter())
+    {
+      if (estreams_)
+        estreams_->estream.clear();
+      reset();
+      done_frames_ = engine_.frame_counter();
+    }
 }
 
 /// Reset all state variables.
 void
 Processor::reset()
 {}
+
+/// Enqueue all rendering dependencies in the engine schedule.
+void
+Processor::enqueue_deps()
+{
+  if (estreams_ && estreams_->oproc)
+    engine_.enqueue (*estreams_->oproc);
+  for (size_t i = 0; i < n_ibuses(); i++)
+    {
+      IBus &ibus = iobus (IBusId (1 + i));
+      if (ibus.proc)
+        engine_.enqueue (*ibus.proc);
+    }
+  enqueue_children();
+}
 
 /** Method called for every audio buffer to be processed.
  * Each connected output bus needs to be filled with `n_frames`,
@@ -1144,6 +1266,17 @@ Processor::reset()
 void
 Processor::render (uint32 n_frames)
 {}
+
+void
+Processor::render_block ()
+{
+  const uint64_t engine_frame_counter = engine_.frame_counter();
+  return_unless (done_frames_ < engine_frame_counter);
+  if (BSE_UNLIKELY (estreams_) && !BSE_ISLIKELY (estreams_->estream.empty()))
+    estreams_->estream.clear();
+  render (MAX_RENDER_BLOCK_SIZE);
+  done_frames_ = engine_frame_counter;
+}
 
 /// Invoke Processor::configure() with `ipatch`/`opatch` applied to the current configuration.
 void
@@ -1188,17 +1321,7 @@ Processor::reconfigure (IBusId ibusid, SpeakerArrangement ipatch, OBusId obusid,
   configure (n_ibuses(), sai, n_obuses(), sao);
   delete[] sai;
   assign_iobufs();
-}
-
-// == ProcessorManager ==
-auto
-ProcessorManager::pm_render (Processor &p, uint n)
-{
-  // TODO: introduce rendering engine
-  // This is supposed to be just a trampoline, but the only single hook into renderig atm
-  if (BSE_UNLIKELY (p.estreams_) && !BSE_ISLIKELY (p.estreams_->estream.empty()))
-    p.estreams_->estream.clear();
-  return p.render (n);
+  reset_state();
 }
 
 // == LogState ==
@@ -1272,8 +1395,12 @@ logstate (LogState ls, Processor *p, OBusId ob, const SpeakerArrangement *osa, P
 class Chain::Inlet : public Processor {
   Chain &chain_;
 public:
-  explicit Inlet (Chain &chain) : chain_ (chain) {}
-  void query_info (ProcessorInfo &info) override        { info.label = "Bse::AudioSignal::Chain::Inlet"; }
+  Inlet (const std::any &any) :
+    chain_ (*std::any_cast<Chain*> (any))
+  {
+    assert_return (nullptr != std::any_cast<Chain*> (any));
+  }
+  void query_info (ProcessorInfo &info) override        { info.label = "Bse.AudioSignal.Chain.Inlet"; }
   void initialize () override                           {}
   void reset      () override                           {}
   void
@@ -1300,8 +1427,12 @@ public:
 Chain::Chain (SpeakerArrangement iobuses) :
   ispeakers_ (iobuses), ospeakers_ (iobuses)
 {
+  static const auto reg_id = enroll_asp<AudioSignal::Chain::Inlet>();
   assert_return (speaker_arrangement_count_channels (iobuses) > 0);
-  inlet_ = std::make_shared<Inlet> (*this);
+  ProcessorP inlet = Processor::registry_create (engine_, reg_id, this);
+  assert_return (inlet != nullptr);
+  inlet_ = std::dynamic_pointer_cast<Inlet> (inlet);
+  assert_return (inlet_ != nullptr);
 }
 
 Chain::~Chain()
@@ -1344,36 +1475,34 @@ Chain::configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obus
 
 void
 Chain::reset()
+{}
+
+void
+Chain::enqueue_children ()
 {
-  inlet_->reset_state();
-  for (size_t i = 0; i < processors_.size(); i++)
-    processors_[i]->reset_state();
+  last_output_ = nullptr;
+  engine_.enqueue (*inlet_);
+  for (auto procp : processors_)
+    {
+      engine_.enqueue (*procp);
+      if (procp->n_obuses())
+        last_output_ = procp.get();
+    }
+  // last_output_ is only valid during render()
 }
 
 void
 Chain::render (uint n_frames)
 {
-  constexpr OBusId OUT1 = OBusId (1);
-  // make sure event source is rendered
-  if (eproc_)
-    pm_render (*eproc_, n_frames);
-  // render inlet and all processors in chain
-  pm_render (*inlet_, n_frames);
-  Processor *last = nullptr;
-  for (size_t i = 0; i < processors_.size(); i++)
-    {
-      Processor &proc = *processors_[i];
-      pm_render (proc, n_frames);
-      if (proc.n_obuses())
-        last = &proc;
-    }
   // make the last processor output the chain output
-  const size_t nochannels = n_ochannels (OUT1);
-  const size_t nlastchannels = last ? last->n_ochannels (OUT1) : 0;
-  for (size_t c = 0; c < nochannels; c++)
+  constexpr OBusId OUT1 = OBusId (1);
+  const size_t nlastchannels = last_output_ ? last_output_->n_ochannels (OUT1) : 0;
+  const size_t n_och = n_ochannels (OUT1);
+  for (size_t c = 0; c < n_och; c++)
     {
-      if (last)
-        redirect_oblock (OUT1, c, last->ofloats (OUT1, std::min (c, nlastchannels - 1)));
+      // an enqueue_children() call is guranteed *before* render(), so last_output_ is valid
+      if (last_output_)
+        redirect_oblock (OUT1, c, last_output_->ofloats (OUT1, std::min (c, nlastchannels - 1)));
       else
         assign_oblock (OUT1, c, 0);
     }
@@ -1392,19 +1521,6 @@ Chain::at (uint nth)
 {
   return_unless (nth < size(), {});
   return processors_[nth];
-}
-
-/// Render `n_frames` audio frames.
-void
-Chain::render_frames (uint n_frames)
-{
-  assert_return (flags_ & HAS_RESET);
-  while (n_frames)
-    {
-      const uint blocksize = std::min (n_frames, MAX_RENDER_BLOCK_SIZE);
-      pm_render (*this, blocksize);
-      n_frames -= blocksize;
-    }
 }
 
 /// Remove a previously added Processor `proc` from the Chain.
@@ -1439,9 +1555,9 @@ Chain::insert (ProcessorP proc, size_t pos)
   assert_return (proc != nullptr);
   const size_t index = CLAMP (pos, 0, processors_.size());
   processors_.insert (processors_.begin() + index, proc);
-  proc->reset_state();
   // fixup following connections
   reconnect (index);
+  engine_.reschedule();
 }
 
 /// Reconnect Chain processors at start and after.
@@ -1496,8 +1612,6 @@ Chain::chain_up (Processor &prev, Processor &next)
           prev.reconfigure (IBusId (0), SpeakerArrangement::NONE, obusid, ispa);
           ospa = speaker_arrangement_channels (prev.bus_info (obusid).speakers);
           logstate (HAVE, &prev, obusid, &ospa, &next, ibusid, &ispa);
-          if (render_setup_)
-            prev.reset_state (*render_setup_);
         }
 #endif
     }
@@ -1508,7 +1622,6 @@ Chain::chain_up (Processor &prev, Processor &next)
       pm_reconfigure (next, ibusid, ospa, OBusId (0), SpeakerArrangement::NONE);
       ispa = speaker_arrangement_channels (next.bus_info (ibusid).speakers);
       logstate (HAVE, &prev, obusid, &ospa, &next, ibusid, &ispa);
-      next.reset_state();
     }
   if (0 == (uint64_t (ispa) & ~uint64_t (ospa)) || // exact match
       (ospa == SpeakerArrangement::MONO &&         // allow MONO -> STEREO connections
@@ -1524,97 +1637,78 @@ Chain::chain_up (Processor &prev, Processor &next)
 }
 
 // == RegistryEntry ==
-using CreateProcessor = std::function<ProcessorP ()>;
-
-struct ProcessorRegistryHook {
-  ProcessorRegistryHook *next = nullptr;
-  const CreateProcessor create = nullptr;
+struct RegistryId::Entry : ProcessorInfo {
+  Entry *next = nullptr;
+  const Processor::MakeProcessor create = nullptr;
   const CString file = "";
   const int line = 0;
+  Entry (Entry *hnext, const Processor::MakeProcessor &make, CString f, int l) :
+    next (hnext), create (make), file (f), line (l)
+  {}
 };
 
-static std::atomic<ProcessorRegistryHook*> processor_registry_hooks = nullptr;
+static std::atomic<RegistryId::Entry*> processor_registry_entries = nullptr;
+using RegistryTable = std::unordered_map<CString, RegistryId::Entry*>;
+static std::recursive_mutex processor_registry_mutex;
+static PersistentStaticInstance<RegistryTable> processor_registry_table;
+static const RegistryId::Entry dummy_registry_entry { 0, 0, "", 0 };
 
 /// Add a new type to the Processor type registry.
 /// New Processor types must have a unique URI (see `query_info()`) and will be created
 /// with the factory function `create()`.
-uint
-Processor::registry_enroll (const std::function<ProcessorP ()> &create,
-                            const char *bfile, int bline)
+RegistryId
+Processor::registry_enroll (MakeProcessor create, const char *bfile, int bline)
 {
-  assert_return (create != nullptr, 0);
-  auto *prh = new ProcessorRegistryHook { nullptr, create, bfile ? bfile : "", bline };
+  assert_return (create != nullptr, { dummy_registry_entry });
+  auto *entry = new RegistryId::Entry { nullptr, create, bfile ? bfile : "", bline };
   // push_front
-  while (!std::atomic_compare_exchange_strong (&processor_registry_hooks,
-                                               &prh->next,
-                                               prh))
+  while (!std::atomic_compare_exchange_strong (&processor_registry_entries,
+                                               &entry->next,
+                                               entry))
     ; // when failing, compare_exchange automatically does *&arg2 = *&arg1
-  static std::atomic<uint> dummy_id = 0;
-  return ++dummy_id;
+  return { *entry };
 }
 
-Processor::RegistryEntry::RegistryEntry (const std::function<ProcessorP ()> &func) :
-  create (func)
-{}
-
-using ProcessorRegistryTable = std::unordered_map<CString,Processor::RegistryEntry>;
-static std::shared_mutex processor_registry_mutex;
-static PersistentStaticInstance<ProcessorRegistryTable> processor_registry_table;
-
-// Ensure all registration hooks have been executed.
+// Ensure all registration entries have been examined
 void
 Processor::registry_init()
 {
   static AudioTiming audio_timing { 120, 1024 * 1024 };
   static Engine regengine (48000, audio_timing); // used only for registration
-  while (processor_registry_hooks)
+  while (processor_registry_entries)
     {
-      std::unique_lock wlock (processor_registry_mutex);
-      ProcessorRegistryHook *node = nullptr, *nullnode = nullptr;
+      std::lock_guard<std::recursive_mutex> rlocker (processor_registry_mutex);
+      RegistryId::Entry *entry = nullptr;
       // pop_all
-      while (!std::atomic_compare_exchange_strong (&processor_registry_hooks, &node, nullnode))
+      while (!std::atomic_compare_exchange_strong (&processor_registry_entries, &entry, (RegistryId::Entry*) nullptr))
         ; // when failing, compare_exchange automatically does *&arg2 = *&arg1
       // register all
-      while (node)
+      while (entry)
         {
-          Processor::RegistryEntry entry { node->create };
-          entry.file = node->file;
-          entry.num = uint32_t (node->line); // upper uint32 is 0 for line numbers
-          Engine *const saved = engine_context_for_processor_ctor;
-          engine_context_for_processor_ctor = &regengine;
-          ProcessorP testproc = node->create ();
-          engine_context_for_processor_ctor = saved;
+          ProcessorRegistryContext *const saved = processor_ctor_registry_context;
+          ProcessorRegistryContext context { &regengine };
+          processor_ctor_registry_context = &context;
+          ProcessorP testproc = entry->create (nullptr);
+          processor_ctor_registry_context = saved;
           if (testproc)
             {
-              testproc->query_info (entry);
+              testproc->query_info (*entry);
               testproc = nullptr;
-              if (entry.uri.empty())
-                warning ("invalid empty URI for Processor: %s:%d", entry.file, entry.num);
+              if (entry->uri.empty())
+                warning ("invalid empty URI for Processor: %s:%d", entry->file, entry->line);
               else
                 {
-                  if (processor_registry_table->find (entry.uri) != processor_registry_table->end())
-                    warning ("duplicate Processor URI: %s", entry.uri);
+                  if (processor_registry_table->find (entry->uri) != processor_registry_table->end())
+                    warning ("duplicate Processor URI: %s", entry->uri);
                   else
-                    (*processor_registry_table)[entry.uri] = entry;
+                    (*processor_registry_table)[entry->uri] = entry;
                 }
             }
-          ProcessorRegistryHook *const old = node;
-          node = old->next;
-          delete old;
+          RegistryId::Entry *const old = entry;
+          entry = old->next;
+          // unlisted entries are left dangling for registry_create(RegistryId,std::any)
         }
     }
-}
-
-/// Retrieve the registry entry of a Processor type via its unique URI (or UUID).
-Processor::RegistryEntry
-Processor::registry_lookup (const std::string &uuiduri)
-{
-  registry_init();
-  std::shared_lock rlock (processor_registry_mutex);
-  auto it = processor_registry_table->find (uuiduri);
-  if (it != processor_registry_table->end())
-    return it->second;
-  return {};
 }
 
 /// Create a new Processor object of the type specified by `uuiduri`.
@@ -1622,23 +1716,38 @@ ProcessorP
 Processor::registry_create (Engine &engine, const std::string &uuiduri)
 {
   registry_init();
-  RegistryEntry rentry;
-  { // read-lock scope
-    std::shared_lock rlock (processor_registry_mutex);
+  RegistryId::Entry *entry = nullptr;
+  { // lock scope
+    std::lock_guard<std::recursive_mutex> rlocker (processor_registry_mutex);
     auto it = processor_registry_table->find (uuiduri);
     if (it != processor_registry_table->end())
-      rentry = it->second;
+      entry = it->second;
   }
   ProcessorP procp;
-  if (rentry.uri != "")
+  if (entry)
     {
-      Engine *const saved = engine_context_for_processor_ctor;
-      engine_context_for_processor_ctor = &engine;
-      procp = rentry.create ();
-      engine_context_for_processor_ctor = saved;
+      ProcessorRegistryContext *const saved = processor_ctor_registry_context;
+      ProcessorRegistryContext context { &engine };
+      processor_ctor_registry_context = &context;
+      procp = entry->create (nullptr);
+      processor_ctor_registry_context = saved;
       if (procp)
         procp->ensure_initialized();
     }
+  return procp;
+}
+
+ProcessorP
+Processor::registry_create (Engine &engine, RegistryId regitry_id, const std::any &any)
+{
+  assert_return (regitry_id.entry.create != nullptr, {});
+  ProcessorRegistryContext *const saved = processor_ctor_registry_context;
+  ProcessorRegistryContext context { &engine };
+  processor_ctor_registry_context = &context;
+  ProcessorP procp = regitry_id.entry.create (&any);
+  processor_ctor_registry_context = saved;
+  if (procp)
+    procp->ensure_initialized();
   return procp;
 }
 
@@ -1648,10 +1757,10 @@ Processor::registry_list()
 {
   registry_init();
   RegistryList rlist;
-  std::shared_lock rlock (processor_registry_mutex);
+  std::lock_guard<std::recursive_mutex> rlocker (processor_registry_mutex);
   rlist.reserve (processor_registry_table->size());
-  for (std::pair<CString,RegistryEntry> el : *processor_registry_table)
-    rlist.push_back (el.second);
+  for (std::pair<CString, RegistryId::Entry*> el : *processor_registry_table)
+    rlist.push_back (*el.second);
   return rlist;
 }
 
