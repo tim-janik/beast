@@ -4,6 +4,7 @@
 #include "bse/bsenote.hh"
 #include "devices/blepsynth/bleposc.hh"
 #include "devices/blepsynth/laddervcf.hh"
+#include "devices/blepsynth/linearsmooth.hh"
 #include "bse/internal.hh"
 
 namespace Bse {
@@ -207,6 +208,7 @@ class BlepSynth : public AudioSignal::Processor {
   ParamId pid_cutoff_;
   Logscale cutoff_logscale_;
   ParamId pid_resonance_;
+  ParamId pid_drive_;
   ParamId pid_mode_;
 
   ParamId pid_attack_;
@@ -231,6 +233,8 @@ class BlepSynth : public AudioSignal::Processor {
     int          channel_     = 0;
     double       freq_        = 0;
 
+    LinearSmooth cutoff_smooth_;
+    double       last_cutoff_;
     BlepUtils::OscImpl osc1_;
     BlepUtils::OscImpl osc2_;
     LadderVCFNonLinear vcf_;
@@ -275,6 +279,7 @@ class BlepSynth : public AudioSignal::Processor {
     pid_cutoff_ = add_param ("Cutoff", "Cutoff", freq_lo, freq_hi, FsharpHz, "Hz", STANDARD);
     cutoff_logscale_.setup (freq_lo, freq_hi);
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
+    pid_drive_ = add_param ("Drive", "Drive", -24, 36, 0, "dB");
     ChoiceEntries centries;
     centries += { "None", "disable filter" };
     centries += { "L1", "1 pole lowpass, 6db/octave" };
@@ -406,6 +411,9 @@ class BlepSynth : public AudioSignal::Processor {
         voice->osc1_.reset();
         voice->osc2_.reset();
         voice->vcf_.reset();
+
+        voice->cutoff_smooth_.reset (sample_rate(), 0.020);
+        voice->last_cutoff_ = -1;
       }
   }
   void
@@ -500,16 +508,39 @@ class BlepSynth : public AudioSignal::Processor {
           default: run_filter = false;
             break;
           }
-        /* run ladder filter - processing in place is ok */
-        if (run_filter)
+        /* --------- run ladder filter - processing in place is ok --------- */
+
+        /* TODO: under some conditions we could enable SSE in LadderVCF (alignment and block_size) */
+        const float *inputs[2]  = { mix_left_out, mix_right_out };
+        float       *outputs[2] = { mix_left_out, mix_right_out };
+        double cutoff = get_param (pid_cutoff_) * inyquist();
+        double resonance = get_param (pid_resonance_) * 0.01;
+
+        if (fabs (voice->last_cutoff_ - cutoff) > 1e-7)
           {
-            /* TODO: under some conditions we could enable SSE in LadderVCF (alignment and block_size) */
-            const float *inputs[2]  = { mix_left_out, mix_right_out };
-            float       *outputs[2] = { mix_left_out, mix_right_out };
-            double cutoff = get_param (pid_cutoff_) * inyquist();
-            double resonance = get_param (pid_resonance_) * 0.01;
-            voice->vcf_.run_block (n_frames, cutoff, resonance, inputs, outputs, true, true, nullptr, nullptr, nullptr, nullptr);
+            const bool reset = voice->last_cutoff_ < 0;
+
+            voice->cutoff_smooth_.set (log2f (cutoff), reset);
+            voice->last_cutoff_ = cutoff;
           }
+        /* TODO: possible improvements:
+         *  - exponential smoothing (get rid of exp2f)
+         *  - don't do anything if cutoff_smooth_->steps_ == 0 (add accessor)
+         */
+        float freq_in[n_frames];
+        for (uint i = 0; i < n_frames; i++)
+          freq_in[i] = exp2f (voice->cutoff_smooth_.get_next());
+        voice->vcf_.set_drive (get_param (pid_drive_));
+
+        float no_out[n_frames];
+        if (!run_filter)
+          {
+            // we keep running the filter even if it is disabled in order to have
+            // sane filter signal to switch to when the filter is enabled again
+            outputs[0] = no_out;
+            outputs[1] = no_out;
+          }
+        voice->vcf_.run_block (n_frames, cutoff, resonance, inputs, outputs, true, true, freq_in, nullptr, nullptr, nullptr);
 
         // apply volume envelope
         for (uint i = 0; i < n_frames; i++)
