@@ -55,7 +55,7 @@ Event::to_string () const
     case NOTE_OFF:        if (!et) et = "NOTE_OFF";
     case NOTE_ON:         if (!et) et = "NOTE_ON";
     case AFTERTOUCH:      if (!et) et = "AFTERTOUCH";
-      return string_format ("%+4d ch=%-2u %s pitch=%d vel=%f tune=%f id=%x",
+      return string_format ("%+4d ch=%-2u %-10s pitch=%d vel=%f tune=%f id=%x",
                             frame, channel, et, pitch, velocity, tuning, noteid);
     case CONTROL_CHANGE:        if (!et) et = "CONTROL_CHANGE";
       return string_format ("%+4d ch=%-2u %s control=%d value=%f (%02x)",
