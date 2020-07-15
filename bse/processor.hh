@@ -212,7 +212,7 @@ private:
   uint64_t                 done_frames_ = 0;
   static __thread uint64   tls_timestamp;
   static void        registry_init      ();
-  const PParam*      find_pparam        (ParamId paramid) const;
+  const PParam*      find_pparam        (Id32 paramid) const;
   const PParam*      find_pparam_       (ParamId paramid) const;
   void               assign_iobufs      ();
   void               release_iobufs     ();
@@ -299,17 +299,21 @@ public:
   virtual void  query_info        (ProcessorInfo &info) = 0;
   String        debug_name        () const;
   // Parameters
+  double              get_param             (Id32 paramid);
+  void                set_param             (Id32 paramid, double value);
+  ParamInfoP          param_info            (Id32 paramid) const;
+  MaybeParamId        find_param            (const std::string &identifier) const;
+  ParamInfoPVec       list_params           () const;
+  MinMax              param_range           (Id32 paramid) const;
+  bool                check_dirty           (Id32 paramid) const;
+  void                adjust_params         (bool include_nondirty = false);
   virtual std::string param_value_to_text   (Id32 paramid, double value) const;
   virtual double      param_value_from_text (Id32 paramid, const std::string &text) const;
-  ParamInfoPVec list_params       () const;
-  void          adjust_params     (bool include_nondirty = false);
-  MaybeParamId  find_param        (const std::string &identifier) const;
-  ParamInfoP    param_info        (Id32 paramid) const;
-  MinMax        param_range       (Id32 paramid) const;
-  double        get_param         (Id32 paramid);
-  void          set_param         (Id32 paramid, double value);
-  bool          check_dirty       (Id32 paramid) const;
-  bool          is_initialized    () const;
+  virtual double      value_to_normalized   (Id32 paramid, double value) const;
+  virtual double      value_from_normalized (Id32 paramid, double normalized) const;
+  double              get_normalized        (Id32 paramid);
+  void                set_normalized        (Id32 paramid, double normalized);
+  bool                is_initialized    () const;
   // Buses
   IBusId        find_ibus         (const std::string &name) const;
   OBusId        find_obus         (const std::string &name) const;
@@ -465,20 +469,20 @@ struct Processor::EventStreams {
 
 // Processor internal parameter book keeping
 struct Processor::PParam {
-  explicit PParam              (ParamId id);
-  explicit PParam              (ParamId id, uint order, const ParamInfo &pinfo);
-  /*copy*/ PParam              (const PParam &);
-  PParam& operator=            (const PParam &);
-  double   get_value_and_clean ()       { clear_dirty(); return value_; }
-  double   peek_value          () const { return value_; }
-  bool     is_dirty            () const { return flags_ & 1; }
-  void     mark_dirty          ()       { flags_ |= 1; }
-  void     clear_dirty         ()       { flags_ &= ~uint32 (1); }
-  bool     has_updated         () const { return flags_ & 2; }
-  void     mark_updated        ()       { flags_ |= 2; }
-  void     clear_updated       ()       { flags_ &= ~uint32 (2); }
-  void     must_notify_mt      (bool n) { if (n) flags_ |= 4; else flags_ &= ~uint32 (4); }
-  bool     must_notify         () const { return flags_ & 4; }
+  explicit PParam          (ParamId id);
+  explicit PParam          (ParamId id, uint order, const ParamInfo &pinfo);
+  /*copy*/ PParam          (const PParam &);
+  PParam& operator=        (const PParam &);
+  double   fetch_and_clean ()       { clear_dirty(); return value_; }
+  double   peek            () const { return value_; }
+  bool     is_dirty        () const { return flags_ & 1; }
+  void     mark_dirty      ()       { flags_ |= 1; }
+  void     clear_dirty     ()       { flags_ &= ~uint32 (1); }
+  bool     has_updated     () const { return flags_ & 2; }
+  void     mark_updated    ()       { flags_ |= 2; }
+  void     clear_updated   ()       { flags_ &= ~uint32 (2); }
+  void     must_notify_mt  (bool n) { if (n) flags_ |= 4; else flags_ &= ~uint32 (4); }
+  bool     must_notify     () const { return flags_ & 4; }
   void
   assign (double f)
   {
@@ -598,13 +602,13 @@ Processor::adjust_params (bool include_nondirty)
 
 // Find parameter for internal access.
 inline const Processor::PParam*
-Processor::find_pparam (ParamId paramid) const
+Processor::find_pparam (Id32 paramid) const
 {
   // fast path via sequential ids
-  const size_t idx = size_t (paramid) - 1;
-  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == paramid))
+  const size_t idx = paramid.id - 1;
+  if (BSE_ISLIKELY (idx < params_.size()) && BSE_ISLIKELY (params_[idx].id == ParamId (paramid.id)))
     return &params_[idx];
-  return find_pparam_ (paramid);
+  return find_pparam_ (ParamId (paramid.id));
 }
 
 /// Fetch `value` of parameter `id` and clear its `dirty` flag.
@@ -612,7 +616,7 @@ inline double
 Processor::get_param (Id32 paramid)
 {
   const PParam *pparam = find_pparam (ParamId (paramid.id));
-  return BSE_ISLIKELY (pparam) ? const_cast<PParam*> (pparam)->get_value_and_clean() : FP_NAN;
+  return BSE_ISLIKELY (pparam) ? const_cast<PParam*> (pparam)->fetch_and_clean() : FP_NAN;
 }
 
 /// Check if the parameter `dirty` flag is set.
