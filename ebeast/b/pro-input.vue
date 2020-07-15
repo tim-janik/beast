@@ -123,16 +123,18 @@ export default {
       this.hints_ = this.hints;
     },
     set_index (v) {
-      if (this.choices === undefined)
+      if (this.choices === undefined || this.choices.length < 1)
 	return;
-      this.prop.set_normalized (v / this.choices.length);
+      const max = this.choices.length - 1;
+      this.prop.set_normalized (v / max);
       setTimeout (this.n1, 15); // FIXME : need real notification
       setTimeout (this.n2, 15); // FIXME : need real notification
     },
     get_index() {
-      if (this.choices === undefined || this.vnum === undefined)
+      if (this.choices === undefined || this.choices.length < 1)
 	return 0;
-      return this.vnum * this.choices.length;
+      const max = this.choices.length - 1;
+      return this.vnum * max;
     },
     is_bidir() {
       this.bidir_ = this.hints.search (/:bidir:/) >= 0;
