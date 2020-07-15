@@ -217,8 +217,7 @@ ParamInfo::get_minmax () const
     case PTAG_FLOATS:
       return { u.fmin, u.fmax };
     case PTAG_CENTRIES:
-      return { (u.centries()->size() - 1) * -0.5,
-               (u.centries()->size() - 1) * +0.5 };
+      return { 0, u.centries()->size() - 1 };
     default:
       return { NAN, NAN };
     }
@@ -710,7 +709,7 @@ Processor::add_param (Id32 id, const std::string &clabel, const std::string &nic
   const auto rid = add_param (id, info, boolvalue);
   assert_return (uint (rid) == id.id, rid);
   const PParam *param = find_pparam (rid);
-  assert_return (param && param->peek_value() == (boolvalue ? +0.5 : -0.5), rid);
+  assert_return (param && param->peek() == (boolvalue ? 1.0 : 0.0), rid);
   return rid;
 }
 
@@ -804,7 +803,7 @@ Processor::peek_param_mt (Id32 paramid) const
 {
   assert_return (is_initialized(), FP_NAN);
   const PParam *param = find_pparam (ParamId (paramid.id));
-  return BSE_ISLIKELY (param) ? param->peek_value() : FP_NAN;
+  return BSE_ISLIKELY (param) ? param->peek() : FP_NAN;
 }
 
 /// Fetch the current parameter value of a Processor from any thread.
@@ -829,6 +828,46 @@ Processor::param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies)
     const_cast<PParam*> (param)->must_notify_mt (need_notifies);
 }
 
+double
+Processor::value_to_normalized (Id32 paramid, double value) const
+{
+  const PParam *const param = find_pparam (paramid);
+  assert_return (param != nullptr, 0);
+  const auto mm = param->info->get_minmax();
+  const double normalized = (value - mm.first) / (mm.second - mm.first);
+  assert_return (normalized >= 0.0 && normalized <= 1.0, CLAMP (normalized, 0.0, 1.0));
+  return normalized;
+}
+
+double
+Processor::value_from_normalized (Id32 paramid, double normalized) const
+{
+  const PParam *const param = find_pparam (paramid);
+  assert_return (param != nullptr, 0);
+  const auto mm = param->info->get_minmax();
+  const double value = mm.first + normalized * (mm.second - mm.first);
+  assert_return (normalized >= 0.0 && normalized <= 1.0, value);
+  return value;
+}
+
+/// Get param value normalized into 0…1.
+double
+Processor::get_normalized (Id32 paramid)
+{
+  return value_to_normalized (paramid, get_param (paramid));
+}
+
+/// Set param value normalized into 0…1.
+void
+Processor::set_normalized (Id32 paramid, double normalized)
+{
+  if (!BSE_ISLIKELY (normalized >= 0.0))
+    normalized = 0;
+  else if (!BSE_ISLIKELY (normalized <= 1.0))
+    normalized = 1.0;
+  set_param (paramid, value_from_normalized (paramid, normalized));
+}
+
 /** Format a parameter `paramid` value as text string.
  * Currently, this function may be called from any thread,
  * so `this` must be treated as `const` (it might be used
@@ -841,8 +880,26 @@ Processor::param_value_to_text (Id32 paramid, double value) const
   if (!pparam || !pparam->info)
     return "";
   const ParamInfo &info = *pparam->info;
+  std::string unit = pparam->info->unit;
+  int fdigits = 2;
+  if (unit == "Hz" && fabs (value) >= 1000)
+    {
+      unit = "kHz";
+      value /= 1000;
+    }
+  if (fabs (value) < 10)
+    fdigits = 2;
+  else if (fabs (value) < 100)
+    fdigits = 1;
+  else if (fabs (value) < 1000)
+    fdigits = 0;
+  else
+    fdigits = 0;
   const bool need_sign = info.get_minmax().first < 0;
-  return need_sign ? string_format ("%+.2f", value) : string_format ("%.2f", value);
+  std::string s = need_sign ? string_format ("%+.*f", fdigits, value) : string_format ("%.*f", fdigits, value);
+  if (!unit.empty())
+    s += " " + unit;
+  return s;
 }
 
 /** Extract a parameter `paramid` value from a text string.

@@ -85,6 +85,33 @@ fast_log2 (float value)
   return i + r; // log2 (i) + log2 (x)
 }
 
+/// Logarithmically map (and invert) a range onto 0…+1.
+struct Logscale {
+  double b2 = 0;         // log2 (begin)
+  double r2 = 1, ir = 1; // range
+  /// Provide minimum and maximum values to be mapped.
+  void
+  setup (double min, double max)
+  {
+    b2 = ::log2l (min);
+    auto range = ::log2l (max) - b2;
+    ir = 1.0 / range;
+    r2 = range;
+  }
+  /// Calculate scale value within `[min … max]` from normalized `x`.
+  double
+  scale (double normalized) const
+  {
+    return ::exp2 (b2 + normalized * r2);
+  }
+  /// Calculate `normalized` from a `scale()` result within `[min … max]`.
+  double
+  iscale (double mmvalue) const
+  {
+    return (::log2 (mmvalue) - b2) * ir;
+  }
+};
+
 } // Bse
 
 #endif // __BSE_SIGNALMATH_HH__

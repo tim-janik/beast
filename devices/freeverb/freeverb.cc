@@ -45,10 +45,10 @@ class Freeverb : public AudioSignal::Processor {
 
     add_param (DAMPING, "Damping",  "D", 0, 100, 100 * initialdamp, "%");
 
-    centries += { "Normal Damping", "Damping with sign correction as implemented in STK Freeverb" };
-    centries += { "VLC Damping",    "The VLC Freeverb version disables one damping feedback chain" };
     centries += { "Signflip 2000",  "Preserve May 2000 Freeverb damping sign flip" };
-    add_param (MODE, "Mode",  "M", std::move (centries), -1, "", "Damping mode found in different Freeverb variants");
+    centries += { "VLC Damping",    "The VLC Freeverb version disables one damping feedback chain" };
+    centries += { "Normal Damping", "Damping with sign correction as implemented in STK Freeverb" };
+    add_param (MODE, "Mode",  "M", std::move (centries), 2, "", "Damping mode found in different Freeverb variants");
   }
   void
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
@@ -68,7 +68,7 @@ class Freeverb : public AudioSignal::Processor {
       case WIDTH:       return model.setwidth (0.01 * get_param (tag));
       case MODE:
       case DAMPING:     return model.setdamp (0.01 * get_param (ParamId (DAMPING)),
-                                              bse_ftoi (get_param (ParamId (MODE))));
+                                              1 - bse_ftoi (get_param (ParamId (MODE))));
       }
   }
   void

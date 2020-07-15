@@ -54,8 +54,8 @@ public:
   friend class DeviceImpl;
   virtual std::string get_tag          (Tag) override;
   virtual void        get_range        (double *min, double *max, double *step) override;
-  virtual double      get_num          () override;
-  virtual bool        set_num          (double v) override;
+  virtual double      get_normalized   () override;
+  virtual bool        set_normalized   (double v) override;
   virtual std::string get_text         () override;
   virtual bool        set_text         (const std::string &v) override;
   virtual bool        is_numeric       () override;
@@ -93,17 +93,17 @@ DevicePropertyWrapper::get_range (double *min, double *max, double *step)
 }
 
 double
-DevicePropertyWrapper::get_num ()
+DevicePropertyWrapper::get_normalized ()
 {
   DeviceImplP device = device_.lock();
   return_unless (device, FP_NAN);
   AudioSignal::ProcessorP proc = device->processor();
   return_unless (proc, FP_NAN);
-  return AudioSignal::Processor::param_peek_mt (proc, info_->id);
+  return proc->value_to_normalized (info_->id, AudioSignal::Processor::param_peek_mt (proc, info_->id));
 }
 
 bool
-DevicePropertyWrapper::set_num (double v)
+DevicePropertyWrapper::set_normalized (double v)
 {
   DeviceImplP device = device_.lock();
   return_unless (device, false);
@@ -111,7 +111,7 @@ DevicePropertyWrapper::set_num (double v)
   return_unless (proc, false);
   const AudioSignal::ParamId pid = info_->id;
   auto lambda = [proc, pid, v] () {
-    proc->set_param (pid, v);
+    proc->set_normalized (pid, v);
   };
   BSE_SERVER.commit_job (lambda);
   return true;
@@ -124,7 +124,8 @@ DevicePropertyWrapper::get_text ()
   return_unless (device, "");
   AudioSignal::ProcessorP proc = device->processor();
   return_unless (proc, "");
-  return proc->param_value_to_text (info_->id, AudioSignal::Processor::param_peek_mt (proc, info_->id));
+  const double value = AudioSignal::Processor::param_peek_mt (proc, info_->id);
+  return proc->param_value_to_text (info_->id, value);
 }
 
 bool
@@ -135,9 +136,10 @@ DevicePropertyWrapper::set_text (const std::string &v)
   AudioSignal::ProcessorP proc = device->processor();
   return_unless (proc, false);
   const double value = proc->param_value_from_text (info_->id, v);
+  const double normalized = proc->value_to_normalized (info_->id, value);
   const AudioSignal::ParamId pid = info_->id;
-  auto lambda = [proc, pid, value] () {
-    proc->set_param (pid, value);
+  auto lambda = [proc, pid, normalized] () {
+    proc->set_normalized (pid, normalized);
   };
   BSE_SERVER.commit_job (lambda);
   return true;

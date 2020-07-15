@@ -207,6 +207,7 @@ class BlepSynth : public AudioSignal::Processor {
   ParamId pid_mix_;
 
   ParamId pid_cutoff_;
+  Logscale cutoff_logscale_;
   ParamId pid_resonance_;
   ParamId pid_mode_;
 
@@ -270,15 +271,19 @@ class BlepSynth : public AudioSignal::Processor {
 
     start_param_group ("Filter");
     /* TODO: cutoff property should have logarithmic scaling */
-    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, 1000, "Hz", STANDARD + "logcenter=880:");
+    const double FsharpHz = 440 * ::pow (2, 9 / 12.);
+    const double freq_lo = FsharpHz / ::pow (2, 5);
+    const double freq_hi = FsharpHz * ::pow (2, 5);
+    pid_cutoff_ = add_param ("Cutoff", "Cutoff", freq_lo, freq_hi, FsharpHz, "Hz", STANDARD);
+    cutoff_logscale_.setup (freq_lo, freq_hi);
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
     ChoiceEntries centries;
-    centries += { "L4", "4 pole lowpass, 24db/octave" };
-    centries += { "L3", "3 pole lowpass, 18db/octave" };
-    centries += { "L2", "2 pole lowpass, 12db/octave" };
-    centries += { "L1", "1 pole lowpass, 6db/octave" };
     centries += { "None", "disable filter" };
-    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), 0, "", "Ladder Filter Mode to be used");
+    centries += { "L1", "1 pole lowpass, 6db/octave" };
+    centries += { "L2", "2 pole lowpass, 12db/octave" };
+    centries += { "L3", "3 pole lowpass, 18db/octave" };
+    centries += { "L4", "4 pole lowpass, 24db/octave" };
+    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), 2, "", "Ladder Filter Mode to be used");
 
     oscparams (1);
 
@@ -428,7 +433,7 @@ class BlepSynth : public AudioSignal::Processor {
   void
   check_note (ParamId pid, bool& old_value, int note)
   {
-    bool value = get_param (pid) > 0.0;
+    const bool value = get_param (pid) > 0.5;
     if (value != old_value)
       {
         constexpr int channel = 0;
@@ -498,19 +503,19 @@ class BlepSynth : public AudioSignal::Processor {
             mix_left_out[i]  = osc1_left_out[i] * v1 + osc2_left_out[i] * v2;
             mix_right_out[i] = osc1_right_out[i] * v1 + osc2_right_out[i] * v2;
           }
-        /* TODO: should be easier to get choice value */
         bool run_filter = true;
         switch (bse_ftoi (get_param (pid_mode_)))
           {
-            case -2: voice->vcf_.set_mode (LadderVCFMode::LP4);
-                     break;
-            case -1: voice->vcf_.set_mode (LadderVCFMode::LP3);
-                     break;
-            case 0: voice->vcf_.set_mode (LadderVCFMode::LP2);
-                    break;
-            case 1: voice->vcf_.set_mode (LadderVCFMode::LP1);
-                    break;
-            default: run_filter = false;
+          case 4: voice->vcf_.set_mode (LadderVCFMode::LP4);
+            break;
+          case 3: voice->vcf_.set_mode (LadderVCFMode::LP3);
+            break;
+          case 2: voice->vcf_.set_mode (LadderVCFMode::LP2);
+            break;
+          case 1: voice->vcf_.set_mode (LadderVCFMode::LP1);
+            break;
+          default: run_filter = false;
+            break;
           }
         /* run ladder filter - processing in place is ok */
         if (run_filter)
@@ -538,6 +543,20 @@ class BlepSynth : public AudioSignal::Processor {
       }
     if (need_free)
       free_unused_voices();
+  }
+  double
+  value_to_normalized (Id32 paramid, double value) const override
+  {
+    if (paramid == pid_cutoff_)
+      return cutoff_logscale_.iscale (value);
+    return Processor::value_to_normalized (paramid, value);
+  }
+  double
+  value_from_normalized (Id32 paramid, double normalized) const override
+  {
+    if (paramid == pid_cutoff_)
+      return cutoff_logscale_.scale (normalized);
+    return Processor::value_from_normalized (paramid, normalized);
   }
 };
 static auto blepsynth = Bse::enroll_asp<BlepSynth>();
