@@ -207,6 +207,7 @@ class BlepSynth : public AudioSignal::Processor {
   ParamId pid_mix_;
 
   ParamId pid_cutoff_;
+  Logscale cutoff_logscale_;
   ParamId pid_resonance_;
   ParamId pid_mode_;
 
@@ -270,7 +271,11 @@ class BlepSynth : public AudioSignal::Processor {
 
     start_param_group ("Filter");
     /* TODO: cutoff property should have logarithmic scaling */
-    pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, 1000, "Hz", STANDARD + "logcenter=880:");
+    const double FsharpHz = 440 * ::pow (2, 9 / 12.);
+    const double freq_lo = FsharpHz / ::pow (2, 5);
+    const double freq_hi = FsharpHz * ::pow (2, 5);
+    pid_cutoff_ = add_param ("Cutoff", "Cutoff", freq_lo, freq_hi, FsharpHz, "Hz", STANDARD);
+    cutoff_logscale_.setup (freq_lo, freq_hi);
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
     ChoiceEntries centries;
     centries += { "None", "disable filter" };
@@ -538,6 +543,20 @@ class BlepSynth : public AudioSignal::Processor {
       }
     if (need_free)
       free_unused_voices();
+  }
+  double
+  value_to_normalized (Id32 paramid, double value) const override
+  {
+    if (paramid == pid_cutoff_)
+      return cutoff_logscale_.iscale (value);
+    return Processor::value_to_normalized (paramid, value);
+  }
+  double
+  value_from_normalized (Id32 paramid, double normalized) const override
+  {
+    if (paramid == pid_cutoff_)
+      return cutoff_logscale_.scale (normalized);
+    return Processor::value_from_normalized (paramid, normalized);
   }
 };
 static auto blepsynth = Bse::enroll_asp<BlepSynth>();
