@@ -253,7 +253,7 @@ export default {
       else if (dx < 0)    // if LEFT
 	s = dy <= dx;     //   Decrease unless mostly UP
       const dist = (s ? +1 : -1) * Math.sqrt (dx * dx + dy * dy) * this.ptraccel;
-      this.point_ = Util.clamp (this.point_ + dist, this.bidi_ ? -1 : 0, +1);
+      this.point_ = Util.clamp (this.point_ + dist, 0, +1);
       if (USE_PTRLOCK)
 	this.drag = { x: 0, y: 0 };
       else
@@ -268,7 +268,7 @@ export default {
 	   (!this.vscroll && p.y != 0)))
 	return;	// only consume scroll events if enabled
       const delta = -p.y || p.x;
-      const min = this.bidi_ ? -1 : 0;
+      const min = 0;
       if ((delta > 0 && this.value_ < 1) || (delta < 0 && this.value_ > min))
 	{
 	  const wheel_accel = this.granularity (ev);
@@ -312,26 +312,25 @@ export default {
 	return;
       this.value_ = value;
       this.point_ = this.value_;
+      let v = 135 * 2 * value - 135;
       if (this.bidi_)
 	{
-	  let v = 135 * value;
 	  this.needle_.style['transform'] = 'rotate(' + v + 'deg)';
-	  if (value < 0)
+	  if (value < 0.5)
 	    {
 	      this.h3dark_.style['transform'] = 'scaleX(+1)';
-	      v = (value + 1) * 130;
+	      v = value * 2 * 130;
 	      this.h3light_.style['transform'] = 'rotate(' + v + 'deg)';
 	    }
 	  else
 	    {
 	      this.h3dark_.style['transform'] = 'scaleX(-1)';
-	      v = 130 - value * 130;
+	      v = 130 - 2 * (value - 0.5) * 130;
 	      this.h3light_.style['transform'] = 'scaleX(-1) rotate(' + v + 'deg)';
 	    }
 	}
       else // !bidi_
 	{
-	  let v = 135 * 2 * value - 135;
 	  this.needle_.style['transform'] = 'rotate(' + v + 'deg)';
 	  if (value < 0.5)
 	    {
