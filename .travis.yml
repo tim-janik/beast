@@ -98,6 +98,9 @@ jobs:
         misc/ciwitness.sh out/asan/build.log asan all check bintray
     - script: |
         misc/ciwitness.sh out/ubsan/build.log ubsan all check bintray
+    - script: |
+        misc/cibuild.sh clang-tidy &&
+        misc/cibuild.sh listunused listhacks bintray
 
 notifications:
   irc:
