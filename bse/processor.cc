@@ -217,8 +217,7 @@ ParamInfo::get_minmax () const
     case PTAG_FLOATS:
       return { u.fmin, u.fmax };
     case PTAG_CENTRIES:
-      return { (u.centries()->size() - 1) * -0.5,
-               (u.centries()->size() - 1) * +0.5 };
+      return { 0, u.centries()->size() - 1 };
     default:
       return { NAN, NAN };
     }
@@ -710,7 +709,7 @@ Processor::add_param (Id32 id, const std::string &clabel, const std::string &nic
   const auto rid = add_param (id, info, boolvalue);
   assert_return (uint (rid) == id.id, rid);
   const PParam *param = find_pparam (rid);
-  assert_return (param && param->peek() == (boolvalue ? +0.5 : -0.5), rid);
+  assert_return (param && param->peek() == (boolvalue ? 1.0 : 0.0), rid);
   return rid;
 }
 

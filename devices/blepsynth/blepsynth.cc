@@ -273,12 +273,12 @@ class BlepSynth : public AudioSignal::Processor {
     pid_cutoff_ = add_param ("Cutoff", "Cutoff", 20, 24000, 1000, "Hz", STANDARD + "logcenter=880:");
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
     ChoiceEntries centries;
-    centries += { "L4", "4 pole lowpass, 24db/octave" };
-    centries += { "L3", "3 pole lowpass, 18db/octave" };
-    centries += { "L2", "2 pole lowpass, 12db/octave" };
-    centries += { "L1", "1 pole lowpass, 6db/octave" };
     centries += { "None", "disable filter" };
-    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), 0, "", "Ladder Filter Mode to be used");
+    centries += { "L1", "1 pole lowpass, 6db/octave" };
+    centries += { "L2", "2 pole lowpass, 12db/octave" };
+    centries += { "L3", "3 pole lowpass, 18db/octave" };
+    centries += { "L4", "4 pole lowpass, 24db/octave" };
+    pid_mode_ = add_param ("Filter Mode", "Mode", std::move (centries), 2, "", "Ladder Filter Mode to be used");
 
     oscparams (1);
 
@@ -428,7 +428,7 @@ class BlepSynth : public AudioSignal::Processor {
   void
   check_note (ParamId pid, bool& old_value, int note)
   {
-    bool value = get_param (pid) > 0.0;
+    const bool value = get_param (pid) > 0.5;
     if (value != old_value)
       {
         constexpr int channel = 0;
@@ -498,19 +498,19 @@ class BlepSynth : public AudioSignal::Processor {
             mix_left_out[i]  = osc1_left_out[i] * v1 + osc2_left_out[i] * v2;
             mix_right_out[i] = osc1_right_out[i] * v1 + osc2_right_out[i] * v2;
           }
-        /* TODO: should be easier to get choice value */
         bool run_filter = true;
         switch (bse_ftoi (get_param (pid_mode_)))
           {
-            case -2: voice->vcf_.set_mode (LadderVCFMode::LP4);
-                     break;
-            case -1: voice->vcf_.set_mode (LadderVCFMode::LP3);
-                     break;
-            case 0: voice->vcf_.set_mode (LadderVCFMode::LP2);
-                    break;
-            case 1: voice->vcf_.set_mode (LadderVCFMode::LP1);
-                    break;
-            default: run_filter = false;
+          case 4: voice->vcf_.set_mode (LadderVCFMode::LP4);
+            break;
+          case 3: voice->vcf_.set_mode (LadderVCFMode::LP3);
+            break;
+          case 2: voice->vcf_.set_mode (LadderVCFMode::LP2);
+            break;
+          case 1: voice->vcf_.set_mode (LadderVCFMode::LP1);
+            break;
+          default: run_filter = false;
+            break;
           }
         /* run ladder filter - processing in place is ok */
         if (run_filter)
