@@ -880,8 +880,26 @@ Processor::param_value_to_text (Id32 paramid, double value) const
   if (!pparam || !pparam->info)
     return "";
   const ParamInfo &info = *pparam->info;
+  std::string unit = pparam->info->unit;
+  int fdigits = 2;
+  if (unit == "Hz" && fabs (value) >= 1000)
+    {
+      unit = "kHz";
+      value /= 1000;
+    }
+  if (fabs (value) < 10)
+    fdigits = 2;
+  else if (fabs (value) < 100)
+    fdigits = 1;
+  else if (fabs (value) < 1000)
+    fdigits = 0;
+  else
+    fdigits = 0;
   const bool need_sign = info.get_minmax().first < 0;
-  return need_sign ? string_format ("%+.2f", value) : string_format ("%.2f", value);
+  std::string s = need_sign ? string_format ("%+.*f", fdigits, value) : string_format ("%.*f", fdigits, value);
+  if (!unit.empty())
+    s += " " + unit;
+  return s;
 }
 
 /** Extract a parameter `paramid` value from a text string.
