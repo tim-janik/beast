@@ -38,7 +38,7 @@
     $timing: 0.1s;
     &.v-enter-active	{ transition: opacity $timing ease-out, transform $timing linear; }
     &.v-leave-active	{ transition: opacity $timing ease-in,  transform $timing linear; }
-    &.v-enter	 	{ opacity: 0.3; transform: translateX(-0.3vw) translateY(-1vh); }
+    &.v-enter	 	{ opacity: 0.3; transform: translateX(0%) translateY(0%); }
     &.v-leave-to	{ opacity: 0; transform: translateX(-0%) translateY(-0%) scale(1); }
     &.b-contextmenu-notransitions { transition: none !important; }
   }
