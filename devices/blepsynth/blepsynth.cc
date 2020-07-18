@@ -227,6 +227,12 @@ class BlepSynth : public AudioSignal::Processor {
   ParamId pid_sustain_;
   ParamId pid_release_;
 
+  ParamId pid_fil_attack_;
+  ParamId pid_fil_decay_;
+  ParamId pid_fil_sustain_;
+  ParamId pid_fil_release_;
+  ParamId pid_fil_cut_mod_;
+
   class Voice
   {
   public:
@@ -239,6 +245,7 @@ class BlepSynth : public AudioSignal::Processor {
     // TODO : enum class MonoType
 
     Envelope     envelope_;
+    Envelope     fil_envelope_;
     State        state_       = IDLE;
     int          midi_note_   = -1;
     int          channel_     = 0;
@@ -305,10 +312,17 @@ class BlepSynth : public AudioSignal::Processor {
     oscparams (1);
 
     start_param_group ("Volume Envelope");
-    pid_attack_  = add_param ("Attack",  "A", 0, 8000, 11.0, "ms", STANDARD + "logcenter=1000");
-    pid_decay_   = add_param ("Decay",   "D", 0, 8000, 20.0, "ms", STANDARD + "logcenter=1000");
+    pid_attack_  = add_param ("Attack",  "A", 0, 8000, 110.0, "ms", STANDARD + "logcenter=1000");
+    pid_decay_   = add_param ("Decay",   "D", 0, 8000, 200.0, "ms", STANDARD + "logcenter=1000");
     pid_sustain_ = add_param ("Sustain", "S", 0, 100, 50.0, "%");
-    pid_release_ = add_param ("Release", "R", 0, 8000, 30.0, "ms", STANDARD + "logcenter=1000");
+    pid_release_ = add_param ("Release", "R", 0, 8000, 300.0, "ms", STANDARD + "logcenter=1000");
+
+    start_param_group ("Filter Envelope");
+    pid_fil_attack_   = add_param ("Attack",  "A", 0, 8000, 500.0, "ms", STANDARD + "logcenter=1000");
+    pid_fil_decay_    = add_param ("Decay",   "D", 0, 8000, 1500.0, "ms", STANDARD + "logcenter=1000");
+    pid_fil_sustain_  = add_param ("Sustain", "S", 0, 100,  30.0, "%");
+    pid_fil_release_  = add_param ("Release", "R", 0, 8000, 300.0, "ms", STANDARD + "logcenter=1000");
+    pid_fil_cut_mod_  = add_param ("Env Cutoff Modulation", "CutMod", -96, 96, 60, "semitones"); /* 8 octaves range */
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, 0, "%");
@@ -422,6 +436,16 @@ class BlepSynth : public AudioSignal::Processor {
         voice->envelope_.set_release (get_param (pid_release_) * 0.001); /* time in milliseconds */
         voice->envelope_.start (sample_rate());
 
+        // Filter Envelope
+        voice->fil_envelope_.set_delay (0);
+        voice->fil_envelope_.set_attack (get_param (pid_fil_attack_) * 0.001);   /* time in milliseconds */
+        voice->fil_envelope_.set_hold (0);
+        voice->fil_envelope_.set_decay (get_param (pid_fil_decay_) * 0.001);     /* time in milliseconds */
+        voice->fil_envelope_.set_sustain (get_param (pid_fil_sustain_));         /* percent */
+        voice->fil_envelope_.set_release (get_param (pid_fil_release_) * 0.001); /* time in milliseconds */
+        voice->fil_envelope_.set_shape (Envelope::Shape::LINEAR);
+        voice->fil_envelope_.start (sample_rate());
+
         init_osc (voice->osc1_, voice->freq_);
         init_osc (voice->osc2_, voice->freq_);
 
@@ -530,9 +554,10 @@ class BlepSynth : public AudioSignal::Processor {
          *  - exponential smoothing (get rid of exp2f)
          *  - don't do anything if cutoff_smooth_->steps_ == 0 (add accessor)
          */
+        float cut_mod = get_param (pid_fil_cut_mod_) / 12.; /* convert semitones to octaves */
         float freq_in[n_frames];
         for (uint i = 0; i < n_frames; i++)
-          freq_in[i] = exp2f (voice->cutoff_smooth_.get_next());
+          freq_in[i] = exp2f (voice->cutoff_smooth_.get_next() + voice->fil_envelope_.get_next() * cut_mod);
         voice->vcf_.set_drive (get_param (pid_drive_));
 
         float no_out[n_frames];
