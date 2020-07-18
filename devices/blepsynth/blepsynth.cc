@@ -429,20 +429,6 @@ class BlepSynth : public AudioSignal::Processor {
       }
   }
   void
-  check_note (ParamId pid, bool& old_value, int note)
-  {
-    const bool value = get_param (pid) > 0.5;
-    if (value != old_value)
-      {
-        constexpr int channel = 0;
-        if (value)
-          note_on (channel, note, 100);
-        else
-          note_off (channel, note);
-        old_value = value;
-      }
-  }
-  void
   render (uint n_frames) override
   {
     EventRange erange = get_event_input();
