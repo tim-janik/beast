@@ -255,6 +255,10 @@ class BlepSynth : public AudioSignal::Processor {
 
     LinearSmooth cutoff_smooth_;
     double       last_cutoff_;
+
+    LinearSmooth cut_mod_smooth_;
+    double       last_cut_mod_;
+
     BlepUtils::OscImpl osc1_;
     BlepUtils::OscImpl osc2_;
     LadderVCFNonLinear vcf_;
@@ -324,7 +328,7 @@ class BlepSynth : public AudioSignal::Processor {
     pid_fil_decay_    = add_param ("Decay",   "D", 0, 8000, 1500.0, "ms", STANDARD + "logcenter=1000");
     pid_fil_sustain_  = add_param ("Sustain", "S", 0, 100,  30.0, "%");
     pid_fil_release_  = add_param ("Release", "R", 0, 8000, 300.0, "ms", STANDARD + "logcenter=1000");
-    pid_fil_cut_mod_  = add_param ("Env Cutoff Modulation", "CutMod", -96, 96, 60, "semitones"); /* 8 octaves range */
+    pid_fil_cut_mod_  = add_param ("Env Cutoff Modulation", "CutMod", -96, 96, 36, "semitones"); /* 8 octaves range */
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, 0, "%");
@@ -464,7 +468,10 @@ class BlepSynth : public AudioSignal::Processor {
         voice->vcf_.reset();
 
         voice->cutoff_smooth_.reset (sample_rate(), 0.020);
-        voice->last_cutoff_ = -1;
+        voice->last_cutoff_ = -5000; // force reset
+
+        voice->cut_mod_smooth_.reset (sample_rate(), 0.020);
+        voice->last_cut_mod_ = -5000; // force reset
       }
   }
   void
@@ -576,19 +583,26 @@ class BlepSynth : public AudioSignal::Processor {
 
         if (fabs (voice->last_cutoff_ - cutoff) > 1e-7)
           {
-            const bool reset = voice->last_cutoff_ < 0;
+            const bool reset = voice->last_cutoff_ < -1000;
 
-            voice->cutoff_smooth_.set (log2f (cutoff), reset);
+            voice->cutoff_smooth_.set (fast_log2 (cutoff), reset);
             voice->last_cutoff_ = cutoff;
+          }
+        double cut_mod = get_param (pid_fil_cut_mod_) / 12.; /* convert semitones to octaves */
+        if (fabs (voice->last_cut_mod_ - cut_mod) > 1e-7)
+          {
+            const bool reset = voice->last_cut_mod_ < -1000;
+
+            voice->cut_mod_smooth_.set (cut_mod, reset);
+            voice->last_cut_mod_ = cut_mod;
           }
         /* TODO: possible improvements:
          *  - exponential smoothing (get rid of exp2f)
          *  - don't do anything if cutoff_smooth_->steps_ == 0 (add accessor)
          */
-        float cut_mod = get_param (pid_fil_cut_mod_) / 12.; /* convert semitones to octaves */
         float freq_in[n_frames];
         for (uint i = 0; i < n_frames; i++)
-          freq_in[i] = exp2f (voice->cutoff_smooth_.get_next() + voice->fil_envelope_.get_next() * cut_mod);
+          freq_in[i] = fast_exp2 (voice->cutoff_smooth_.get_next() + voice->fil_envelope_.get_next() * voice->cut_mod_smooth_.get_next());
         voice->vcf_.set_drive (get_param (pid_drive_));
 
         float no_out[n_frames];
