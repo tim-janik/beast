@@ -17,6 +17,9 @@ namespace {
 
 class Envelope
 {
+public:
+  enum class Shape { EXPONENTIAL, LINEAR };
+private:
   /* values in seconds */
   float delay_ = 0;
   float attack_ = 0;
@@ -35,6 +38,7 @@ class Envelope
   enum class State { DELAY, ATTACK, HOLD, DECAY, SUSTAIN, RELEASE, DONE };
 
   State state_ = State::DONE;
+  Shape shape_ = Shape::EXPONENTIAL;
 
   struct SlopeParams {
     int len;
@@ -47,6 +51,11 @@ class Envelope
   double level_ = 0;
 
 public:
+  void
+  set_shape (Shape shape)
+  {
+    shape_ = shape;
+  }
   void
   set_delay (float f)
   {
@@ -108,7 +117,7 @@ public:
   {
     params_.end = end_x;
 
-    if (param_state == State::ATTACK || param_state == State::DELAY || param_state == State::HOLD)
+    if (param_state == State::ATTACK || param_state == State::DELAY || param_state == State::HOLD || shape_ == Shape::LINEAR)
       {
         // linear
         params_.len    = len;
