@@ -483,6 +483,7 @@ class BlepSynth : public AudioSignal::Processor {
           {
             voice->state_ = Voice::RELEASE;
             voice->envelope_.stop();
+            voice->fil_envelope_.stop();
           }
       }
   }
