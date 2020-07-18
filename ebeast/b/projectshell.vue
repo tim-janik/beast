@@ -20,14 +20,12 @@
     align-items: stretch;
   }
   .b-projectshell-panel1 {
+    @include b-panel-box;
     flex-grow: 1;
   }
   .b-projectshell-panel2 {
-    color: $b-panel-foreground;
-    background: $b-panel-background; //* $b-panel-focus */
-    border: $b-panel-border; border-radius: $b-panel-radius;
-    height: 19em; overflow: hidden;
-    margin-left: 3px;
+    @include b-panel-box;
+    height: 19em;
   }
   .b-projectshell-sidebar {
     padding: 3px;
