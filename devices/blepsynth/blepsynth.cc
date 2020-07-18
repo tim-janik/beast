@@ -199,6 +199,8 @@ class BlepSynth : public AudioSignal::Processor {
     ParamId sub;
     ParamId sub_width;
     ParamId sync;
+    ParamId octave;
+    ParamId pitch;
 
     ParamId unison_voices;
     ParamId unison_detune;
@@ -264,6 +266,9 @@ class BlepSynth : public AudioSignal::Processor {
       osc_params[o].sub = add_param (string_format ("Osc %d Subharmonic", o + 1), "Sub", 0, 100, 0, "%");
       osc_params[o].sub_width = add_param (string_format ("Osc %d Subharmonic Width", o + 1), "Sub.W", 0, 100, 50, "%");
       osc_params[o].sync = add_param (string_format ("Osc %d Sync Slave", o + 1), "Sync", 0, 60, 0, "semitones");
+
+      osc_params[o].pitch  = add_param (string_format ("Osc %d Pitch", o + 1), "Pitch", -7, 7, 0, "semitones");
+      osc_params[o].octave = add_param (string_format ("Osc %d Octave", o + 1), "Octave", -2, 3, 0, "octaves");
 
       /* TODO: unison_voices property should have stepping set to 1 */
       osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 1, 16, 1, "voices");
@@ -377,7 +382,6 @@ class BlepSynth : public AudioSignal::Processor {
     osc.frequency_base = freq;
     osc.set_rate (sample_rate());
 #if 0
-    osc.frequency_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose) * bse_cent_tune_fast (properties->fine_tune);
     osc.freq_mod_octaves  = properties->freq_mod_octaves;
 #endif
   }
@@ -389,6 +393,10 @@ class BlepSynth : public AudioSignal::Processor {
     osc.sub_base            = get_param (params.sub) * 0.01;
     osc.sub_width_base      = get_param (params.sub_width) * 0.01;
     osc.sync_base           = get_param (params.sync);
+
+    int octave = bse_ftoi (get_param (params.octave));
+    octave = CLAMP (octave, -2, 3);
+    osc.frequency_factor = fast_exp2 (octave + get_param (params.pitch) / 12.);
 
     int unison_voices = bse_ftoi (get_param (params.unison_voices));
     unison_voices = CLAMP (unison_voices, 1, 16);
@@ -579,8 +587,13 @@ class BlepSynth : public AudioSignal::Processor {
   param_value_to_text (Id32 paramid, double value) const
   {
     /* fake step=1 */
-    if (paramid == osc_params[0].unison_voices || paramid == osc_params[1].unison_voices)
-      return string_format ("%d voices", bse_ftoi (value));
+    for (int o = 0; o < 2; o++)
+      {
+        if (paramid == osc_params[o].unison_voices)
+          return string_format ("%d voices", bse_ftoi (value));
+        if (paramid == osc_params[o].octave)
+          return string_format ("%d octaves", bse_ftoi (value));
+      }
 
     return Processor::param_value_to_text (paramid, value);
   }
