@@ -222,6 +222,7 @@ class BlepSynth : public AudioSignal::Processor {
   Logscale cutoff_logscale_;
   ParamId pid_resonance_;
   ParamId pid_drive_;
+  ParamId pid_key_track_;
   ParamId pid_mode_;
 
   ParamId pid_attack_;
@@ -255,6 +256,7 @@ class BlepSynth : public AudioSignal::Processor {
 
     LinearSmooth cutoff_smooth_;
     double       last_cutoff_;
+    double       last_key_track_;
 
     LinearSmooth cut_mod_smooth_;
     double       last_cut_mod_;
@@ -299,7 +301,7 @@ class BlepSynth : public AudioSignal::Processor {
     oscparams (0);
 
     start_param_group ("Filter");
-    /* TODO: cutoff property should have logarithmic scaling */
+
     const double FsharpHz = 440 * ::pow (2, 9 / 12.);
     const double freq_lo = FsharpHz / ::pow (2, 5);
     const double freq_hi = FsharpHz * ::pow (2, 5);
@@ -307,6 +309,7 @@ class BlepSynth : public AudioSignal::Processor {
     cutoff_logscale_.setup (freq_lo, freq_hi);
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
     pid_drive_ = add_param ("Drive", "Drive", -24, 36, 0, "dB");
+    pid_key_track_ = add_param ("Key Tracking", "KeyTr", 0, 100, 50, "%");
     ChoiceEntries centries;
     centries += { "None", "disable filter" };
     centries += { "L1", "1 pole lowpass, 6db/octave" };
@@ -472,6 +475,7 @@ class BlepSynth : public AudioSignal::Processor {
 
         voice->cut_mod_smooth_.reset (sample_rate(), 0.020);
         voice->last_cut_mod_ = -5000; // force reset
+        voice->last_key_track_ = -5000;
       }
   }
   void
@@ -581,13 +585,18 @@ class BlepSynth : public AudioSignal::Processor {
         float       *outputs[2] = { mix_left_out, mix_right_out };
         double cutoff = get_param (pid_cutoff_) * inyquist();
         double resonance = get_param (pid_resonance_) * 0.01;
+        double key_track = get_param (pid_key_track_) * 0.01;
 
-        if (fabs (voice->last_cutoff_ - cutoff) > 1e-7)
+        if (fabs (voice->last_cutoff_ - cutoff) > 1e-7 || fabs (voice->last_key_track_ - key_track) > 1e-7)
           {
             const bool reset = voice->last_cutoff_ < -1000;
 
-            voice->cutoff_smooth_.set (fast_log2 (cutoff), reset);
+            // original strategy for key tracking: cutoff * exp (amount * log (key / 261.63))
+            // but since cutoff_smooth_ is already in log2-frequency space, we can do it better
+
+            voice->cutoff_smooth_.set (fast_log2 (cutoff) + key_track * fast_log2 (voice->freq_ / 261.63), reset);
             voice->last_cutoff_ = cutoff;
+            voice->last_key_track_ = key_track;
           }
         double cut_mod = get_param (pid_fil_cut_mod_) / 12.; /* convert semitones to octaves */
         if (fabs (voice->last_cut_mod_ - cut_mod) > 1e-7)
