@@ -263,8 +263,8 @@ class BlepSynth : public AudioSignal::Processor {
       osc_params[o].sub_width = add_param (string_format ("Osc %d Subharmonic Width", o + 1), "Sub.W", 0, 100, 50, "%");
       osc_params[o].sync = add_param (string_format ("Osc %d Sync Slave", o + 1), "Sync", 0, 60, 0, "semitones");
 
-      /* TODO: unison_voices property should be an integer property, range 1-16, default 1 */
-      osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 0, 100, 0, "%");
+      /* TODO: unison_voices property should have stepping set to 1 */
+      osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 1, 16, 1, "voices");
       osc_params[o].unison_detune = add_param (string_format ("Osc %d Unison Detune", o + 1), "Detune", 0.5, 50, 6, "%");
       osc_params[o].unison_stereo = add_param (string_format ("Osc %d Unison Stereo", o + 1), "Stereo", 0, 100, 0, "%");
     };
@@ -380,7 +380,7 @@ class BlepSynth : public AudioSignal::Processor {
     osc.sub_width_base      = get_param (params.sub_width) * 0.01;
     osc.sync_base           = get_param (params.sync);
 
-    int unison_voices = bse_ftoi (get_param (params.unison_voices) * 0.01 * 15 + 1);
+    int unison_voices = bse_ftoi (get_param (params.unison_voices));
     unison_voices = CLAMP (unison_voices, 1, 16);
     osc.set_unison (unison_voices, get_param (params.unison_detune), get_param (params.unison_stereo) * 0.01);
   }
@@ -543,6 +543,15 @@ class BlepSynth : public AudioSignal::Processor {
       }
     if (need_free)
       free_unused_voices();
+  }
+  std::string
+  param_value_to_text (Id32 paramid, double value) const
+  {
+    /* fake step=1 */
+    if (paramid == osc_params[0].unison_voices || paramid == osc_params[1].unison_voices)
+      return string_format ("%d voices", bse_ftoi (value));
+
+    return Processor::param_value_to_text (paramid, value);
   }
   double
   value_to_normalized (Id32 paramid, double value) const override
