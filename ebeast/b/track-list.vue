@@ -12,9 +12,11 @@
   @import 'mixins.scss';
   $b-track-list-arranger-lpad: 3px;
   $b-track-scrollelement-bg: transparent;
+  $scrollbar-area-size: 12px;
   .b-track-list {
     background-color: $b-track-list-bg;
     grid-template-columns: min-content 1fr 1fr min-content;
+    grid-template-rows:    min-content 1fr     min-content;
   }
   .b-trackrow-cell {
     flex-shrink: 0;
@@ -40,7 +42,7 @@
   }
   .b-track-list-vscrollbar {
     display: flex;
-    width: 12px;
+    width: $scrollbar-area-size;
     height: -moz-available; height: -webkit-fill-available; height: fill-available; height: auto;
     background: $b-track-scrollelement-bg;
     overflow-y: scroll;
@@ -53,7 +55,7 @@
   .b-track-list-hscrollbar1,
   .b-track-list-hscrollbar2 {
     display: flex; flex-direction: column;
-    height: 12px;
+    height: $scrollbar-area-size;
     width: -moz-available; width: -webkit-fill-available; width: fill-available; width: auto;
     background: $b-track-scrollelement-bg;
     overflow-x: scroll;
@@ -78,7 +80,7 @@
     white-space: nowrap;
     overflow: hidden;
   }
-  .b-track-list-pointer {
+  .b-track-list-tickpointer {
     position: absolute; height: 100%; display: flex;
     transform: translateX(0px);
     left: $b-track-list-arranger-lpad - 3px;
@@ -118,7 +120,7 @@
 	<b-part-list class="b-trackrow-cell"
 		     v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
 		     :track="pair[0]" :trackindex="tindex"></b-part-list>
-	<span class="b-track-list-pointer" ref="tickpointer"></span>
+	<span class="b-track-list-tickpointer" ref="tickpointer"></span>
       </b-vflex>
     </div>
     <!-- VScrollbar -->
@@ -184,7 +186,9 @@ export default {
   mounted() {
     // vscrollbar
     const sync_vscrollbar_size = () => {
-      this.$refs.vscrollbar_element.style.height = this.$refs.tracks.scrollHeight + 'px';
+      const vscroll_pxheight = this.$refs.tracks.scrollHeight + 'px';
+      this.$refs.vscrollbar_element.style.height = vscroll_pxheight;
+      this.$refs.tickpointer.style.height = vscroll_pxheight;
       // $refs.tracks.scrollHeight changes with $refs.trackswrapper.height
     };
     this.vscrollbar_observer = new Util.ResizeObserver (sync_vscrollbar_size);
