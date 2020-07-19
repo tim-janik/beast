@@ -14,7 +14,7 @@
 
   <div class="b-part-list" >
     <b-part-thumb v-for="(tp, pindex) in parts" :key="tp.unique_id + '-' + tp.tick"
-		   :part="tp.part" :tick="tp.tick" :trackindex="trackindex" :index="pindex" ></b-part-thumb>
+		  :part="tp.part" :tick="tp.tick" :trackindex="trackindex" :index="pindex" ></b-part-thumb>
   </div>
 
 </template>
@@ -24,7 +24,7 @@
   .b-part-list {
     display: inline-block;
     position: relative;
-    height: $b-track-list-row-height;	//* fixed height is required to accurately calculate vertical scroll area */
+    height: $b-trackrow-height;	//* fixed height is required to accurately calculate vertical scroll area */
   }
 </style>
 
