@@ -96,24 +96,25 @@
     <span class="b-track-list-pheader" > Timeline... </span>
     <span > s </span>
     <!-- Track Controls -->
-    <div class="b-track-list-tracks" style="grid-column-start: 1; grid-row-start: 2" ref="tracks" >
-      <b-vflex class="b-track-list-trackswrapper" ref="trackswrapper">
+    <div class="b-track-list-tracks" style="grid-column-start: 1; grid-row-start: 2" ref="tracks"
+	 @wheel.stop="wheel2vscrollbar" >
+      <b-vflex class="b-track-list-trackswrapper" ref="trackswrapper" >
 	<b-track-view class="b-trackrow-cell"
 		      v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
 		      :track="pair[0]" :trackindex="tindex"></b-track-view>
       </b-vflex>
     </div>
     <!-- Clips -->
-    <div class="b-track-list-clips" ref="clips" >
-      <b-vflex class="b-track-list-clipswrapper" ref="clipswrapper">
+    <div class="b-track-list-clips" ref="clips" @wheel.stop="wheel2hscrollbar1" >
+      <b-vflex class="b-track-list-clipswrapper" ref="clipswrapper" >
 	<span class="b-trackrow-cell" v-for="pair in sdata.tracks" :key="pair[1]"
 	      style="background: #252525">
 	  Clips...</span>
       </b-vflex>
     </div>
     <!-- Parts -->
-    <div class="b-track-list-parts" ref="parts" >
-      <b-vflex class="b-track-list-partswrapper" ref="partswrapper">
+    <div class="b-track-list-parts" ref="parts" @wheel.stop="wheel2hscrollbar2" >
+      <b-vflex class="b-track-list-partswrapper" ref="partswrapper" >
 	<b-part-list class="b-trackrow-cell"
 		     v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
 		     :track="pair[0]" :trackindex="tindex"></b-part-list>
@@ -230,6 +231,26 @@ export default {
   beforeDestroy () {
   },
   methods:  {
+    wheel2vscrollbar (ev) {
+      let delta = ev.deltaX;
+      delta = ev.deltaMode != 0 ? Util.wheel_delta (ev).y : ev.deltaY; // DOM_DELTA_PIXEL
+      delta /= window.devicePixelRatio || 1;
+      this.$refs.vscrollbar.scrollBy ({ top: delta, });
+    },
+    wheel2hscrollbar1 (ev) {
+      let delta = ev.deltaX;
+      delta = ev.deltaMode != 0 ? Util.wheel_delta (ev).x : ev.deltaX; // DOM_DELTA_PIXEL
+      delta /= window.devicePixelRatio || 1;
+      this.$refs.hscrollbar1.scrollBy ({ left: delta, });
+      this.wheel2vscrollbar (ev);
+    },
+    wheel2hscrollbar2 (ev) {
+      let delta = ev.deltaX;
+      delta = ev.deltaMode != 0 ? Util.wheel_delta (ev).x : ev.deltaX; // DOM_DELTA_PIXEL
+      delta /= window.devicePixelRatio || 1;
+      this.$refs.hscrollbar2.scrollBy ({ left: delta, });
+      this.wheel2vscrollbar (ev);
+    },
     list_dblclick (event) {
       Shell?.song?.create_track();
     },
