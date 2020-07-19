@@ -26,6 +26,7 @@
   .b-projectshell-panel2 {
     @include b-panel-box;
     height: 19em;
+    flex-shrink: 0;
   }
   .b-projectshell-sidebar {
     padding: 3px;
