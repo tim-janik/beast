@@ -14,7 +14,7 @@
   @import 'mixins.scss';
   .b-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
-    height: $b-track-list-row-height;
+    height: $b-trackrow-height;
     border-radius: $b-theme-border-radius * 0.66;
     --part-thumb-font-color: #{$b-part-thumb-font-color}; --part-thumb-font: #{$b-part-thumb-font};
     --part-thumb-note-color: #{$b-part-thumb-note-color}; --part-thumb-colors: #{$b-part-thumb-colors};
