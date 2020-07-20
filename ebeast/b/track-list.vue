@@ -15,8 +15,10 @@
   $scrollbar-area-size: 12px;
   .b-track-list {
     background-color: $b-track-list-bg;
-    grid-template-columns: min-content 1fr 1fr min-content;
-    grid-template-rows:    min-content 1fr     min-content;
+    //* Layout: Tracks Spacer Clips Sapcer Parts */
+    grid-template-columns: min-content 3px 1fr 3px 1fr 20px;
+    //* Layout: Header Spacer Main Spacer Footer */
+    grid-template-rows: min-content 3px 1fr 3px 20px;
   }
   .b-trackrow-cell {
     flex-shrink: 0;
@@ -42,6 +44,7 @@
   }
   .b-track-list-vscrollbar {
     display: flex;
+    justify-self: center;
     width: $scrollbar-area-size;
     height: -moz-available; height: -webkit-fill-available; height: fill-available; height: auto;
     background: $b-track-scrollelement-bg;
@@ -55,6 +58,7 @@
   .b-track-list-hscrollbar1,
   .b-track-list-hscrollbar2 {
     display: flex; flex-direction: column;
+    align-self: center;
     height: $scrollbar-area-size;
     width: -moz-available; width: -webkit-fill-available; width: fill-available; width: auto;
     background: $b-track-scrollelement-bg;
@@ -65,20 +69,26 @@
       width: 0;
     }
   }
-  .b-track-list-tracks {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .b-track-scrollbar-spacer {
-    height: $b-scrollbar-thickness;
-    background-color: grey;
-  }
+  .b-track-list-tracks,
   .b-track-list-clips,
   .b-track-list-parts {
     position: relative;
     white-space: nowrap;
     overflow: hidden;
+    background: $b-track-list-parts-bg;
+  }
+  .b-track-list-tracks-shadow,
+  .b-track-list-clips-shadow,
+  .b-track-list-parts-shadow {
+    position: absolute; //* Note, 'position:sticky' increases parent layout */
+    left: 0; top: 0; will-change: left, top;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+  .b-track-list-tracks-shadow,
+  .b-track-list-clips-shadow,
+  .b-track-list-parts-shadow {
+    box-shadow: 0px 0px $b-scroll-shadow-blur 0px inset #000;
   }
   .b-track-list-tickpointer {
     position: absolute; height: 100%; display: flex;
@@ -92,20 +102,29 @@
 <template>
 
   <b-grid class="b-track-list" @dblclick.stop="list_dblclick" >
-    <!-- Headers -->
-    <span class="b-track-list-theader" > THeader </span>
-    <span class="b-track-list-cheader" > CHeader </span>
+    <!-- Headers, ROW-1 -->
+    <span class="b-track-list-theader" > Tracks </span>
+    <!-- Gap -->
+    <span class="b-track-list-vgap1" />
+    <span class="b-track-list-cheader" > Clips </span>
+    <!-- Gap -->
+    <span class="b-track-list-vgap2" />
     <span class="b-track-list-pheader" > Timeline... </span>
     <span > s </span>
-    <!-- Track Controls -->
-    <div class="b-track-list-tracks" style="grid-column-start: 1; grid-row-start: 2" ref="tracks"
+    <!-- Gap, ROW-2 -->
+    <span class="b-track-list-hgap1" style="grid-row-start: 2; grid-column: 1/-1" />
+    <!-- Tracks, ROW-3 -->
+    <div class="b-track-list-tracks" style="grid-column-start: 1; grid-row-start: 3" ref="tracks"
 	 @wheel.stop="wheel2vscrollbar" >
       <b-vflex class="b-track-list-trackswrapper" ref="trackswrapper" >
 	<b-track-view class="b-trackrow-cell"
 		      v-for="(pair, tindex) in sdata.tracks" :key="pair[1]"
 		      :track="pair[0]" :trackindex="tindex"></b-track-view>
       </b-vflex>
+      <div class="b-track-list-tracks-shadow" ref="tracksshadow" ></div>
     </div>
+    <!-- Gap -->
+    <span class="b-track-list-vgap1" />
     <!-- Clips -->
     <div class="b-track-list-clips" ref="clips" @wheel.stop="wheel2hscrollbar1" >
       <b-vflex class="b-track-list-clipswrapper" ref="clipswrapper" >
@@ -113,7 +132,10 @@
 	      style="background: #252525">
 	  Clips...</span>
       </b-vflex>
+      <div class="b-track-list-clips-shadow" ref="clipsshadow" ></div>
     </div>
+    <!-- Gap -->
+    <span class="b-track-list-vgap2" />
     <!-- Parts -->
     <div class="b-track-list-parts" ref="parts" @wheel.stop="wheel2hscrollbar2" >
       <b-vflex class="b-track-list-partswrapper" ref="partswrapper" >
@@ -122,17 +144,24 @@
 		     :track="pair[0]" :trackindex="tindex"></b-part-list>
 	<span class="b-track-list-tickpointer" ref="tickpointer"></span>
       </b-vflex>
+      <div class="b-track-list-parts-shadow" ref="partsshadow" ></div>
     </div>
     <!-- VScrollbar -->
     <div class="b-track-list-vscrollbar" ref="vscrollbar" >
       <div class="b-track-list-vscrollbar-elemnt" ref="vscrollbar_element" ></div>
     </div>
-    <!-- Footer -->
-    <span class="b-track-list-tfooter" style="grid-row-start: 3" > Footer </span>
+    <!-- Gap, ROW-4 -->
+    <span class="b-track-list-hgap2" style="grid-row-start: 4; grid-column: 1/-1" />
+    <!-- Footer, ROW-5 -->
+    <span class="b-track-list-tfooter" style="grid-row-start: 5" > Footer </span>
+    <!-- Gap -->
+    <span class="b-track-list-vgap1" />
     <!-- HScrollbar1 -->
     <div class="b-track-list-hscrollbar1" ref="hscrollbar1" >
       <div class="b-track-list-hscrollbar-elemnt" ref="hscrollbar1_element" ></div>
     </div>
+    <!-- Gap -->
+    <span class="b-track-list-vgap2" />
     <!-- HScrollbar2 -->
     <div class="b-track-list-hscrollbar2" ref="hscrollbar2" >
       <div class="b-track-list-hscrollbar-elemnt" ref="hscrollbar2_element" ></div>
@@ -194,9 +223,14 @@ export default {
     this.vscrollbar_observer = new Util.ResizeObserver (sync_vscrollbar_size);
     this.vscrollbar_observer.observe (this.$refs.trackswrapper);
     const sync_vscrollbar_pos = e => {
-      this.$refs.tracks.scrollTop = this.$refs.vscrollbar.scrollTop;
-      this.$refs.clips.scrollTop = this.$refs.vscrollbar.scrollTop;
-      this.$refs.parts.scrollTop = this.$refs.vscrollbar.scrollTop;
+      const scrolltop = this.$refs.vscrollbar.scrollTop;
+      this.$refs.tracks.scrollTop = scrolltop;
+      this.$refs.clips.scrollTop = scrolltop;
+      this.$refs.parts.scrollTop = scrolltop;
+      const scrolltoppx = scrolltop + 'px';
+      this.$refs.tracksshadow.style.top = scrolltoppx;
+      this.$refs.clipsshadow.style.top = scrolltoppx;
+      this.$refs.partsshadow.style.top = scrolltoppx;
     };
     this.$refs.vscrollbar.onscroll = sync_vscrollbar_pos;
     sync_vscrollbar_size();
@@ -209,6 +243,7 @@ export default {
     this.hscrollbar1_observer.observe (this.$refs.clipswrapper);
     const sync_hscrollbar1_pos = e => {
       this.$refs.clips.scrollLeft = this.$refs.hscrollbar1.scrollLeft;
+      this.$refs.clipsshadow.style.left = this.$refs.hscrollbar1.scrollLeft + 'px';
     };
     this.$refs.hscrollbar1.onscroll = sync_hscrollbar1_pos;
     sync_hscrollbar1_size();
@@ -221,6 +256,7 @@ export default {
     this.hscrollbar2_observer.observe (this.$refs.partswrapper);
     const sync_hscrollbar2_pos = e => {
       this.$refs.parts.scrollLeft = this.$refs.hscrollbar2.scrollLeft;
+      this.$refs.partsshadow.style.left = this.$refs.hscrollbar2.scrollLeft + 'px';
     };
     this.$refs.hscrollbar2.onscroll = sync_hscrollbar2_pos;
     sync_hscrollbar2_size();
