@@ -794,6 +794,16 @@ sequence PartSeq {
   Part part;
 };
 
+/// Container for MIDI note and control events.
+interface Clip : Object {
+  int32          end_tick       ();                         ///< Get the end tick, this tick is past any event ticks.
+  int32          start_tick     ();                         ///< Get the first tick intended for playback (this is >= 0).
+  int32          stop_tick      ();                         ///< Get the tick to stop playback, not events should be played after this.
+  PartNoteSeq    list_all_notes ();                         ///< List all notes of this Clip.
+  PartControlSeq list_controls  (MidiSignal control_type);  ///< List all controls of a specific type.
+};
+sequence ClipSeq { Clip clip; };
+
 /// A list of floating point values.
 sequence FloatSeq {
   float64 floats;
@@ -1038,6 +1048,7 @@ interface Track : ContextMerger {
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
   void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
+  ClipSeq      list_clips ();                   ///< List all clips contained in a track.
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
   Part         get_part (int32 tick);           ///< Get the part starting at a specific tick position.

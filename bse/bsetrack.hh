@@ -102,6 +102,7 @@ public:
   virtual int          insert_part       (int tick, PartIface &part) override;
   virtual void         remove_tick       (int tick) override;
   virtual void         remove_link       (int id) override;
+  virtual ClipSeq      list_clips        () override;
   virtual PartSeq      list_parts_uniq   () override;
   virtual TrackPartSeq list_parts        () override;
   virtual PartIfaceP   get_part          (int tick) override;

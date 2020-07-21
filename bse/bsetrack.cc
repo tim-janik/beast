@@ -20,6 +20,7 @@
 #include "bsepart.hh"
 #include "bseserver.hh"
 #include "bsecxxplugin.hh"
+#include "clip.hh"
 #include "processor.hh"
 #include "bse/internal.hh"
 #include <string.h>
@@ -1322,6 +1323,18 @@ TrackImpl::remove_link (int link_id)
   BseTrackEntry *entry = bse_track_find_link (self, link_id);
   if (entry)
     remove_tick (entry->tick);
+}
+
+ClipSeq
+TrackImpl::list_clips ()
+{
+  static std::vector<ClipImplP> clips {
+    ClipImpl::create_clip(), ClipImpl::create_clip(), ClipImpl::create_clip()
+  };
+  ClipSeq cs;
+  for (auto cp : clips)
+    cs.push_back (cp);
+  return cs;
 }
 
 PartSeq
