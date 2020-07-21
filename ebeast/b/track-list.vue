@@ -125,9 +125,9 @@
     <!-- Clips -->
     <div class="b-track-list-clips" ref="clips" @wheel.stop="wheel2hscrollbar1" >
       <b-vflex class="b-track-list-clipswrapper" ref="clipswrapper" >
-	<span class="b-trackrow-cell" v-for="pair in sdata.tracks" :key="pair[1]"
-	      style="background: #252525">
-	  Clips...</span>
+	<b-cliplist class="b-trackrow-cell" v-for="pair in sdata.tracks" :key="pair[1]"
+		    :track="pair[0]"
+		    style="background: #252525" />
       </b-vflex>
       <div class="b-track-list-clips-shadow" ref="clipsshadow" ></div>
     </div>
