@@ -84,10 +84,7 @@
     left: 0; top: 0; will-change: left, top;
     width: 100%; height: 100%;
     z-index: 1;
-  }
-  .b-track-list-tracks-shadow,
-  .b-track-list-clips-shadow,
-  .b-track-list-parts-shadow {
+    pointer-events: none;
     box-shadow: 0px 0px $b-scroll-shadow-blur 0px inset #000;
   }
   .b-track-list-tickpointer {
