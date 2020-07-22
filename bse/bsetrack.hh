@@ -7,6 +7,7 @@
 #include <bse/bsecontextmerger.hh>
 #include <bse/bseproject.hh>
 #include <bse/device.hh>
+#include <bse/clip.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
@@ -90,6 +91,8 @@ using SongImplP = std::shared_ptr<SongImpl>;
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
   DeviceContainerImplP device_container_;
+  using ClipV = std::vector<ClipImplP>;
+  ClipV                clips_;
 protected:
   virtual             ~TrackImpl         ();
   virtual void         xml_serialize     (SerializationNode &xs) override;

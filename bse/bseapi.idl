@@ -1299,6 +1299,7 @@ interface Project : Container {
   void         clear_undo          (); ///< Delete all recorded undo or redo steps.
   void         clean_dirty         (); ///< Clear a project's dirty flags.
   bool         is_dirty            (); ///< Check whether a project needs saving.
+  int32        max_clips           (); ///< Maximum number of clips supported per track.
   SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
   Error        store               (String file_name, bool self_contained);     ///< Save project to file.
   Error        store_bse           (Container super, String file_name,

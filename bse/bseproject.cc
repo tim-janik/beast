@@ -1164,6 +1164,12 @@ ProjectImpl::is_dirty ()
   return dirty();
 }
 
+int
+ProjectImpl::max_clips ()
+{
+  return 8;
+}
+
 void
 ProjectImpl::inject_midi_control (int midi_channel, int midi_control, double control_value)
 {

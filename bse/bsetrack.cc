@@ -20,7 +20,6 @@
 #include "bsepart.hh"
 #include "bseserver.hh"
 #include "bsecxxplugin.hh"
-#include "clip.hh"
 #include "processor.hh"
 #include "bse/internal.hh"
 #include <string.h>
@@ -1337,11 +1336,16 @@ TrackImpl::remove_link (int link_id)
 ClipSeq
 TrackImpl::list_clips ()
 {
-  static std::vector<ClipImplP> clips {
-    ClipImpl::create_clip(), ClipImpl::create_clip(), ClipImpl::create_clip()
-  };
+  ProjectImplP projectp = project_impl();
+  const uint max_clips = projectp ? projectp->max_clips() : 8;
+  if (clips_.size() < max_clips)
+    {
+      clips_.reserve (max_clips);
+      while (clips_.size() < max_clips)
+        clips_.push_back (ClipImpl::create_clip());
+    }
   ClipSeq cs;
-  for (auto cp : clips)
+  for (auto cp : clips_)
     cs.push_back (cp);
   return cs;
 }
