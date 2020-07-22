@@ -1255,6 +1255,15 @@ TrackImpl::get_song ()
   return parent ? parent->as<SongImplP>() : nullptr;
 }
 
+ProjectImplP
+TrackImpl::project_impl ()
+{
+  ItemIfaceP parent = get_parent();
+  if (parent)
+    parent = parent->get_parent();
+  return parent ? parent->as<ProjectImplP>() : nullptr;
+}
+
 SongTiming
 TrackImpl::get_timing (int tick)
 {

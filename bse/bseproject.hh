@@ -114,7 +114,7 @@ public:
   virtual void               remove_snet         (SNetIface &snet) override;
   struct Internal; friend struct Internal;
 };
-typedef std::shared_ptr<ProjectImpl> ProjectImplP;
+using ProjectImplP = std::shared_ptr<ProjectImpl>;
 
 } // Bse
 

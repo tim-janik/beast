@@ -5,6 +5,7 @@
 #include <bse/bseitem.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsecontextmerger.hh>
+#include <bse/bseproject.hh>
 #include <bse/device.hh>
 
 /* --- BSE type macros --- */
@@ -96,6 +97,7 @@ protected:
 public:
   explicit             TrackImpl         (BseObject*);
   SongImplP            get_song          ();
+  ProjectImplP         project_impl      ();
   bool                 needs_serialize   ();
   virtual SongTiming   get_timing        (int tick) override;
   virtual PartIfaceP   create_part       (int32 tick) override;
