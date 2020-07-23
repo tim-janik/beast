@@ -33,10 +33,11 @@ $b-toggle-1-bg:		lcolor($b-color-active, 63%);
 $b-toggle-1-bh:		contrast-lighten($b-toggle-1-bg, 1.5); // highlight
 $b-toggle-1-bl:		contrast-lighten($b-toggle-1-bg, 1.3); // light
 $b-toggle-1-bd:		contrast-darken($b-toggle-1-bg, 1.3);  // dark
-$b-trackrow-height:	2.5em;
+$b-trackrow-height:	3em;
 $b-track-list-bg:	$b-device-area1;
 $b-track-list-parts-bg:	$b-device-area2;
-$b-scroll-shadow-blur:   3px;
+$b-scroll-shadow-blur:  3px;
+$b-clipthumb-width:	6em;
 
 @mixin b-panel-box {
   color: $b-panel-foreground;
