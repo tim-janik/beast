@@ -10,24 +10,30 @@
   : The BseTrack containing the clips to display.
 </docs>
 
-<template>
-
-  <div class="b-cliplist" >
-    <span v-for="(clip, index) in clips" :key="clip.$id"
-	  :clip="clip" :index="index" :track="track"
-	  style="padding-right: 1em" >{{ index + ":" + clip.$id }}</span>
-  </div>
-
-</template>
-
 <style lang="scss">
   @import 'mixins.scss';
   .b-cliplist {
-    display: inline-block;
+    display: flex;
     position: relative;
     height: $b-trackrow-height;	//* fixed height is required to accurately calculate vertical scroll area */
   }
+  .b-cliplist-clip {
+    display: flex;
+    flex-shrink: 0;
+    width: $b-clipthumb-width;
+    border: 1px solid black;
+  }
 </style>
+
+<template>
+
+  <div class="b-cliplist" >
+    <span class="b-cliplist-clip" v-for="(clip, index) in clips" :key="clip.$id"
+	  :clip="clip" :index="index" :track="track" >
+      {{ index + ":" + clip.$id }}</span>
+  </div>
+
+</template>
 
 <script>
 function cliplist_data () {
