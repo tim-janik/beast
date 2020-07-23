@@ -56,7 +56,7 @@
       <b-positionview :song="song"> </b-positionview>
     </b-hflex>
 
-    <b-hflex grow1 style="overflow: hidden">
+    <b-hflex style="overflow: hidden; flex: 1 1 auto">
       <b-vflex grow1 shrink1>
 	<!-- upper main area -->
 	<b-hflex class="b-projectshell-panel1" >
@@ -70,7 +70,7 @@
       </b-vflex>
 
       <!-- browser -->
-      <b-hflex ref="sidebarcontainer" style="width:15%" >
+      <b-hflex ref="sidebarcontainer" style="width: 0; flex: 0 0 15%" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
 	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
 	  <b-treeselector :tree="o.filetree" v-show="App.panel3 == 'b'" ></b-treeselector>
@@ -172,7 +172,7 @@ export default {
       const html_classes = document.documentElement.classList;
       if (e.type == 'mousedown' && !this.listening)
 	{
-	  this.listening = this.sidebar_mouse.bind (this);
+	  this.listening = Util.debounce (this.sidebar_mouse.bind (this));
 	  document.addEventListener ('mousemove', this.listening);
 	  document.addEventListener ('mouseup', this.listening);
 	  this.startx = e.clientX; //  - e.offsetX;
@@ -197,9 +197,10 @@ export default {
       else
 	newwidth = Util.clamp (newwidth, minwidth, maxwidth);
       sidebar.style.transition = newwidth > minwidth ? "" : "width var(--b-transition-fast-slide)";
-      const stylewidth = (newwidth / pwidth) * 100 + '%';
-      if (stylewidth != sidebar.style.width)
-	sidebar.style.width = stylewidth;
+      const flexwidth = '0 0 ' + (newwidth / pwidth) * 100 + '%';
+      if (flexwidth != sidebar.style.flex)
+	sidebar.style.flex = flexwidth;
+      // Resize via: https://www.w3.org/TR/css-flexbox-1/#flex-common
       e.preventDefault();
     },
     open_part_edit (part) {
