@@ -33,12 +33,14 @@
     margin-left: $b-panel-spacing / 2;
   }
   .b-track-list-clipswrapper {
+    display: inline-flex;
     padding-top: $b-panel-spacing / 2; padding-bottom: $b-panel-spacing / 2;
   }
   .b-track-list-cheader, .b-track-list-hscrollbar1, .b-track-list-clipswrapper {
     margin: 0 $b-panel-spacing;
   }
   .b-track-list-partswrapper {
+    display: inline-flex;
     padding-top: $b-panel-spacing / 2; padding-bottom: $b-panel-spacing / 2;
     padding-right: $b-panel-spacing / 2;
   }
