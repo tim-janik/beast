@@ -642,7 +642,7 @@ class BlepSynth : public AudioSignal::Processor {
       free_unused_voices();
   }
   std::string
-  param_value_to_text (Id32 paramid, double value) const
+  param_value_to_text (Id32 paramid, double value) const override
   {
     /* fake step=1 */
     for (int o = 0; o < 2; o++)
