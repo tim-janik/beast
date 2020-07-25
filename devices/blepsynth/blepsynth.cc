@@ -4,6 +4,7 @@
 #include "bse/bsenote.hh"
 #include "devices/blepsynth/bleposc.hh"
 #include "devices/blepsynth/laddervcf.hh"
+#include "devices/blepsynth/linearsmooth.hh"
 #include "bse/internal.hh"
 
 namespace Bse {
@@ -16,6 +17,9 @@ namespace {
 
 class Envelope
 {
+public:
+  enum class Shape { EXPONENTIAL, LINEAR };
+private:
   /* values in seconds */
   float delay_ = 0;
   float attack_ = 0;
@@ -34,6 +38,7 @@ class Envelope
   enum class State { DELAY, ATTACK, HOLD, DECAY, SUSTAIN, RELEASE, DONE };
 
   State state_ = State::DONE;
+  Shape shape_ = Shape::EXPONENTIAL;
 
   struct SlopeParams {
     int len;
@@ -46,6 +51,11 @@ class Envelope
   double level_ = 0;
 
 public:
+  void
+  set_shape (Shape shape)
+  {
+    shape_ = shape;
+  }
   void
   set_delay (float f)
   {
@@ -107,7 +117,7 @@ public:
   {
     params_.end = end_x;
 
-    if (param_state == State::ATTACK || param_state == State::DELAY || param_state == State::HOLD)
+    if (param_state == State::ATTACK || param_state == State::DELAY || param_state == State::HOLD || shape_ == Shape::LINEAR)
       {
         // linear
         params_.len    = len;
@@ -198,6 +208,8 @@ class BlepSynth : public AudioSignal::Processor {
     ParamId sub;
     ParamId sub_width;
     ParamId sync;
+    ParamId octave;
+    ParamId pitch;
 
     ParamId unison_voices;
     ParamId unison_detune;
@@ -209,12 +221,20 @@ class BlepSynth : public AudioSignal::Processor {
   ParamId pid_cutoff_;
   Logscale cutoff_logscale_;
   ParamId pid_resonance_;
+  ParamId pid_drive_;
+  ParamId pid_key_track_;
   ParamId pid_mode_;
 
   ParamId pid_attack_;
   ParamId pid_decay_;
   ParamId pid_sustain_;
   ParamId pid_release_;
+
+  ParamId pid_fil_attack_;
+  ParamId pid_fil_decay_;
+  ParamId pid_fil_sustain_;
+  ParamId pid_fil_release_;
+  ParamId pid_fil_cut_mod_;
 
   class Voice
   {
@@ -228,10 +248,18 @@ class BlepSynth : public AudioSignal::Processor {
     // TODO : enum class MonoType
 
     Envelope     envelope_;
+    Envelope     fil_envelope_;
     State        state_       = IDLE;
     int          midi_note_   = -1;
     int          channel_     = 0;
     double       freq_        = 0;
+
+    LinearSmooth cutoff_smooth_;
+    double       last_cutoff_;
+    double       last_key_track_;
+
+    LinearSmooth cut_mod_smooth_;
+    double       last_cut_mod_;
 
     BlepUtils::OscImpl osc1_;
     BlepUtils::OscImpl osc2_;
@@ -261,8 +289,11 @@ class BlepSynth : public AudioSignal::Processor {
       osc_params[o].sub_width = add_param (string_format ("Osc %d Subharmonic Width", o + 1), "Sub.W", 0, 100, 50, "%");
       osc_params[o].sync = add_param (string_format ("Osc %d Sync Slave", o + 1), "Sync", 0, 60, 0, "semitones");
 
-      /* TODO: unison_voices property should be an integer property, range 1-16, default 1 */
-      osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 0, 100, 0, "%");
+      osc_params[o].pitch  = add_param (string_format ("Osc %d Pitch", o + 1), "Pitch", -7, 7, 0, "semitones");
+      osc_params[o].octave = add_param (string_format ("Osc %d Octave", o + 1), "Octave", -2, 3, 0, "octaves");
+
+      /* TODO: unison_voices property should have stepping set to 1 */
+      osc_params[o].unison_voices = add_param (string_format ("Osc %d Unison Voices", o + 1), "Voices", 1, 16, 1, "voices");
       osc_params[o].unison_detune = add_param (string_format ("Osc %d Unison Detune", o + 1), "Detune", 0.5, 50, 6, "%");
       osc_params[o].unison_stereo = add_param (string_format ("Osc %d Unison Stereo", o + 1), "Stereo", 0, 100, 0, "%");
     };
@@ -270,13 +301,15 @@ class BlepSynth : public AudioSignal::Processor {
     oscparams (0);
 
     start_param_group ("Filter");
-    /* TODO: cutoff property should have logarithmic scaling */
+
     const double FsharpHz = 440 * ::pow (2, 9 / 12.);
     const double freq_lo = FsharpHz / ::pow (2, 5);
     const double freq_hi = FsharpHz * ::pow (2, 5);
     pid_cutoff_ = add_param ("Cutoff", "Cutoff", freq_lo, freq_hi, FsharpHz, "Hz", STANDARD);
     cutoff_logscale_.setup (freq_lo, freq_hi);
     pid_resonance_ = add_param ("Resonance", "Reso", 0, 100, 25.0, "%");
+    pid_drive_ = add_param ("Drive", "Drive", -24, 36, 0, "dB");
+    pid_key_track_ = add_param ("Key Tracking", "KeyTr", 0, 100, 50, "%");
     ChoiceEntries centries;
     centries += { "None", "disable filter" };
     centries += { "L1", "1 pole lowpass, 6db/octave" };
@@ -288,10 +321,17 @@ class BlepSynth : public AudioSignal::Processor {
     oscparams (1);
 
     start_param_group ("Volume Envelope");
-    pid_attack_  = add_param ("Attack",  "A", 0, 8000, 11.0, "ms", STANDARD + "logcenter=1000");
-    pid_decay_   = add_param ("Decay",   "D", 0, 8000, 20.0, "ms", STANDARD + "logcenter=1000");
+    pid_attack_  = add_param ("Attack",  "A", 0, 8000, 110.0, "ms", STANDARD + "logcenter=1000");
+    pid_decay_   = add_param ("Decay",   "D", 0, 8000, 200.0, "ms", STANDARD + "logcenter=1000");
     pid_sustain_ = add_param ("Sustain", "S", 0, 100, 50.0, "%");
-    pid_release_ = add_param ("Release", "R", 0, 8000, 30.0, "ms", STANDARD + "logcenter=1000");
+    pid_release_ = add_param ("Release", "R", 0, 8000, 300.0, "ms", STANDARD + "logcenter=1000");
+
+    start_param_group ("Filter Envelope");
+    pid_fil_attack_   = add_param ("Attack",  "A", 0, 8000, 500.0, "ms", STANDARD + "logcenter=1000");
+    pid_fil_decay_    = add_param ("Decay",   "D", 0, 8000, 1500.0, "ms", STANDARD + "logcenter=1000");
+    pid_fil_sustain_  = add_param ("Sustain", "S", 0, 100,  30.0, "%");
+    pid_fil_release_  = add_param ("Release", "R", 0, 8000, 300.0, "ms", STANDARD + "logcenter=1000");
+    pid_fil_cut_mod_  = add_param ("Env Cutoff Modulation", "CutMod", -96, 96, 36, "semitones"); /* 8 octaves range */
 
     start_param_group ("Mix");
     pid_mix_ = add_param ("Mix", "Mix", 0, 100, 0, "%");
@@ -372,7 +412,6 @@ class BlepSynth : public AudioSignal::Processor {
     osc.frequency_base = freq;
     osc.set_rate (sample_rate());
 #if 0
-    osc.frequency_factor  = bse_transpose_factor (properties->current_musical_tuning, properties->transpose) * bse_cent_tune_fast (properties->fine_tune);
     osc.freq_mod_octaves  = properties->freq_mod_octaves;
 #endif
   }
@@ -385,7 +424,11 @@ class BlepSynth : public AudioSignal::Processor {
     osc.sub_width_base      = get_param (params.sub_width) * 0.01;
     osc.sync_base           = get_param (params.sync);
 
-    int unison_voices = bse_ftoi (get_param (params.unison_voices) * 0.01 * 15 + 1);
+    int octave = bse_ftoi (get_param (params.octave));
+    octave = CLAMP (octave, -2, 3);
+    osc.frequency_factor = fast_exp2 (octave + get_param (params.pitch) / 12.);
+
+    int unison_voices = bse_ftoi (get_param (params.unison_voices));
     unison_voices = CLAMP (unison_voices, 1, 16);
     osc.set_unison (unison_voices, get_param (params.unison_detune), get_param (params.unison_stereo) * 0.01);
   }
@@ -410,12 +453,29 @@ class BlepSynth : public AudioSignal::Processor {
         voice->envelope_.set_release (get_param (pid_release_) * 0.001); /* time in milliseconds */
         voice->envelope_.start (sample_rate());
 
+        // Filter Envelope
+        voice->fil_envelope_.set_delay (0);
+        voice->fil_envelope_.set_attack (get_param (pid_fil_attack_) * 0.001);   /* time in milliseconds */
+        voice->fil_envelope_.set_hold (0);
+        voice->fil_envelope_.set_decay (get_param (pid_fil_decay_) * 0.001);     /* time in milliseconds */
+        voice->fil_envelope_.set_sustain (get_param (pid_fil_sustain_));         /* percent */
+        voice->fil_envelope_.set_release (get_param (pid_fil_release_) * 0.001); /* time in milliseconds */
+        voice->fil_envelope_.set_shape (Envelope::Shape::LINEAR);
+        voice->fil_envelope_.start (sample_rate());
+
         init_osc (voice->osc1_, voice->freq_);
         init_osc (voice->osc2_, voice->freq_);
 
         voice->osc1_.reset();
         voice->osc2_.reset();
         voice->vcf_.reset();
+
+        voice->cutoff_smooth_.reset (sample_rate(), 0.020);
+        voice->last_cutoff_ = -5000; // force reset
+
+        voice->cut_mod_smooth_.reset (sample_rate(), 0.020);
+        voice->last_cut_mod_ = -5000; // force reset
+        voice->last_key_track_ = -5000;
       }
   }
   void
@@ -427,6 +487,7 @@ class BlepSynth : public AudioSignal::Processor {
           {
             voice->state_ = Voice::RELEASE;
             voice->envelope_.stop();
+            voice->fil_envelope_.stop();
           }
       }
   }
@@ -517,16 +578,52 @@ class BlepSynth : public AudioSignal::Processor {
           default: run_filter = false;
             break;
           }
-        /* run ladder filter - processing in place is ok */
-        if (run_filter)
+        /* --------- run ladder filter - processing in place is ok --------- */
+
+        /* TODO: under some conditions we could enable SSE in LadderVCF (alignment and block_size) */
+        const float *inputs[2]  = { mix_left_out, mix_right_out };
+        float       *outputs[2] = { mix_left_out, mix_right_out };
+        double cutoff = get_param (pid_cutoff_) * inyquist();
+        double resonance = get_param (pid_resonance_) * 0.01;
+        double key_track = get_param (pid_key_track_) * 0.01;
+
+        if (fabs (voice->last_cutoff_ - cutoff) > 1e-7 || fabs (voice->last_key_track_ - key_track) > 1e-7)
           {
-            /* TODO: under some conditions we could enable SSE in LadderVCF (alignment and block_size) */
-            const float *inputs[2]  = { mix_left_out, mix_right_out };
-            float       *outputs[2] = { mix_left_out, mix_right_out };
-            double cutoff = get_param (pid_cutoff_) * inyquist();
-            double resonance = get_param (pid_resonance_) * 0.01;
-            voice->vcf_.run_block (n_frames, cutoff, resonance, inputs, outputs, true, true, nullptr, nullptr, nullptr, nullptr);
+            const bool reset = voice->last_cutoff_ < -1000;
+
+            // original strategy for key tracking: cutoff * exp (amount * log (key / 261.63))
+            // but since cutoff_smooth_ is already in log2-frequency space, we can do it better
+
+            voice->cutoff_smooth_.set (fast_log2 (cutoff) + key_track * fast_log2 (voice->freq_ / 261.63), reset);
+            voice->last_cutoff_ = cutoff;
+            voice->last_key_track_ = key_track;
           }
+        double cut_mod = get_param (pid_fil_cut_mod_) / 12.; /* convert semitones to octaves */
+        if (fabs (voice->last_cut_mod_ - cut_mod) > 1e-7)
+          {
+            const bool reset = voice->last_cut_mod_ < -1000;
+
+            voice->cut_mod_smooth_.set (cut_mod, reset);
+            voice->last_cut_mod_ = cut_mod;
+          }
+        /* TODO: possible improvements:
+         *  - exponential smoothing (get rid of exp2f)
+         *  - don't do anything if cutoff_smooth_->steps_ == 0 (add accessor)
+         */
+        float freq_in[n_frames];
+        for (uint i = 0; i < n_frames; i++)
+          freq_in[i] = fast_exp2 (voice->cutoff_smooth_.get_next() + voice->fil_envelope_.get_next() * voice->cut_mod_smooth_.get_next());
+        voice->vcf_.set_drive (get_param (pid_drive_));
+
+        float no_out[n_frames];
+        if (!run_filter)
+          {
+            // we keep running the filter even if it is disabled in order to have
+            // sane filter signal to switch to when the filter is enabled again
+            outputs[0] = no_out;
+            outputs[1] = no_out;
+          }
+        voice->vcf_.run_block (n_frames, cutoff, resonance, inputs, outputs, true, true, freq_in, nullptr, nullptr, nullptr);
 
         // apply volume envelope
         for (uint i = 0; i < n_frames; i++)
@@ -543,6 +640,20 @@ class BlepSynth : public AudioSignal::Processor {
       }
     if (need_free)
       free_unused_voices();
+  }
+  std::string
+  param_value_to_text (Id32 paramid, double value) const override
+  {
+    /* fake step=1 */
+    for (int o = 0; o < 2; o++)
+      {
+        if (paramid == osc_params[o].unison_voices)
+          return string_format ("%d voices", bse_ftoi (value));
+        if (paramid == osc_params[o].octave)
+          return string_format ("%d octaves", bse_ftoi (value));
+      }
+
+    return Processor::param_value_to_text (paramid, value);
   }
   double
   value_to_normalized (Id32 paramid, double value) const override
