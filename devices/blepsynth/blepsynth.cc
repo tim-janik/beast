@@ -216,6 +216,17 @@ class BlepSynth : public AudioSignal::Processor {
     ParamId unison_stereo;
   };
   OscParams osc_params[2];
+
+  struct PlotParams
+  {
+    double shape = 0;
+    double pulse_width = 0;
+    double sub = 0;
+    double sub_width = 0;
+    double sync = 0;
+  };
+  PlotParams last_plot_[2];
+
   ParamId pid_mix_;
 
   ParamId pid_cutoff_;
@@ -505,6 +516,97 @@ class BlepSynth : public AudioSignal::Processor {
         old_value = value;
       }
   }
+  bool
+  get_plot_params (PlotParams& pp, int osc)
+  {
+    bool replot = false;
+
+    pp.shape = get_param (osc_params[osc].shape) * 0.01;
+    if (pp.shape != last_plot_[osc].shape)
+      replot = true;
+
+    pp.pulse_width = get_param (osc_params[osc].pulse_width) * 0.01;
+    if (pp.pulse_width != last_plot_[osc].pulse_width)
+      replot = true;
+
+    pp.sub = get_param (osc_params[osc].sub) * 0.01;
+    if (pp.sub != last_plot_[osc].sub)
+      replot = true;
+
+    pp.sub_width = get_param (osc_params[osc].sub_width) * 0.01;
+    if (pp.sub_width != last_plot_[osc].sub_width)
+      replot = true;
+
+    pp.sync = get_param (osc_params[osc].sync);
+    if (pp.sync != last_plot_[osc].sync)
+      replot = true;
+
+    last_plot_[osc] = pp;
+
+    return replot;
+  }
+  // plot_values doesn't access any device state (only PlotParams),
+  // so it can be run at any time in any thread
+  static vector<float>
+  plot_values (const PlotParams& pp, uint n_values, uint copy_values)
+  {
+    vector<float> out;
+
+    const double pulse_width = std::clamp (pp.pulse_width, 0.01, 0.99);
+    const double sub = pp.sub;
+    const double shape = pp.shape;
+    const double sub_width = 1.0 - std::clamp (pp.sub_width, 0.01, 0.99);
+    const double sync_factor = fast_exp2 (pp.sync / 12.);
+
+    const double a = (1 - sub_width) * pulse_width;
+    const double c = a + sub_width;
+    const double b = c - sub_width * pulse_width;
+
+    for (uint i = 0; i < n_values; i++)
+      {
+        const double master_phase = double (i) / n_values;
+        const double sub_phase = fmod (master_phase * sync_factor, 1);
+
+        double saw_state = -4 * sub_phase * (shape + 1);
+        double pout, sout;
+
+        if (sub_phase > c)
+          {
+            pout = shape * 4 + 3;
+            sout = 1;
+          }
+        else if (sub_phase > b)
+          {
+            pout = shape * 2 + 3;
+            sout = -1;
+          }
+        else if (sub_phase > a)
+          {
+            pout = shape * 2 + 1;
+            sout = -1;
+          }
+        else
+          {
+            pout = 1;
+            sout = 1;
+          }
+
+        out.push_back (saw_state * (1 - sub) + pout * (1 - sub) + sout * sub);
+      }
+    /* we draw the beginning of the waveform again at the end */
+    out.insert (out.end(), out.begin(), out.begin() + copy_values);
+    return out;
+  }
+  static void
+  plot (const PlotParams& pp, const String& filename)
+  {
+    FILE *f = fopen (filename.c_str(), "w");
+    if (!f)
+      return;
+    for (auto v : plot_values (pp, 256, 44))
+      fprintf (f, "%s\n", string_format ("%f", v).c_str()); /* C locale printf to be able to gnuplot the result */
+    fclose (f);
+  }
   void
   render (uint n_frames) override
   {
@@ -532,6 +634,22 @@ class BlepSynth : public AudioSignal::Processor {
           break;
         default: ;
         }
+
+    if (0)
+      {
+        /* This will output gnuplot files for the shape of Osc 1 and Osc 2
+         * whenever the shape parameters change. In gnuplot use
+         *
+         *   plot "/tmp/plot1" with lines
+         *   plot "/tmp/plot2" with lines
+         */
+        for (int plot_osc = 0; plot_osc < 2; plot_osc++)
+          {
+            PlotParams pp;
+            if (get_plot_params (pp, plot_osc))
+              plot (pp, string_format ("/tmp/plot%d", plot_osc + 1));
+          }
+      }
 
     assert_return (n_ochannels (stereout_) == 2);
     bool   need_free = false;
