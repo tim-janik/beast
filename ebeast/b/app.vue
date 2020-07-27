@@ -214,6 +214,12 @@ class App {
     else
       this.panel2 = a[(a.indexOf (this.panel2) + 1) % a.length];
   }
+  piano_roll_source = undefined;
+  open_piano_roll (midi_source) {
+    this.piano_roll_source = midi_source;
+    if (this.piano_roll_source)
+      this.switch_panel2 ('p');
+  }
 }
 
 // == export default ==

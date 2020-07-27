@@ -24,7 +24,7 @@
 </style>
 
 <template>
-  <canvas ref="canvas" class="b-part-thumb" @click="Shell.open_part_edit (part)"
+  <canvas ref="canvas" class="b-part-thumb" @click="App.open_piano_roll (part)"
 	  :style="{ left: pxoffset + 'px', width: canvas_width + 'px', }" ></canvas>
 </template>
 

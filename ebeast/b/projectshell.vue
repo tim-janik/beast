@@ -64,7 +64,7 @@
 	</b-hflex>
 	<!-- lower main area -->
 	<b-hflex class="b-projectshell-panel2" >
-	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="App.panel2 == 'p'" ></b-piano-roll>
+	  <b-piano-roll class="grow1" :part="App.piano_roll_source" v-show="App.panel2 == 'p'" ></b-piano-roll>
 	  <b-devicepanel v-show="App.panel2 == 'd'" :track="current_track" />
 	</b-hflex>
       </b-vflex>
@@ -113,7 +113,6 @@ export default {
     project: undefined,
     o: observable_project_data.call (this),
     current_track: undefined,
-    piano_roll_part: undefined,
     show_about_dialog: false,
     show_preferences_dialog: false,
     song: undefined,
@@ -203,10 +202,6 @@ export default {
       // Resize via: https://www.w3.org/TR/css-flexbox-1/#flex-common
       e.preventDefault();
     },
-    open_part_edit (part) {
-      console.assert (part == undefined || part instanceof Bse.Part);
-      this.piano_roll_part = part;
-    },
     status (...args) {
       console.log (...args);
     },
@@ -271,7 +266,7 @@ export default {
       if (this.project)
 	{
 	  this.notifynameclear();
-	  this.open_part_edit (undefined);
+	  App.open_piano_roll (undefined);
 	  this.project.stop();
 	  this.project = null; // TODO: should trigger FinalizationGroup
 	}
