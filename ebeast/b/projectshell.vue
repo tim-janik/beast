@@ -64,7 +64,7 @@
 	</b-hflex>
 	<!-- lower main area -->
 	<b-hflex class="b-projectshell-panel2" >
-	  <b-piano-roll class="grow1" :part="App.piano_roll_source" v-show="App.panel2 == 'p'" ></b-piano-roll>
+	  <b-piano-roll class="grow1" :msrc="App.piano_roll_source" v-show="App.panel2 == 'p'" ></b-piano-roll>
 	  <b-devicepanel v-show="App.panel2 == 'd'" :track="current_track" />
 	</b-hflex>
       </b-vflex>
