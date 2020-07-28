@@ -41,13 +41,28 @@ ClipImpl::end_tick ()
 int
 ClipImpl::start_tick ()
 {
-  return 0;
+  return starttick_;
 }
 
 int
 ClipImpl::stop_tick ()
 {
-  return 0;
+  return stoptick_;
+}
+
+void
+ClipImpl::assign_range (int starttick, int stoptick)
+{
+  assert_return (starttick >= 0);
+  assert_return (stoptick >= starttick);
+  const auto last_starttick_ = starttick_;
+  const auto last_stoptick_ = stoptick_;
+  starttick_ = starttick;
+  stoptick_ = stoptick;
+  if (last_stoptick_ != stoptick_)
+    emit_event ("notify:stop_tick");
+  if (last_starttick_ != starttick_)
+    emit_event ("notify:start_tick");
 }
 
 PartNoteSeq
@@ -60,6 +75,13 @@ PartControlSeq
 ClipImpl::list_controls (MidiSignal control_type)
 {
   return {};
+}
+
+int
+ClipImpl::change_note (int id, int tick, int duration, int note, int fine_tune, double velocity)
+{
+  emit_event ("notify:notes");
+  return 0;
 }
 
 } // Bse

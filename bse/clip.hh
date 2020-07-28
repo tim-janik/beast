@@ -9,6 +9,8 @@ namespace Bse {
 
 // == ClipImpl ==
 class ClipImpl : public ObjectImpl, public virtual ClipIface {
+  int starttick_ = 0;
+  int stoptick_ = 0;
 protected:
   friend class FriendAllocator<ClipImpl>;
   virtual     ~ClipImpl      ();
@@ -20,8 +22,10 @@ public:
   virtual int            end_tick       () override;
   virtual int            start_tick     () override;
   virtual int            stop_tick      () override;
+  virtual void           assign_range   (int starttick, int endtick) override;
   virtual PartNoteSeq    list_all_notes () override;
   virtual PartControlSeq list_controls  (MidiSignal control_type) override;
+  virtual int            change_note    (int id, int tick, int duration, int note, int fine_tune, double velocity) override;
   static ClipImplP       create_clip    ();
 };
 using ClipImplP = ClipImpl::ClipImplP;

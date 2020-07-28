@@ -796,11 +796,14 @@ sequence PartSeq {
 
 /// Container for MIDI note and control events.
 interface Clip : Object {
-  int32          end_tick       ();                         ///< Get the end tick, this tick is past any event ticks.
-  int32          start_tick     ();                         ///< Get the first tick intended for playback (this is >= 0).
-  int32          stop_tick      ();                         ///< Get the tick to stop playback, not events should be played after this.
-  PartNoteSeq    list_all_notes ();                         ///< List all notes of this Clip.
-  PartControlSeq list_controls  (MidiSignal control_type);  ///< List all controls of a specific type.
+  int32          end_tick       (); ///< Get the end tick, this tick is past any event ticks, changes on `notify:end_tick`.
+  int32          start_tick     (); ///< Get the first tick intended for playback (this is >= 0), changes on `notify:start_tick`.
+  int32          stop_tick      (); ///< Get the tick to stop playback, not events should be played after this, changes on `notify:stop_tick`.
+  void           assign_range   (int32 starttick, int32 stoptick); ///< Change start_tick() and stop_tick(); emits `notify:start_tick`, `notify:stop_tick`.
+  PartNoteSeq    list_all_notes (); ///< List all notes of this Clip; changes on `notify:notes`.
+  PartControlSeq list_controls  (MidiSignal control_type);  ///< List all controls of a specific type; changes on `notify:controls`.
+  /// Change note `id` according to the arguments or add a new note if `id` < 0; emits `notify:notes`.
+  int32          change_note    (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity);
 };
 sequence ClipSeq { Clip clip; };
 
