@@ -29,7 +29,7 @@
 
   <div class="b-cliplist" >
     <span class="b-cliplist-clip" v-for="(clip, index) in clips" :key="clip.$id"
-	  :clip="clip" :index="index" :track="track" >
+	  :clip="clip" :index="index" :track="track" @click.stop="click" >
       {{ index + ":" + clip.$id }}</span>
   </div>
 
@@ -51,6 +51,18 @@ export default {
     'track': { type: Bse.Track, },
   },
   data() { return cliplist_data.call (this); },
+  methods: {
+    click (ev) {
+      const indexattr = ev.target.getAttribute ('index');
+      if (indexattr !== undefined)
+	{
+	  const index = indexattr >>> 0;
+	  const clip = this.clips[index];
+	  if (clip)
+	    App.open_piano_roll (clip);
+	}
+    },
+  },
 };
 
 </script>
