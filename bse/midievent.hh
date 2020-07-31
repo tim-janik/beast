@@ -44,20 +44,21 @@ struct Event {
   constexpr static EventType SYSEX            = EventType (0xF0);
   EventType type;       ///< Event type, one of the EventType members
   int8      frame;      ///< Offset into current block, delayed if negative
-  uint16    channel;    ///< 1…16 for standard events
+  uint8     channel;    ///< 1…16 for standard events
+  union {
+    uint8   key;        ///< NOTE, KEY_PRESSURE MIDI note, 0…0x7f, 60 = middle C at 261.63 Hz.
+    uint8   fragment;   ///< Flag for multi-part control change mesages.
+  };
   union {
     uint    length;     ///< Data event length of byte array.
     uint    param;      ///< PROGRAM_CHANGE program, CONTROL_CHANGE controller, 0…0x7f
-    struct {
-      uint8 pitch;      ///< NOTE, KEY_PRESSURE MIDI note, 0…0x7f, 60 = middle C at 261.63 Hz.
-      uint  noteid :24; ///< NOTE, identifier for note expression handling or 0xffffff.
-    };
+    uint    noteid;     ///< NOTE, identifier for note expression handling or 0xffffffff.
   };
   union {
     char   *data;       ///< Data event byte array.
     struct {
-      float  value;     ///< CONTROL_CHANGE 0…+1, CHANNEL_PRESSURE, 0…+1, PITCH_BEND -1…+1
-      uint   cval;      ///< CONTROL_CHANGE control value, 0…0x7f
+      float value;      ///< CONTROL_CHANGE 0…+1, CHANNEL_PRESSURE, 0…+1, PITCH_BEND -1…+1
+      uint  cval;       ///< CONTROL_CHANGE control value, 0…0x7f
     };
     struct {
       float velocity;   ///< NOTE, KEY_PRESSURE, CHANNEL_PRESSURE, 0…+1
@@ -72,9 +73,9 @@ struct Event {
   std::string  to_string  () const;
 };
 
-Event make_note_on    (uint16 chnl, uint8 ptch, float velo, float tune = 0, uint nid = 0xffffff);
-Event make_note_off   (uint16 chnl, uint8 ptch, float velo, float tune = 0, uint nid = 0xffffff);
-Event make_aftertouch (uint16 chnl, uint8 ptch, float velo, float tune = 0, uint nid = 0xffffff);
+Event make_note_on    (uint16 chnl, uint8 mkey, float velo, float tune = 0, uint nid = 0xffffff);
+Event make_note_off   (uint16 chnl, uint8 mkey, float velo, float tune = 0, uint nid = 0xffffff);
+Event make_aftertouch (uint16 chnl, uint8 mkey, float velo, float tune = 0, uint nid = 0xffffff);
 Event make_pressure   (uint16 chnl, float velo);
 Event make_control    (uint16 chnl, uint prm, float val);
 Event make_control8   (uint16 chnl, uint prm, uint8 cval);

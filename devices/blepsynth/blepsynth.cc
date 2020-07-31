@@ -520,10 +520,10 @@ class BlepSynth : public AudioSignal::Processor {
       switch (ev.message())
         {
         case Message::NOTE_OFF:
-          note_off (ev.channel, ev.pitch);
+          note_off (ev.channel, ev.key);
           break;
         case Message::NOTE_ON:
-          note_on (ev.channel, ev.pitch, ev.velocity);
+          note_on (ev.channel, ev.key, ev.velocity);
           break;
         case Message::ALL_NOTES_OFF:
           for (auto voice : active_voices_)
