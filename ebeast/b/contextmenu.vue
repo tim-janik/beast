@@ -159,6 +159,12 @@ export default {
       const area_el = this.$refs.contextmenuarea;
       if (area_el && area_el.getBoundingClientRect) // ignore Vue placeholder (html comment)
 	{
+	  const origin = this.popup_options.origin?.$el || this.popup_options.origin;
+	  if (origin && Util.inside_display_none (origin))
+	    {
+	      this.close();
+	      return;
+	    }
 	  const menu_el = this.$refs.cmenu;
 	  // unset size constraints before calculating desired size, otherwise resizing
 	  // can take dozens of resize_observer/popup_position frame iterations
@@ -166,7 +172,7 @@ export default {
 	  area_el.style.top = '0px';
 	  const p = Util.popup_position (menu_el, { x: this.doc_x, xscale: this.xscale,
 						    y: this.doc_y, yscale: this.yscale,
-						    origin: this.popup_options.origin?.$el || this.popup_options.origin });
+						    origin });
 	  area_el.style.left = p.x + "px";
 	  area_el.style.top = p.y + "px";
 	}
