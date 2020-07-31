@@ -721,7 +721,7 @@ record PartNote
   int32   channel   = Range ("Channel", "", ":readwrite", 0, MAXINT31, 1);
   int32   tick      = Range ("Tick", "", ":readwrite", 0, MAXINT31, 1);
   int32   duration  = Range ("Duration", "Duration in number of ticks", ":readwrite", 0, MAXINT31, 1);
-  int32   note      = Range ("Note", "", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
+  int32   key       = Range ("Note", "", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
   int32   fine_tune = Range ("Fine Tune", "", FINETUNEHINTS, MIN_FINE_TUNE, MAX_FINE_TUNE, 1);
   float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
   bool    selected  = Bool ("Selected", "", ":readwrite", false);
