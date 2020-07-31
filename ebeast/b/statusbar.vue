@@ -52,13 +52,7 @@
       strong { color: $b-main-foreground; font-weight: normal; padding: 0 0.5em; }
       kbd {
 	padding: 0 0.4em 1px;
-	// border: 1px outset #777; background: #444; color: #fff;
-	border: 1px outset #555; background: #333; color: #eee;
-	border-radius: 0.5em;
-	letter-spacing: 1px;
-	font-family: mono; font-weight: 600;
-	font-size: calc(1em - 2px); //* text-transform: uppercase; */
-	//* text-transform: lowercase; font-variant: small-caps; */
+	@include b-kbd-hotkey($border: true);
       }
     }
   }

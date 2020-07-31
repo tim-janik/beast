@@ -49,6 +49,20 @@ $b-clipthumb-width:	6em;
   &:not(:last-of-type)  { margin-bottom: $b-panel-spacing / 2; }
 }
 
+// == Hotkey ==
+@mixin b-kbd-hotkey($border: true) {
+  font-family: mono;
+  font-weight: 600;
+  font-size: calc(1em - 2px);
+  letter-spacing: 1px;
+  //* text-transform: uppercase; text-transform: lowercase; font-variant: small-caps; */
+  border-radius: 0.5em;
+  @if not $border {}
+  @else {
+    background: lgrey(30%); border: 1px outset lgrey(50%); color: lgrey(95%); // #3 #5 #e
+  }
+}
+
 // == Status Bar ==
 $b-statusbar-bg: $b-main-background;
 $b-statusbar-field-spacing: 0.5em;
