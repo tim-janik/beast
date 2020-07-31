@@ -200,28 +200,28 @@ export default {
 	case RIGHT:
 	  if (idx < 0)
 	    note = { id: -1, tick: -1, note: -1, duration: 0 };
-	  pred  = n => n.tick > note.tick || (n.tick == note.tick && n.note >= note.note);
-	  score = n => (n.tick - note.tick) * 1000 + n.note;
+	  pred  = n => n.tick > note.tick || (n.tick == note.tick && n.key >= note.key);
+	  score = n => (n.tick - note.tick) * 1000 + n.key;
 	  // nextid = idx >= 0 && idx + 1 < this.adata.pnotes.length ? this.adata.pnotes[idx + 1].id : -1;
 	  break;
 	case LEFT:
 	  if (idx < 0)
 	    note = { id: -1, tick: +big, note: 1000, duration: 0 };
-	  pred  = n => n.tick < note.tick || (n.tick == note.tick && n.note <= note.note);
-	  score = n => (note.tick - n.tick) * 1000 + 1000 - n.note;
+	  pred  = n => n.tick < note.tick || (n.tick == note.tick && n.key <= note.key);
+	  score = n => (note.tick - n.tick) * 1000 + 1000 - n.key;
 	  // nextid = idx > 0 ? this.adata.pnotes[idx - 1].id : -1;
 	  break;
 	case DOWN:
 	  if (note.id)
 	    {
-	      this.part.change_note (note.id, note.tick, note.duration, Math.max (note.note - 1, 0), note.fine_tune, note.velocity);
+	      this.part.change_note (note.id, note.tick, note.duration, Math.max (note.key - 1, 0), note.fine_tune, note.velocity);
 	      event.preventDefault();
 	    }
 	  break;
 	case UP:
 	  if (note.id)
 	    {
-	      this.part.change_note (note.id, note.tick, note.duration, Math.min (note.note + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
+	      this.part.change_note (note.id, note.tick, note.duration, Math.min (note.key + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
 	      event.preventDefault();
 	    }
 	  break;
@@ -250,7 +250,7 @@ export default {
       const tick = this.tick_from_canvas_x (event.offsetX);
       const midinote = this.midinote_from_canvas_y (event.offsetY);
       const idx = find_note (this.adata.pnotes,
-			     n => tick >= n.tick && tick < n.tick + n.duration && n.note == midinote);
+			     n => tick >= n.tick && tick < n.tick + n.duration && n.key == midinote);
       if (idx >= 0)
 	{
 	  const note = this.adata.pnotes[idx];
@@ -543,7 +543,7 @@ function render_notes (canvas, cstyle, layout) {
   // draw notes
   for (const note of this.adata.pnotes)
     {
-      const oct = floor (note.note / 12), key = note.note - oct * 12;
+      const oct = floor (note.key / 12), key = note.key - oct * 12;
       const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
       const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
       if (note.id == focus_noteid)
