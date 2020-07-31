@@ -68,7 +68,10 @@ ClipImpl::assign_range (int starttick, int stoptick)
 PartNoteSeq
 ClipImpl::list_all_notes ()
 {
-  return {};
+  PartNoteSeq ns;
+  auto events = notes_.ordered_events<OrderedEventList> ();
+  ns.assign (events->begin(), events->end());
+  return ns;
 }
 
 PartControlSeq
@@ -78,10 +81,29 @@ ClipImpl::list_controls (MidiSignal control_type)
 }
 
 int
-ClipImpl::change_note (int id, int tick, int duration, int note, int fine_tune, double velocity)
+ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, double velocity)
 {
+  static int next_noteid = MIDI_NOTE_ID_FIRST;
+  if (id < 0 && duration > 0)
+    id = next_noteid++; // automatic id allocation for new notes
+  assert_return (id >= MIDI_NOTE_ID_FIRST && id <= MIDI_NOTE_ID_LAST, 0);
+  assert_return (tick >= 0, 0);
+  assert_return (duration >= 0, 0);
+  PartNote ev;
+  ev.id = id;
+  ev.channel = 0xffff;
+  ev.tick = tick;
+  ev.duration = duration;
+  ev.key = key;
+  ev.fine_tune = fine_tune;
+  ev.velocity = velocity;
+  ev.selected = false;
+  if (duration == 0)
+    return notes_.remove (ev) ? 0 : -1;
+  else
+    notes_.insert (ev);
   emit_event ("notify:notes");
-  return 0;
+  return ev.id;
 }
 
 } // Bse
