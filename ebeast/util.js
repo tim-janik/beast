@@ -1797,18 +1797,19 @@ export function match_key_event (event, keyname)
 const hotkey_list = [];
 
 function hotkey_handler (event) {
+  const kdebug = () => undefined; // debug;
   // give precedence to navigatable element with focus
   if (is_nav_input (document.activeElement) ||
       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement)))
     {
-      // debug ("hotkey_handler: ignore-nav: " + event.code + ' (' + document.activeElement.tagName + ')');
+      kdebug ("hotkey_handler: ignore-nav: " + event.code + ' (' + document.activeElement.tagName + ')');
       return false;
     }
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
       event.preventDefault();
-      // debug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
+      kdebug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
       Util.keyboard_click (document.activeElement);
       return true;
     }
@@ -1819,7 +1820,7 @@ function hotkey_handler (event) {
       {
 	const callback = array[i][1];
 	event.preventDefault();
-	// debug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
+	kdebug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
 	callback.call (null, event);
 	return true;
       }
@@ -1829,11 +1830,11 @@ function hotkey_handler (event) {
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
 	event.preventDefault();
-	// debug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
+	kdebug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
 	return true;
       }
-  // debug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
+  kdebug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
