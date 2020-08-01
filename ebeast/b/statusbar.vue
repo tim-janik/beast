@@ -71,7 +71,7 @@
     <span class="b-statusbar-spacer" />
     <span class="b-statusbar-text" ref="b-statusbar-text" />
     <span class="b-statusbar-text" v-if="!!kbd_" style="flex-grow: 0; margin: 0 0.5em;" >
-      <strong>KEY</strong> <kbd>{{ kbd_ }}</kbd> </span>
+      <strong>KEY</strong> <kbd>{{ Util.display_keyname (kbd_) }}</kbd> </span>
     <span class="b-statusbar-spacer" />
     <span class="b-statusbar-field" >
       <b-icon fa="info-circle" style="font-size:120%" :class="App.panel3 == 'i' && 'b-active'"
@@ -102,7 +102,7 @@ export default {
           const rawmsg = els.length ? els[els.length - 1].getAttribute ('data-tip') : '';
           if (rawmsg != this.status_)
             Util.markdown_to_html (this.$refs['b-statusbar-text'], this.status_ = rawmsg);
-          const rawkbd = els.length ? els[0].getAttribute ('data-kbd') : '';
+          const rawkbd = els.length ? els[els.length - 1].getAttribute ('data-kbd') : '';
           if (rawkbd != this.kbd_)
             this.kbd_ = rawkbd;
 	}
