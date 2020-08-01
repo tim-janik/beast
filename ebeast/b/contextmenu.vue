@@ -264,6 +264,7 @@ export default {
       if (this.tieclass)
 	this.tieclass.element.classList.add (this.tieclass.class);
       this.visible = true;
+      App.zmove(); // force changes to be picked up
     },
     clear_dragging() {
       if (!this.dragging)
@@ -303,6 +304,7 @@ export default {
 	this.shield.destroy (false);
       this.shield = undefined;
       this.$emit ('close');
+      App.zmove(); // force changes to be picked up
     },
     clicked (uri) {
       this.$emit ('click', uri);
