@@ -333,6 +333,21 @@ export default {
       for (const k in this.active_kmap_)
 	Util.add_hotkey (k, this.active_kmap_[k]);
     },
+    /// Find a menuitem via its `uri`.
+    find_menuitem (uri) {
+      const match_uri = e => {
+	if (e.uri == uri)
+	  return e;
+	for (const c of e.$children)
+	  {
+	    const r = match_uri (c);
+	    if (r)
+	      return r;
+	  }
+	return undefined;
+      };
+      return match_uri (this);
+    },
   },
 };
 </script>
