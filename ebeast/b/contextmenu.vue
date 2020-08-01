@@ -21,12 +21,16 @@
   : Event signaling activation of a submenu item, the `uri` of the submenu is provided as argument.
   *close*
   : Event signaling closing of a menu, regardless of whether menu item activation occoured or not.
+  *keepmounted*
+  : Keep the menu and menu items mounted at all times, needed for map_kbd_hotkeys().
   ## Methods:
   *popup (event, { origin, tieclass })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
   : reference DOM element to use for drop-down positioning.
   *close()*
   : Hide the contextmenu.
+  *map_kbd_hotkeys (active)*
+  : Activate (deactivate) the `kbd=...` hotkeys specified in menu items.
 </docs>
 
 <style lang="scss">
@@ -60,8 +64,8 @@
 
 <template>
   <transition>
-    <div class='b-contextmenu-area' :class='cmenu_class' ref='contextmenuarea' v-if='visible' >
-      <b-vflex class='b-contextmenu' ref='cmenu' start >
+    <div class='b-contextmenu-area' :class='cmenu_class' ref='contextmenuarea' v-show='visible' >
+      <b-vflex class='b-contextmenu' ref='cmenu' start v-if='visible || keepmounted' >
 	<slot />
       </b-vflex>
     </div>
@@ -94,6 +98,7 @@ const menuitem_isdisabled = function () {
 export default {
   name: 'b-contextmenu',
   props: { notransitions: { default: false },
+	   keepmounted: { type: Boolean, },
 	   xscale: { default: 1, },
 	   yscale: { default: 1, }, },
   computed: {
@@ -101,10 +106,16 @@ export default {
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
 	       resize_observer: undefined, checkeduris: {},
-	       showicons: true, showaccels: true, popup_options: {},
+	       showicons: true, popup_options: {},
 	       onclick: menuitem_onclick, isdisabled: menuitem_isdisabled, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
-			    [ 'checkeduris', 'showicons', 'showaccels', 'clicked', 'close', 'onclick', 'isdisabled' ]),
+			    [ 'checkeduris', 'showicons', 'keepmounted', 'clicked', 'close', 'onclick', 'isdisabled' ]),
+  beforeDestroy() {
+    this.map_kbd_hotkeys (false);
+  },
+  destroyed () {
+    this.map_kbd_hotkeys (false);
+  },
   methods: {
     dom_update () {
       if (!this.resize_observer)
@@ -296,6 +307,29 @@ export default {
     clicked (uri) {
       this.$emit ('click', uri);
       this.close();
+    },
+    /// Activate or disable the `kbd=...` hotkeys in menu items.
+    map_kbd_hotkeys (active = false) {
+      if (this.active_kmap_)
+	{
+	  for (const k in this.active_kmap_)
+	    Util.remove_hotkey (k, this.active_kmap_[k]);
+	  this.active_kmap_ = undefined;
+	}
+      if (!active)
+	return;
+      const kmap = {}; // key -> component
+      const buildmap = v => {
+	const key = v.kbd_hotkey?.();
+	if (key)
+	  kmap[key] = _ => v.$el && Util.keyboard_click (v.$el);
+	for (const c of v.$children)
+	  buildmap (c);
+      };
+      buildmap (this);
+      this.active_kmap_ = kmap;
+      for (const k in this.active_kmap_)
+	Util.add_hotkey (k, this.active_kmap_[k]);
     },
   },
 };

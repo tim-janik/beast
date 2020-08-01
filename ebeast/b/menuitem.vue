@@ -12,7 +12,7 @@
   *uri*
   : Descriptor for this menuitem that is passed on to its B-CONTEXTMENU `onclick`.
   *kbd*
-  : Hotkey / accelerator label to display next to the menu item.
+  : Hotkey to display next to the menu item and to use for the context menu kbd map.
   *disabled*
   : Boolean flag indicating disabled state.
   *fa*, *mi*, *bc*, *uc*
@@ -78,7 +78,7 @@
 	  @click="onclick" >
     <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :bc="bc" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
-    <span v-if="kbd !== undefined" class="kbdspan"><kbd v-if="kbd">{{ kbd }}</kbd></span>
+    <span v-if="kbd !== undefined" class="kbdspan"><kbd v-if="kbd">{{ Util.display_keyname (kbd) }}</kbd></span>
   </button>
 </template>
 
@@ -89,16 +89,19 @@ export default {
   props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, bc: STR, uc: STR,
 	   kbd: { type: String }, },
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { showicons: true, showaccels: true, checkeduris: {},
-				   isdisabled: () => false, onclick: () => 0, }, },
+			default: { showicons: true, keepmounted: false, checkeduris: {},
+				   isdisabled: () => false, onclick: undefined, }, },
   },
   methods: {
     focus() {
       if (this.$el && !this.isdisabled())
 	this.$el.focus();
     },
-    onclick (event) 	{ return this.menudata.onclick.call (this, event); },
+    onclick (event) 	{ return this.menudata.onclick?.call (this, event); },
     isdisabled ()	{ return this.menudata.isdisabled.call (this); },
+    kbd_hotkey() {
+      return this.kbd;
+    },
   },
 };
 </script>
