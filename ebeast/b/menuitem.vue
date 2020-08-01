@@ -102,6 +102,16 @@ export default {
     kbd_hotkey() {
       return this.kbd;
     },
+    /// Extract menu item label (without icon/kbd infos).
+    get_text() {
+      const filter = e => {
+	if (e.nodeName == 'KBD')
+	  return false;
+	if (e.getAttribute ('role') == 'icon')
+	  return false;
+      };
+      return Util.element_text (this.$el, filter);
+    },
   },
 };
 </script>
