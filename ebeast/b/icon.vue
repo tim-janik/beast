@@ -40,11 +40,12 @@
     .b-icon-hflip { transform: scaleX(-1); }
     .b-icon-vflip { transform: scaleY(-1); }
     .b-icon-hflip.b-icon-vflip { transform: scaleX(-1) scaleY(-1); }
+    &.-mi { align-self: center; }
   }
 </style>
 
 <template>
-  <span class="b-icon">
+  <span class="b-icon" :class="outerclasses" >
     <span    v-if="uc_" :class="iconclasses" role="icon" aria-hidden="true">{{ uc_ }}</span>
     <i  v-else-if="fa_" :class="iconclasses" role="icon" aria-hidden="true"></i>
     <i  v-else-if="mi_" :class="iconclasses" role="icon" aria-hidden="true">{{ mi_ }}</i>
@@ -64,6 +65,26 @@ export default {
     mi_() { return this.ic.startsWith ('mi-') ? this.ic.substr (3) : this.mi; },
     uc_() { return this.ic.startsWith ('uc-') ? this.ic.substr (3) : this.uc; },
     fa_() { return this.ic.startsWith ('fa-') ? this.ic.substr (3) : this.fa; },
+    outerclasses() {
+      let classes = [];
+      if (this.fw || this.fw === '')
+	classes.push ('-fw');
+      else if (!(this.nosize || this.nosize == ''))
+	classes.push ('-dfl');
+      if (this.lg || this.lg == '')
+	classes.push ('-lg');
+      if (this.mi_)
+	classes.push ('-mi');
+      else if (this.fa_)
+	classes.push ('-fa');
+      else
+	classes.push ('-uc');
+      if (this.hflip || this.hflip == '')
+	classes.push ('-hflip');
+      if (this.vflip || this.vflip == '')
+	classes.push ('-vflip');
+      return classes.join (' ');
+    },
     iconclasses() {
       let classes = (this.iconclass || '').split (/ +/);
       if (this.fw || this.fw === '')
