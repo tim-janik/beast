@@ -1751,6 +1751,16 @@ export function keyboard_map_name (keyname) {
   return name || keyname;
 }
 
+/// Create display name from KeyEvent.code names.
+export function display_keyname (keyname)
+{
+  // Replace KeyX with 'X'
+  keyname = keyname.replace (/\bKey([A-Z])/g, "$1");
+  // Replace Digit7 with '7'
+  keyname = keyname.replace (/\bDigit([0-9])/g, "$1");
+  return keyname;
+}
+
 /// Match an event's key code, considering modifiers.
 export function match_key_event (event, keyname)
 {
