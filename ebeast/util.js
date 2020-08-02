@@ -1723,6 +1723,14 @@ export function element_text (element, filter)
   return texts.join ('');
 }
 
+/// Popup `menu` using `event.target` as origin.
+export function dropdown (menu, event, options = {})
+{
+  if (!options.origin)
+    options.origin = event.target;
+  return menu?.popup (event, options);
+}
+
 /// Clone a menuitem icon via its `uri`.
 export function clone_menu_icon (menu, uri, title = '')
 {
