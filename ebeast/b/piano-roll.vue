@@ -291,15 +291,30 @@ export default {
 	  event.preventDefault();
 	}
     },
-    notes_click (event) {
+    async notes_click (event) {
+      if (!this.msrc)
+	return;
+      event.preventDefault();
       const tick = this.tick_from_canvas_x (event.offsetX);
       const midinote = this.midinote_from_canvas_y (event.offsetY);
       const idx = find_note (this.adata.pnotes,
 			     n => tick >= n.tick && tick < n.tick + n.duration && n.key == midinote);
-      if (idx >= 0)
+      if (idx >= 0 && this.pianotool == 'E')
+	{
+	  let note = this.adata.pnotes[idx];
+	  this.msrc.change_note (note.id, note.tick, 0, note.key, note.fine_tune, note.velocity);
+	}
+      else if (idx >= 0)
 	{
 	  const note = this.adata.pnotes[idx];
 	  this.adata.focus_noteid = note.id;
+	}
+      else if (this.pianotool == 'P')
+	{
+	  this.adata.focus_noteid = undefined;
+	  const note_id = await this.msrc.change_note (-1, tick, 384, midinote, 0, 1);
+	  if (this.adata.focus_noteid === undefined)
+	    this.adata.focus_noteid = note_id;
 	}
     },
   },
