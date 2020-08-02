@@ -74,7 +74,7 @@
 
 <script>
 const menuitem_onclick = function (event) {
-  this.$emit ('click', event, this.uri);
+  this.$emit ('click', this.uri, event);
   if (!event.defaultPrevented)
     {
       if (this.uri !== undefined && this.menudata.clicked)
