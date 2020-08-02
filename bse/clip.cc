@@ -98,12 +98,13 @@ ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, d
   ev.fine_tune = fine_tune;
   ev.velocity = velocity;
   ev.selected = false;
-  if (duration == 0)
-    return notes_.remove (ev) ? 0 : -1;
-  else
+  int ret = ev.id;
+  if (duration > 0)
     notes_.insert (ev);
-  emit_event ("notify:notes");
-  return ev.id;
+  else
+    ret = notes_.remove (ev) ? 0 : -1;
+  emit_event ("notify:notes"); // FIXME: move to eventlist
+  return ret;
 }
 
 } // Bse
