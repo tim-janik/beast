@@ -186,7 +186,7 @@ async function bootup() {
       bootlog ("Will clean Bse cachedirs in", ms + "ms...");
       setTimeout (async () => {
 	await Bse.server.purge_stale_cachedirs();
-	bootlog ("Cleaned Bse cachedirs...");
+	// bootlog ("Cleaned Bse cachedirs...");
       }, ms);
     }
   // Dismiss startup messages
