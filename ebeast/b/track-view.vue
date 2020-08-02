@@ -219,7 +219,6 @@ export default {
 	return ' ';
     },
     async menuactivation (uri) {
-      debug ("menuactivation:", uri);
       // close popup to remove focus guards
       this.$refs.cmenu.close();
       if (uri == 'add-track')
