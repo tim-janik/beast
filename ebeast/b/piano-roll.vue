@@ -15,12 +15,20 @@
   @import 'mixins.scss';
   .b-piano-roll {
     border: 1px solid #111;
+    width: 100%;
   }
   .b-piano-roll-buttons {
-    font: $b-piano-roll-buttons-font;
+    //* font: $b-piano-roll-buttons-font; */
   }
   .b-piano-roll {
-    canvas { image-rendering: pixelated /*ff: crisp-edges*/; }
+    canvas {
+      image-rendering: pixelated
+      /*ff: crisp-edges*/;
+    }
+    &[data-pianotool='S'] canvas.b-piano-roll-notes { cursor: crosshair; }
+    &[data-pianotool='H'] canvas.b-piano-roll-notes { cursor: col-resize; }
+    &[data-pianotool='P'] canvas.b-piano-roll-notes { @include cursor_pen; }
+    &[data-pianotool='E'] canvas.b-piano-roll-notes { @include cursor_eraser24; }
     //* Make scss variables available to JS via getComputedStyle() */
     --piano-roll-light-row:             #{$b-piano-roll-light-row};
     --piano-roll-dark-row:              #{$b-piano-roll-dark-row};
@@ -44,21 +52,38 @@
     --piano-roll-font:                  #{$b-piano-roll-font};
     --piano-roll-font-color:            #{$b-piano-roll-font-color};
     --piano-roll-key-length:            #{$b-piano-roll-key-length};
+    .-toolbutton {
+      align-items: center;
+      width: 2em;
+      justify-content: center;
+    }
+    .b-hscrollbar {
+      align-self: center;
+    }
   }
   .b-piano-roll-key-width { width: $b-piano-roll-key-length; }
 </style>
 
 <template>
 
-  <b-vflex class="b-piano-roll" style="width: 100%; border-top: 3px solid blue"
-	   tabindex="0" @keydown="keydown">
+  <b-vflex class="b-piano-roll" :style="outerstyle()" tabindex="0"
+	   @keydown="keydown" @focus="focuschange" @blur="focuschange"
+	   @mouseenter="mouseenter" @mouseleave="mouseleave" >
     <b-hflex class="shrink0" style="width: 100%">
-      <div ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0; display: flex" >
-	<button >I</button>
-	<button >m</button>
-	<button >q</button>
+      <b-hflex ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0" >
 	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
-      </div>
+	<span>Q</span>
+	<b-hflex class="-toolbutton" @click="Util.dropdown ($refs.toolmenu, $event)" >
+	  <b-icon class='-iconclass'
+		  v-bind="Util.clone_menu_icon ($refs.toolmenu, pianotool, '**EDITOR TOOL**')" />
+	  <b-contextmenu ref="toolmenu" keepmounted >
+	    <b-menuitem mi="crop_free"     uri="S" @click="usetool" kbd="Digit1" > Rectangular Selection </b-menuitem>
+	    <b-menuitem mi="multiple_stop" uri="H" @click="usetool" kbd="Digit2" > Horizontal Selection </b-menuitem>
+	    <b-menuitem fa="pencil"        uri="P" @click="usetool" kbd="Digit3" > Pen          </b-menuitem>
+	    <b-menuitem fa="eraser"        uri="E" @click="usetool" kbd="Digit4" > Eraser       </b-menuitem>
+	  </b-contextmenu>
+	</b-hflex>
+      </b-hflex>
       <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
     </b-hflex>
 
@@ -107,15 +132,18 @@ export default {
   },
   data() {
     return { piano_keys:   PIANO_KEYS,
+	     pianotool:    'S',
 	     piano_height: 84 * floor ((PIANO_KEYS + 12 - 1) / 12) + 1,
 	     adata:        observable_msrc_data.call (this) }; },
   watch: {
     msrc (nv, ov) {
-      this.adata.focus_noteid = 0;
+      this.adata.focus_noteid = -1;
       this.sync_scrollpos (nv, ov);
     },
   },
   mounted () {
+    // setup tool state
+    this.usetool (this.pianotool);
     // keep vertical scroll position for each msrc, non-reactive
     this.auto_scrolls = {};
     // observer to watch for canvas size changes
@@ -125,6 +153,25 @@ export default {
     this.resize_observer.disconnect();
   },
   methods: {
+    focuschange() {
+      if (this.$refs.toolmenu)
+	this.$refs.toolmenu.map_kbd_hotkeys (this.entered || document.activeElement == this.$el);
+    },
+    mouseenter (ev) {
+      this.entered = true;
+      this.focuschange();
+    },
+    mouseleave (ev) {
+      this.entered = false;
+      this.focuschange();
+    },
+    usetool (uri) {
+      this.pianotool = uri;
+      this.$el?.setAttribute ('data-pianotool', this.pianotool);
+    },
+    outerstyle() {
+      return this.msrc ? 'visibility: visible' : 'visibility: hidden';
+    },
     sync_scrollpos (new_msrc, old_msrc) {
       if (!this.$refs.scrollarea)
 	return;

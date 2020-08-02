@@ -67,7 +67,6 @@ $b-piano-roll-note-font-color:	#88cc88b0 !default;
 $b-piano-roll-note-focus-color:	#aafe !default;
 $b-piano-roll-note-focus-border: #fff !default;
 $b-piano-roll-key-length:	88px !default;
-$b-piano-roll-buttons-font:	normal 9px $b-theme-font-family !default;	// size must fit into b-piano-roll-key-length
 
 @mixin b-popup-box-shadow()	{ box-shadow: 0 2px 8px $b-boxshadow-color; }
 
