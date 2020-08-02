@@ -206,7 +206,7 @@ class App {
       this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
   }
   panel2_types = [ 'd' /*devices*/, 'p' /*pianoroll*/ ];
-  panel2 = 'd';
+  panel2 = 'p';
   switch_panel2 (n) {
     const a = this.panel2_types;
     if ('string' == typeof n)
