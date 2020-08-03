@@ -1307,19 +1307,16 @@ export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) 
   const cw = Math.round (csswidth), ch = Math.round (cssheight);
   const pw = Math.round (devicepixelratio * cw);
   const ph = Math.round (devicepixelratio * ch);
-  if (cw != canvas.style.width || ch != canvas.style.height ||
-      pw != canvas.width || ph != canvas.height || fill_style) {
-    canvas.style.width = cw + 'px';
-    canvas.style.height = ch + 'px';
-    canvas.width = pw;
-    canvas.height = ph;
-    const ctx = canvas.getContext ('2d');
-    if (!fill_style || fill_style === true)
-      ctx.clearRect (0, 0, canvas.width, canvas.height);
-    else {
-      ctx.fillStyle = fill_style;
-      ctx.fillRect (0, 0, canvas.width, canvas.height);
-    }
+  canvas.style.width = cw + 'px';
+  canvas.style.height = ch + 'px';
+  canvas.width = pw;
+  canvas.height = ph;
+  const ctx = canvas.getContext ('2d');
+  if (!fill_style || fill_style === true)
+    ctx.clearRect (0, 0, canvas.width, canvas.height);
+  else {
+    ctx.fillStyle = fill_style;
+    ctx.fillRect (0, 0, canvas.width, canvas.height);
   }
   return devicepixelratio;
 }
