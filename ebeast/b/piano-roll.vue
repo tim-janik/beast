@@ -13,22 +13,10 @@
 
 <style lang="scss">
   @import 'mixins.scss';
+  $b-piano-roll-key-length: 64px;
+  $scrollbar-area-size: 12px;
+  $scrollarea-bg: red /*transparent*/;
   .b-piano-roll {
-    border: 1px solid #111;
-    width: 100%;
-  }
-  .b-piano-roll-buttons {
-    //* font: $b-piano-roll-buttons-font; */
-  }
-  .b-piano-roll {
-    canvas {
-      image-rendering: pixelated
-      /*ff: crisp-edges*/;
-    }
-    &[data-pianotool='S'] canvas.b-piano-roll-notes { cursor: crosshair; }
-    &[data-pianotool='H'] canvas.b-piano-roll-notes { cursor: col-resize; }
-    &[data-pianotool='P'] canvas.b-piano-roll-notes { cursor: $bc-cursor-pen; }
-    &[data-pianotool='E'] canvas.b-piano-roll-notes { cursor: $bc-cursor-eraser; }
     //* Make scss variables available to JS via getComputedStyle() */
     --piano-roll-light-row:             #{$b-piano-roll-light-row};
     --piano-roll-dark-row:              #{$b-piano-roll-dark-row};
@@ -52,6 +40,32 @@
     --piano-roll-font:                  #{$b-piano-roll-font};
     --piano-roll-font-color:            #{$b-piano-roll-font-color};
     --piano-roll-key-length:            #{$b-piano-roll-key-length};
+  }
+  .b-piano-roll {
+    border: 1px solid #111;
+    width: 100%;
+    //* COLS: VTitle Piano Roll Scrollbar */
+    grid-template-columns: min-content $b-piano-roll-key-length 1fr min-content;
+    //* ROWS: Timeline Roll Scrollbar */
+    grid-template-rows: min-content 1fr min-content;
+
+    .-vtitle {
+      text-align: center;
+      writing-mode: vertical-rl; transform: rotate(180deg); /* FF: writing-mode: sideways-rl; */
+    }
+  }
+  .b-piano-roll-buttons {
+    //* font: $b-piano-roll-buttons-font; */
+  }
+  .b-piano-roll {
+    canvas {
+      image-rendering: pixelated
+      /*ff: crisp-edges*/;
+    }
+    &[data-pianotool='S'] canvas.b-piano-roll-notes { cursor: crosshair; }
+    &[data-pianotool='H'] canvas.b-piano-roll-notes { cursor: col-resize; }
+    &[data-pianotool='P'] canvas.b-piano-roll-notes { cursor: $bc-cursor-pen; }
+    &[data-pianotool='E'] canvas.b-piano-roll-notes { cursor: $bc-cursor-eraser; }
     .-toolbutton {
       align-items: center;
       width: 2em;
@@ -60,44 +74,75 @@
     .b-hscrollbar {
       align-self: center;
     }
+
+    .-vscrollbar {
+      display: flex; justify-self: center;
+      width: $scrollbar-area-size; height: auto;
+      overflow-y: scroll; overflow-x: hidden; background: $scrollarea-bg;
+      .-vscrollbar-area { width: 1px; height: 2500px; }
+    }
+    .-hscrollbar {
+      display: flex; flex-direction: column; align-self: center;
+      height: $scrollbar-area-size; width: auto;
+      overflow-x: scroll; overflow-y: hidden; background: $scrollarea-bg;
+      .-hscrollbar-area { height: 1px; width: 3840px; }
+    }
   }
   .b-piano-roll-key-width { width: $b-piano-roll-key-length; }
+
+  .-overflow-hidden {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 </style>
 
 <template>
 
-  <b-vflex class="b-piano-roll" :style="outerstyle()" tabindex="0"
-	   @keydown="keydown" @focus="focuschange" @blur="focuschange"
-	   @mouseenter="mouseenter" @mouseleave="mouseleave" >
-    <b-hflex class="shrink0" style="width: 100%">
-      <b-hflex ref="piano-roll-buttons" class="b-piano-roll-buttons" style="flex-shrink: 0" >
-	<b-color-picker style="flex-shrink: 1" ></b-color-picker>
-	<span>Q</span>
-	<b-hflex class="-toolbutton" @click="Util.dropdown ($refs.toolmenu, $event)" >
-	  <b-icon class='-iconclass'
-		  v-bind="Util.clone_menu_icon ($refs.toolmenu, pianotool, '**EDITOR TOOL**')" />
-	  <b-contextmenu ref="toolmenu" keepmounted >
-	    <b-menuitem mi="crop_free"     uri="S" @click="usetool" kbd="Digit1" > Rectangular Selection </b-menuitem>
-	    <b-menuitem mi="multiple_stop" uri="H" @click="usetool" kbd="Digit2" > Horizontal Selection </b-menuitem>
-	    <b-menuitem fa="pencil"        uri="P" @click="usetool" kbd="Digit3" > Pen          </b-menuitem>
-	    <b-menuitem fa="eraser"        uri="E" @click="usetool" kbd="Digit4" > Eraser       </b-menuitem>
-	  </b-contextmenu>
-	</b-hflex>
+  <b-grid class="b-piano-roll" :style="outerstyle()" tabindex="0"
+	  @keydown="keydown" @focus="focuschange" @blur="focuschange"
+	  @mouseenter="mouseenter" @mouseleave="mouseleave" >
+    <!-- VTitle, COL-1 -->
+    <span class="-vtitle" style="grid-row: 1/-1"  > VTitle </span>
+
+    <!-- Buttons, COL-2 -->
+    <b-hflex ref="piano-roll-buttons" class="b-piano-roll-buttons" style="grid-column: 2; grid-row: 1" >
+      <b-color-picker style="flex-shrink: 1" ></b-color-picker>
+      <span>Q</span>
+      <b-hflex class="-toolbutton" @click="Util.dropdown ($refs.toolmenu, $event)" >
+	<b-icon class='-iconclass'
+		v-bind="Util.clone_menu_icon ($refs.toolmenu, pianotool, '**EDITOR TOOL**')" />
+	<b-contextmenu ref="toolmenu" keepmounted >
+	  <b-menuitem mi="crop_free"     uri="S" @click="usetool" kbd="Digit1" > Rectangular Selection </b-menuitem>
+	  <b-menuitem mi="multiple_stop" uri="H" @click="usetool" kbd="Digit2" > Horizontal Selection </b-menuitem>
+	  <b-menuitem fa="pencil"        uri="P" @click="usetool" kbd="Digit3" > Pen          </b-menuitem>
+	  <b-menuitem fa="eraser"        uri="E" @click="usetool" kbd="Digit4" > Eraser       </b-menuitem>
+	</b-contextmenu>
       </b-hflex>
-      <b-hscrollbar ref="hscrollbar" slider-size='45' style="width: 100%;" ></b-hscrollbar>
     </b-hflex>
 
-    <b-vflex class="grow1" style="overflow-x: hidden; overflow-y: scroll" >
-      <b-hflex ref="scrollarea" style="position: relative; overflow: visible; height: 100%" >
-	<canvas class="b-piano-roll-piano tabular-nums" @click="$forceUpdate()"
-		style="position: absolute; left: 0"
-		ref="piano-canvas" ></canvas>
-	<canvas class="b-piano-roll-notes tabular-nums" @click="notes_click"
-		style="position: absolute; left: var(--piano-roll-key-length)"
-		ref="notes-canvas" ></canvas>
-      </b-hflex>
-    </b-vflex>
-  </b-vflex>
+    <!-- Piano, COL-2 -->
+    <div class="-overflow-hidden" style="grid-column: 2; grid-row: 2" >
+      <canvas class="b-piano-roll-piano tabular-nums" @click="$forceUpdate()" ref="piano-canvas" ></canvas>
+    </div>
+
+    <!-- Roll, COL-3 -->
+    <div class="-overflow-hidden" style="grid-column: 3; grid-row: 2" ref="scrollarea" >
+      <canvas class="b-piano-roll-notes tabular-nums" @click="notes_click" ref="notes-canvas" ></canvas>
+    </div>
+
+    <!-- HScrollbar, ROW-3 -->
+    <div class="-hscrollbar" ref="hscrollbar" style="grid-column: 3; grid-row: 3" >
+      <div class="-hscrollbar-area" ref="hscrollbar_area" ></div>
+    </div>
+    <b-hscrollbar ref="Oscrollbar" slider-size='45' style="grid-column: 3; grid-row: 4" ></b-hscrollbar>
+
+    <!-- VScrollbar, COL-4 -->
+    <div class="-vscrollbar" ref="vscrollbar" style="grid-column: 4; grid-row: 2" >
+      <div class="-vscrollbar-area" ref="vscrollbar_area" ></div>
+    </div>
+
+  </b-grid>
 
 </template>
 
@@ -175,7 +220,7 @@ export default {
     sync_scrollpos (new_msrc, old_msrc) {
       if (!this.$refs.scrollarea)
 	return;
-      this.$refs.hscrollbar.value = 0;
+      this.$refs.Oscrollbar.value = 0;
       const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
       const sbr = this.$refs['notes-canvas'].getBoundingClientRect();
       if (old_msrc && sbr.height > vbr.height)
@@ -202,7 +247,7 @@ export default {
       // make sure scroll events in the canvas are forwarded to the scrollbar
       if (!this.scrollarea_element.forwarding_wheel)
 	{
-	  this.scrollarea_element.addEventListener ('wheel', e => this.$refs.hscrollbar.wheel_event (e));
+	  this.scrollarea_element.addEventListener ('wheel', e => this.$refs.Oscrollbar.wheel_event (e));
 	  this.scrollarea_element.forwarding_wheel = true;
 	}
       // canvas setup
@@ -383,11 +428,11 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   layout.white_width = round (layout.white_width * layout.pixelratio);
   layout.black_width = round (layout.white_width * layout.black_width);
   // hscrollbar setup
-  if (this.$refs.hscrollbar)
+  if (this.$refs.Oscrollbar)
     {
-      if (this.$refs.hscrollbar.percentage !== undefined)
-	this.$refs.hscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
-      layout.xscroll = this.$refs.hscrollbar.value * layout.virt_width;
+      if (this.$refs.Oscrollbar.percentage !== undefined)
+	this.$refs.Oscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
+      layout.xscroll = this.$refs.Oscrollbar.value * layout.virt_width;
     }
   // assign white key positions and aligned sizes
   let last = layout.oct_length;
