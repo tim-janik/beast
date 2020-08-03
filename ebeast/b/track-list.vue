@@ -15,7 +15,7 @@
   $scrollbar-area-size: 12px;
   .b-track-list {
     background-color: $b-track-list-bg;
-    //* Layout: Tracks Spacer Clips Sapcer Parts */
+    //* Layout: Tracks Spacer Clips Spacer Parts Scrollbar */
     grid-template-columns: min-content 3px 1fr 3px 1fr 20px;
     //* Layout: Header Spacer Main Spacer Footer */
     grid-template-rows: min-content 3px 1fr 3px 20px;
