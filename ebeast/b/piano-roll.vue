@@ -99,7 +99,7 @@
 
 <template>
 
-  <b-grid class="b-piano-roll" :style="outerstyle()" tabindex="0"
+  <b-grid class="b-piano-roll" tabindex="0"
 	  @keydown="keydown" @focus="focuschange" @blur="focuschange"
 	  @mouseenter="mouseenter" @mouseleave="mouseleave" >
     <!-- VTitle, COL-1 -->
@@ -213,9 +213,6 @@ export default {
     usetool (uri) {
       this.pianotool = uri;
       this.$el?.setAttribute ('data-pianotool', this.pianotool);
-    },
-    outerstyle() {
-      return this.msrc ? 'visibility: visible' : 'visibility: hidden';
     },
     sync_scrollpos (new_msrc, old_msrc) {
       if (!this.$refs.scrollarea)
