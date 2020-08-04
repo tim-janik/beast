@@ -252,7 +252,7 @@ export default {
       this.layout = piano_layout.call (this);
       // render piano first, it fills some caches that render_notes utilizes
       render_piano.call (this);
-      this.render_notes (notes_canvas, notes_style, this.layout);
+      render_notes.call (this);
       // scrollto an area with visible notes
       if (this.adata.auto_scrollto !== undefined) {
 	const vbr = this.scrollarea_element.parentElement.getBoundingClientRect();
@@ -273,8 +273,8 @@ export default {
     },
     vscrollbar_scroll() {
       render_piano.call (this);
+      render_notes.call (this);
     },
-    render_notes: render_notes,
     tick_from_canvas_x: tick_from_canvas_x,
     midinote_from_canvas_y: midinote_from_canvas_y,
     keydown (event) {
@@ -444,6 +444,8 @@ function piano_layout () {
   }
   // resize piano
   Util.resize_canvas (piano_canvas, layout.piano_csswidth, this.$refs.vscrollbar.clientHeight); // layout.cssheight
+  // resize notes
+  Util.resize_canvas (notes_canvas, layout.notes_csswidth, this.$refs.vscrollbar.clientHeight); // layout.cssheight
   // resize button area
   const piano_buttons = this.$refs.piano_roll_buttons;
   piano_buttons.style.width = layout.piano_csswidth + 'px';
@@ -467,10 +469,10 @@ function tick_from_canvas_x (x) {
 }
 
 function midinote_from_canvas_y (y) {
-  const layout = this.layout;
+  const layout = this.layout, yoffset = layout.yoffset - this.$refs.vscrollbar.scrollTop;
   const yp = y * layout.pixelratio;
-  const nthoct = 0| (layout.yoffset - yp) / layout.oct_length;
-  const inoct = (layout.yoffset - yp) - nthoct * layout.oct_length;
+  const nthoct = 0| (yoffset - yp) / layout.oct_length;
+  const inoct = (yoffset - yp) - nthoct * layout.oct_length;
   let octkey = 0;
   for (let i = layout.bkeys.length - 1; i >= 0; --i)
     if (inoct >= layout.bkeys[i][0] && inoct < layout.bkeys[i][0] + layout.bkeys[i][1])
@@ -494,8 +496,7 @@ function render_piano()
 {
   const canvas = this.$refs['piano-canvas'], cstyle = getComputedStyle (canvas);
   const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
-  const layout = this.layout, scroll_top = this.$refs.vscrollbar.scrollTop;
-  const yoffset = layout.yoffset - this.$refs.vscrollbar.scrollTop;
+  const layout = this.layout, yoffset = layout.yoffset - this.$refs.vscrollbar.scrollTop;
   // resize canvas to match onscreen pixels, paint bg with white key row color
   const light_row = csp ('--piano-roll-light-row');
   ctx.fillStyle = light_row;
@@ -581,11 +582,15 @@ function render_piano()
   }
 }
 
-function render_notes (canvas, cstyle, layout) {
+function render_notes()
+{
+  const canvas = this.$refs['notes-canvas'], cstyle = getComputedStyle (canvas);
   const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
+  const layout = this.layout, yoffset = layout.yoffset - this.$refs.vscrollbar.scrollTop;
   const light_row = cstyle.getPropertyValue ('--piano-roll-light-row');
   // resize canvas to match onscreen pixels, paint bg with white key row color
-  Util.resize_canvas (canvas, layout.notes_csswidth, layout.cssheight, light_row);
+  ctx.fillStyle = light_row;
+  ctx.fillRect (0, 0, layout.notes_csswidth * layout.pixelratio, layout.cssheight * layout.pixelratio);
   // we draw piano keys verticaly overlapping by one th and align octave separators accordingly
   const th = layout.thickness;
 
@@ -593,7 +598,7 @@ function render_notes (canvas, cstyle, layout) {
   const dark_row = csp ('--piano-roll-dark-row');
   ctx.fillStyle = dark_row;
   for (let oct = 0; oct < layout.octaves; oct++) {
-    const oy = layout.yoffset - oct * layout.oct_length;
+    const oy = yoffset - oct * layout.oct_length;
     for (let r = 0; r < layout.row_colors.length; r++) {
       if (layout.row_colors[r] > 1) {
 	ctx.fillRect (0, oy - r * layout.row - layout.row, canvas.width, layout.row);
@@ -612,15 +617,15 @@ function render_notes (canvas, cstyle, layout) {
   const stipple = round (3 * layout.pixelratio), stipple2 = 2 * stipple;
   const qy = layout.wkeys[3][0]; // separator between F|G
   for (let oct = 0; oct < layout.octaves; oct++) {
-    const oy = layout.yoffset - oct * layout.oct_length;
+    const oy = yoffset - oct * layout.oct_length;
     Util.hstippleRect (ctx, th - lsx % stipple2, oy - qy, canvas.width, th, stipple);
   }
 
   // draw vertical grid lines
   const grid_main1 = csp ('--piano-roll-grid-main1');
   const grid_sub1 = csp ('--piano-roll-grid-sub1');
-  const gy1 = layout.yoffset - layout.octaves * layout.oct_length + th;
-  const gy2 = layout.yoffset; // align with outer piano border
+  const gy1 = yoffset - layout.octaves * layout.oct_length + th;
+  const gy2 = yoffset; // align with outer piano border
   const beat_dist = layout.beat_pixels;
   const grid_divider = 4 * beat_dist; // largest grid divider
   let grid = floor (lsx / grid_divider);
@@ -638,7 +643,7 @@ function render_notes (canvas, cstyle, layout) {
   const semitone12 = csp ('--piano-roll-semitone12');
   ctx.fillStyle = semitone12;
   for (let oct = 0; oct <= layout.octaves; oct++) {	// condiiton +1 to include top border
-    const oy = layout.yoffset - oct * layout.oct_length;
+    const oy = yoffset - oct * layout.oct_length;
     ctx.fillRect (0, oy, canvas.width, th);
   }
 
@@ -660,7 +665,7 @@ function render_notes (canvas, cstyle, layout) {
   for (const note of this.adata.pnotes)
     {
       const oct = floor (note.key / 12), key = note.key - oct * 12;
-      const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
+      const ny = yoffset - oct * layout.oct_length - key * layout.row;
       const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
       if (note.id == focus_noteid)
 	{
