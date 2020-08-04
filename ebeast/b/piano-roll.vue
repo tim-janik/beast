@@ -79,7 +79,7 @@
       display: flex; justify-self: center;
       width: $scrollbar-area-size; height: auto;
       overflow-y: scroll; overflow-x: hidden; background: $scrollarea-bg;
-      .-vscrollbar-area { width: 1px; height: 2500px; }
+      .-vscrollbar-area { width: 1px; height: 0; }
     }
     .-hscrollbar {
       display: flex; flex-direction: column; align-self: center;
@@ -106,7 +106,7 @@
     <span class="-vtitle" style="grid-row: 1/-1"  > VTitle </span>
 
     <!-- Buttons, COL-2 -->
-    <b-hflex ref="piano-roll-buttons" class="b-piano-roll-buttons" style="grid-column: 2; grid-row: 1" >
+    <b-hflex ref="piano_roll_buttons" class="b-piano-roll-buttons" style="grid-column: 2; grid-row: 1" >
       <b-color-picker style="flex-shrink: 1" ></b-color-picker>
       <span>Q</span>
       <b-hflex class="-toolbutton" @click="Util.dropdown ($refs.toolmenu, $event)" >
@@ -138,7 +138,7 @@
     <b-hscrollbar ref="Oscrollbar" slider-size='45' style="grid-column: 3; grid-row: 4" ></b-hscrollbar>
 
     <!-- VScrollbar, COL-4 -->
-    <div class="-vscrollbar" ref="vscrollbar" style="grid-column: 4; grid-row: 2" >
+    <div class="-vscrollbar" ref="vscrollbar" style="grid-column: 4; grid-row: 2" @scroll="vscrollbar_scroll" >
       <div class="-vscrollbar-area" ref="vscrollbar_area" ></div>
     </div>
 
@@ -149,7 +149,6 @@
 <script>
 const floor = Math.floor, round = Math.round;
 const PIANO_KEYS = 132;
-const PIANO_ROLL_CSSHEIGHT = 84  * PIANO_KEYS / 12 + 1;
 
 function observable_msrc_data () {
   const data = {
@@ -250,9 +249,9 @@ export default {
       // canvas setup
       const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
       const notes_canvas = this.$refs['notes-canvas'], notes_style = getComputedStyle (notes_canvas);
-      this.layout = this.piano_layout (piano_canvas, piano_style, notes_canvas, notes_style);
+      this.layout = piano_layout.call (this);
       // render piano first, it fills some caches that render_notes utilizes
-      this.render_piano (piano_canvas, piano_style, this.layout);
+      render_piano.call (this);
       this.render_notes (notes_canvas, notes_style, this.layout);
       // scrollto an area with visible notes
       if (this.adata.auto_scrollto !== undefined) {
@@ -272,8 +271,9 @@ export default {
 	this.adata.auto_scrollto = undefined;
       }
     },
-    piano_layout: piano_layout,
-    render_piano: render_piano,
+    vscrollbar_scroll() {
+      render_piano.call (this);
+    },
     render_notes: render_notes,
     tick_from_canvas_x: tick_from_canvas_x,
     midinote_from_canvas_y: midinote_from_canvas_y,
@@ -372,7 +372,11 @@ function find_note (allnotes, predicate) {
   return -1;
 }
 
-function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
+function piano_layout () {
+  const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
+  const notes_canvas = this.$refs['notes-canvas'];
+  const PIANO_ZOOM = 1.0;
+  const PIANO_ROLL_CSSHEIGHT = PIANO_ZOOM * 84 * PIANO_KEYS / 12 + 1;
   /* By design, each octave consists of 12 aligned rows that are used for note placement.
    * Each row is always pixel aligned. Consequently, the pixel area assigned to an octave
    * can only shrink or grow in 12 screen pixel intervalls.
@@ -385,52 +389,45 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     piano_csswidth:	0,			// derived from white_width
     notes_csswidth:	0,			// display width, determined by parent
     virt_width:		0,			// virtual width in CSS pixels, derived from end_tick
-    oct_length:		84,			// initially css pixels, = 12 * 7
+    oct_length:		PIANO_ZOOM * 84,	// initially css pixels, = 12 * 7
     octaves:		0,			// number of octaves to display
     thickness:		1,			// if ratio in [0..2]
     yoffset:		PIANO_ROLL_CSSHEIGHT,	// y coordinate of lowest octave
     xscroll:		0,			// horizontal scroll position
     beat_pixels:	50,			// pixels per quarter note
     tickscale:		50 / 384,
-    row:		7,
+    row:		PIANO_ZOOM * 7,
     bkeys:		[], 			// [ [offset,size] * 5 ]
     wkeys:		[], 			// [ [offset,size] * 7 ]
     row_colors:		[ 1, 2, 1, 2, 1,   1, 2, 1, 2, 1, 2, 1 ],		// distinct key colors
     white_width:	54,			// length of white keys, --piano-roll-key-length
-    black_width:	0.55,			// length of black keys (pre-init factor)
+    black_width:	0.59,			// length of black keys (pre-init factor)
     label_keys:		1,			// 0=none, 1=roots, 2=whites
     black2midi:         [   1,  3,     6,  8,  10,  ],
     white2midi:         [ 0,  2,  4, 5,  7,  9,  11 ],
   };
-  const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84px octave
-  const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84px octave
+  const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84.0px octave
+  const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84.0px octave
   const key_length = parseFloat (piano_style.getPropertyValue ('--piano-roll-key-length'));
   const min_end_tick = 384;
   const end_tick = Math.max (this.adata.end_tick || 0, min_end_tick);
   // scale layout
   const sbr = this.scrollarea_element.getBoundingClientRect();
   layout.pixelratio = window.devicePixelRatio;
-  const layout_height = round (layout.pixelratio * layout.cssheight);
+  layout.full_height = round (layout.pixelratio * layout.cssheight);
   layout.white_width = key_length || layout.white_width; // allow CSS override
   layout.piano_csswidth = layout.white_width;
-  layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width - layout.piano_csswidth);
+  layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width);
   layout.beat_pixels = round (layout.beat_pixels * layout.pixelratio * this.adata.hzoom);
   layout.tickscale = layout.beat_pixels / 384;
   layout.virt_width = floor (384 * floor (end_tick / 384));
   layout.octaves = round (layout.cssheight / layout.oct_length);
   layout.thickness = Math.max (round (layout.pixelratio * 0.5), 1);
-  layout.yoffset = layout_height - layout.thickness;		// leave a pixel for overlapping piano key borders
+  layout.yoffset = layout.full_height - layout.thickness; // leave a pixel for overlapping piano key borders
   layout.row = round (layout.pixelratio * layout.row * this.adata.vzoom);
   layout.oct_length = layout.row * 12;
   layout.white_width = round (layout.white_width * layout.pixelratio);
   layout.black_width = round (layout.white_width * layout.black_width);
-  // hscrollbar setup
-  if (this.$refs.Oscrollbar)
-    {
-      if (this.$refs.Oscrollbar.percentage !== undefined)
-	this.$refs.Oscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
-      layout.xscroll = this.$refs.Oscrollbar.value * layout.virt_width;
-    }
   // assign white key positions and aligned sizes
   let last = layout.oct_length;
   for (let i = white_offsets.length - 1; i >= 0; i--) {
@@ -445,6 +442,20 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     const key_end   = round (layout.oct_length * (black_keyspans[i][0] + black_keyspans[i][1]) / 84.0);
     layout.bkeys.push ([key_start, key_end - key_start]);
   }
+  // resize piano
+  Util.resize_canvas (piano_canvas, layout.piano_csswidth, this.$refs.vscrollbar.clientHeight); // layout.cssheight
+  // resize button area
+  const piano_buttons = this.$refs.piano_roll_buttons;
+  piano_buttons.style.width = layout.piano_csswidth + 'px';
+  // vscrollbar setup
+  this.$refs.vscrollbar_area.style.height = (layout.full_height - this.$refs.vscrollbar.clientHeight) + 'px';
+  // hscrollbar setup
+  if (this.$refs.Oscrollbar)
+    {
+      if (this.$refs.Oscrollbar.percentage !== undefined)
+	this.$refs.Oscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
+      layout.xscroll = this.$refs.Oscrollbar.value * layout.virt_width;
+    }
   return Object.freeze (layout); // effectively 'const'
 }
 
@@ -479,13 +490,16 @@ function midinote_from_canvas_y (y) {
   return midinote; // [ midioct, octkey, midinote ]
 }
 
-function render_piano (canvas, cstyle, layout) {
+function render_piano()
+{
+  const canvas = this.$refs['piano-canvas'], cstyle = getComputedStyle (canvas);
   const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
+  const layout = this.layout, scroll_top = this.$refs.vscrollbar.scrollTop;
+  const yoffset = layout.yoffset - this.$refs.vscrollbar.scrollTop;
   // resize canvas to match onscreen pixels, paint bg with white key row color
   const light_row = csp ('--piano-roll-light-row');
-  Util.resize_canvas (canvas, layout.piano_csswidth, layout.cssheight, light_row);
-  const piano_buttons = this.$refs['piano-roll-buttons'];
-  piano_buttons.style.width = layout.piano_csswidth + 'px';
+  ctx.fillStyle = light_row;
+  ctx.fillRect (0, 0, layout.piano_csswidth * layout.pixelratio, layout.cssheight * layout.pixelratio);
   // we draw piano keys horizontally within their boundaries, but verticaly overlapping by one th
   const th = layout.thickness, hf = th * 0.5; // thickness/2 fraction
 
@@ -498,7 +512,7 @@ function render_piano (canvas, cstyle, layout) {
   const black_shine = csp ('--piano-roll-black-shine');
   const black_border = csp ('--piano-roll-black-border');
   for (let oct = 0; oct < layout.octaves; oct++) {
-    const oy = layout.yoffset - oct * layout.oct_length;
+    const oy = yoffset - oct * layout.oct_length;
     // draw white keys
     ctx.fillStyle = white_base;
     ctx.lineWidth = th;
@@ -548,7 +562,7 @@ function render_piano (canvas, cstyle, layout) {
     ctx.textBaseline = 'top';
     // TODO: use actualBoundingBoxAscent once measureText() becomes more sophisticated
     for (let oct = 0; oct < layout.octaves; oct++) {
-      const oy = layout.yoffset - oct * layout.oct_length;
+      const oy = yoffset - oct * layout.oct_length;
       // skip non-roots / roots according to configuration
       for (let k = 0; k < layout.wkeys.length; k++) {
 	if ((k && layout.label_keys < 2) || layout.label_keys < 1)
