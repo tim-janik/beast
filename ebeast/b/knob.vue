@@ -155,19 +155,15 @@ export default {
       this.$emit ('input', v);
     },
     granularity (ev) {
-      let gran = 2 / 360;           // steps per full turn to *feel* natural
+      let gran = 1 / 405;               // steps per full turn to feel natural
       if (ev.shiftKey)
-	gran = gran * 0.1;          // slow down
+        gran = gran * 0.1;              // slow down
       else if (ev.ctrlKey)
-	gran = gran * 10;           // speed up
-      if (event.type == 'wheel')
-	{
-	  gran = gran * 0.75;       // approximate touchpad drag / scroll gesture ratio
-	  const DPR = Math.max (window.devicePixelRatio || 1, 1);
-	  gran = gran / DPR;        // ignore HiDPI when turning knob via scroll *wheel*
-	}
+        gran = gran * 10;               // speed up
+      if (ev.type == 'wheel')
+        gran *= 1 / 3.75;                       // approximate mouse movements in pixels
       if (this.bidi_)
-	gran = gran * 2;            // bi-directional knobs cover twice the value range
+        gran = gran * 2;                // bi-directional knobs cover twice the value range
       return gran;
     },
     dblclick (ev) {
@@ -231,16 +227,18 @@ export default {
       ev.stopPropagation();
     },
     drag_move (ev) {
+      // store physical pixel movements (DPR) so knob behaviour is unrelated to display resolution
       if (!this.pending_change) // debounce value updates
 	this.pending_change = requestAnimationFrame (this.drag_change);
+      const DPR = Math.max (window.devicePixelRatio || 1, 1);
       if (USE_PTRLOCK)
 	{
-	  const dprfix = !CONFIG.dpr_movement ? 1 : 1 / Math.max (window.devicePixelRatio || 1, 1);
+	  const dprfix = CONFIG.dpr_movement ? 1 : DPR;
 	  this.drag.x += ev.movementX * dprfix;
 	  this.drag.y += ev.movementY * dprfix;
 	}
       else
-	this.drag = { x: ev.pageX, y: ev.pageY };
+	this.drag = { x: ev.pageX * DPR, y: ev.pageY * DPR };
       this.ptraccel = this.granularity (ev);
     },
     drag_change () {
@@ -267,7 +265,7 @@ export default {
 	  ((!this.hscroll && p.x != 0) ||
 	   (!this.vscroll && p.y != 0)))
 	return;	// only consume scroll events if enabled
-      const delta = -p.y || p.x;
+      const delta = -p.y || p.x * 0.5;
       const min = 0;
       if ((delta > 0 && this.value_ < 1) || (delta < 0 && this.value_ > min))
 	{
