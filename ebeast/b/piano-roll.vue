@@ -122,12 +122,14 @@
     </b-hflex>
 
     <!-- Piano, COL-2 -->
-    <div class="-overflow-hidden" style="grid-column: 2; grid-row: 2" >
+    <div class="-overflow-hidden" style="grid-column: 2; grid-row: 2"
+	 @wheel.stop="Util.wheel2scrollbars ($event, $refs, 'vscrollbar')" >
       <canvas class="b-piano-roll-piano tabular-nums" @click="$forceUpdate()" ref="piano-canvas" ></canvas>
     </div>
 
     <!-- Roll, COL-3 -->
-    <div class="-overflow-hidden" style="grid-column: 3; grid-row: 2" ref="scrollarea" >
+    <div class="-overflow-hidden" style="grid-column: 3; grid-row: 2" ref="scrollarea"
+	 @wheel.stop="Util.wheel2scrollbars ($event, $refs, 'vscrollbar', 'hscrollbar')" >
       <canvas class="b-piano-roll-notes tabular-nums" @click="notes_click" ref="notes-canvas" ></canvas>
     </div>
 
