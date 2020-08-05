@@ -880,6 +880,22 @@ export function wheel_delta (ev)
   return { x: 0, y: (ev.detail || 0) * -10 };
 }
 
+/** Use deltas from `event` to call scrollBy() on `refs[scrollbars...]`. */
+export function wheel2scrollbars (event, refs, ...scrollbars)
+{
+  const delta = Util.wheel_delta (event);
+  for (const sb of scrollbars)
+    {
+      const scrollbar = refs[sb];
+      if (!scrollbar)
+	continue;
+      if (scrollbar.clientHeight > scrollbar.clientWidth)       // vertical
+        scrollbar.scrollBy ({ top: delta.y });
+      else                                                      // horizontal
+	scrollbar.scrollBy ({ left: delta.x });
+    }
+}
+
 /** List all elements that can take focus and are descendants of `element` or the document. */
 export function list_focusables (element)
 {
