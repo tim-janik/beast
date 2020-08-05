@@ -71,9 +71,6 @@
       width: 2em;
       justify-content: center;
     }
-    .b-hscrollbar {
-      align-self: center;
-    }
 
     .-vscrollbar {
       display: flex; justify-self: center;
@@ -137,7 +134,6 @@
     <div class="-hscrollbar" ref="hscrollbar" style="grid-column: 3; grid-row: 3" >
       <div class="-hscrollbar-area" ref="hscrollbar_area" ></div>
     </div>
-    <b-hscrollbar ref="Oscrollbar" slider-size='45' style="grid-column: 3; grid-row: 4" ></b-hscrollbar>
 
     <!-- VScrollbar, COL-4 -->
     <div class="-vscrollbar" ref="vscrollbar" style="grid-column: 4; grid-row: 2" @scroll="vscrollbar_scroll" >
@@ -218,7 +214,7 @@ export default {
     sync_scrollpos (new_msrc, old_msrc) {
       if (!this.$refs.scrollarea)
 	return;
-      this.$refs.Oscrollbar.value = 0;
+      this.$refs.hscrollbar.scrollLeft = 0;
       const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
       const sbr = this.$refs['notes-canvas'].getBoundingClientRect();
       if (old_msrc && sbr.height > vbr.height)
@@ -235,41 +231,35 @@ export default {
       if (!this.$el) // we need a second Vue.render() call for canvas drawing
 	return this.$forceUpdate();
       // DOM, $el and $refs are in place now
-      if (this.scrollarea_element != this.$refs.scrollarea)
-	{
-	  if (this.scrollarea_element)
-	    this.resize_observer.unobserve (this.scrollarea_element);
-	  this.scrollarea_element = this.$refs.scrollarea;
-	  this.resize_observer.observe (this.scrollarea_element);
-	}
-      // make sure scroll events in the canvas are forwarded to the scrollbar
-      if (!this.scrollarea_element.forwarding_wheel)
-	{
-	  this.scrollarea_element.addEventListener ('wheel', e => this.$refs.Oscrollbar.wheel_event (e));
-	  this.scrollarea_element.forwarding_wheel = true;
-	}
+      this.resize_observer.disconnect();
+      this.resize_observer.observe (this.$refs.hscrollbar);
+      this.resize_observer.observe (this.$refs.vscrollbar);
       // canvas setup
-      const piano_canvas = this.$refs['piano-canvas'], piano_style = getComputedStyle (piano_canvas);
-      const notes_canvas = this.$refs['notes-canvas'], notes_style = getComputedStyle (notes_canvas);
+      const notes_canvas = this.$refs['notes-canvas'];
       this.layout = piano_layout.call (this);
       // render piano first, it fills some caches that render_notes utilizes
       render_piano.call (this);
       render_notes.call (this);
       // scrollto an area with visible notes
       if (this.adata.auto_scrollto !== undefined) {
-	const vbr = this.scrollarea_element.parentElement.getBoundingClientRect();
+	/* FIXME: const vbr = this.scrollarea_element.parentElement.getBoundingClientRect();
 	const sbr = notes_canvas.getBoundingClientRect();
-	if (sbr.height > vbr.height) {
-	  let scroll_top, scroll_behavior = 'smooth';
-	  if (this.adata.auto_scrollto >= 0)
-	    scroll_top = (sbr.height - vbr.height) * this.adata.auto_scrollto;
-	  else {
-	    scroll_top = (sbr.height - vbr.height) / 2;
-	    if (this.adata.auto_scrollto < -1)
-	      scroll_behavior = 'auto'; // initial scroll pos, avoid animation
+	 */
+	/*
+	if (sbr.height > vbr.height)
+	  {
+	    let scroll_top, scroll_behavior = 'smooth';
+	    if (this.adata.auto_scrollto >= 0)
+	      scroll_top = (sbr.height - vbr.height) * this.adata.auto_scrollto;
+	    else
+	      {
+		scroll_top = (sbr.height - vbr.height) / 2;
+		if (this.adata.auto_scrollto < -1)
+		  scroll_behavior = 'auto'; // initial scroll pos, avoid animation
+	      }
+	    // FIXME: this.scrollarea_element.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
 	  }
-	  this.scrollarea_element.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
-	}
+	 */
 	this.adata.auto_scrollto = undefined;
       }
     },
@@ -414,12 +404,11 @@ function piano_layout () {
   const min_end_tick = 384;
   const end_tick = Math.max (this.adata.end_tick || 0, min_end_tick);
   // scale layout
-  const sbr = this.scrollarea_element.getBoundingClientRect();
   layout.pixelratio = window.devicePixelRatio;
   layout.full_height = round (layout.pixelratio * layout.cssheight);
   layout.white_width = key_length || layout.white_width; // allow CSS override
   layout.piano_csswidth = layout.white_width;
-  layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width);
+  layout.notes_csswidth = this.$refs.hscrollbar.clientWidth;
   layout.beat_pixels = round (layout.beat_pixels * layout.pixelratio * this.adata.hzoom);
   layout.tickscale = layout.beat_pixels / 384;
   layout.virt_width = floor (384 * floor (end_tick / 384));
@@ -454,14 +443,13 @@ function piano_layout () {
   // vscrollbar setup
   this.$refs.vscrollbar_area.style.height = (layout.full_height - this.$refs.vscrollbar.clientHeight) + 'px';
   // hscrollbar setup
-  if (this.$refs.Oscrollbar)
-    {
-      if (this.$refs.Oscrollbar.percentage !== undefined)
-	this.$refs.Oscrollbar.percentage = layout.notes_csswidth / layout.virt_width;
-      layout.xscroll = this.$refs.Oscrollbar.value * layout.virt_width;
-    }
+  this.$refs.hscrollbar_area.style.width = (this.$refs.hscrollbar.clientWidth * hscrollbar_factor) + 'px';
+  const xscroll = -this.$refs.hscrollbar.scrollLeft / (this.$refs.hscrollbar.clientWidth * (hscrollbar_factor - 1));
+  layout.xscroll = xscroll * (layout.virt_width - layout.notes_csswidth);
   return Object.freeze (layout); // effectively 'const'
 }
+
+const hscrollbar_factor = 10;
 
 function tick_from_canvas_x (x) {
   const layout = this.layout;
