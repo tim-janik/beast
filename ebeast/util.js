@@ -830,6 +830,15 @@ export function inside_display_none (element) {
   return false;
 }
 
+/** Check if `element` is displayed (has width/height assigned) */
+export function is_displayed (element) {
+  // https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom/33456469#33456469
+  if (element.offsetWidth || element.offsetHeight ||
+      element.getClientRects().length)
+    return true;
+  return false;
+}
+
 function calculate_scroll_line_height()
 {
   // Work around Firefox sending wheel events with ev.deltaMode == DOM_DELTA_LINE, see:
