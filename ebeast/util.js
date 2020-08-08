@@ -2096,6 +2096,9 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       else if (!(tmpl[key] instanceof Object))
 	continue;
       const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
+      tmpl[key] = default_value;
+      if (!async_getter && !async_notify)
+	continue;
       const assign_getter_cleanup = (c) => assign_async_cleanup (getter_cleanups, key, c);
       const getter = async () => {
 	const had_cleanup = !!getter_cleanups[key];
@@ -2123,7 +2126,6 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	  }
       };
       monitoring_getters.push (getter_and_listen);
-      tmpl[key] = default_value;
     }
   // make all fields observable
   odata = Vue.reactive (tmpl);
