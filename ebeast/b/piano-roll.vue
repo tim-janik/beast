@@ -171,7 +171,7 @@ function observable_msrc_data () {
   const data = {
     qnpt:          { default:   4, },	// quarter notes per tact
     vzoom:         { default: 2.0, },
-    hzoom:         { default: 1.0, },
+    hzoom:         { default: 2.0, },
     auto_scrollto: { default:  -2, },
     focus_noteid:  { default: -1, },
     end_tick:      { getter: c => this.msrc.end_tick(), notify: n => this.msrc.on ("notify:end_tick", n), },
@@ -234,7 +234,7 @@ export default {
     adjust_zoom (which, dir)
     {
       if (which == 'timeline' || which == 'notes')
-	this.adata.hzoom = Util.clamp (this.adata.hzoom * (dir < 0 ? 1.03 : 0.97), 0.1, 20);
+	this.adata.hzoom = Util.clamp (this.adata.hzoom * (dir < 0 ? 1.01 : 0.99), 0.05, 20);
       else if (which == 'piano')
 	this.adata.vzoom = Util.clamp (this.adata.vzoom * (dir < 0 ? 1.03 : 0.97), 1, 5);
     },
@@ -392,7 +392,7 @@ export default {
       else if (this.pianotool == 'P')
 	{
 	  this.adata.focus_noteid = undefined;
-	  const note_id = await this.msrc.change_note (-1, tick, 1 * PPQN, midinote, 0, 1);
+	  const note_id = await this.msrc.change_note (-1, tick, PPQN * 0.25, midinote, 0, 1);
 	  if (this.adata.focus_noteid === undefined)
 	    this.adata.focus_noteid = note_id;
 	}
@@ -431,7 +431,7 @@ function piano_layout () {
     notes_csswidth:	0,			// display width, determined by parent
     virt_width:		0,			// virtual width in CSS pixels, derived from end_tick
     beat_pixels:	50,			// pixels per quarter note
-    tickscale:		50 / PPQN,
+    tickscale:		undefined,		// pixels per tick
     octaves:		PIANO_OCTAVES,		// number of octaves to display
     yoffset:		notes_cssheight,	// y coordinate of lowest octave
     oct_length:		undefined,		// 12 * 7 = 84px for vzoom==1 && DPR==1
@@ -457,7 +457,7 @@ function piano_layout () {
   layout.notes_csswidth = this.hscrollbar_width;
   layout.beat_pixels = round (layout.beat_pixels * DPR * this.adata.hzoom);
   layout.tickscale = layout.beat_pixels / PPQN;
-  const hpad = 10 * DPR;
+  layout.hpad = 10 * DPR;
   layout.virt_width = Math.ceil (layout.tickscale * end_tick);
   layout.row = Math.floor (layout.dpr_height / PIANO_KEYS);
   layout.oct_length = layout.row * 12;
@@ -509,7 +509,7 @@ function piano_layout () {
     }
   layout.xscroll = () => {
     const xpos = this.$refs.hscrollbar.scrollLeft / (this.hscrollbar_width * hscrollbar_proportion);
-    return xpos * layout.virt_width - hpad;
+    return xpos * layout.virt_width - layout.hpad;
   };
   layout.tick_from_x = css_x => {
     const xp = css_x * layout.DPR;
@@ -659,22 +659,7 @@ function render_notes()
   }
 
   // draw vertical grid lines
-  const grid_main1 = csp ('--piano-roll-grid-main1');
-  const grid_sub1 = csp ('--piano-roll-grid-sub1');
-  const gy1 = yoffset - layout.octaves * layout.oct_length + th;
-  const gy2 = yoffset; // align with outer piano border
-  const beat_dist = layout.beat_pixels;
-  const grid_divider = 4 * beat_dist; // largest grid divider
-  let grid = floor (lsx / grid_divider);
-  for (let gx = 0; gx - lsx < canvas.width; grid++) {
-    gx = grid * beat_dist;
-    if (grid % 4 == 0) {
-      ctx.fillStyle = grid_main1;
-    } else {
-      ctx.fillStyle = grid_sub1;
-    }
-    ctx.fillRect (gx - lsx, gy1, th, gy2 - gy1);
-  }
+  render_timegrid.call (this, canvas, false);
 
   // draw octave separators
   const semitone12 = csp ('--piano-roll-semitone12');
@@ -716,63 +701,68 @@ function render_timeline()
 {
   const canvas = this.$refs.timeline_canvas, cstyle = getComputedStyle (canvas);
   const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
-  const layout = this.layout;
-  const light_row = cstyle.getPropertyValue ('--piano-roll-light-row');
-  const th = layout.thickness;
-
+  const layout = this.layout, light_row = csp ('--piano-roll-light-row');
   // paint bg with white key row color
   ctx.fillStyle = light_row;
   ctx.fillRect (0, 0, layout.notes_csswidth * layout.DPR, canvas.height);
 
-  // line thickness and line cap
-  ctx.lineWidth = th;
+  render_timegrid.call (this, canvas, true);
+}
+
+function render_timegrid (canvas, with_labels)
+{
+  const signature = [ 4, 4 ]; // 15, 16
+  const cstyle = getComputedStyle (canvas), gy1 = 0;
+  const gy2 = canvas.height * (with_labels ? 0.5 : 0), gy3 = canvas.height * (with_labels ? 0.75 : 0);
+  const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
+  const layout = this.layout, lsx = layout.xscroll(), th = layout.thickness;
+  const grid_main1 = csp ('--piano-roll-grid-main1'), grid_sub1 = csp ('--piano-roll-grid-sub1');
+  const TPN64 = PPQN / 16;			// Ticks per 64th note
+  const TPD = TPN64 * 64 / signature[1];	// Ticks per denominator fraction
+  const bar_ticks = signature[0] * TPD;		// Ticks per bar
+  const bar_pixels = bar_ticks * layout.tickscale;
+  const denominator_pixels = bar_pixels / signature[0];
+  const barjumps = 8;
+  ctx.lineWidth = th; // line thickness
   ctx.lineCap = 'butt'; // chrome 'butt' has a 0.5 pixel bug, so we use fillRect
-  const lsx = layout.xscroll();
 
-  // draw vertical grid lines
-  const grid_main1 = csp ('--piano-roll-grid-main1');
-  const grid_sub1 = csp ('--piano-roll-grid-sub1');
-  const gy1 = 0, gy2 = canvas.height;
-  const beat_dist = layout.beat_pixels;
-  const grid_divider = 4 * beat_dist; // largest grid divider
-  let grid = floor (lsx / grid_divider);
-  for (let gx = 0; gx - lsx < canvas.width; grid++) {
-    gx = grid * beat_dist;
-    if (grid % 4 == 0) {
-      ctx.fillStyle = grid_main1;
-    } else {
-      ctx.fillStyle = grid_sub1;
+  // determine stepping granularity
+  let stepping; // [ ticks_per_step, steps_per_mainline, steps_per_midline ]
+  const mingap = th * 17;
+  if (denominator_pixels / 16 >= mingap)
+    stepping = [ TPD / 16, 16, 4 ];
+  else if (denominator_pixels / 4 >= mingap)
+    stepping = [ TPD / 4, 4 * signature[0], 4 ];
+  else if (denominator_pixels >= mingap)
+    stepping = [ TPD, signature[0], 0 ];
+  else // just use bars
+    stepping = [ bar_ticks, 0, 0 ];
+
+  // first 2^x aligned bar tick before/at xscroll
+  const start_bar = floor ((lsx + layout.hpad) / (barjumps * bar_pixels));
+  const start = start_bar * bar_ticks;
+
+  // step through visible tick fractions and draw lines
+  let tx = 0, c = 0, d = 0;
+  const grid_sub2 = stepping[2] ? grid_main1 : grid_sub1;
+  for (let tick = start; tx < canvas.width; tick += stepping[0])
+    {
+      tx = tick * layout.tickscale - lsx;
+      ctx.fillStyle = c ? d ? grid_sub1 : grid_sub2 : grid_main1;
+      const gy = c ? d ? gy3 : gy2 : gy1;
+      ctx.fillRect (tx, gy, th, canvas.height);
+      c += 1;
+      if (c >= stepping[1])
+	c = 0;
+      d += 1;
+      if (d >= stepping[2])
+	d = 0;
     }
-    ctx.fillRect (gx - lsx, gy1, th, gy2 - gy1);
-    if (beat_dist > th * 4 * 5)
-      {
-	ctx.fillStyle = grid_main1;
-	ctx.fillRect (gx - lsx + beat_dist * 1 / 4.0, gy2 * 0.5, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist * 2 / 4.0, gy2 * 0.5, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist * 3 / 4.0, gy2 * 0.5, th, gy2 - gy1);
-      }
-    if (beat_dist > th * 16 * 5)
-      {
-	ctx.fillStyle = grid_main1;
-	ctx.fillRect (gx - lsx + beat_dist *  1 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist *  2 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist *  3 / 16.0, gy2 * 0.75, th, gy2 - gy1);
 
-	ctx.fillRect (gx - lsx + beat_dist *  5 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist *  6 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist *  7 / 16.0, gy2 * 0.75, th, gy2 - gy1);
+  if (!with_labels)
+    return;
 
-	ctx.fillRect (gx - lsx + beat_dist *  9 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist * 10 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist * 11 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-
-	ctx.fillRect (gx - lsx + beat_dist * 13 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist * 14 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-	ctx.fillRect (gx - lsx + beat_dist * 15 / 16.0, gy2 * 0.75, th, gy2 - gy1);
-      }
-  }
-
-  // draw labels
+  // step through all denominators and draw labels
   ctx.fillStyle = csp ('--piano-roll-num-color');
   const num_font = csp ('--piano-roll-num-font');
   const fpx_parts = num_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
@@ -780,25 +770,28 @@ function render_timeline()
   ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  grid = floor (lsx / grid_divider);
-  const draw_beats = ctx.measureText ('999.9').width + th < beat_dist;
-  for (let gx = 0; gx - lsx < canvas.width; grid++) {
-    gx = grid * beat_dist;
-    const bar = 1 + Math.floor (grid / 4), beat = grid % 4;
-    if (bar < 1)
-      continue;
-    let label = bar + '';
-    if (beat)
-      {
-	if (!draw_beats)
-	  continue;
-	label += '.' + (1 + beat);
-      }
-    const tm = ctx.measureText (label);
-    const tl = tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
-    const tx = gx - lsx + th;
-    ctx.fillText (label, tx, (canvas.height - tl) * 0.5);
-  }
+  c = 0;
+  tx = 0;
+  let bar = start_bar;
+  for (let tick = start; tx < canvas.width; tick += TPD)
+    {
+      tx = tick * layout.tickscale - lsx;
+      let label = (1 + bar) + '';
+      if (c) // fractions
+	label += '.' + (1 + c);
+      const tm = ctx.measureText (label);
+      const lh = tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent;
+      if ((c && tm.width < denominator_pixels * 0.93) ||
+	  (!c && tm.width < bar_pixels * 0.93) ||
+	  (!c && !(bar & 0x7) && tm.width < bar_pixels * barjumps * 0.93))
+	ctx.fillText (label, tx + th, (canvas.height - lh) * 0.5);
+      c += 1;
+      if (c >= signature[0])
+	{
+	  bar += 1;
+	  c = 0;
+	}
+    }
 }
 
 </script>
