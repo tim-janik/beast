@@ -169,10 +169,8 @@ const PPQN = 384;	// ticks per quarter note
 
 function observable_msrc_data () {
   const data = {
-    qnpt:          { default:   4, },	// quarter notes per tact
-    vzoom:         { default: 2.0, },
+    vzoom:         { default: 1.5, },
     hzoom:         { default: 2.0, },
-    auto_scrollto: { default:  -2, },
     focus_noteid:  { default: -1, },
     end_tick:      { getter: c => this.msrc.end_tick(), notify: n => this.msrc.on ("notify:end_tick", n), },
     pnotes:        { default: [],                            notify: n => this.msrc.on ("notify:notes", n),
@@ -187,16 +185,21 @@ export default {
   props: {
     msrc: { required: true },
   },
-  priv_tmpl: {
-    layout: undefined,
-  },
   data() {
     return { pianotool:    'S',
 	     adata:        observable_msrc_data.call (this) }; },
   watch: {
-    msrc (nv, ov) {
+    msrc (new_msrc, old_msrc) {
+      // store and restore old and new zoom & scroll positions
+      if (old_msrc && old_msrc.$id && this.auto_scrolls)
+	this.auto_scrolls[old_msrc.$id] = this.snapshot_zoomscroll();
+      this.auto_scrollto = this.auto_scrolls[new_msrc.$id] || this.snapshot_zoomscroll (true);
+      this.adata.hzoom = this.auto_scrollto.hzoom;
+      this.adata.vzoom = this.auto_scrollto.vzoom;
+      // reset other state
       this.adata.focus_noteid = -1;
-      this.sync_scrollpos (nv, ov);
+      // re-layout, even if just this.auto_scrollto changed
+      this.$forceUpdate();
     },
   },
   mounted () {
@@ -204,6 +207,7 @@ export default {
     this.usetool (this.pianotool);
     // keep vertical scroll position for each msrc, non-reactive
     this.auto_scrolls = {};
+    this.auto_scrollto = this.snapshot_zoomscroll (true);
     // observer to watch for canvas size changes
     this.resize_observer = new Util.ResizeObserver (els => {
       if (this.hscrollbar_width != this.$refs.hscrollbar.clientWidth ||
@@ -254,65 +258,26 @@ export default {
       else if (which == 'notes')
 	Util.wheel2scrollbars (event, this.$refs, 'hscrollbar', 'vscrollbar');
     },
-    sync_scrollpos (new_msrc, old_msrc) {
-      if (!this.$refs.scrollarea)
-	return;
-      this.$refs.hscrollbar.scrollLeft = 0;
-      const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
-      const sbr = this.$refs.notes_canvas.getBoundingClientRect();
-      if (old_msrc && sbr.height > vbr.height)
-	this.auto_scrolls[old_msrc.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
-      if (new_msrc)
-	{
-	  const auto_scrollto = this.auto_scrolls[new_msrc.$id];
-	  this.adata.auto_scrollto = auto_scrollto == undefined ? -1 : auto_scrollto;
-	}
-    },
     dom_update() {
-      this.layout = undefined;
-      // Guard against the initial VNode Vue.render() call, after which DOM elements are created and assigned to $el and $ref
-      if (!this.$el) // we need a second Vue.render() call for canvas drawing
-	return this.$forceUpdate();
       // DOM, $el and $refs are in place now
+      this.layout = undefined;
       this.resize_observer.disconnect();
       this.resize_observer.observe (this.$refs.hscrollbar);
       this.hscrollbar_width = this.$refs.hscrollbar.clientWidth;
       this.resize_observer.observe (this.$refs.vscrollbar);
       this.vscrollbar_height = this.$refs.vscrollbar.clientHeight;
       if (!Util.is_displayed (this.$el))
-	return; // laoyut calculation needs size assignments
+	return; // laoyut calculation needs DOM element sizes (only assigned when visible)
       // canvas setup
       if (piano_layout.call (this))
 	return this.$forceUpdate();	// laoyut components resized
-      // render piano first, it fills some caches that render_notes utilizes
-      render_piano.call (this);
       render_timeline.call (this);
+      render_piano.call (this);
       render_notes.call (this);
-      // scrollto an area with visible notes
-      if (this.adata.auto_scrollto !== undefined) {
-	/*
-	const vbr = this.scrollarea_element.parentElement.getBoundingClientRect();
-	const sbr = notes_canvas.getBoundingClientRect();
-	if (sbr.height > vbr.height)
-	  {
-	    let scroll_top, scroll_behavior = 'smooth';
-	    if (this.adata.auto_scrollto >= 0)
-	      scroll_top = (sbr.height - vbr.height) * this.adata.auto_scrollto;
-	    else
-	      {
-		scroll_top = (sbr.height - vbr.height) / 2;
-		if (this.adata.auto_scrollto < -1)
-		  scroll_behavior = 'auto'; // initial scroll pos, avoid animation
-	      }
-	    this.scrollarea_element.parentElement.scroll ({ top: scroll_top, behavior: scroll_behavior });
-	  }
-	*/
-	this.adata.auto_scrollto = undefined;
-      }
     },
     scrollbar_scroll() {
-      render_piano.call (this);
       render_timeline.call (this);
+      render_piano.call (this);
       render_notes.call (this);
     },
     keydown (event) {
@@ -396,6 +361,18 @@ export default {
 	  if (this.adata.focus_noteid === undefined)
 	    this.adata.focus_noteid = note_id;
 	}
+    },
+    snapshot_zoomscroll (defaults = false) {
+      if (defaults && this.snapshot_zoomscroll.defaults)
+	return this.snapshot_zoomscroll.defaults;
+      const vscrollpos = !this.vscrollbar_height || defaults ? 0.5 :
+			 this.$refs.vscrollbar.scrollTop / (this.vscrollbar_height * vscrollbar_proportion);
+      const hscrollpos = !this.hscrollbar_width || defaults ? 0 :
+			 this.$refs.hscrollbar.scrollLeft / (this.hscrollbar_width * hscrollbar_proportion);
+      const zs = { hzoom: this.adata.hzoom, vzoom: this.adata.vzoom, vscrollpos, hscrollpos };
+      if (defaults)
+	this.snapshot_zoomscroll.defaults = zs;
+      return zs;
     },
   },
 };
@@ -511,6 +488,14 @@ function piano_layout () {
     const xpos = this.$refs.hscrollbar.scrollLeft / (this.hscrollbar_width * hscrollbar_proportion);
     return xpos * layout.virt_width - layout.hpad;
   };
+  // restore scroll & zoom
+  if (this.auto_scrollto)
+    {
+      this.$refs.vscrollbar.scrollTop = this.auto_scrollto.vscrollpos * (this.vscrollbar_height * vscrollbar_proportion);
+      this.$refs.hscrollbar.scrollLeft = this.auto_scrollto.hscrollpos * (this.hscrollbar_width * hscrollbar_proportion);
+      this.auto_scrollto = undefined;
+    }
+  // conversions
   layout.tick_from_x = css_x => {
     const xp = css_x * layout.DPR;
     const tick = Math.round ((layout.xscroll() + xp) / layout.tickscale);
