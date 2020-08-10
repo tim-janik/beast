@@ -16,7 +16,11 @@
 
   .b-color-picker {
     * { flex-shrink: 0; }
-    button { cursor: pointer; }
+    .-button {
+      display: inline-flex; cursor: pointer;
+      justify-content: center; align-items: center;
+      width: 100%; height: 100%;
+    }
   }
 
   .b-color-picker-dropdown {
@@ -42,8 +46,10 @@
 </style>
 
 <template>
-  <div class="b-color-picker" style="position: relative; display: flex;" >
-    <button ref="button" :style="{ 'background-color': color, color: contrast }" @click="visible_dropdown++" ><slot>⁜</slot></button>
+  <div class="b-color-picker" style="position: relative; display: flex;"
+       @mouseenter="mouseenter" @mouseleave="mouseleave" >
+    <div ref="button" class="-button" :style="style()" @click="visible_dropdown++" >
+      <slot> </slot></div>
     <transition @before-leave="intransition++" @after-leave="end_transitions" >
       <div v-if="visible_dropdown" ref="dropdown" class="b-color-picker-dropdown" >
 	<div style="display: flex; flex-direction: row;"
@@ -69,11 +75,11 @@ export default {
   data: function() {
     return {
       value: this['initial-color'],
+      entered: false,
       intransition: 0,
       visible_dropdown: 0,
   }; },
   computed: {
-    contrast: function () { return Util.parse_hex_pgrey (this.value) > 0x7f ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.5)'; },
     color: {
       get ()  { return this.value; },
       set (v) {
@@ -95,6 +101,17 @@ export default {
       this.shield.destroy (false);
   },
   methods: {
+    mouseenter() { this.entered = true; },
+    mouseleave() { this.entered = false; },
+    style() {
+      const contrast = Util.parse_hex_pgrey (this.value) > 0x7f ? 'rgba(0,0,0,.15)' : 'rgba(255,255,255,.3)';
+      const style = {
+	'background-color': this.color,
+      };
+      if (!this.entered)
+	style['color'] = contrast;
+      return style;
+    },
     update_shield() {
       if (this.visible_dropdown && !this.shield)
 	this.shield = Util.modal_shield (this.$refs.dropdown, { close: this.hide });
