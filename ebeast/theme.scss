@@ -169,6 +169,40 @@ $b-style-outset-activebg-glint: $b-style-outset-activebg-2 !default;
   }
 }
 
+// == Buttons ==
+$b-buttonbar-height: 1em;
+// softbutton is an almost flat button with subtle outlines
+$b-softbutton-bg: #585858;
+$b-softbutton-border-color: contrast-lighten($b-softbutton-bg, 1.6);
+$b-softbutton-bgl: contrast-lighten($b-softbutton-bg, 1.05);
+$b-softbutton-bgd: contrast-darken($b-softbutton-bg, 1.05);
+$b-softbutton-lg-up: linear-gradient(to bottom, $b-softbutton-bgd, $b-softbutton-bgl);
+$b-softbutton-lg-down: linear-gradient(to top, $b-softbutton-bgd, $b-softbutton-bgl);
+@mixin b-softbutton() {
+  background: $b-softbutton-lg-down;
+  border: 1px outset $b-softbutton-border-color;
+  border-top-color: transparent; border-bottom-color: transparent;
+  &:focus { outline: $b-focus-outline; }
+  &.hover, &:hover   { box-shadow: inset 500px 500px rgba(255, 255, 255, 0.035); }
+  &.active, &:active {
+    background: $b-softbutton-lg-up;
+    border-color: $b-softbutton-bg; border-style: solid;
+    box-shadow: inset 500px 500px rgba(0, 0, 0, 0.05);
+  }
+  &[disabled] {
+    filter: saturate(80%) brightness(80%);
+    pointer-events: none;
+  }
+}
+@mixin b-softbuttonbar() {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  justify-items: stretch; align-items: stretch;
+  justify-content: stretch; align-content: stretch;
+  user-select: none; text-align: center;
+  align-items: center; justify-content: center;
+  border: 1px inset $b-softbutton-border-color;
+}
+
 // == input[type='number'] ==
 @mixin b-style-number-input () {
   @include b-style-inset();
