@@ -190,9 +190,7 @@ export default {
 	     adata:        observable_msrc_data.call (this) }; },
   watch: {
     msrc (new_msrc, old_msrc) {
-      // store and restore old and new zoom & scroll positions
-      if (old_msrc && old_msrc.$id && this.auto_scrolls)
-	this.auto_scrolls[old_msrc.$id] = this.snapshot_zoomscroll();
+      // restore old and new zoom & scroll positions
       this.auto_scrollto = this.auto_scrolls[new_msrc.$id] || this.snapshot_zoomscroll (true);
       this.adata.hzoom = this.auto_scrollto.hzoom;
       this.adata.vzoom = this.auto_scrollto.vzoom;
@@ -274,11 +272,17 @@ export default {
       render_timeline.call (this);
       render_piano.call (this);
       render_notes.call (this);
+      // store new zoom & scroll positions
+      if (this.msrc && this.msrc.$id && this.auto_scrolls)
+	this.auto_scrolls[this.msrc.$id] = this.snapshot_zoomscroll();
     },
     scrollbar_scroll() {
       render_timeline.call (this);
       render_piano.call (this);
       render_notes.call (this);
+      // store new zoom & scroll positions
+      if (this.msrc && this.msrc.$id && this.auto_scrolls)
+	this.auto_scrolls[this.msrc.$id] = this.snapshot_zoomscroll();
     },
     keydown (event) {
       const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
