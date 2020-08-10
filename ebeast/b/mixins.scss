@@ -44,30 +44,6 @@ $b-part-thumb-font-color: rgba(255, 255, 255, 0.7) !default;
 $b-part-thumb-note-color: rgba(255, 255, 255, 0.7) !default;
 $b-part-thumb-colors: #ff7b50a7, #f68403a7, #d6960ea7, #92ad19a7, #67b518a7, #22bb27a7, #21b873a7, #24b3b3a7, #11adeba7, #799fffa7, #a094ffa7, #c287ffa7, #e473ffa7, #ff5ff5a7, #ff70b0a7 !default;
 
-// b-piano-roll
-// font format: italic small-caps bold 12px serif
-$b-piano-roll-num-font:     	normal 9px $b-theme-font-family !default; // the '9px' part is dynamically resized
-$b-piano-roll-num-color:	#eeeeee !default;
-$b-piano-roll-key-font:     	bold 9px $b-theme-font-family !default; // the '9px' part is dynamically resized
-$b-piano-roll-key-color:	#221111 !default;
-$b-piano-roll-key-length:	88px !default;
-$b-piano-roll-light-row:    	#303030 !default;		// background row color for notes
-$b-piano-roll-dark-row:     	#272727 !default;		// background row color for notes
-$b-piano-roll-semitone12:   	#555555 !default;		// separator per octave
-$b-piano-roll-semitone6:    	#555555 !default;		// separator after 6 semitones
-$b-piano-roll-grid-main1:   	#555555 !default;		// separator, usually per measure
-$b-piano-roll-grid-sub1:    	#3b3b3b !default;		// separator, usually per quarter
-$b-piano-roll-white-base:   	#bbbbbb !default;		// base color for white piano key
-$b-piano-roll-white-glint:  	#cccccc !default;		// highlight on white piano key
-$b-piano-roll-white-border: 	#111111 !default;		// border around white piano key
-$b-piano-roll-black-base:   	#181818 !default;		// base color for black piano key
-$b-piano-roll-black-glint:  	#3a3a3a !default;		// highlight on black piano key
-$b-piano-roll-black-shine:  	#666666 !default;		// reflection on black piano key
-$b-piano-roll-black-border: 	#222222 !default;		// border around black piano key
-$b-piano-roll-note-color:	#88cc88b0 !default;
-$b-piano-roll-note-focus-color:	#aafe !default;
-$b-piano-roll-note-focus-border: #fff !default;
-
 @mixin b-popup-box-shadow()	{ box-shadow: 0 2px 8px $b-boxshadow-color; }
 
 // == Glossy Buttons ==

@@ -203,6 +203,22 @@ $b-softbutton-lg-down: linear-gradient(to top, $b-softbutton-bgd, $b-softbutton-
   border: 1px inset $b-softbutton-border-color;
 }
 
+// == Timeline ==
+$b-timeline-outer-height: 3em;
+
+// == piano roll ==
+$b-scrollboundary-color: #111;	// dark boundary next to scrollable areas, should be (nearly) black
+$b-piano-roll-num-color:	#eeeeee !default;
+$b-piano-roll-white-base:   	#bbbbbb;			// base color for white piano key
+$b-piano-roll-black-base:   	#181818;			// base color for black piano key
+$b-piano-roll-dark-row:     	lgrey(16%);   			// background row color for notes
+$b-piano-roll-light-row:    	lgrey(20%);   			// background row color for notes
+$b-piano-roll-note-color:	#88cc88b0;			// color(15,65%,25%);
+$b-piano-roll-note-focus-color:	 #aaf8;
+$b-piano-roll-note-focus-border: #f0f0f0;
+$b-piano-roll-font:     	normal 9px $b-main-font-family; // the '9px' part is dynamically resized
+// font format: italic small-caps bold 12px serif
+
 // == input[type='number'] ==
 @mixin b-style-number-input () {
   @include b-style-inset();
