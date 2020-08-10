@@ -218,8 +218,9 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
 	$Q $(NODE_MODULES.bin)/node-sass \
 		--functions $(NODE_MODULES.bin)/../chromatic-sass/dist/main.js \
-		ebeast/app.scss $>/app/assets/stylesheets.css \
-		--include-path ebeast/ --include-path $>/ebeast/ --source-map-embed --source-map-contents --source-comments
+		ebeast/app.scss $@ \
+		--include-path ebeast/ --include-path $>/ebeast/ \
+		--source-map-embed --source-map-contents --source-comments
 $>/app/assets/material-icons.css:			| $>/ebeast/ $>/app/assets/
 	$(QECHO) FETCH "material-icons-*.tar.xz"
 	@ $(eval T := material-icons-200821-1-h0fccaba10.tar.xz)
