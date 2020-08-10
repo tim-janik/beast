@@ -14,27 +14,28 @@
 <style lang="scss">
   @import 'mixins.scss';
   $b-piano-roll-key-length: 64px;
-  $scrollbar-area-size: 13px;
-  $scrollarea-bg: red /*transparent*/;
+  $scrollbar-area-size: 15px;
+  $scrollarea-bg: transparent;
   .b-piano-roll {
     //* Make scss variables available to JS via getComputedStyle() */
-    --piano-roll-light-row:             #{$b-piano-roll-light-row};
-    --piano-roll-dark-row:              #{$b-piano-roll-dark-row};
-    --piano-roll-semitone12:            #{$b-piano-roll-semitone12};
-    --piano-roll-semitone6:             #{$b-piano-roll-semitone6};
-    --piano-roll-grid-main1:            #{$b-piano-roll-grid-main1};
-    --piano-roll-grid-sub1:             #{$b-piano-roll-grid-sub1};
-    --piano-roll-white-base:            #{$b-piano-roll-white-base};
-    --piano-roll-white-glint:           #{$b-piano-roll-white-glint};
-    --piano-roll-white-border:          #{$b-piano-roll-white-border};
-    --piano-roll-black-base:            #{$b-piano-roll-black-base};
-    --piano-roll-black-glint:           #{$b-piano-roll-black-glint};
-    --piano-roll-black-shine:           #{$b-piano-roll-black-shine};
-    --piano-roll-black-border:          #{$b-piano-roll-black-border};
-    --piano-roll-num-font:              #{$b-piano-roll-num-font};
+    --piano-roll-light-row:    #{$b-piano-roll-light-row};
+    --piano-roll-dark-row:     #{$b-piano-roll-dark-row};
+    --piano-roll-grid-main:    #{contrast-lighten($b-piano-roll-light-row, 2.2)};   // bar separator
+    --piano-roll-grid-sub:     #{contrast-lighten($b-piano-roll-light-row, 1.6)};   // quarter note separator
+    --piano-roll-semitone12:   #{contrast-lighten($b-piano-roll-light-row, 2.2)};   // separator per octave
+    --piano-roll-semitone6:    #{contrast-lighten($b-piano-roll-light-row, 2.2)};   // separator after 6 semitones
+
+    --piano-roll-white-base:   #{$b-piano-roll-white-base};
+    --piano-roll-white-border: #{$b-scrollboundary-color};                          // border around piano key
+    --piano-roll-white-glint:  #{contrast-lighten($b-piano-roll-white-base, 1.2)};  // highlight on piano key
+    --piano-roll-key-color:    #{$b-scrollboundary-color};
+    --piano-roll-black-base:   #{$b-piano-roll-black-base};
+    --piano-roll-black-border: #{contrast-lighten($b-piano-roll-black-base, 1.1)};  // border around piano key
+    --piano-roll-black-glint:  #{contrast-lighten($b-piano-roll-black-base, 1.55)}; // highlight on piano key
+    --piano-roll-black-shine:  #{contrast-lighten($b-piano-roll-black-base, 3.1)};  // reflection on piano key
+
+    --piano-roll-font:                  #{$b-piano-roll-font};
     --piano-roll-num-color:             #{$b-piano-roll-num-color};
-    --piano-roll-key-font:              #{$b-piano-roll-key-font};
-    --piano-roll-key-color:             #{$b-piano-roll-key-color};
     --piano-roll-note-color:       	#{$b-piano-roll-note-color};
     --piano-roll-note-focus-color:      #{$b-piano-roll-note-focus-color};
     --piano-roll-note-focus-border:     #{$b-piano-roll-note-focus-border};
@@ -52,46 +53,68 @@
       }
     }
   }
+
   .b-piano-roll {
-    border: 1px solid #111;
+    outline: none;
     width: 100%;
-    //* COLS: VTitle Piano Roll Scrollbar */
-    grid-template-columns: min-content $b-piano-roll-key-length 1fr min-content;
-    //* ROWS: Timeline Roll Scrollbar */
-    grid-template-rows: min-content 1fr min-content;
+    //* COLS: VTitle Piano Roll Scrollborder Scrollbar */
+    grid-template-columns: min-content $b-piano-roll-key-length 1fr min-content min-content;
+    //* ROWS: Timeline Roll Scrollborder Scrollbar */
+    grid-template-rows: min-content 1fr min-content min-content;
 
     .-vtitle {
       text-align: center;
       writing-mode: vertical-rl; transform: rotate(180deg); /* FF: writing-mode: sideways-rl; */
     }
-  }
-  .b-piano-roll-buttons {
-    //* font: $b-piano-roll-buttons-font; */
-  }
-  .b-piano-roll {
-    canvas {
-      image-rendering: pixelated
-      /*ff: crisp-edges*/;
+    .-buttons {
+      justify-self: stretch; align-self: stretch;
+      @include b-softbuttonbar;
+      border-bottom: 1px solid $b-scrollboundary-color;	//* edge near scroll area */
+      border-right: 1px solid $b-scrollboundary-color;	//* edge near scroll area */
+      & > * {
+	justify-self: stretch; align-self: stretch;
+	padding: 5px;
+	@include b-softbutton;
+	//* tweak cihld next to scroll boundary */
+	&:last-child {
+	  border-right: 1px solid transparent;			//* avoid double border */
+	  &.active, &:active {
+	    border-right: 1px inset $b-softbutton-border-color;	//* preserve glint */
+	  }
+	}
+      }
+      .-toolbutton {
+	align-items: center; justify-content: center;
+      }
     }
+    .-timeline-wrapper {
+      height: $b-timeline-outer-height;
+      border-bottom: 1px solid $b-scrollboundary-color;	//* edge near scroll area */
+    }
+    .-vscrollborder {
+      border-left: 1px solid $b-scrollboundary-color;  //* edge near scroll area */
+    }
+    .-hscrollborder {
+      border-bottom: 1px solid $b-scrollboundary-color;  //* edge near scroll area */
+    }
+    .-notes-wrapper, .-piano-wrapper {} // leave these alone to preserve vertical sizing
+    canvas { image-rendering: pixelated; }
     &[data-pianotool='S'] canvas.b-piano-roll-notes { cursor: crosshair; }
     &[data-pianotool='H'] canvas.b-piano-roll-notes { cursor: col-resize; }
     &[data-pianotool='P'] canvas.b-piano-roll-notes { cursor: $bc-cursor-pen; }
     &[data-pianotool='E'] canvas.b-piano-roll-notes { cursor: $bc-cursor-eraser; }
-    .-toolbutton {
-      align-items: center;
-      width: 2em;
-      justify-content: center;
-    }
 
     .-vscrollbar {
       display: flex; justify-self: center;
       width: $scrollbar-area-size; height: auto;
+      margin: 0 4px 0 2px;
       overflow-y: scroll; overflow-x: hidden; background: $scrollarea-bg;
       .-vscrollbar-area { width: 1px; height: 0; }
     }
     .-hscrollbar {
       display: flex; flex-direction: column; align-self: center;
       height: $scrollbar-area-size; width: auto;
+      margin: 2px 0 4px 0;
       overflow-x: scroll; overflow-y: hidden; background: $scrollarea-bg;
       .-hscrollbar-area { height: 1px; width: 3840px; }
     }
@@ -115,9 +138,8 @@
     <span class="-vtitle" style="grid-row: 1/-1"  > VTitle </span>
 
     <!-- Buttons, COL-2 -->
-    <b-hflex ref="piano_roll_buttons" class="b-piano-roll-buttons" style="grid-column: 2; grid-row: 1" >
+    <div class="-buttons" style="grid-column: 2; grid-row: 1" >
       <b-color-picker style="flex-shrink: 1" ></b-color-picker>
-      <span>Q</span>
       <b-hflex class="-toolbutton" @click="Util.dropdown ($refs.toolmenu, $event)" >
 	<b-icon class='-iconclass'
 		v-bind="Util.clone_menu_icon ($refs.toolmenu, pianotool, '**EDITOR TOOL**')" />
@@ -128,34 +150,40 @@
 	  <b-menuitem fa="eraser"        uri="E" @click="usetool" kbd="Digit4" > Eraser       </b-menuitem>
 	</b-contextmenu>
       </b-hflex>
-    </b-hflex>
+    </div>
 
     <!-- Piano, COL-2 -->
-    <div class="-overflow-hidden" style="grid-column: 2; grid-row: 2"
+    <div class="-overflow-hidden -piano-wrapper" style="grid-column: 2; grid-row: 2"
 	 @wheel.stop="wheel_event ($event, 'piano')" >
       <canvas class="b-piano-roll-piano tabular-nums" @click="$forceUpdate()" ref="piano-canvas" ></canvas>
     </div>
 
     <!-- Timeline, COL-3 -->
-    <div class="-overflow-hidden" style="grid-column: 3; grid-row: 1" ref="timeline_wrapper"
+    <div class="-overflow-hidden -timeline-wrapper" style="grid-column: 3; grid-row: 1" ref="timeline_wrapper"
 	 @wheel.stop="wheel_event ($event, 'timeline')" >
       <canvas class="-timeline tabular-nums" ref="timeline_canvas" ></canvas>
     </div>
 
     <!-- Roll, COL-3 -->
-    <div class="-overflow-hidden" style="grid-column: 3; grid-row: 2" ref="scrollarea"
+    <div class="-overflow-hidden -notes-wrapper" style="grid-column: 3; grid-row: 2" ref="scrollarea"
 	 @wheel.stop="wheel_event ($event, 'notes')" >
       <canvas class="b-piano-roll-notes tabular-nums" @click="notes_click" ref="notes_canvas" ></canvas>
     </div>
 
-    <!-- HScrollbar, ROW-3 -->
-    <div class="-hscrollbar" ref="hscrollbar" style="grid-column: 3; grid-row: 3" @scroll="scrollbar_scroll" >
-      <div class="-hscrollbar-area" ref="hscrollbar_area" ></div>
+    <!-- VScrollborder, COL-4 -->
+    <div class="-vscrollborder" style="grid-column: 4; grid-row: 1/4" ></div>
+
+    <!-- VScrollbar, COL-5 -->
+    <div class="-vscrollbar" ref="vscrollbar" style="grid-column: 5; grid-row: 2" @scroll="scrollbar_scroll" >
+      <div class="-vscrollbar-area" ref="vscrollbar_area" ></div>
     </div>
 
-    <!-- VScrollbar, COL-4 -->
-    <div class="-vscrollbar" ref="vscrollbar" style="grid-column: 4; grid-row: 2" @scroll="scrollbar_scroll" >
-      <div class="-vscrollbar-area" ref="vscrollbar_area" ></div>
+    <!-- HScrollborder, ROW-3 -->
+    <div class="-hscrollborder" style="grid-column: 2/4; grid-row: 3" ></div>
+
+    <!-- HScrollbar, ROW-4 -->
+    <div class="-hscrollbar" ref="hscrollbar" style="grid-column: 3; grid-row: 4" @scroll="scrollbar_scroll" >
+      <div class="-hscrollbar-area" ref="hscrollbar_area" ></div>
     </div>
 
   </b-grid>
@@ -461,12 +489,9 @@ function piano_layout () {
   // resize piano
   Util.resize_canvas (piano_canvas, layout.piano_csswidth, this.vscrollbar_height); // layout.cssheight
   // resize timeline
-  Util.resize_canvas (timeline_canvas, layout.notes_csswidth, 24);
+  Util.resize_canvas (timeline_canvas, layout.notes_csswidth, this.$refs.timeline_wrapper.clientHeight);
   // resize notes
   Util.resize_canvas (notes_canvas, layout.notes_csswidth, this.vscrollbar_height); // layout.cssheight
-  // resize button area
-  const piano_buttons = this.$refs.piano_roll_buttons;
-  piano_buttons.style.width = layout.piano_csswidth + 'px';
   // vscrollbar setup
   let px, layout_changed = false;
   px = (this.vscrollbar_height * (vscrollbar_proportion + 1)) + 'px';
@@ -478,7 +503,7 @@ function piano_layout () {
   layout.yoffset = () => {
     const yscroll = this.$refs.vscrollbar.scrollTop / (this.vscrollbar_height * vscrollbar_proportion);
     let yoffset = layout.dpr_height - yscroll * (layout.dpr_height - this.vscrollbar_height * DPR);
-    yoffset -= layout.thickness; // leave a pixel for overlapping piano key borders
+    yoffset -= 2 * layout.thickness; // leave room for overlapping piano key borders
     return yoffset;
   };
   // hscrollbar setup
@@ -523,7 +548,7 @@ function render_piano()
 {
   const canvas = this.$refs['piano-canvas'], cstyle = getComputedStyle (canvas);
   const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
-  const layout = this.layout, yoffset = layout.yoffset();
+  const layout = this.layout, DPR = layout.DPR, yoffset = layout.yoffset();
   // resize canvas to match onscreen pixels, paint bg with white key row color
   const light_row = csp ('--piano-roll-light-row');
   ctx.fillStyle = light_row;
@@ -546,21 +571,21 @@ function render_piano()
     ctx.lineWidth = th;
     for (let k = 0; k < layout.wkeys.length; k++) {
       const p = layout.wkeys[k];
-      const x = 0, y = oy - p[0];
-      const w = layout.white_width, h = p[1];
-      ctx.fillRect   (x + th, y - h + th, w - 2 * th, h - th);	// v-overlap by 1*th
+      const x = DPR, y = oy - p[0];
+      const w = layout.white_width - DPR, h = p[1];
+      ctx.fillRect (x, y - h + th, w - 2 * th, h - th);		// v-overlap by 1*th
       const sx = x + hf, sy = y - h + hf;			// stroke coords
-      ctx.strokeStyle = white_glint;		// highlight
-      ctx.strokeRect (sx, sy + th, w - 2 * th, h - th);
-      ctx.strokeStyle = white_border;		// border
-      ctx.strokeRect (sx, sy, w - th, h);			// v-overlap by 1*th
+      ctx.strokeStyle = white_glint;				// highlight
+      ctx.strokeRect (sx, sy + th, w - th, h - th);
+      ctx.strokeStyle = white_border;				// border
+      ctx.strokeRect (sx - th, sy, w, h);			// v-overlap by 1*th
     }
     // draw black keys
     ctx.fillStyle = black_base;
     ctx.lineWidth = th;
     for (let k = 0; k < layout.bkeys.length; k++) {
       const p = layout.bkeys[k];
-      const x = 0, y = oy - p[0];
+      const x = DPR, y = oy - p[0];
       const w = layout.black_width, h = p[1];
       const gradient = [ [0, black_base], [.08, black_base], [.15, black_shine],   [1, black_base] ];
       ctx.fillStyle = Util.linear_gradient_from (ctx, gradient, x + th, y - h / 2, x + w - 2 * th, y - h / 2);
@@ -571,6 +596,9 @@ function render_piano()
       ctx.strokeStyle = black_border;		// border
       ctx.strokeRect (sx, sy, w - th, h);
     }
+    // outer border
+    ctx.fillStyle = white_border;
+    ctx.fillRect (0, 0, DPR, canvas.height);
   }
 
   // figure font size for piano key labels
@@ -579,7 +607,7 @@ function render_piano()
   fpx = Util.clamp (fpx / layout.DPR, 7, 12) * layout.DPR;
   if (fpx >= 6) {
     ctx.fillStyle = csp ('--piano-roll-key-color');
-    const key_font = csp ('--piano-roll-key-font');
+    const key_font = csp ('--piano-roll-font');
     const fpx_parts = key_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
     ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
     // measure Midi labels, faster if batched into an array
@@ -705,7 +733,7 @@ function render_timegrid (canvas, with_labels)
   const gy2 = canvas.height * (with_labels ? 0.5 : 0), gy3 = canvas.height * (with_labels ? 0.75 : 0);
   const ctx = canvas.getContext ('2d'), csp = cstyle.getPropertyValue.bind (cstyle);
   const layout = this.layout, lsx = layout.xscroll(), th = layout.thickness;
-  const grid_main1 = csp ('--piano-roll-grid-main1'), grid_sub1 = csp ('--piano-roll-grid-sub1');
+  const grid_main = csp ('--piano-roll-grid-main'), grid_sub = csp ('--piano-roll-grid-sub');
   const TPN64 = PPQN / 16;			// Ticks per 64th note
   const TPD = TPN64 * 64 / signature[1];	// Ticks per denominator fraction
   const bar_ticks = signature[0] * TPD;		// Ticks per bar
@@ -733,11 +761,11 @@ function render_timegrid (canvas, with_labels)
 
   // step through visible tick fractions and draw lines
   let tx = 0, c = 0, d = 0;
-  const grid_sub2 = stepping[2] ? grid_main1 : grid_sub1;
+  const grid_sub2 = stepping[2] ? grid_main : grid_sub;
   for (let tick = start; tx < canvas.width; tick += stepping[0])
     {
       tx = tick * layout.tickscale - lsx;
-      ctx.fillStyle = c ? d ? grid_sub1 : grid_sub2 : grid_main1;
+      ctx.fillStyle = c ? d ? grid_sub : grid_sub2 : grid_main;
       const gy = c ? d ? gy3 : gy2 : gy1;
       ctx.fillRect (tx, gy, th, canvas.height);
       c += 1;
@@ -753,7 +781,7 @@ function render_timegrid (canvas, with_labels)
 
   // step through all denominators and draw labels
   ctx.fillStyle = csp ('--piano-roll-num-color');
-  const num_font = csp ('--piano-roll-num-font');
+  const num_font = csp ('--piano-roll-font');
   const fpx_parts = num_font.split (/\s*\d+px\s*/i); // 'bold 10px sans' -> [ ['bold', 'sans']
   const fpx = 24;
   ctx.font = fpx_parts[0] + ' ' + fpx + 'px ' + (fpx_parts[1] || '');
