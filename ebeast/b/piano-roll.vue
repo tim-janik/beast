@@ -132,7 +132,7 @@
 <template>
 
   <b-grid class="b-piano-roll" tabindex="0"
-	  @keydown="keydown" @focus="focuschange" @blur="focuschange"
+	  @keydown="piano_ctrl.keydown ($event)" @focus="focuschange" @blur="focuschange"
 	  @mouseenter="mouseenter" @mouseleave="mouseleave" >
     <!-- VTitle, COL-1 -->
     <span class="-vtitle" style="grid-row: 1/-1"  > VTitle </span>
@@ -167,7 +167,7 @@
     <!-- Roll, COL-3 -->
     <div class="-overflow-hidden -notes-wrapper" style="grid-column: 3; grid-row: 2" ref="scrollarea"
 	 @wheel.stop="wheel_event ($event, 'notes')" >
-      <canvas class="b-piano-roll-notes tabular-nums" @click="notes_click" ref="notes_canvas" ></canvas>
+      <canvas class="b-piano-roll-notes tabular-nums" @click="piano_ctrl.notes_click ($event)" ref="notes_canvas" ></canvas>
     </div>
 
     <!-- VScrollborder, COL-4 -->
@@ -191,9 +191,14 @@
 </template>
 
 <script>
+import {
+  PianoCtrl,
+  PIANO_OCTAVES,	// 11
+  PIANO_KEYS,		// 132
+  PPQN,
+} from "./piano-ctrl.js";
+
 const floor = Math.floor, round = Math.round;
-const PIANO_OCTAVES = 11, PIANO_KEYS = PIANO_OCTAVES * 12;
-const PPQN = 384;	// ticks per quarter note
 
 function observable_msrc_data () {
   const data = {
@@ -228,6 +233,9 @@ export default {
       this.$forceUpdate();
     },
   },
+  created () {
+    this.piano_ctrl = new PianoCtrl (this);
+  },
   mounted () {
     // setup tool state
     this.usetool (this.pianotool);
@@ -243,6 +251,7 @@ export default {
   },
   destroyed() {
     this.resize_observer.disconnect();
+    this.piano_ctrl = null;
   },
   methods: {
     focuschange() {
@@ -303,6 +312,7 @@ export default {
       // store new zoom & scroll positions
       if (this.msrc && this.msrc.$id && this.auto_scrolls)
 	this.auto_scrolls[this.msrc.$id] = this.snapshot_zoomscroll();
+      this.piano_ctrl.dom_update();
     },
     scrollbar_scroll() {
       render_timeline.call (this);
@@ -311,88 +321,6 @@ export default {
       // store new zoom & scroll positions
       if (this.msrc && this.msrc.$id && this.auto_scrolls)
 	this.auto_scrolls[this.msrc.$id] = this.snapshot_zoomscroll();
-    },
-    keydown (event) {
-      const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
-      const idx = find_note (this.adata.pnotes, n => this.adata.focus_noteid == n.id);
-      let note = idx >= 0 ? this.adata.pnotes[idx] : {};
-      const big = 9e12; // assert: big * 1000 + 999 < Number.MAX_SAFE_INTEGER
-      let nextdist = +Number.MAX_VALUE, nextid = -1, pred, score;
-      switch (event.keyCode) {
-	case RIGHT:
-	  if (idx < 0)
-	    note = { id: -1, tick: -1, note: -1, duration: 0 };
-	  pred  = n => n.tick > note.tick || (n.tick == note.tick && n.key >= note.key);
-	  score = n => (n.tick - note.tick) * 1000 + n.key;
-	  // nextid = idx >= 0 && idx + 1 < this.adata.pnotes.length ? this.adata.pnotes[idx + 1].id : -1;
-	  break;
-	case LEFT:
-	  if (idx < 0)
-	    note = { id: -1, tick: +big, note: 1000, duration: 0 };
-	  pred  = n => n.tick < note.tick || (n.tick == note.tick && n.key <= note.key);
-	  score = n => (note.tick - n.tick) * 1000 + 1000 - n.key;
-	  // nextid = idx > 0 ? this.adata.pnotes[idx - 1].id : -1;
-	  break;
-	case DOWN:
-	  if (note.id)
-	    {
-	      this.msrc.change_note (note.id, note.tick, note.duration, Math.max (note.key - 1, 0), note.fine_tune, note.velocity);
-	      event.preventDefault();
-	    }
-	  break;
-	case UP:
-	  if (note.id)
-	    {
-	      this.msrc.change_note (note.id, note.tick, note.duration, Math.min (note.key + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
-	      event.preventDefault();
-	    }
-	  break;
-      }
-      if (note.id && pred && score)
-	{
-	  this.adata.pnotes.forEach (n => {
-	    if (n.id != note.id && pred (n))
-	      {
-		const dist = score (n);
-		if (dist < nextdist)
-		  {
-		    nextdist = dist;
-		    nextid = n.id;
-		  }
-	      }
-	  });
-	}
-      if (nextid > 0)
-	{
-	  this.adata.focus_noteid = nextid;
-	  event.preventDefault();
-	}
-    },
-    async notes_click (event) {
-      if (!this.msrc)
-	return;
-      event.preventDefault();
-      const tick = this.layout.tick_from_x (event.offsetX);
-      const midinote = this.layout.midinote_from_y (event.offsetY);
-      const idx = find_note (this.adata.pnotes,
-			     n => tick >= n.tick && tick < n.tick + n.duration && n.key == midinote);
-      if (idx >= 0 && this.pianotool == 'E')
-	{
-	  let note = this.adata.pnotes[idx];
-	  this.msrc.change_note (note.id, note.tick, 0, note.key, note.fine_tune, note.velocity);
-	}
-      else if (idx >= 0)
-	{
-	  const note = this.adata.pnotes[idx];
-	  this.adata.focus_noteid = note.id;
-	}
-      else if (this.pianotool == 'P')
-	{
-	  this.adata.focus_noteid = undefined;
-	  const note_id = await this.msrc.change_note (-1, tick, PPQN * 0.25, midinote, 0, 1);
-	  if (this.adata.focus_noteid === undefined)
-	    this.adata.focus_noteid = note_id;
-	}
     },
     snapshot_zoomscroll (defaults = false) {
       if (defaults && this.snapshot_zoomscroll.defaults)
@@ -408,16 +336,6 @@ export default {
     },
   },
 };
-
-function find_note (allnotes, predicate) {
-  for (let i = 0; i < allnotes.length; ++i)
-    {
-      const n = allnotes[i];
-      if (predicate (n))
-	return i;
-    }
-  return -1;
-}
 
 const hscrollbar_proportion = 20, vscrollbar_proportion = 11;
 
