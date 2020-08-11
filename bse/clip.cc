@@ -91,11 +91,14 @@ ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, d
   if (tick < 0)
     return -1;
   PartNote ev;
+  ev.tick = tick;
+  ev.key = key;
+  ev.id = 0;
+  if (find_key_at_tick (ev) && ev.id != id)
+    notes_.remove (ev);
   ev.id = id;
   ev.channel = 0xffff;
-  ev.tick = tick;
   ev.duration = duration;
-  ev.key = key;
   ev.fine_tune = fine_tune;
   ev.velocity = velocity;
   ev.selected = false;
@@ -106,6 +109,18 @@ ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, d
     ret = notes_.remove (ev) ? 0 : -1;
   emit_event ("notify:notes"); // FIXME: move to eventlist
   return ret;
+}
+
+bool
+ClipImpl::find_key_at_tick (PartNote &ev)
+{
+  for (const auto &e : notes_)
+    if (e.key == ev.key && e.tick == ev.tick)
+      {
+        ev = e;
+        return true;
+      }
+  return false;
 }
 
 } // Bse

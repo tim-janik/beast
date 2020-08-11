@@ -27,6 +27,7 @@ protected:
   virtual void xml_serialize (SerializationNode &xs) override;
   virtual void xml_reflink   (SerializationNode &xs) override;
   explicit     ClipImpl      ();
+  bool         find_key_at_tick (PartNote &ev);
 public:
   using ClipImplP = std::shared_ptr<ClipImpl>;
   virtual int            end_tick       () override;
