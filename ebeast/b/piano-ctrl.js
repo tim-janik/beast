@@ -4,6 +4,8 @@
 export const PIANO_OCTAVES = 11;
 export const PIANO_KEYS = PIANO_OCTAVES * 12;
 export const PPQN = 384;			// ticks per quarter note
+const MINDURATION = PPQN / 64;
+const MINTICKS = MINDURATION / 6;
 
 export class PianoCtrl {
   constructor (piano_roll)
@@ -24,9 +26,19 @@ export class PianoCtrl {
     const fract = tick / quant;
     return (nearest ? Math.round : Math.trunc) (fract) * quant;
   }
+  tickdelta (event)
+  {
+    if (!event.shiftKey)
+      return this.quantization();
+    const roll = this.piano_roll, layout = roll.layout;
+    const pixelstep = 2;
+    let dist = Math.ceil (pixelstep / (layout.tickscale * MINTICKS));
+    dist = Math.max (MINTICKS, dist * MINTICKS);
+    return dist;
+  }
   keydown (event)
   {
-    const roll = this.piano_roll, msrc = roll.msrc, layout = roll.layout;
+    const roll = this.piano_roll, msrc = roll.msrc;
     const LEFT = Util.KeyCode.LEFT, UP = Util.KeyCode.UP, RIGHT = Util.KeyCode.RIGHT, DOWN = Util.KeyCode.DOWN;
     const idx = find_note (roll.adata.pnotes, n => roll.adata.focus_noteid == n.id);
     let note = idx >= 0 ? roll.adata.pnotes[idx] : {};
@@ -54,17 +66,19 @@ export class PianoCtrl {
 	break;
       case LEFT: case SHIFT + LEFT:
 	if (note.id)
-	  {
-	    const dist = event.shiftKey ? Math.ceil (1 / layout.tickscale) : this.quantization();
-	    msrc.change_note (note.id, Math.max (0, note.tick - dist), note.duration, note.key, note.fine_tune, note.velocity);
-	  }
+	  msrc.change_note (note.id, Math.max (0, note.tick - this.tickdelta (event)), note.duration, note.key, note.fine_tune, note.velocity);
 	break;
       case RIGHT: case SHIFT + RIGHT:
 	if (note.id)
-	  {
-	    const dist = event.shiftKey ? Math.ceil (1 / layout.tickscale) : this.quantization();
-	    msrc.change_note (note.id, note.tick + dist, note.duration, note.key, note.fine_tune, note.velocity);
-	  }
+	  msrc.change_note (note.id, note.tick + this.tickdelta (event), note.duration, note.key, note.fine_tune, note.velocity);
+	break;
+      case CTRL + LEFT: case SHIFT + CTRL + LEFT:
+	if (note.id)
+	  msrc.change_note (note.id, note.tick, Math.max (MINDURATION, note.duration - this.tickdelta (event)), note.key, note.fine_tune, note.velocity);
+	break;
+      case CTRL + RIGHT: case SHIFT + CTRL + RIGHT:
+	if (note.id)
+	  msrc.change_note (note.id, note.tick, note.duration + this.tickdelta (event), note.key, note.fine_tune, note.velocity);
 	break;
       case DOWN:
 	if (note.id)
