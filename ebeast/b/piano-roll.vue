@@ -229,12 +229,14 @@ export default {
       this.adata.vzoom = this.auto_scrollto.vzoom;
       // reset other state
       this.adata.focus_noteid = -1;
+      this.stepping = [ PPQN, 0, 0 ];
       // re-layout, even if just this.auto_scrollto changed
       this.$forceUpdate();
     },
   },
   created () {
     this.piano_ctrl = new PianoCtrl (this);
+    this.stepping = [ PPQN, 0, 0 ];
   },
   mounted () {
     // setup tool state
@@ -672,6 +674,7 @@ function render_timegrid (canvas, with_labels)
     stepping = [ TPD, signature[0], 0 ];
   else // just use bars
     stepping = [ bar_ticks, 0, 0 ];
+  this.stepping = stepping;
 
   // first 2^x aligned bar tick before/at xscroll
   const start_bar = floor ((lsx + layout.hpad) / (barjumps * bar_pixels));

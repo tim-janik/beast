@@ -13,42 +13,66 @@ export class PianoCtrl {
   dom_update()
   {
   }
+  quantization ()
+  {
+    const roll = this.piano_roll, stepping = roll.stepping ? roll.stepping[0] : PPQN;
+    return Math.min (stepping, PPQN);
+  }
+  quantize (tick, nearest = false)
+  {
+    const quant = this.quantization();
+    const fract = tick / quant;
+    return (nearest ? Math.round : Math.trunc) (fract) * quant;
+  }
   keydown (event)
   {
-    const roll = this.piano_roll, msrc = roll.msrc;
+    const roll = this.piano_roll, msrc = roll.msrc, layout = roll.layout;
     const LEFT = Util.KeyCode.LEFT, UP = Util.KeyCode.UP, RIGHT = Util.KeyCode.RIGHT, DOWN = Util.KeyCode.DOWN;
     const idx = find_note (roll.adata.pnotes, n => roll.adata.focus_noteid == n.id);
     let note = idx >= 0 ? roll.adata.pnotes[idx] : {};
     const big = 9e12; // assert: big * 1000 + 999 < Number.MAX_SAFE_INTEGER
     let nextdist = +Number.MAX_VALUE, nextid = -1, pred, score;
-    switch (event.keyCode) {
-      case RIGHT:
+    const SHIFT = 0x1000, CTRL = 0x2000, ALT = 0x4000;
+    switch (event.keyCode + (event.shiftKey ? SHIFT : 0) + (event.ctrlKey ? CTRL : 0) + (event.altKey ? ALT : 0)) {
+      case ALT + RIGHT:
 	if (idx < 0)
 	  note = { id: -1, tick: -1, note: -1, duration: 0 };
 	pred  = n => n.tick > note.tick || (n.tick == note.tick && n.key >= note.key);
 	score = n => (n.tick - note.tick) * 1000 + n.key;
 	// nextid = idx >= 0 && idx + 1 < roll.adata.pnotes.length ? roll.adata.pnotes[idx + 1].id : -1;
 	break;
-      case LEFT:
+      case ALT + LEFT:
 	if (idx < 0)
 	  note = { id: -1, tick: +big, note: 1000, duration: 0 };
 	pred  = n => n.tick < note.tick || (n.tick == note.tick && n.key <= note.key);
 	score = n => (note.tick - n.tick) * 1000 + 1000 - n.key;
 	// nextid = idx > 0 ? roll.adata.pnotes[idx - 1].id : -1;
 	break;
-      case DOWN:
+      case 81: // 'Q':
+	if (note.id)
+	    msrc.change_note (note.id, this.quantize (note.tick, true), note.duration, note.key, note.fine_tune, note.velocity);
+	break;
+      case LEFT: case SHIFT + LEFT:
 	if (note.id)
 	  {
-	    msrc.change_note (note.id, note.tick, note.duration, Math.max (note.key - 1, 0), note.fine_tune, note.velocity);
-	    event.preventDefault();
+	    const dist = event.shiftKey ? Math.ceil (1 / layout.tickscale) : this.quantization();
+	    msrc.change_note (note.id, Math.max (0, note.tick - dist), note.duration, note.key, note.fine_tune, note.velocity);
 	  }
+	break;
+      case RIGHT: case SHIFT + RIGHT:
+	if (note.id)
+	  {
+	    const dist = event.shiftKey ? Math.ceil (1 / layout.tickscale) : this.quantization();
+	    msrc.change_note (note.id, note.tick + dist, note.duration, note.key, note.fine_tune, note.velocity);
+	  }
+	break;
+      case DOWN:
+	if (note.id)
+	  msrc.change_note (note.id, note.tick, note.duration, Math.max (note.key - 1, 0), note.fine_tune, note.velocity);
 	break;
       case UP:
 	if (note.id)
-	  {
-	    msrc.change_note (note.id, note.tick, note.duration, Math.min (note.key + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
-	    event.preventDefault();
-	  }
+	  msrc.change_note (note.id, note.tick, note.duration, Math.min (note.key + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
 	break;
     }
     if (note.id && pred && score)
@@ -66,10 +90,8 @@ export class PianoCtrl {
 	});
       }
     if (nextid > 0)
-      {
-	roll.adata.focus_noteid = nextid;
-	event.preventDefault();
-      }
+      roll.adata.focus_noteid = nextid;
+    event.preventDefault();
   }
   async notes_click (event) {
     const roll = this.piano_roll, msrc = roll.msrc, layout = roll.layout;
@@ -93,7 +115,7 @@ export class PianoCtrl {
     else if (roll.pianotool == 'P')
       {
 	roll.adata.focus_noteid = undefined;
-	const note_id = await msrc.change_note (-1, tick, PPQN * 0.25, midinote, 0, 1);
+	const note_id = await msrc.change_note (-1, this.quantize (tick), PPQN * 0.25, midinote, 0, 1);
 	if (roll.adata.focus_noteid === undefined)
 	  roll.adata.focus_noteid = note_id;
       }
