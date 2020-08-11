@@ -16,6 +16,7 @@ ebeast/all: $>/app/index.html
 # == sources ==
 ebeast/b/vue.inputs	::= $(sort $(wildcard ebeast/b/*.vue))
 ebeast/b/vue.stems	::= $(patsubst ebeast/b/%.vue, %, $(ebeast/b/vue.inputs))
+ebeast/b/js.inputs	::= $(sort $(wildcard ebeast/b/*.js))
 ebeast/eslint.files	::= $(wildcard ebeast/*.html) $(wildcard ebeast/*.js ebeast/b/*.js)
 ebeast/app.scss.d	::= $(wildcard ebeast/*.scss ebeast/b/*.scss)
 app/assets/tri-pngs	::= $(strip	\
@@ -40,17 +41,21 @@ ebeast/copy.tool.targets ::= $(strip	\
 	$>/ebeast/markdown-it.rollup.js	\
 	$>/ebeast/.eslintrc.js		\
 )
-ebeast/copy.content.targets ::= $(strip	\
+app/copy.content.targets ::= $(strip	\
 	$>/app/main.js			\
 	$>/app/jsbse.js			\
 	$>/app/menus.js			\
 	$>/app/util.js			\
 )
-ebeast/copy.targets ::= $(ebeast/copy.tool.targets) $(ebeast/copy.content.targets)
+ebeast/copy.targets ::= $(ebeast/copy.tool.targets) $(app/copy.content.targets) $(ebeast/b/js.inputs:ebeast/b/%=$>/app/b/%)
 
 # == ebeast/copy.targets ==
-$(filter $>/ebeast/%, $(ebeast/copy.targets)):	$>/ebeast/%: ebeast/% | $>/ebeast/ ;	$(QGEN) && cp ebeast/$(@F) $@
-$(filter $>/app/%, $(ebeast/copy.targets)):	$>/app/%:    ebeast/% | $>/app/    ;	$(QGEN) && cp ebeast/$(@F) $@
+$(filter $>/ebeast/%, $(ebeast/copy.targets)):	$>/ebeast/%: ebeast/%	| $>/ebeast/
+	$(QECHO) COPY $@
+	$(Q) $(CP) $(@:$>/ebeast/%=ebeast/%) $@
+$(filter $>/app/%, $(ebeast/copy.targets)):	$>/app/%:    ebeast/%	| $>/app/b/
+	$(QECHO) COPY $@
+	$(Q) $(CP) $(@:$>/app/%=ebeast/%) $@
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
@@ -106,17 +111,21 @@ $>/electron/ebeast:						| $>/
 	$Q mv $>/electron/electron $>/electron/ebeast
 
 # == $>/ebeast/index-mjs.list ==
-$>/ebeast/index-mjs.list: $(ebeast/b/vue.inputs) ebeast/index.html | $>/ebeast/
+$>/ebeast/index-mjs.list: $(ebeast/b/vue.inputs) $(ebeast/b/js.inputs) ebeast/index.html | $>/ebeast/
 	$(QGEN)
 	$Q for C in $(ebeast/b/vue.stems) ; do \
 	  echo '    <link rel="stylesheet"    href="/b/'"$$C"'.css">' || break ; \
 	  echo '    <link rel="modulepreload" href="/b/'"$$C"'.mjs" data-autoload>' || break ; \
 	done >$@.tmp
+	$Q for C in $(notdir $(ebeast/b/js.inputs)) ; do \
+	  echo '    <link rel="modulepreload" href="/b/'"$$C"'">' || break ; \
+	done >>$@.tmp
 	$Q mv $@.tmp $@
 
 # == app ==
-$>/app/index.html: $>/electron/ebeast $>/ebeast/lint.done $(ebeast/copy.targets) $(app/generated) $(app/assets.copies)
-$>/app/index.html: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_modules/npm.done ebeast/eknob.svg $>/ebeast/index-mjs.list
+$>/app/index.html: $(app/generated) $(app/assets.copies) $>/app/bseapi_jsonipc.js | $>/app/b/
+$>/app/index.html: $>/electron/ebeast $>/ebeast/lint.done $(ebeast/copy.targets)
+$>/app/index.html: ebeast/index.html $>/ebeast/node_modules/npm.done ebeast/eknob.svg $>/ebeast/index-mjs.list
 	$(QGEN)
 	$Q ln -f -s ../doc $>/app/doc
 	$Q $(CP) -a $>/ebeast/node_modules/vue/dist/vue.esm.browser.js $>/app/vue.mjs
