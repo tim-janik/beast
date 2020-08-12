@@ -1458,6 +1458,21 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
   bse_bus_or_track_set_outputs (self, newoutputs);
 }
 
+void
+TrackImpl::update_bpm (double bpm)
+{
+  if (midi_in_)
+    {
+      const AudioSignal::ParamId BPM = midi_in_->BPM;
+      AudioSignal::ProcessorP proc = midi_in_;
+      const double nbpm = proc->value_to_normalized (BPM, bpm);
+      auto lambda = [proc, BPM, nbpm] () {
+        proc->set_normalized (BPM, nbpm);
+      };
+      BSE_SERVER.commit_job (lambda);
+    }
+}
+
 DeviceContainerIfaceP
 TrackImpl::device_container()
 {
@@ -1465,8 +1480,11 @@ TrackImpl::device_container()
     {
       assert_return (!midi_in_, nullptr);
       const char *midi_in_uri = "Bse.MidiLib.MidiInput";
-      MidiLib::MidiInputIfaceP midi_in_ = std::dynamic_pointer_cast<MidiLib::MidiInputIface> (AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), midi_in_uri));
+      midi_in_ = std::dynamic_pointer_cast<MidiLib::MidiInputIface> (AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), midi_in_uri));
       assert_return (midi_in_, nullptr);
+      SongImpl *song = get_song().get();
+      if (song)
+        update_bpm (song->bpm());
       DeviceImplP devicep = DeviceImpl::create_single_device ("Bse.AudioSignal.Chain");
       assert_return (devicep != nullptr, nullptr);
       DeviceContainerImplP device_container = std::dynamic_pointer_cast<DeviceContainerImpl> (devicep);

@@ -73,6 +73,7 @@ protected:
   virtual                  ~SongImpl                ();
 public:
   explicit                  SongImpl                (BseObject*);
+  void                      propagate_bpm           ();
   virtual int               numerator               () const override;
   virtual void              numerator               (int val) override;
   virtual int               denominator             () const override;

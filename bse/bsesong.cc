@@ -357,6 +357,7 @@ static void
 bse_song_prepare (BseSource *source)
 {
   BseSong *self = BSE_SONG (source);
+  Bse::SongImpl *impl = self->as<Bse::SongImpl*>();
 
   bse_object_lock (BSE_OBJECT (self));
   self->sequencer_underrun_detected_SL = FALSE;
@@ -364,6 +365,7 @@ bse_song_prepare (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
+  impl->propagate_bpm();
   bse_song_update_tpsi_SL (self);
 
   if (!self->position_handler)
@@ -857,8 +859,19 @@ SongImpl::bpm (double val)
   BseSong *self = as<BseSong*>();
   if (APPLY_IDL_PROPERTY (self->bpm, float (val)))
     bse_song_update_tpsi_SL (self);
+  propagate_bpm();
 }
 
+void
+SongImpl::propagate_bpm()
+{
+  BseSong *self = as<BseSong*>();
+  for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      TrackImpl *track = ((BseTrack*) ring->data)->as<TrackImpl*>();
+      track->update_bpm (self->bpm);
+    }
+}
 
 int
 SongImpl::tpqn() const
