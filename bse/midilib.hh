@@ -9,6 +9,8 @@ namespace Bse {
 namespace MidiLib {
 
 class MidiInputIface : public AudioSignal::Processor {
+public:
+  constexpr static ParamId BPM = ParamId (1);
 };
 
 using MidiInputIfaceP = std::shared_ptr<MidiInputIface>;

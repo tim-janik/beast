@@ -23,7 +23,9 @@ class MidiInputImpl : public MidiInputIface {
   }
   void
   initialize () override
-  {}
+  {
+    add_param (BPM, "BPM",  "", 20, 500, 110);
+  }
   void
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
   {
