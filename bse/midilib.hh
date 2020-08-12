@@ -8,6 +8,11 @@ namespace Bse {
 
 namespace MidiLib {
 
+class MidiInputIface : public AudioSignal::Processor {
+};
+
+using MidiInputIfaceP = std::shared_ptr<MidiInputIface>;
+
 } // MidiLib
 } // Bse
 

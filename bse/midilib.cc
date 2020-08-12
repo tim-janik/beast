@@ -12,7 +12,7 @@ namespace MidiLib {
 using namespace AudioSignal;
 
 // == MidiInputImpl ==
-class MidiInputImpl : public AudioSignal::Processor {
+class MidiInputImpl : public MidiInputIface {
   void
   query_info (ProcessorInfo &info) override
   {
@@ -28,6 +28,7 @@ class MidiInputImpl : public AudioSignal::Processor {
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
   {
     remove_all_buses();
+    prepare_event_input();
     prepare_event_output();
   }
   void
@@ -36,13 +37,10 @@ class MidiInputImpl : public AudioSignal::Processor {
   void
   render (uint n_frames) override
   {
-    EventStream evout = get_event_output(); // needs prepare_event_output()
-    EventRange evinp { evout };
-    uint n = evinp.events_pending();
-    (void) n;
+    EventStream &evout = get_event_output(); // needs prepare_event_output()
+    EventRange evinp = get_event_input();
     for (const auto ev : evinp)
-      if (ev.type == Event::NOTE_ON)
-        evout.append (ev.frame, ev);
+      evout.append (ev.frame, ev);
   }
 };
 static auto midilib_midiinputimpl = Bse::enroll_asp<MidiInputImpl>();
