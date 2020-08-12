@@ -101,12 +101,12 @@ public:
 
 /// A readonly view and iterator into an EventStream.
 class EventRange {
-  const EventStream estream_;
+  const EventStream &estream_;
 public:
   const Event* begin          () const  { return &*estream_.begin(); }
   const Event* end            () const  { return &*estream_.end(); }
   size_t       events_pending () const  { return estream_.size(); }
-  explicit     EventRange     (const EventStream estream);
+  explicit     EventRange     (const EventStream &estream);
 };
 
 } // AudioSignal
