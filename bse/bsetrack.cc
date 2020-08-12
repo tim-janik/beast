@@ -1463,12 +1463,19 @@ TrackImpl::device_container()
 {
   if (!device_container_)
     {
+      assert_return (!midi_in_, nullptr);
+      const char *midi_in_uri = "Bse.MidiLib.MidiInput";
+      MidiLib::MidiInputIfaceP midi_in_ = std::dynamic_pointer_cast<MidiLib::MidiInputIface> (AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), midi_in_uri));
+      assert_return (midi_in_, nullptr);
       DeviceImplP devicep = DeviceImpl::create_single_device ("Bse.AudioSignal.Chain");
       assert_return (devicep != nullptr, nullptr);
       DeviceContainerImplP device_container = std::dynamic_pointer_cast<DeviceContainerImpl> (devicep);
       assert_return (device_container != nullptr, nullptr);
       device_container_ = device_container;
-      BSE_SERVER.assign_event_source (*device_container_->processor());
+      AudioSignal::Chain *container = dynamic_cast<AudioSignal::Chain*> (&*device_container_->processor());
+      assert_return (container != nullptr, nullptr);
+      container->set_event_source (midi_in_);
+      BSE_SERVER.add_event_input (*midi_in_);
     }
   return device_container_;
 }

@@ -8,6 +8,7 @@
 #include <bse/bseproject.hh>
 #include <bse/device.hh>
 #include <bse/clip.hh>
+#include <bse/midilib.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
@@ -91,6 +92,7 @@ using SongImplP = std::shared_ptr<SongImpl>;
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
   DeviceContainerImplP device_container_;
+  MidiLib::MidiInputIfaceP midi_in_;
   using ClipV = std::vector<ClipImplP>;
   ClipV                clips_;
 protected:

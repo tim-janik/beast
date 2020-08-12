@@ -284,8 +284,6 @@ protected:
   EventRange    get_event_input        ();
   void          prepare_event_output   ();
   EventStream&  get_event_output       ();
-  void          connect_event_input    (Processor &oproc);
-  void          disconnect_event_input ();
 public:
   using RegistryList = std::vector<ProcessorInfo>;
   using MakeProcessor = ProcessorP (*) (const std::any*);
@@ -331,6 +329,8 @@ public:
   static uint64 timestamp         ();
   bool          has_event_input   ();
   bool          has_event_output  ();
+  void          connect_event_input    (Processor &oproc);
+  void          disconnect_event_input ();
   // Registration and factory
   static RegistryList  registry_list      ();
   static ProcessorP    registry_create    (Engine &engine, const std::string &uuiduri);
@@ -510,6 +510,13 @@ inline uint
 BusInfo::n_channels () const
 {
   return speaker_arrangement_count_channels (speakers);
+}
+
+/// Retrieve AudioSignal::Engine handle for this Processor.
+inline Engine&
+Processor::engine () const
+{
+  return engine_;
 }
 
 /// Sample rate mixing frequency in Hz as unsigned, used for render().
