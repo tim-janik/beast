@@ -3,6 +3,7 @@
 #define __BSE_EVENTLIST_HH__
 
 #include <bse/bcore.hh>
+#include <bse/serializable.hh>
 #include <any>
 
 namespace Bse {
@@ -39,6 +40,7 @@ public:
   auto         ordered_events () -> typename OrderedEventList::ConstP;
   CIter        begin          () const          { return events_.begin(); }
   CIter        end            () const          { return events_.end(); }
+  void         xml_serialize (Xms::SerializationNode &xs, const String &ident) { xs[ident] & events_; }
 private:
   EventVector        events_;
   Compare            compare_;

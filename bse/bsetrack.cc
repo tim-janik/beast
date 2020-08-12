@@ -1169,8 +1169,34 @@ TrackImpl::xml_serialize (SerializationNode &xs)
         }
       printerr ("Bse::TrackImpl::%s: failed to create device: %s\n", __func__, uuiduri);
     }
+  for (auto &xc : xs.children ("Clip"))                        // in_load
+    {
+      const uint index = string_to_uint (xc.get ("index"));
+      ClipSeq cs = list_clips();
+      if (index < cs.size())
+        {
+          ClipIfaceP clipi = cs[index];
+          if (clipi)
+            {
+              auto *clip = dynamic_cast<ClipImpl*> (clipi.get());
+              if (clip)
+                {
+                  xc.load (*clip);
+                  continue;
+                }
+            }
+        }
+      else
+        printerr ("Bse::TrackImpl::%s: failed to find clip at: %u\n", __func__, index);
+    }
   for (DeviceIfaceP device : device_container()->list_devices()) // in_save
     xs.save_under ("Device", *dynamic_cast<DeviceImpl*> (device.get()));
+  for (ClipIfaceP clipi : clips_) // in_save
+    {
+      ClipImpl *clip = dynamic_cast<ClipImpl*> (clipi.get());
+      if (clip->needs_serialize())
+        xs.save_under ("Clip", *clip);
+    }
 }
 
 void
@@ -1182,7 +1208,7 @@ TrackImpl::xml_reflink (SerializationNode &xs)
 bool
 TrackImpl::needs_serialize()
 {
-  return device_container()->list_devices().size() > 0;
+  return clips_.size() || device_container()->list_devices().size() > 0;
 }
 
 bool
@@ -1342,7 +1368,7 @@ TrackImpl::list_clips ()
     {
       clips_.reserve (max_clips);
       while (clips_.size() < max_clips)
-        clips_.push_back (ClipImpl::create_clip());
+        clips_.push_back (ClipImpl::create_clip (*this));
     }
   ClipSeq cs;
   for (auto cp : clips_)

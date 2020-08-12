@@ -1,16 +1,18 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "clip.hh"
 #include "bseserver.hh"
+#include "bsetrack.hh"
 #include "internal.hh"
 
 namespace Bse {
 
 // == ClipImpl ==
 ClipImplP
-ClipImpl::create_clip ()
+ClipImpl::create_clip (TrackImpl &track)
 {
   ClipImplP clipp;
   clipp = FriendAllocator<ClipImpl>::make_shared();
+  clipp->track_ = track.as<TrackImplP>();
   return clipp;
 }
 
@@ -20,10 +22,31 @@ ClipImpl::ClipImpl()
 ClipImpl::~ClipImpl ()
 {}
 
+ssize_t
+ClipImpl::clip_index () const
+{
+  TrackImplP track = track_.lock();
+  if (track)
+    {
+      ClipSeq cs = track->list_clips();
+      for (size_t i = 0; i < cs.size(); i++)
+        if (cs[i].get() == this)
+          return i;
+    }
+  return -1;
+}
+
 void
 ClipImpl::xml_serialize (SerializationNode &xs)
 {
+  if (xs.in_save())
+    {
+      size_t index = clip_index();
+      xs["index"] & index;
+    }
   ObjectImpl::xml_serialize (xs); // always chain to parent's method
+  notes_.xml_serialize (xs, "notes");
+  printerr ("LOADED: clip index=%d notes=%d\n", clip_index(), notes_.size());
 }
 
 void
@@ -97,7 +120,7 @@ ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, d
   if (find_key_at_tick (ev) && ev.id != id)
     notes_.remove (ev);
   ev.id = id;
-  ev.channel = 0xffff;
+  ev.channel = 0;
   ev.duration = duration;
   ev.fine_tune = fine_tune;
   ev.velocity = velocity;
