@@ -869,7 +869,7 @@ SongImpl::propagate_bpm()
   for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
     {
       TrackImpl *track = ((BseTrack*) ring->data)->as<TrackImpl*>();
-      track->update_bpm (self->bpm);
+      track->update_clip();
     }
 }
 

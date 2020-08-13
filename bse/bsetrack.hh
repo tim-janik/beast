@@ -104,7 +104,7 @@ public:
   SongImplP            get_song          ();
   ProjectImplP         project_impl      ();
   bool                 needs_serialize   ();
-  void                 update_bpm        (double bpm);
+  void                 update_clip       ();
   virtual SongTiming   get_timing        (int tick) override;
   virtual PartIfaceP   create_part       (int32 tick) override;
   virtual int          insert_part       (int tick, PartIface &part) override;

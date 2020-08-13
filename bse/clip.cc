@@ -17,7 +17,13 @@ ClipImpl::create_clip (TrackImpl &track)
 }
 
 ClipImpl::ClipImpl()
-{}
+{
+  __attach__ ("notify", [this] (const Aida::Event &event) {
+    TrackImplP track = track_.lock();
+    return_unless (track);
+    track->update_clip();
+  });
+}
 
 ClipImpl::~ClipImpl ()
 {}
@@ -45,6 +51,7 @@ ClipImpl::xml_serialize (SerializationNode &xs)
       xs["index"] & index;
     }
   ObjectImpl::xml_serialize (xs); // always chain to parent's method
+  // FIXME: loading notes leads to ID collisions
   notes_.xml_serialize (xs, "notes");
   printerr ("LOADED: clip index=%d notes=%d\n", clip_index(), notes_.size());
 }
@@ -88,11 +95,19 @@ ClipImpl::assign_range (int starttick, int stoptick)
     emit_event ("notify:start_tick");
 }
 
+/// Retrieve const vector with all notes ordered by tick.
+ClipImpl::OrderedEventList::ConstP
+ClipImpl::tick_events ()
+{
+  return notes_.ordered_events<OrderedEventList> ();
+}
+
+/// List all notes ordered by tick.
 PartNoteSeq
 ClipImpl::list_all_notes ()
 {
   PartNoteSeq ns;
-  auto events = notes_.ordered_events<OrderedEventList> ();
+  auto events = tick_events();
   ns.assign (events->begin(), events->end());
   return ns;
 }
@@ -103,6 +118,7 @@ ClipImpl::list_controls (MidiSignal control_type)
   return {};
 }
 
+/// Change note `id`, or delete (`duration=0`) or create (`id=-1`) it.
 int
 ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, double velocity)
 {
