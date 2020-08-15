@@ -353,7 +353,7 @@ class Engine {
   const double       inyquist_; ///< Inverse Nyquist frequency, i.e. 1.0 / nyquist_;
   const uint         sample_rate_; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
   uint64_t           frame_counter_;
-  uint               flags_;
+  std::atomic<uint>  flags_;
   uint               scheduler_depth_;
   std::vector<Processor*> schedule_;
   std::vector<ProcessorP> roots_;
