@@ -16,12 +16,20 @@ class LiquidSFZ : public AudioSignal::Processor {
   OBusId stereo_out_;
   Synth synth_;
 
+  static constexpr const int PID_CC_OFFSET = 1000;
   void
   initialize () override
   {
     synth_.set_sample_rate (sample_rate());
     synth_.load ("/home/stefan/sfz/SalamanderGrandPianoV3_44.1khz16bit/SalamanderGrandPianoV3.sfz");
     // TODO: handle load error
+
+    auto ccs = synth_.list_ccs();
+    for (const auto& cc_info : ccs)
+      {
+        Id32 pid = cc_info.cc() + PID_CC_OFFSET;
+        add_param (pid, cc_info.label(), cc_info.label(), 0, 100, cc_info.default_value() / 127. * 100, "%");
+      }
   }
   void
   query_info (ProcessorInfo &info) override
@@ -42,11 +50,25 @@ class LiquidSFZ : public AudioSignal::Processor {
   void
   reset () override
   {
-    // TODO: not available in liquidsfz API at the moment
+    // TODO: reset is not available in liquidsfz API at the moment
+
+    adjust_params (true);
+  }
+  void
+  adjust_param (Id32 tag) override
+  {
+    if (tag >= PID_CC_OFFSET)
+      {
+        const int cc = tag - PID_CC_OFFSET;
+        const int cc_value = std::clamp (bse_ftoi (get_param (tag) * 0.01 * 127), 0, 127);
+        synth_.add_event_cc (0, 0, cc, cc_value);
+      }
   }
   void
   render (uint n_frames) override
   {
+    adjust_params (false);
+
     EventRange erange = get_event_input();
     for (const auto &ev : erange)
       {
