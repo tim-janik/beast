@@ -717,14 +717,14 @@ interface Item : LegacyObject {
 /// Part specific note event representation.
 record PartNote
 {
-  int32   id        = Num ("ID", "", 0, STANDARD);
+  int32   id        = Num ("ID", "", 0, GUI);
   int32   channel   = Range ("Channel", "", STANDARD, 0, MAXINT31, 1);
   int32   tick      = Range ("Tick", "", STANDARD, 0, MAXINT31, 1);
   int32   duration  = Range ("Duration", "Duration in number of ticks", STANDARD, 0, MAXINT31, 1);
   int32   key       = Range ("Note", "Pitch as MIDI key", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
   int32   fine_tune = Range ("Fine Tune", "", FINETUNEHINTS, MIN_FINE_TUNE, MAX_FINE_TUNE, 1);
   float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
-  bool    selected  = Bool ("Selected", "", ":readwrite", false);
+  bool    selected  = Bool ("Selected", "", READWRITE, false);
 };
 
 /// A list of part note events.
