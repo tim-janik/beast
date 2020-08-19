@@ -14,7 +14,7 @@ using ClipEventVectorP = ClipImpl::OrderedEventList::ConstP;
 class MidiInputIface : public AudioSignal::Processor {
 public:
   constexpr static ParamId BPM = ParamId (1);
-  virtual void assign_events (ClipEventVectorP cev) = 0;
+  virtual void swap_event_vector (ClipEventVectorP &cev) = 0;
 };
 
 using MidiInputIfaceP = std::shared_ptr<MidiInputIface>;
