@@ -45,6 +45,7 @@ public:
   virtual int            change_note    (int id, int tick, int duration, int key, int fine_tune, double velocity) override;
   bool                   needs_serialize()      { return notes_.size() > 0; }
   static ClipImplP       create_clip    (TrackImpl &track);
+  static uint            next_noteid    ();
 };
 using ClipImplP = ClipImpl::ClipImplP;
 using ClipImplW = std::weak_ptr<ClipImpl>;

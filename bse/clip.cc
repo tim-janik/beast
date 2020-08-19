@@ -42,18 +42,44 @@ ClipImpl::clip_index () const
   return -1;
 }
 
+#define PPQ 384
+
 void
 ClipImpl::xml_serialize (SerializationNode &xs)
 {
   if (xs.in_save())
     {
-      size_t index = clip_index();
-      xs["index"] & index;
+      size_t n = clip_index();
+      xs["index"] & n;
+      n = PPQ;
+      xs["ppq"] & n;
     }
   ObjectImpl::xml_serialize (xs); // always chain to parent's method
-  // FIXME: loading notes leads to ID collisions
-  notes_.xml_serialize (xs, "notes");
+  if (xs.in_save())
+    notes_.xml_serialize (xs, "notes");
+  else if (xs.in_load())
+    {
+      int ppq = PPQ;
+      xs["ppq"] & ppq;
+      std::vector<PartNote> notes;
+      xs["notes"] & notes;
+      for (const auto &cnote : notes)
+        {
+          PartNote note = cnote;
+          note.id = next_noteid();
+          note.tick = note.tick * PPQ / ppq;
+          note.duration = note.duration * PPQ / ppq;
+          notes_.insert (note);
+        }
+    }
   printerr ("LOADED: clip index=%d notes=%d\n", clip_index(), notes_.size());
+}
+
+uint
+ClipImpl::next_noteid()
+{
+  static std::atomic<uint> next_noteid { MIDI_NOTE_ID_FIRST };
+  return next_noteid++;
 }
 
 void
@@ -122,9 +148,8 @@ ClipImpl::list_controls (MidiSignal control_type)
 int
 ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, double velocity)
 {
-  static int next_noteid = MIDI_NOTE_ID_FIRST;
   if (id < 0 && duration > 0)
-    id = next_noteid++; // automatic id allocation for new notes
+    id = next_noteid(); // automatic id allocation for new notes
   assert_return (id >= MIDI_NOTE_ID_FIRST && id <= MIDI_NOTE_ID_LAST, 0);
   assert_return (duration >= 0, 0);
   if (tick < 0)
