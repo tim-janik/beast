@@ -258,6 +258,16 @@ vector_contains (const vector<E> &v, const E &e1, const E &e2)
   return false;
 }
 
+/// Insert `value` into sorted `vec` using binary_lookup_insertion_pos() with `compare`.
+template<class T, class Compare> inline typename std::vector<T>::iterator
+vector_insert_sorted (std::vector<T> &vec, const T &value, Compare compare)
+{
+  static_assert (std::is_signed<decltype (std::declval<Compare>() (std::declval<T>(), std::declval<T>()))>::value, "REQUIRE: int Compare (const&, const&);");
+  auto insmatch = binary_lookup_insertion_pos (vec.begin(), vec.end(), compare, value);
+  auto it = insmatch.first;
+  return vec.insert (it, value);
+}
+
 namespace Internal {
 extern bool debug_enabled_flag;
 } // Internal
