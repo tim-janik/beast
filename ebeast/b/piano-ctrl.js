@@ -88,6 +88,13 @@ export class PianoCtrl {
 	if (note.id)
 	  msrc.change_note (note.id, note.tick, note.duration, Math.min (note.key + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
 	break;
+      case Util.KeyCode.BACKSPACE: case Util.KeyCode.DELETE:
+	if (note.id)
+	  {
+	    msrc.change_note (note.id, note.tick, 0, note.key, note.fine_tune, note.velocity);
+	    roll.adata.focus_noteid = undefined;
+	  }
+	break;
     }
     if (note.id && pred && score)
       {
