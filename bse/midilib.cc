@@ -144,7 +144,7 @@ public:
   {
     // playback in ticks
     PartNote index;
-    int64_t current_tick = 0;
+    int64_t current_tick = 0; // offset in ticks into render().n_frames
     int64_t delta = MIN (clip_end_ - clip_tick_, tick_span - current_tick);
     while (delta > 0)
       {
@@ -153,15 +153,16 @@ public:
         const PartNote *note = cevp->lookup_after (index);
         while (note && note != &*cevp->end() && note->tick < clip_tick_ + delta)
           {
-            const int64_t tick_offset = current_tick + note->tick - clip_tick_;
-            enqueue_until_tick (last_tick, tick_offset);
-            const int64_t frame = tick2frame_ * tick_offset;
+            const int64_t tick_on  = current_tick + note->tick - clip_tick_;
+            const int64_t tick_off = current_tick + MIN (note->tick + note->duration, clip_end_) - clip_tick_;
+            enqueue_until_tick (last_tick, tick_on);
+            const int64_t frame = tick2frame_ * tick_on;
             CDEBUG ("play: engineframe=%u t2f=%.3f key=%d tick=%d frame=%u cur=%d clip=%d span=%d\n", engine().frame_counter(), tick2frame_,
                     note->key, note->tick, frame, current_tick, clip_tick_, tick_span);
             Event ev = make_note_on (note->channel, note->key, note->velocity, note->fine_tune, note->id);
             enqueue_at_frame (frame, ev);
             ev.type = Event::NOTE_OFF;
-            TickNote tnote { last_tick + tick_offset + note->duration, ev };
+            TickNote tnote { last_tick + tick_off, ev };
             auto old = offqueue.size();
             vector_insert_sorted (offqueue, tnote, CmpTickNotes::cmpticknotes);
             CDEBUG ("qoff: engineframe=%u t2f=%.3f key=%d tick=%d frame=%u last=%d span=%d fq=%d old=%d\n", engine().frame_counter(), tick2frame_,
@@ -170,7 +171,7 @@ public:
           }
         // adjust deltas
         current_tick += delta;  // march in sync with clip_tick
-        clip_tick_ += delta;     // march in sync with current_tick
+        clip_tick_ += delta;    // march in sync with current_tick
         if (BSE_UNLIKELY (clip_tick_ >= clip_end_) && loop_clip_)
           clip_tick_ = 0;
         delta = MIN (clip_end_ - clip_tick_, tick_span - current_tick);
