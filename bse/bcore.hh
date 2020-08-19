@@ -99,52 +99,6 @@ void   diag_printerr        (const ::std::string &message);
 void   diag_abort_hook      (const std::function<void (const ::std::string&)> &hook);
 
 // == Small Utilities ==
-/// Erase element @a value from std::vector @a v if it is present.
-template<class V> bool
-vector_erase_element (V &v, const typename V::value_type &value)
-{
-  typename V::iterator it = std::find (v.begin(), v.end(), value);
-  if (it != v.end())
-    {
-      v.erase (it);
-      return true;
-    }
-  return false;
-}
-
-/// Erase element `value` from std::vector `v` if it matches a vector elements __iface__().
-template<class V, class O> bool
-vector_erase_iface (V &v, O *value)
-{
-  for (auto it = v.begin(); it != v.end(); ++it)
-    if ((*it).get() == value)
-      {
-        v.erase (it);
-        return true;
-      }
-  return false;
-}
-
-/// Returns `true` if vector `v` contains `e1`.
-template<typename E> static bool
-vector_contains (const vector<E> &v, const E &e1)
-{
-  for (const E &e : v)
-    if (e == e1)
-      return true;
-  return false;
-}
-
-/// Returns `true` if vector `v` contains `e1` or `e2`.
-template<typename E> static bool
-vector_contains (const vector<E> &v, const E &e1, const E &e2)
-{
-  for (const E &e : v)
-    if (e == e1 || e == e2)
-      return true;
-  return false;
-}
-
 /// Copy @a unordered_first .. @a unordered_end into @a output_iterator in the order given by @a ordered_first .. @a ordered_end.
 template<class InputIterator, class OutputIterator> OutputIterator
 copy_reordered (InputIterator const unordered_first, InputIterator const unordered_end,
@@ -255,6 +209,53 @@ template<typename Value> static inline int
 compare_greater (const Value &v1, const Value &v2)
 {
   return (v1 < v2) | -(v2 < v1);
+}
+
+// == Vector Utilities ==
+/// Erase element @a value from std::vector @a v if it is present.
+template<class V> bool
+vector_erase_element (V &v, const typename V::value_type &value)
+{
+  typename V::iterator it = std::find (v.begin(), v.end(), value);
+  if (it != v.end())
+    {
+      v.erase (it);
+      return true;
+    }
+  return false;
+}
+
+/// Erase element `value` from std::vector `v` if it matches a vector elements __iface__().
+template<class V, class O> bool
+vector_erase_iface (V &v, O *value)
+{
+  for (auto it = v.begin(); it != v.end(); ++it)
+    if ((*it).get() == value)
+      {
+        v.erase (it);
+        return true;
+      }
+  return false;
+}
+
+/// Returns `true` if vector `v` contains `e1`.
+template<typename E> static bool
+vector_contains (const vector<E> &v, const E &e1)
+{
+  for (const E &e : v)
+    if (e == e1)
+      return true;
+  return false;
+}
+
+/// Returns `true` if vector `v` contains `e1` or `e2`.
+template<typename E> static bool
+vector_contains (const vector<E> &v, const E &e1, const E &e2)
+{
+  for (const E &e : v)
+    if (e == e1 || e == e2)
+      return true;
+  return false;
 }
 
 namespace Internal {
