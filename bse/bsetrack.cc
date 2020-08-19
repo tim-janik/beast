@@ -1468,9 +1468,11 @@ TrackImpl::update_clip()
   MidiLib::MidiInputIfaceP midiin = midi_in_;
   ClipImpl::OrderedEventList::ConstP cevp = clips_.size() ? clips_[0]->tick_events() : nullptr;
   const double nbpm = midiin->value_to_normalized (BPM, bpm);
-  auto lambda = [midiin, BPM, nbpm, cevp] () {
+  struct PtrCopy { mutable MidiLib::ClipEventVectorP cevp; };
+  PtrCopy pc { cevp }; // use ClipEventVectorP copy to defer dtor to user thread
+  auto lambda = [midiin, BPM, nbpm, pc] () {
     midiin->set_normalized (BPM, nbpm);
-    midiin->assign_events (cevp);
+    midiin->swap_event_vector (pc.cevp);
   };
   BSE_SERVER.commit_job (lambda);
 }
