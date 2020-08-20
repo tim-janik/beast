@@ -48,3 +48,12 @@ make_cursor	eraser.svg	24 57
     BASENAME=${P##*/}
     echo "@import './$BASENAME';"
   done ) > cursors/cursors.scss
+
+# == dist ==
+HASH=$(git rev-parse --short=9 HEAD)
+DATE=$(date +%y%m%d)
+TARBALL=cursors-$DATE-1-g$HASH.tgz
+tar cf $TARBALL --exclude '*.hotspot.png' cursors/
+tar tvf $TARBALL
+ls -l $TARBALL
+sha256sum $TARBALL
