@@ -139,6 +139,18 @@ $>/app/index.html: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_mod
 		< ebeast/index.html	> $@.tmp
 	$Q mv $@.tmp $@
 
+# == cursors ==
+$>/ebeast/cursors/cursors.scss:				| $>/ebeast/
+	$(QECHO) FETCH "cursors-*.tgz"
+	@ $(eval T := cursors-200821-1-g00fe3f54e.tgz)
+	$Q cd $>/ebeast/ $(call AND_DOWNLOAD_SHAURL, \
+		db008d2782f77e3df729eb1b77b88270c66aa5dd3abc5b981785e47649fea524, \
+			https://github.com/tim-janik/assets/releases/download/cursors/$T)
+	$(QGEN)
+	$Q cd $>/ebeast/ && rm -rf cursors/ && tar -xf $T
+	$Q rm $>/ebeast/$T
+$>/app/assets/stylesheets.css: $>/ebeast/cursors/cursors.scss
+
 # == &>/app/markdown-it.mjs ==
 # rollup for import+require is tricky: https://github.com/rollup/rollup/issues/1058#issuecomment-254187433
 $>/app/markdown-it.mjs: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/npm.done	| $>/app/
