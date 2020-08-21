@@ -216,16 +216,16 @@ $>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.w
 		--functions $(NODE_MODULES.bin)/../chromatic-sass/dist/main.js \
 		ebeast/app.scss $>/app/assets/stylesheets.css \
 		--include-path ebeast/ --include-path $>/ebeast/ --source-map-embed --source-map-contents --source-comments
-$>/app/assets/material-icons.css:			| $>/app/assets/
-	$(QECHO) FETCH material-icons-190326.1.tar.xz
-	$Q cd $>/app/assets/ \
-	     $(call AND_DOWNLOAD_SHAURL, \
-		53eba258da6170f5aa3925579f1552ef7d7a06d5b762260efac5e26d5f95e721, \
-		  https://github.com/tim-janik/assets/releases/download/material-icons-190326.1/material-icons-190326.1.tar.xz)
+$>/app/assets/material-icons.css:			| $>/ebeast/ $>/app/assets/
+	$(QECHO) FETCH "material-icons-*.tar.xz"
+	@ $(eval T := material-icons-200821-1-h0fccaba10.tar.xz)
+	$Q cd $>/ebeast/ $(call AND_DOWNLOAD_SHAURL, \
+		11653afda6690b5230a64d67a0057634bc5a45b9f2c9fc95916de839ba72e12f, \
+		  https://github.com/tim-janik/assets/releases/download/material-icons/$T)
 	$(QGEN)
-	$Q tar -C $>/app/assets/ -xf $>/app/assets/material-icons-190326.1.tar.xz
-	$Q mv $>/app/assets/material-icons/material-icons.woff2 $>/app/assets/material-icons/material-icons.css $>/app/assets/
-	$Q rm $>/app/assets/material-icons-190326.1.tar.xz && rm -r $>/app/assets/material-icons/
+	$Q cd $>/ebeast/ && rm -fr material-icons/ && tar -xf $T
+	$Q $(CP) $>/ebeast/material-icons/material-icons.* $>/app/assets/
+	$Q rm $>/ebeast/$T
 ebeast/fork-awesome-downloads ::= \
   844517a2bc5430242cb857e56b6dccf002f469c4c1b295ed8d0b7211fb452f50 \
     https://raw.githubusercontent.com/ForkAwesome/Fork-Awesome/b0605a81632452818bf19c8fa97469da1206b52b/fonts/forkawesome-webfont.woff2 \
