@@ -10,4 +10,4 @@ becomes neccessary in the future.
 * build.sh: build hotspot PNG files, render SCSS files and create artifact tarball.
 
 The build is slightly involved, using Inkscape and ImageMagick, so prebuilt artifacts
-are uploaded and can be fetched from https://github.com/tim-janik/artifacts/releases/.
+are uploaded and can be fetched from https://github.com/tim-janik/assets/releases/.
