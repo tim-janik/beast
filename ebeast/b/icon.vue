@@ -12,10 +12,12 @@
   : The name of a "Fork Awesome" icon (compatible with "Font Awesome 4"), see the [Fork Awesome Icons](https://forkaweso.me/Fork-Awesome/cheatsheet/).
   *mi*
   : The name of a "Material Icons" icon, see the [Material Design Icons](https://material.io/tools/icons/).
+  *bc*
+  : The name of a "Beast Iconic Font" icon.
   *uc*
   : A unicode character literal, see the [Unicode symbols block list](https://en.wikipedia.org/wiki/Unicode_symbols#Symbol_block_list).
   *ic*
-  : A prefixed variant of `fa`, `mi`, `uc`.
+  : A prefixed variant of `fa`, `bc`, `mi`, `uc`.
   *nosize*
   : Prevent the element from applying default size constraints.
   *fw*
@@ -33,6 +35,7 @@
   .b-icon {
     display: inline-flex;
     margin: 0; padding: 0; text-align: center;
+    &.-uc	 { line-height: 1; }
     .b-icon-dfl { height: 1em; width: 1em; }
     .b-icon-fw	 { height: 1em; width: 1.28571429em; text-align: center; }
     .b-icon-lg	 { font-size: 1.33333333em; }
@@ -40,7 +43,8 @@
     .b-icon-hflip { transform: scaleX(-1); }
     .b-icon-vflip { transform: scaleY(-1); }
     .b-icon-hflip.b-icon-vflip { transform: scaleX(-1) scaleY(-1); }
-    &.-mi { align-self: center; }
+    &.-mi { align-self: center; line-height: 1; }
+    &.-bc { align-self: center; line-height: 1; }
   }
 </style>
 
@@ -48,6 +52,7 @@
   <span class="b-icon" :class="outerclasses" >
     <span    v-if="uc_" :class="iconclasses" role="icon" aria-hidden="true">{{ uc_ }}</span>
     <i  v-else-if="fa_" :class="iconclasses" role="icon" aria-hidden="true"></i>
+    <i  v-else-if="bc_" :class="iconclasses" role="icon" aria-hidden="true"></i>
     <i  v-else-if="mi_" :class="iconclasses" role="icon" aria-hidden="true">{{ mi_ }}</i>
     <span v-else-if="1" :class="iconclasses" role="icon" aria-hidden="true"><slot /></span>
   </span>
@@ -58,13 +63,14 @@
 const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-icon',
-  props: { iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR,
+  props: { iconclass: STR, ic: STR, fa: STR, bc: STR, mi: STR, uc: STR,
 	   nosize: undefined, fw: undefined, lg: undefined,
 	   hflip: undefined, vflip: undefined },
   computed: {
     mi_() { return this.ic.startsWith ('mi-') ? this.ic.substr (3) : this.mi; },
     uc_() { return this.ic.startsWith ('uc-') ? this.ic.substr (3) : this.uc; },
     fa_() { return this.ic.startsWith ('fa-') ? this.ic.substr (3) : this.fa; },
+    bc_() { return this.ic.startsWith ('bc-') ? this.ic.substr (3) : this.bc; },
     outerclasses() {
       let classes = [];
       if (this.fw || this.fw === '')
@@ -77,6 +83,8 @@ export default {
 	classes.push ('-mi');
       else if (this.fa_)
 	classes.push ('-fa');
+      else if (this.bc_)
+	classes.push ('-bc');
       else
 	classes.push ('-uc');
       if (this.hflip || this.hflip == '')
@@ -102,6 +110,11 @@ export default {
 	{
 	  classes.push ('fa');
 	  classes.push ('fa-' + this.fa_);
+	}
+      else if (this.bc_)
+	{
+	  classes.push ('bc');
+	  classes.push ('Beastycons-' + this.bc_);
 	}
       else
 	classes.push ('uc');

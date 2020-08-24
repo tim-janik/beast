@@ -13,7 +13,7 @@
   : Descriptor for this menuitem that is passed on to its B-CONTEXTMENU `onclick`.
   *disabled*
   : Boolean flag indicating disabled state.
-  *fa*, *mi*, *uc*
+  *fa*, *mi*, *bc*, *uc*
   : Shorthands icon properties that are forwarded to a [B-ICON](#b-icon) used inside the menuitem.
   ## Events:
   *click*
@@ -68,7 +68,7 @@
 	  @mouseenter="focus"
 	  @keydown="Util.keydown_move_focus"
 	  @click="onclick" >
-    <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :uc="uc" v-if="menudata.showicons" />
+    <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :bc="bc" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
   </button>
 </template>
@@ -77,7 +77,7 @@
 const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-menuitem',
-  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, uc: STR },
+  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, bc: STR, uc: STR },
   inject: { menudata: { from: 'b-contextmenu.menudata',
 			default: { showicons: true, showaccels: true, checkeduris: {},
 				   isdisabled: () => false, onclick: () => 0, }, },
