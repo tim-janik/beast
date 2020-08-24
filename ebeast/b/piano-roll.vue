@@ -27,8 +27,8 @@
     }
     &[data-pianotool='S'] canvas.b-piano-roll-notes { cursor: crosshair; }
     &[data-pianotool='H'] canvas.b-piano-roll-notes { cursor: col-resize; }
-    &[data-pianotool='P'] canvas.b-piano-roll-notes { @include cursor_pen; }
-    &[data-pianotool='E'] canvas.b-piano-roll-notes { @include cursor_eraser24; }
+    &[data-pianotool='P'] canvas.b-piano-roll-notes { cursor: $bc-cursor-pen; }
+    &[data-pianotool='E'] canvas.b-piano-roll-notes { cursor: $bc-cursor-eraser; }
     //* Make scss variables available to JS via getComputedStyle() */
     --piano-roll-light-row:             #{$b-piano-roll-light-row};
     --piano-roll-dark-row:              #{$b-piano-roll-dark-row};
