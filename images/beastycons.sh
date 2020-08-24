@@ -1,59 +1,71 @@
 #!/bin/bash
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 set -Eeuo pipefail
-set -x
+# set -x
 
 # == Config ==
-S=2			# scaling
-W=$(( 64 / $S ))	# width
-H=$(( 64 / $S ))	# height
-SCSSFILES=()
+S=1	# scaling
+W=32	# width
+H=32	# height
+
+# == args ==
+SCRIPTNAME=${0##*/} ; die() { [ -z "$*" ] || echo "$SCRIPTNAME: $*" >&2; exit 9 ; }
+HOTSPOT=false
+while test $# -ne 0 ; do
+  case "$1" in
+    --hotspot)          HOTSPOT=true ;;
+    *)			die "unknown argument: '$1'" ;;
+  esac
+  shift
+done
+
+# == Create TMP ==
+TMP=$(pwd) && TMP="$TMP/build.$UID"
+test -e $TMP/node_modules/.bin/svgo || (
+  rm -rf $TMP/
+  mkdir $TMP/
+  cd $TMP/
+  npm i svgo )
+rm -rf $TMP/font/
+rm -f $TMP/* || :
 
 # == Dist basics ==
-rm -fr cursors/ cursors-*-g*.tgz
+rm -fr beastycons/
 test "${1:-}" != clean || exit
-mkdir -p cursors/
-pandoc README.md -t markdown -o cursors/README
+mkdir -p beastycons/
+pandoc README.md -t markdown -o beastycons/README
 
 # == make_cursor ==
-make_cursor() # make_cursor foo.svg 16 16
+make_cursor() # make_cursor foo.svg 16 16 fallback
 {
-  F=$1 && X=$(( $2 / $S )) && Y=$(( $3 / $S ))
-  N=${F%.*}	# bare name
-  P=cursors/$N.png
-  O=cursors/$N.scss
-  # Include SVG in output
-  cp $F cursors/
-  # Render SVG to PNG, render .hotspot.png with hotspot, generate SCSS
-  inkscape -z -w $W -h $H -e $P $F
-  # Render .hotspot.png with red hotspot
-  # http://www.imagemagick.org/Usage/compose/ http://www.imagemagick.org/Usage/draw/
-  convert -size $W'x'$H xc:none -draw "fill red point $X,$Y" $O.tmpdot.png
-  convert $P $O.tmpdot.png -compose Atop -composite ${P%.png}.hotspot.png
-  rm -f $O.tmpdot.png
+  N=${1%.*}	# bare name
+  F=cursors/$1 && X=$(( $2 / $S )) && Y=$(( $3 / $S )) && FALLBACK="$4"
+  if $HOTSPOT ; then
+    P=beastycons/$N.png
+    O=beastycons/$N.tmpdot
+    convert -background none $F $P					# Render SVG to PNG
+    convert -size $W'x'$H xc:none -draw "fill red point $X,$Y" $O.png	# Render .hotspot.png with red hotspot
+    convert $P $O.png -compose Atop -composite ${P%.png}.hotspot.png	# Compose hotspot
+    rm -f $O.png $P
+  fi
   # Generate SCSS
-  DATA=$(base64 -w0 < $P)
-  ( echo "@mixin cursor_$N {"
-    echo "  cursor: url(\"data:image/png;base64,$DATA\") $X $Y, auto;"
-    echo "}" ) > $O
-  SCSSFILES+=($O)
+  URI=$( $TMP/node_modules/.bin/svgo -i $F --multipass --datauri=base64 -o - )
+  echo "\$bc-cursor-$N: url($URI) $X $Y, $FALLBACK;" >> beastycons/cursors.tmp
 }
+echo > beastycons/cursors.tmp
 
 # == Cursor List ==
-make_cursor	pen.svg		 6 57
-make_cursor	eraser.svg	24 57
+make_cursor	pen.svg		 3 28 default
+make_cursor	eraser.svg	12 28 not-allowed
 
-# == cursors.scss ==
-( for P in "${SCSSFILES[@]}"; do
-    BASENAME=${P##*/}
-    echo "@import './$BASENAME';"
-  done ) > cursors/cursors.scss
+# == bc-cursors.scss ==
+mv beastycons/cursors.tmp beastycons/bc-cursors.scss
 
 # == dist ==
-HASH=$(git rev-parse --short=9 HEAD)
 DATE=$(date +%y%m%d)
-TARBALL=cursors-$DATE-1-g$HASH.tgz
-tar cf $TARBALL --exclude '*.hotspot.png' cursors/
+TARBALL=beastycons-$DATE.1.tgz
+tar --mtime="$DATE" -cf $TARBALL --exclude '*.hotspot.png' beastycons/
+$HOTSPOT || rm -r beastycons/
 tar tvf $TARBALL
 ls -l $TARBALL
 sha256sum $TARBALL
