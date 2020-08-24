@@ -1731,7 +1731,7 @@ export function clone_menu_icon (menu, uri, title = '')
     return {};
   App.zmove (); // pick up 'data-tip'
   return {
-    ic: menuitem.ic, fa: menuitem.fa, mi: menuitem.mi, uc: menuitem.uc,
+    ic: menuitem.ic, fa: menuitem.fa, mi: menuitem.mi, bc: menuitem.bc, uc: menuitem.uc,
     'data-kbd': menuitem.kbd,
     'data-tip': title ? title + ' ' + menuitem.get_text() : '',
   };
