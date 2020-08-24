@@ -30,9 +30,9 @@
   .b-button:hover            	{ @include b-buttonhover; }
   .b-button.active,
   .b-button:active           	{ @include b-buttonactive; }
-  .b-button, .b-button *	{ color: $b-button-foreground; fill: $b-button-foreground !important; }
-  .b-button.active *,	/* use '*' + fill!important to include svg elements in buttons */
-  .b-button:active *         	{ color: $b-button-active-fg;  fill: $b-button-active-fg !important; }
+  .b-button			{ color: $b-button-foreground; }
+  .b-button.active,	/* use '*' + fill!important to include svg elements in buttons */
+  .b-button:active         	{ color: $b-button-active-fg; }
 </style>
 
 <script>
