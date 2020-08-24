@@ -72,6 +72,21 @@ $>/external/minizip/mz_zip.h:			| $>/external/
 CLEANDIRS += $>/external/minizip
 $(bse/libbse.objects): $>/external/minizip/mz_zip.h
 
+# == external/websocketpp ==
+$>/external/websocketpp/server.hpp:			| $>/external/
+	$(QECHO) FETCH "WebSocket++/0.8.2"
+	$Q cd $>/external/ \
+	     $(call AND_DOWNLOAD_SHAURL, \
+		6ce889d85ecdc2d8fa07408d6787e7352510750daa66b5ad44aacb47bea76755, \
+			https://github.com/zaphoyd/websocketpp/archive/0.8.2.tar.gz)
+	$(QGEN)
+	$Q cd $>/external/ && rm -rf websocketpp-0.8.2/ && tar xf 0.8.2.tar.gz
+	$Q rm -f $>/external/0.8.2.tar.gz $>/external/websocketpp
+	$Q cd $>/external/ && ln -s websocketpp-0.8.2/websocketpp websocketpp
+CLEANDIRS += $>/external/websocketpp
+$(bse/BeastSoundEngine.objects): $>/external/websocketpp/server.hpp
+$>/external/websocketpp/config/asio_no_tls.hpp: $>/external/websocketpp/server.hpp
+
 # == subdirs ==
 include bse/icons/Makefile.mk
 
@@ -275,7 +290,7 @@ $>/bse/bse_jsonipc_stub4.cc: $>/bse/bseapi_jsonipc.cc
 
 # == BeastSoundEngine ==
 $(bse/BeastSoundEngine.objects): $(bse/BeastSoundEngine.deps) $(bse/libbse.deps)
-$(bse/BeastSoundEngine.objects): EXTRA_INCLUDES ::= -I$> -Iexternal/ $(GLIB_CFLAGS)
+$(bse/BeastSoundEngine.objects): EXTRA_INCLUDES ::= -Iexternal/ -I$> -I$>/external/ $(GLIB_CFLAGS)
 $(bse/BeastSoundEngine.objects): EXTRA_FLAGS ::= -Wno-sign-promo
 $(call BUILD_PROGRAM, \
 	$(lib/BeastSoundEngine), \
