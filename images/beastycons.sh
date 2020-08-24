@@ -21,11 +21,11 @@ done
 
 # == Create TMP ==
 TMP=$(pwd) && TMP="$TMP/build.$UID"
-test -e $TMP/node_modules/.bin/svgo || (
+test -e $TMP/node_modules/.bin/svgtofont || (
   rm -rf $TMP/
   mkdir $TMP/
   cd $TMP/
-  npm i svgo )
+  npm i svgtofont svgo )
 rm -rf $TMP/font/
 rm -f $TMP/* || :
 
