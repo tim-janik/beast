@@ -93,7 +93,10 @@ mv beastycons/cursors.tmp beastycons/bc-cursors.scss
 
 # == dist ==
 DATE=$(date +%y%m%d)
-TARBALL=beastycons-$DATE.1.tgz
+fgrep -s -q "# $DATE" $TMP/lastminor ||	echo "0" > $TMP/lastminor
+MINOR=$(sed 's/ #.*//' $TMP/lastminor)
+MINOR=$(( $MINOR + 1 )) &&		echo "$MINOR # $DATE" > $TMP/lastminor
+TARBALL=beastycons-$DATE.$MINOR.tgz
 tar --mtime="$DATE" -cf $TARBALL --exclude '*.hotspot.png' beastycons/
 $HOTSPOT || rm -r beastycons/
 tar tvf $TARBALL
