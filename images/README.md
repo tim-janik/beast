@@ -1,4 +1,4 @@
-# Beastycons - Cursors & icons for Beast
+# Beastycons - Cursors & icon font for Beast
 
 SVG based cursor and icon drawings for the Beast project.
 
@@ -33,9 +33,10 @@ are transformed into a WOFF2 font and a CSS file `Beastycons.css` to be used lik
 
 The icons are SVG drawings and layed out at 24x24 pixels.
 
-The build is slightly involved, using Inkscape, ImageMagick and various npm
-packages, so prebuilt artifacts are uploaded and can be fetched from:
-	https://github.com/tim-janik/assets/releases/.
+The required set of build tools is fairly involved. Building makes use of Inkscape,
+ImageMagick and various SVG/font related npm packages, so prebuilt artifacts are
+uploaded and can be fetched from:
+	https://github.com/tim-janik/assets/releases/tag/beastycons
 
 ## LICENSE
 
