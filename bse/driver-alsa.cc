@@ -54,6 +54,8 @@ static_assert (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__, "endianess unimplement
 
 namespace Bse {
 
+static std::string hex_str (uint len, const uint8 *d);
+
 static String
 chars2string (const char *s)
 {
@@ -1277,12 +1279,19 @@ public:
                                 ev->data.control.value *
                                 (ev->data.control.value < 0 ? 1.0 / 8192.0 : 1.0 / 8191.0)));
           break;
+        case SND_SEQ_EVENT_SYSEX:
+          MDEBUG ("%+4d ch=%-2u SYSEX: %s",
+                  int (samplerate * (ev->time.time.tv_sec + 1e-9 * ev->time.time.tv_nsec - now)),
+                  ev->data.control.channel, hex_str (ev->data.ext.len, (const uint8*) ev->data.ext.ptr));
+          break;
         case SND_SEQ_EVENT_CONTROL14:
         case SND_SEQ_EVENT_NONREGPARAM:
         case SND_SEQ_EVENT_REGPARAM:
         case SND_SEQ_EVENT_NOTE:  // unhandled, duration usually too long for Event.frame
-        case SND_SEQ_EVENT_SYSEX:
         default:
+          MDEBUG ("%+4d ch=%-2u SND_SEQ_EVENT_... %u",
+                  int (samplerate * (ev->time.time.tv_sec + 1e-9 * ev->time.time.tv_nsec - now)),
+                  ev->data.control.channel, ev->type);
           break;
           // DEPRECATED: snd_seq_free_event (ev);
         }
@@ -1300,6 +1309,22 @@ public:
 static const String alsa_seqmidi_driverid = MidiDriver::register_driver ("alsa",
                                                                          AlsaSeqMidiDriver::create,
                                                                          AlsaSeqMidiDriver::list_drivers);
+
+static std::string
+hex_str (uint len, const uint8 *d)
+{
+  std::string s;
+  for (uint i = 0; i < 16 && i < len; i++)
+    {
+      if (!i)
+        s += string_format ("%02x", d[i]);
+      else
+        s += string_format (" %02x", d[i]);
+    }
+  if (len > 16)
+    s += "…";
+  return s;
+}
 
 } // Bse
 
