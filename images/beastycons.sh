@@ -35,6 +35,9 @@ rm -fr beastycons/
 test "${1:-}" != clean || exit
 mkdir -p beastycons/
 pandoc README.md -t markdown -o beastycons/README
+BEASTVERSION=$(git describe --match '[0-9]*.[0-9]*.*[0-9a]' --abbrev=8 --long)
+echo >> beastycons/README
+echo "Build with beastycons.sh from beast-$BEASTVERSION" >> beastycons/README
 
 # == Optimize Glyph ==
 optimize_glyph()
