@@ -79,11 +79,11 @@ export default {
   name: 'b-treeselector-item',
   props: { label: 	{ default: '' },
 	   uri:		{ default: '' },
-	   entries:	{ default: [] },
+	   entries:	{ default: _ => [] },
   },
   data: function() { return { is_active: false, }; },
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { showicons: true, showaccels: true, checkeduris: {},
+			default: { showicons: true, keepmounted: false, checkeduris: {},
 				   isdisabled: () => false, onclick: undefined, }, },
   },
   methods: {

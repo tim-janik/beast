@@ -2,15 +2,13 @@
 
 <docs>
   # B-PIANO-ROLL
-  A Vue template to display a Bse.part as a piano roll.
+  A Vue template to display notes from a MIDI event source as a piano roll.
   ## Props:
-  *part*
-  : The Bse.Part to display.
+  *msrc*
+  : The MIDI event source for editing and display.
   ## Data:
   *hscrollbar*
   : The horizontal scrollbar component, used to provide the virtual scrolling position for the notes canvas.
-  *part*
-  : Retrieve the *Bse.Part* set via the `part` property.
 </docs>
 
 <style lang="scss">
@@ -83,7 +81,7 @@ const floor = Math.floor, round = Math.round;
 const PIANO_KEYS = 132;
 const PIANO_ROLL_CSSHEIGHT = 84  * PIANO_KEYS / 12 + 1;
 
-function observable_part_data () {
+function observable_msrc_data () {
   const data = {
     qnpt:          { default:   4, },	// quarter notes per tact
     tpqn:          { default: 384, },	// ticks per quarter note
@@ -91,18 +89,18 @@ function observable_part_data () {
     hzoom:         { default: 1.0, },
     auto_scrollto: { default:  -2, },
     focus_noteid:  { default: -1, },
-    last_tick:     { getter: c => this.part.get_last_tick(), notify: n => this.part.on ("notify:last_tick", n), },
-    pnotes:        { default: [],                            notify: n => this.part.on ("noteschanged", n),
-                     getter: async c => Object.freeze (await this.part.list_notes_crossing (0, CONFIG.MAXINT)), },
+    end_tick:      { getter: c => this.msrc.end_tick(), notify: n => this.msrc.on ("notify:end_tick", n), },
+    pnotes:        { default: [],                            notify: n => this.msrc.on ("notify:notes", n),
+                     getter: async c => Object.freeze (await this.msrc.list_all_notes()), },
   };
-  return this.observable_from_getters (data, () => this.part);
+  return this.observable_from_getters (data, () => this.msrc);
 }
 
 export default {
   name: 'b-piano-roll',
   mixins: [ Util.vue_mixins.hyphen_props ],
   props: {
-    part: [Bse.Part],
+    msrc: { required: true },
   },
   priv_tmpl: {
     layout: undefined,
@@ -110,15 +108,15 @@ export default {
   data() {
     return { piano_keys:   PIANO_KEYS,
 	     piano_height: 84 * floor ((PIANO_KEYS + 12 - 1) / 12) + 1,
-	     adata:        observable_part_data.call (this) }; },
+	     adata:        observable_msrc_data.call (this) }; },
   watch: {
-    part (nv, ov) {
+    msrc (nv, ov) {
       this.adata.focus_noteid = 0;
       this.sync_scrollpos (nv, ov);
     },
   },
   mounted () {
-    // keep vertical scroll position for each part, non-reactive
+    // keep vertical scroll position for each msrc, non-reactive
     this.auto_scrolls = {};
     // observer to watch for canvas size changes
     this.resize_observer = new Util.ResizeObserver (() => this.$forceUpdate());
@@ -127,17 +125,17 @@ export default {
     this.resize_observer.disconnect();
   },
   methods: {
-    sync_scrollpos (newpart, oldpart) {
+    sync_scrollpos (new_msrc, old_msrc) {
       if (!this.$refs.scrollarea)
 	return;
       this.$refs.hscrollbar.value = 0;
       const vbr = this.$refs.scrollarea.parentElement.getBoundingClientRect();
       const sbr = this.$refs['notes-canvas'].getBoundingClientRect();
-      if (oldpart && sbr.height > vbr.height)
-	this.auto_scrolls[oldpart.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
-      if (newpart)
+      if (old_msrc && sbr.height > vbr.height)
+	this.auto_scrolls[old_msrc.$id] = this.$refs.scrollarea.parentElement.scrollTop / (sbr.height - vbr.height);
+      if (new_msrc)
 	{
-	  const auto_scrollto = this.auto_scrolls[newpart.$id];
+	  const auto_scrollto = this.auto_scrolls[new_msrc.$id];
 	  this.adata.auto_scrollto = auto_scrollto == undefined ? -1 : auto_scrollto;
 	}
     },
@@ -200,28 +198,28 @@ export default {
 	case RIGHT:
 	  if (idx < 0)
 	    note = { id: -1, tick: -1, note: -1, duration: 0 };
-	  pred  = n => n.tick > note.tick || (n.tick == note.tick && n.note >= note.note);
-	  score = n => (n.tick - note.tick) * 1000 + n.note;
+	  pred  = n => n.tick > note.tick || (n.tick == note.tick && n.key >= note.key);
+	  score = n => (n.tick - note.tick) * 1000 + n.key;
 	  // nextid = idx >= 0 && idx + 1 < this.adata.pnotes.length ? this.adata.pnotes[idx + 1].id : -1;
 	  break;
 	case LEFT:
 	  if (idx < 0)
 	    note = { id: -1, tick: +big, note: 1000, duration: 0 };
-	  pred  = n => n.tick < note.tick || (n.tick == note.tick && n.note <= note.note);
-	  score = n => (note.tick - n.tick) * 1000 + 1000 - n.note;
+	  pred  = n => n.tick < note.tick || (n.tick == note.tick && n.key <= note.key);
+	  score = n => (note.tick - n.tick) * 1000 + 1000 - n.key;
 	  // nextid = idx > 0 ? this.adata.pnotes[idx - 1].id : -1;
 	  break;
 	case DOWN:
 	  if (note.id)
 	    {
-	      this.part.change_note (note.id, note.tick, note.duration, Math.max (note.note - 1, 0), note.fine_tune, note.velocity);
+	      this.msrc.change_note (note.id, note.tick, note.duration, Math.max (note.key - 1, 0), note.fine_tune, note.velocity);
 	      event.preventDefault();
 	    }
 	  break;
 	case UP:
 	  if (note.id)
 	    {
-	      this.part.change_note (note.id, note.tick, note.duration, Math.min (note.note + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
+	      this.msrc.change_note (note.id, note.tick, note.duration, Math.min (note.key + 1, PIANO_KEYS - 1), note.fine_tune, note.velocity);
 	      event.preventDefault();
 	    }
 	  break;
@@ -250,7 +248,7 @@ export default {
       const tick = this.tick_from_canvas_x (event.offsetX);
       const midinote = this.midinote_from_canvas_y (event.offsetY);
       const idx = find_note (this.adata.pnotes,
-			     n => tick >= n.tick && tick < n.tick + n.duration && n.note == midinote);
+			     n => tick >= n.tick && tick < n.tick + n.duration && n.key == midinote);
       if (idx >= 0)
 	{
 	  const note = this.adata.pnotes[idx];
@@ -282,7 +280,7 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
     cssheight:		PIANO_ROLL_CSSHEIGHT,
     piano_csswidth:	0,			// derived from white_width
     notes_csswidth:	0,			// display width, determined by parent
-    virt_width:		0,			// virtual width in CSS pixels, derived from last_tick
+    virt_width:		0,			// virtual width in CSS pixels, derived from end_tick
     oct_length:		84,			// initially css pixels, = 12 * 7
     octaves:		0,			// number of octaves to display
     thickness:		1,			// if ratio in [0..2]
@@ -303,8 +301,8 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   const black_keyspans = [  [7,7], [21,7],     [43,7], [56.5,7], [70,7]   ]; 	// for 84px octave
   const white_offsets  = [ 0,    12,     24, 36,     48,       60,     72 ]; 	// for 84px octave
   const key_length = parseFloat (piano_style.getPropertyValue ('--piano-roll-key-length'));
-  const min_last_tick = 384;
-  const last_tick = Math.max (this.adata.last_tick || 0, min_last_tick);
+  const min_end_tick = 384;
+  const end_tick = Math.max (this.adata.end_tick || 0, min_end_tick);
   // scale layout
   const sbr = this.scrollarea_element.getBoundingClientRect();
   layout.pixelratio = window.devicePixelRatio;
@@ -314,7 +312,7 @@ function piano_layout (piano_canvas, piano_style, notes_canvas, notes_style) {
   layout.notes_csswidth = Math.max (layout.piano_csswidth + 1, sbr.width - layout.piano_csswidth);
   layout.beat_pixels = round (layout.beat_pixels * layout.pixelratio * this.adata.hzoom);
   layout.tickscale = layout.beat_pixels / 384;
-  layout.virt_width = floor (384 * floor (last_tick / 384));
+  layout.virt_width = floor (384 * floor (end_tick / 384));
   layout.octaves = round (layout.cssheight / layout.oct_length);
   layout.thickness = Math.max (round (layout.pixelratio * 0.5), 1);
   layout.yoffset = layout_height - layout.thickness;		// leave a pixel for overlapping piano key borders
@@ -543,7 +541,7 @@ function render_notes (canvas, cstyle, layout) {
   // draw notes
   for (const note of this.adata.pnotes)
     {
-      const oct = floor (note.note / 12), key = note.note - oct * 12;
+      const oct = floor (note.key / 12), key = note.key - oct * 12;
       const ny = layout.yoffset - oct * layout.oct_length - key * layout.row;
       const nx = round (note.tick * tickscale), nw = Math.max (1, round (note.duration * tickscale));
       if (note.id == focus_noteid)

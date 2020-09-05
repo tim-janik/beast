@@ -20,14 +20,13 @@
     align-items: stretch;
   }
   .b-projectshell-panel1 {
+    @include b-panel-box;
     flex-grow: 1;
   }
   .b-projectshell-panel2 {
-    color: $b-panel-foreground;
-    background: $b-panel-background; //* $b-panel-focus */
-    border: $b-panel-border; border-radius: $b-panel-radius;
-    height: 19em; overflow: hidden;
-    margin-left: 3px;
+    @include b-panel-box;
+    height: 19em;
+    flex-shrink: 0;
   }
   .b-projectshell-sidebar {
     padding: 3px;
@@ -57,7 +56,7 @@
       <b-positionview :song="song"> </b-positionview>
     </b-hflex>
 
-    <b-hflex grow1 style="overflow: hidden">
+    <b-hflex style="overflow: hidden; flex: 1 1 auto">
       <b-vflex grow1 shrink1>
 	<!-- upper main area -->
 	<b-hflex class="b-projectshell-panel1" >
@@ -65,13 +64,13 @@
 	</b-hflex>
 	<!-- lower main area -->
 	<b-hflex class="b-projectshell-panel2" >
-	  <b-piano-roll class="grow1" :part="piano_roll_part" v-show="App.panel2 == 'p'" ></b-piano-roll>
+	  <b-piano-roll class="grow1" :msrc="App.piano_roll_source" v-show="App.panel2 == 'p'" ></b-piano-roll>
 	  <b-devicepanel v-show="App.panel2 == 'd'" :track="current_track" />
 	</b-hflex>
       </b-vflex>
 
       <!-- browser -->
-      <b-hflex ref="sidebarcontainer" style="width:15%" >
+      <b-hflex ref="sidebarcontainer" style="width: 0; flex: 0 0 15%" >
 	<div     style="flex-grow: 0; flex-shrink: 0" class="b-projectshell-resizer" @mousedown="sidebar_mouse" ></div>
 	<b-vflex class="b-projectshell-sidebar" start shrink1 grow1 >
 	  <b-treeselector :tree="o.filetree" v-show="App.panel3 == 'b'" ></b-treeselector>
@@ -114,7 +113,6 @@ export default {
     project: undefined,
     o: observable_project_data.call (this),
     current_track: undefined,
-    piano_roll_part: undefined,
     show_about_dialog: false,
     show_preferences_dialog: false,
     song: undefined,
@@ -173,7 +171,7 @@ export default {
       const html_classes = document.documentElement.classList;
       if (e.type == 'mousedown' && !this.listening)
 	{
-	  this.listening = this.sidebar_mouse.bind (this);
+	  this.listening = Util.debounce (this.sidebar_mouse.bind (this));
 	  document.addEventListener ('mousemove', this.listening);
 	  document.addEventListener ('mouseup', this.listening);
 	  this.startx = e.clientX; //  - e.offsetX;
@@ -198,14 +196,11 @@ export default {
       else
 	newwidth = Util.clamp (newwidth, minwidth, maxwidth);
       sidebar.style.transition = newwidth > minwidth ? "" : "width var(--b-transition-fast-slide)";
-      const stylewidth = (newwidth / pwidth) * 100 + '%';
-      if (stylewidth != sidebar.style.width)
-	sidebar.style.width = stylewidth;
+      const flexwidth = '0 0 ' + (newwidth / pwidth) * 100 + '%';
+      if (flexwidth != sidebar.style.flex)
+	sidebar.style.flex = flexwidth;
+      // Resize via: https://www.w3.org/TR/css-flexbox-1/#flex-common
       e.preventDefault();
-    },
-    open_part_edit (part) {
-      console.assert (part == undefined || part instanceof Bse.Part);
-      this.piano_roll_part = part;
     },
     status (...args) {
       console.log (...args);
@@ -271,7 +266,7 @@ export default {
       if (this.project)
 	{
 	  this.notifynameclear();
-	  this.open_part_edit (undefined);
+	  App.open_piano_roll (undefined);
 	  this.project.stop();
 	  this.project = null; // TODO: should trigger FinalizationGroup
 	}

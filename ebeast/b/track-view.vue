@@ -50,7 +50,8 @@
     display: flex; align-items: center; /* vertical centering */
     background-color: $b-button-border;
     border: 1px solid $b-button-border;
-    border-radius: $b-button-radius; }
+    border-top-left-radius: $b-button-radius;
+    border-bottom-left-radius: $b-button-radius; }
   .b-track-view-current { background-color: lighten($b-button-border, 15%); }
   .b-track-view-label {
     display: inline-flex; position: relative; width: 7em; overflow: hidden;
@@ -219,7 +220,6 @@ export default {
 	return ' ';
     },
     async menuactivation (uri) {
-      debug ("menuactivation:", uri);
       // close popup to remove focus guards
       this.$refs.cmenu.close();
       if (uri == 'add-track')

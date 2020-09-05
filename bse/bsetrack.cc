@@ -1254,6 +1254,15 @@ TrackImpl::get_song ()
   return parent ? parent->as<SongImplP>() : nullptr;
 }
 
+ProjectImplP
+TrackImpl::project_impl ()
+{
+  ItemIfaceP parent = get_parent();
+  if (parent)
+    parent = parent->get_parent();
+  return parent ? parent->as<ProjectImplP>() : nullptr;
+}
+
 SongTiming
 TrackImpl::get_timing (int tick)
 {
@@ -1322,6 +1331,23 @@ TrackImpl::remove_link (int link_id)
   BseTrackEntry *entry = bse_track_find_link (self, link_id);
   if (entry)
     remove_tick (entry->tick);
+}
+
+ClipSeq
+TrackImpl::list_clips ()
+{
+  ProjectImplP projectp = project_impl();
+  const uint max_clips = projectp ? projectp->max_clips() : 8;
+  if (clips_.size() < max_clips)
+    {
+      clips_.reserve (max_clips);
+      while (clips_.size() < max_clips)
+        clips_.push_back (ClipImpl::create_clip());
+    }
+  ClipSeq cs;
+  for (auto cp : clips_)
+    cs.push_back (cp);
+  return cs;
 }
 
 PartSeq

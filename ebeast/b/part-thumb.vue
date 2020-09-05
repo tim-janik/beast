@@ -14,7 +14,7 @@
   @import 'mixins.scss';
   .b-part-thumb {
     display: inline-block; position: absolute; top: 0px; bottom: 0px;
-    height: $b-track-list-row-height;
+    height: $b-trackrow-height;
     border-radius: $b-theme-border-radius * 0.66;
     --part-thumb-font-color: #{$b-part-thumb-font-color}; --part-thumb-font: #{$b-part-thumb-font};
     --part-thumb-note-color: #{$b-part-thumb-note-color}; --part-thumb-colors: #{$b-part-thumb-colors};
@@ -24,7 +24,7 @@
 </style>
 
 <template>
-  <canvas ref="canvas" class="b-part-thumb" @click="Shell.open_part_edit (part)"
+  <canvas ref="canvas" class="b-part-thumb" @click="App.open_piano_roll (part)"
 	  :style="{ left: pxoffset + 'px', width: canvas_width + 'px', }" ></canvas>
 </template>
 
@@ -102,7 +102,7 @@ function render_canvas () {
   const noteoffset = 12;
   const notescale = height / (123.0 - 2 * noteoffset); // MAX_NOTE
   for (const note of pnotes) {
-    ctx.fillRect (note.tick * tickscale, height - (note.note - noteoffset) * notescale, note.duration * tickscale, 1 * pixelratio);
+    ctx.fillRect (note.tick * tickscale, height - (note.key - noteoffset) * notescale, note.duration * tickscale, 1 * pixelratio);
   }
 }
 

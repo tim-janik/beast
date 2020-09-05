@@ -156,7 +156,7 @@ $(call tests/audio/template,							\
 	--seconds 5,								\
 	--cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy,		\
 	--cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy,		\
-	99.99)	# another simple loop
+	97.99)	# another simple loop
 
 # == tests/audio/soundfont-test ==
 $(call tests/audio/template,							\

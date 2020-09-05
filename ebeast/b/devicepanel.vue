@@ -30,7 +30,7 @@
       border-bottom-right-radius: inherit;
       height: 100%;
       //* Add slight shadow to the right for a soft scroll boundary */
-      box-shadow: 0 0 5px 2px #000;
+      box-shadow: -2px 0 $b-scroll-shadow-blur 0px #000;
       background: #000000ef;
       z-index: 9; //* raise above scrolled siblings */
     }

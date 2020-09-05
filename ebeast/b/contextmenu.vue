@@ -21,12 +21,16 @@
   : Event signaling activation of a submenu item, the `uri` of the submenu is provided as argument.
   *close*
   : Event signaling closing of a menu, regardless of whether menu item activation occoured or not.
+  *keepmounted*
+  : Keep the menu and menu items mounted at all times, needed for map_kbd_hotkeys().
   ## Methods:
   *popup (event, { origin, tieclass })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
   : reference DOM element to use for drop-down positioning.
   *close()*
   : Hide the contextmenu.
+  *map_kbd_hotkeys (active)*
+  : Activate (deactivate) the `kbd=...` hotkeys specified in menu items.
 </docs>
 
 <style lang="scss">
@@ -38,7 +42,7 @@
     $timing: 0.1s;
     &.v-enter-active	{ transition: opacity $timing ease-out, transform $timing linear; }
     &.v-leave-active	{ transition: opacity $timing ease-in,  transform $timing linear; }
-    &.v-enter	 	{ opacity: 0.3; transform: translateX(-0.3vw) translateY(-1vh); }
+    &.v-enter	 	{ opacity: 0.3; transform: translateX(0%) translateY(0%); }
     &.v-leave-to	{ opacity: 0; transform: translateX(-0%) translateY(-0%) scale(1); }
     &.b-contextmenu-notransitions { transition: none !important; }
   }
@@ -60,8 +64,8 @@
 
 <template>
   <transition>
-    <div class='b-contextmenu-area' :class='cmenu_class' ref='contextmenuarea' v-if='visible' >
-      <b-vflex class='b-contextmenu' ref='cmenu' start >
+    <div class='b-contextmenu-area' :class='cmenu_class' ref='contextmenuarea' v-show='visible' >
+      <b-vflex class='b-contextmenu' ref='cmenu' start v-if='visible || keepmounted' >
 	<slot />
       </b-vflex>
     </div>
@@ -70,7 +74,7 @@
 
 <script>
 const menuitem_onclick = function (event) {
-  this.$emit ('click', event, this.uri);
+  this.$emit ('click', this.uri, event);
   if (!event.defaultPrevented)
     {
       if (this.uri !== undefined && this.menudata.clicked)
@@ -94,6 +98,7 @@ const menuitem_isdisabled = function () {
 export default {
   name: 'b-contextmenu',
   props: { notransitions: { default: false },
+	   keepmounted: { type: Boolean, },
 	   xscale: { default: 1, },
 	   yscale: { default: 1, }, },
   computed: {
@@ -101,10 +106,16 @@ export default {
   },
   data_tmpl: { visible: false, doc_x: undefined, doc_y: undefined,
 	       resize_observer: undefined, checkeduris: {},
-	       showicons: true, showaccels: true, popup_options: {},
+	       showicons: true, popup_options: {},
 	       onclick: menuitem_onclick, isdisabled: menuitem_isdisabled, },
   provide: Util.fwdprovide ('b-contextmenu.menudata',	// context for menuitem descendants
-			    [ 'checkeduris', 'showicons', 'showaccels', 'clicked', 'close', 'onclick', 'isdisabled' ]),
+			    [ 'checkeduris', 'showicons', 'keepmounted', 'clicked', 'close', 'onclick', 'isdisabled' ]),
+  beforeDestroy() {
+    this.map_kbd_hotkeys (false);
+  },
+  destroyed () {
+    this.map_kbd_hotkeys (false);
+  },
   methods: {
     dom_update () {
       if (!this.resize_observer)
@@ -159,6 +170,12 @@ export default {
       const area_el = this.$refs.contextmenuarea;
       if (area_el && area_el.getBoundingClientRect) // ignore Vue placeholder (html comment)
 	{
+	  const origin = this.popup_options.origin?.$el || this.popup_options.origin;
+	  if (origin && Util.inside_display_none (origin))
+	    {
+	      this.close();
+	      return;
+	    }
 	  const menu_el = this.$refs.cmenu;
 	  // unset size constraints before calculating desired size, otherwise resizing
 	  // can take dozens of resize_observer/popup_position frame iterations
@@ -166,7 +183,7 @@ export default {
 	  area_el.style.top = '0px';
 	  const p = Util.popup_position (menu_el, { x: this.doc_x, xscale: this.xscale,
 						    y: this.doc_y, yscale: this.yscale,
-						    origin: this.popup_options.origin?.$el || this.popup_options.origin });
+						    origin });
 	  area_el.style.left = p.x + "px";
 	  area_el.style.top = p.y + "px";
 	}
@@ -247,6 +264,7 @@ export default {
       if (this.tieclass)
 	this.tieclass.element.classList.add (this.tieclass.class);
       this.visible = true;
+      App.zmove(); // force changes to be picked up
     },
     clear_dragging() {
       if (!this.dragging)
@@ -286,10 +304,49 @@ export default {
 	this.shield.destroy (false);
       this.shield = undefined;
       this.$emit ('close');
+      App.zmove(); // force changes to be picked up
     },
     clicked (uri) {
       this.$emit ('click', uri);
       this.close();
+    },
+    /// Activate or disable the `kbd=...` hotkeys in menu items.
+    map_kbd_hotkeys (active = false) {
+      if (this.active_kmap_)
+	{
+	  for (const k in this.active_kmap_)
+	    Util.remove_hotkey (k, this.active_kmap_[k]);
+	  this.active_kmap_ = undefined;
+	}
+      if (!active)
+	return;
+      const kmap = {}; // key -> component
+      const buildmap = v => {
+	const key = v.kbd_hotkey?.();
+	if (key)
+	  kmap[key] = _ => v.$el && Util.keyboard_click (v.$el);
+	for (const c of v.$children)
+	  buildmap (c);
+      };
+      buildmap (this);
+      this.active_kmap_ = kmap;
+      for (const k in this.active_kmap_)
+	Util.add_hotkey (k, this.active_kmap_[k]);
+    },
+    /// Find a menuitem via its `uri`.
+    find_menuitem (uri) {
+      const match_uri = e => {
+	if (e.uri == uri)
+	  return e;
+	for (const c of e.$children)
+	  {
+	    const r = match_uri (c);
+	    if (r)
+	      return r;
+	  }
+	return undefined;
+      };
+      return match_uri (this);
     },
   },
 };

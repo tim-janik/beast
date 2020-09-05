@@ -56,10 +56,10 @@ Event::to_string () const
     case NOTE_ON:         if (!et) et = "NOTE_ON";
     case AFTERTOUCH:      if (!et) et = "AFTERTOUCH";
       return string_format ("%+4d ch=%-2u %-10s pitch=%d vel=%f tune=%f id=%x",
-                            frame, channel, et, pitch, velocity, tuning, noteid);
+                            frame, channel, et, key, velocity, tuning, noteid);
     case CONTROL_CHANGE:        if (!et) et = "CONTROL_CHANGE";
-      return string_format ("%+4d ch=%-2u %s control=%d value=%f (%02x)",
-                            frame, channel, et, param, value, cval);
+      return string_format ("%+4d ch=%-2u %s control=%d value=%f (%02x) {%u}",
+                            frame, channel, et, param, value, cval, fragment);
     case PROGRAM_CHANGE:        if (!et) et = "PROGRAM_CHANGE";
       return string_format ("%+4d ch=%-2u %s program=%d",
                             frame, channel, et, param);
@@ -75,11 +75,11 @@ Event::to_string () const
 }
 
 Event
-make_note_on (uint16 chnl, uint8 pch_, float velo, float tune, uint nid)
+make_note_on (uint16 chnl, uint8 mkey, float velo, float tune, uint nid)
 {
   Event ev (velo > 0 ? Event::NOTE_ON : Event::NOTE_OFF);
   ev.channel = chnl;
-  ev.pitch = pch_;
+  ev.key = mkey;
   ev.velocity = velo;
   ev.tuning = tune;
   ev.noteid = nid;
@@ -87,11 +87,11 @@ make_note_on (uint16 chnl, uint8 pch_, float velo, float tune, uint nid)
 }
 
 Event
-make_note_off (uint16 chnl, uint8 pch_, float velo, float tune, uint nid)
+make_note_off (uint16 chnl, uint8 mkey, float velo, float tune, uint nid)
 {
   Event ev (Event::NOTE_OFF);
   ev.channel = chnl;
-  ev.pitch = pch_;
+  ev.key = mkey;
   ev.velocity = velo;
   ev.tuning = tune;
   ev.noteid = nid;
@@ -99,11 +99,11 @@ make_note_off (uint16 chnl, uint8 pch_, float velo, float tune, uint nid)
 }
 
 Event
-make_aftertouch (uint16 chnl, uint8 pch_, float velo, float tune, uint nid)
+make_aftertouch (uint16 chnl, uint8 mkey, float velo, float tune, uint nid)
 {
   Event ev (Event::AFTERTOUCH);
   ev.channel = chnl;
-  ev.pitch = pch_;
+  ev.key = mkey;
   ev.velocity = velo;
   ev.tuning = tune;
   ev.noteid = nid;

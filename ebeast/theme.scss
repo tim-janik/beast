@@ -11,9 +11,10 @@ $b-color-active:	#00e5ea; // #ff8811;
 $b-panel-foreground:	$b-main-foreground;
 $b-panel-background:	lgrey(36%); // also panel border
 $b-panel-focus:		lgrey(50%); // focused panel border
-$b-panel-borderwidth:	3px;
+$b-panel-borderwidth:	2px;
 $b-panel-border:	$b-panel-borderwidth solid $b-panel-background;
 $b-panel-radius:	3px;
+$b-panel-spacing:	$b-panel-borderwidth;
 $b-devicepanel-bg:	lgrey(3%);
 $b-device-radius:	3px;
 $b-device-bg:		$b-panel-background;
@@ -32,6 +33,35 @@ $b-toggle-1-bg:		lcolor($b-color-active, 63%);
 $b-toggle-1-bh:		contrast-lighten($b-toggle-1-bg, 1.5); // highlight
 $b-toggle-1-bl:		contrast-lighten($b-toggle-1-bg, 1.3); // light
 $b-toggle-1-bd:		contrast-darken($b-toggle-1-bg, 1.3);  // dark
+$b-trackrow-height:	3em;
+$b-track-list-bg:	$b-device-area1;
+$b-track-list-parts-bg:	$b-device-area2;
+$b-scroll-shadow-blur:  3px;
+$b-clipthumb-width:	6em;
+
+@mixin b-panel-box {
+  color: $b-panel-foreground;
+  background: $b-panel-background; //* $b-panel-focus */
+  border: $b-panel-border; border-radius: $b-panel-radius;
+  overflow: hidden;
+  margin-left: $b-panel-spacing;
+  &:not(:first-of-type) { margin-top: $b-panel-spacing / 2; }
+  &:not(:last-of-type)  { margin-bottom: $b-panel-spacing / 2; }
+}
+
+// == Hotkey ==
+@mixin b-kbd-hotkey($border: true) {
+  font-family: mono;
+  font-weight: 600;
+  font-size: calc(1em - 2px);
+  letter-spacing: 1px;
+  //* text-transform: uppercase; text-transform: lowercase; font-variant: small-caps; */
+  border-radius: 0.5em;
+  @if not $border {}
+  @else {
+    background: lgrey(30%); border: 1px outset lgrey(50%); color: lgrey(95%); // #3 #5 #e
+  }
+}
 
 // == Status Bar ==
 $b-statusbar-bg: $b-main-background;

@@ -99,6 +99,7 @@ public:
   virtual void               clear_undo          () override;
   virtual void               clean_dirty         () override;
   virtual bool               is_dirty            () override;
+  virtual int                max_clips           () override;
   virtual void               inject_midi_control (int midi_channel, int midi_control, double control_value) override;
   virtual Error              import_midi_file    (const String &file_name) override;
   virtual Error              restore_from_file   (const String &file_name) override;
@@ -114,7 +115,7 @@ public:
   virtual void               remove_snet         (SNetIface &snet) override;
   struct Internal; friend struct Internal;
 };
-typedef std::shared_ptr<ProjectImpl> ProjectImplP;
+using ProjectImplP = std::shared_ptr<ProjectImpl>;
 
 } // Bse
 

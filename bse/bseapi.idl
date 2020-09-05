@@ -721,7 +721,7 @@ record PartNote
   int32   channel   = Range ("Channel", "", ":readwrite", 0, MAXINT31, 1);
   int32   tick      = Range ("Tick", "", ":readwrite", 0, MAXINT31, 1);
   int32   duration  = Range ("Duration", "Duration in number of ticks", ":readwrite", 0, MAXINT31, 1);
-  int32   note      = Range ("Note", "", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
+  int32   key       = Range ("Note", "", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
   int32   fine_tune = Range ("Fine Tune", "", FINETUNEHINTS, MIN_FINE_TUNE, MAX_FINE_TUNE, 1);
   float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
   bool    selected  = Bool ("Selected", "", ":readwrite", false);
@@ -793,6 +793,19 @@ interface Part : Item {
 sequence PartSeq {
   Part part;
 };
+
+/// Container for MIDI note and control events.
+interface Clip : Object {
+  int32          end_tick       (); ///< Get the end tick, this tick is past any event ticks, changes on `notify:end_tick`.
+  int32          start_tick     (); ///< Get the first tick intended for playback (this is >= 0), changes on `notify:start_tick`.
+  int32          stop_tick      (); ///< Get the tick to stop playback, not events should be played after this, changes on `notify:stop_tick`.
+  void           assign_range   (int32 starttick, int32 stoptick); ///< Change start_tick() and stop_tick(); emits `notify:start_tick`, `notify:stop_tick`.
+  PartNoteSeq    list_all_notes (); ///< List all notes of this Clip; changes on `notify:notes`.
+  PartControlSeq list_controls  (MidiSignal control_type);  ///< List all controls of a specific type; changes on `notify:controls`.
+  /// Change note `id` according to the arguments or add a new note if `id` < 0; emits `notify:notes`.
+  int32          change_note    (int32 id, int32 tick, int32 duration, int32 key, int32 fine_tune, float64 velocity);
+};
+sequence ClipSeq { Clip clip; };
 
 /// A list of floating point values.
 sequence FloatSeq {
@@ -1038,6 +1051,7 @@ interface Track : ContextMerger {
   int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
   void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
+  ClipSeq      list_clips ();                   ///< List all clips contained in a track.
   PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
   Part         get_part (int32 tick);           ///< Get the part starting at a specific tick position.
@@ -1288,6 +1302,7 @@ interface Project : Container {
   void         clear_undo          (); ///< Delete all recorded undo or redo steps.
   void         clean_dirty         (); ///< Clear a project's dirty flags.
   bool         is_dirty            (); ///< Check whether a project needs saving.
+  int32        max_clips           (); ///< Maximum number of clips supported per track.
   SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
   Error        store               (String file_name, bool self_contained);     ///< Save project to file.
   Error        store_bse           (Container super, String file_name,

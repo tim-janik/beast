@@ -321,6 +321,7 @@ http_request (websocketpp::connection_hdl hdl)
         con->append_header ("Content-Type", "image/jpeg");
       else
         con->append_header ("Content-Type", "application/octet-stream");
+      con->append_header ("Cache-Control", "public, max-age=604800, immutable");
       Blob blob = Blob::from_file (filepath);
       con->set_body (blob.string());
       con->set_status (websocketpp::http::status_code::ok);

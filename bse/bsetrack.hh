@@ -5,7 +5,9 @@
 #include <bse/bseitem.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsecontextmerger.hh>
+#include <bse/bseproject.hh>
 #include <bse/device.hh>
+#include <bse/clip.hh>
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
@@ -89,6 +91,8 @@ using SongImplP = std::shared_ptr<SongImpl>;
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
   DeviceContainerImplP device_container_;
+  using ClipV = std::vector<ClipImplP>;
+  ClipV                clips_;
 protected:
   virtual             ~TrackImpl         ();
   virtual void         xml_serialize     (SerializationNode &xs) override;
@@ -96,12 +100,14 @@ protected:
 public:
   explicit             TrackImpl         (BseObject*);
   SongImplP            get_song          ();
+  ProjectImplP         project_impl      ();
   bool                 needs_serialize   ();
   virtual SongTiming   get_timing        (int tick) override;
   virtual PartIfaceP   create_part       (int32 tick) override;
   virtual int          insert_part       (int tick, PartIface &part) override;
   virtual void         remove_tick       (int tick) override;
   virtual void         remove_link       (int id) override;
+  virtual ClipSeq      list_clips        () override;
   virtual PartSeq      list_parts_uniq   () override;
   virtual TrackPartSeq list_parts        () override;
   virtual PartIfaceP   get_part          (int tick) override;

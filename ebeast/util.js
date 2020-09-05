@@ -1704,6 +1704,39 @@ export function matches_forof (element, iteratable)
   return false;
 }
 
+/// Extract filtered text nodes from Element.
+export function element_text (element, filter)
+{
+  let texts = [];
+  const each = e => {
+    if (e.nodeType == 3) // text element
+      {
+	texts.push (e.data);
+	return;
+      }
+    if (filter && filter (e) == false)
+      return;
+    for (const c of e.childNodes)
+      each (c);
+  };
+  each (element);
+  return texts.join ('');
+}
+
+/// Clone a menuitem icon via its `uri`.
+export function clone_menu_icon (menu, uri, title = '')
+{
+  const menuitem = menu?.find_menuitem (uri);
+  if (!menuitem)
+    return {};
+  App.zmove (); // pick up 'data-tip'
+  return {
+    ic: menuitem.ic, fa: menuitem.fa, mi: menuitem.mi, uc: menuitem.uc,
+    'data-kbd': menuitem.kbd,
+    'data-tip': title ? title + ' ' + menuitem.get_text() : '',
+  };
+}
+
 /// Symbolic names for key codes
 export const KeyCode = {
   BACKSPACE: 8, TAB: 9, LINEFEED: 10, ENTER: 13, RETURN: 13, CAPITAL: 20, CAPSLOCK: 20, ESC: 27, ESCAPE: 27, SPACE: 32,
@@ -1749,6 +1782,16 @@ async function refresh_keyboard_map () {
 export function keyboard_map_name (keyname) {
   const name = keyboard_map.get (keyname);
   return name || keyname;
+}
+
+/// Create display name from KeyEvent.code names.
+export function display_keyname (keyname)
+{
+  // Replace KeyX with 'X'
+  keyname = keyname.replace (/\bKey([A-Z])/g, "$1");
+  // Replace Digit7 with '7'
+  keyname = keyname.replace (/\bDigit([0-9])/g, "$1");
+  return keyname;
 }
 
 /// Match an event's key code, considering modifiers.
@@ -1797,18 +1840,19 @@ export function match_key_event (event, keyname)
 const hotkey_list = [];
 
 function hotkey_handler (event) {
+  const kdebug = () => undefined; // debug;
   // give precedence to navigatable element with focus
   if (is_nav_input (document.activeElement) ||
       (document.activeElement.tagName == "INPUT" && !is_button_input (document.activeElement)))
     {
-      // debug ("hotkey_handler: ignore-nav: " + event.code + ' (' + document.activeElement.tagName + ')');
+      kdebug ("hotkey_handler: ignore-nav: " + event.code + ' (' + document.activeElement.tagName + ')');
       return false;
     }
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
       event.preventDefault();
-      // debug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
+      kdebug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
       Util.keyboard_click (document.activeElement);
       return true;
     }
@@ -1819,7 +1863,7 @@ function hotkey_handler (event) {
       {
 	const callback = array[i][1];
 	event.preventDefault();
-	// debug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
+	kdebug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
 	callback.call (null, event);
 	return true;
       }
@@ -1829,11 +1873,11 @@ function hotkey_handler (event) {
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
 	event.preventDefault();
-	// debug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
+	kdebug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
 	return true;
       }
-  // debug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
+  kdebug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });

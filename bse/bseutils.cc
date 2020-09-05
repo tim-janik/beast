@@ -21,7 +21,7 @@ bse_part_note (uint id, uint channel, uint tick, uint duration, int note, int fi
   pnote.channel = channel;
   pnote.tick = tick;
   pnote.duration = duration;
-  pnote.note = note;
+  pnote.key = note;
   pnote.fine_tune = fine_tune;
   pnote.velocity = velocity;
   pnote.selected = selected != false;

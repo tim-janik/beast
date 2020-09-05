@@ -11,6 +11,8 @@
   ## Props:
   *uri*
   : Descriptor for this menuitem that is passed on to its B-CONTEXTMENU `onclick`.
+  *kbd*
+  : Hotkey to display next to the menu item and to use for the context menu kbd map.
   *disabled*
   : Boolean flag indicating disabled state.
   *fa*, *mi*, *bc*, *uc*
@@ -51,6 +53,12 @@
     }
     flex-direction: row; align-items: baseline;
     & > .b-icon:first-child { margin: 0 $b-menu-spacing 0 0; }
+    .kbdspan {
+      flex-grow: 1;
+      text-align: right;
+      padding-left: 1.5em;
+      kbd { @include b-kbd-hotkey($border: false); }
+    }
   }
   body .b-menurow-turn button.b-menuitem {
     flex-direction: column; align-items: center;
@@ -70,6 +78,7 @@
 	  @click="onclick" >
     <b-icon :class='iconclass' :ic="ic" :fa="fa" :mi="mi" :bc="bc" :uc="uc" v-if="menudata.showicons" />
     <span class="menulabel"><slot /></span>
+    <span v-if="kbd !== undefined" class="kbdspan"><kbd v-if="kbd">{{ Util.display_keyname (kbd) }}</kbd></span>
   </button>
 </template>
 
@@ -77,18 +86,32 @@
 const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-menuitem',
-  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, bc: STR, uc: STR },
+  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, bc: STR, uc: STR,
+	   kbd: { type: String }, },
   inject: { menudata: { from: 'b-contextmenu.menudata',
-			default: { showicons: true, showaccels: true, checkeduris: {},
-				   isdisabled: () => false, onclick: () => 0, }, },
+			default: { showicons: true, keepmounted: false, checkeduris: {},
+				   isdisabled: () => false, onclick: undefined, }, },
   },
   methods: {
     focus() {
       if (this.$el && !this.isdisabled())
 	this.$el.focus();
     },
-    onclick (event) 	{ return this.menudata.onclick.call (this, event); },
+    onclick (event) 	{ return this.menudata.onclick?.call (this, event); },
     isdisabled ()	{ return this.menudata.isdisabled.call (this); },
+    kbd_hotkey() {
+      return this.kbd;
+    },
+    /// Extract menu item label (without icon/kbd infos).
+    get_text() {
+      const filter = e => {
+	if (e.nodeName == 'KBD')
+	  return false;
+	if (e.getAttribute ('role') == 'icon')
+	  return false;
+      };
+      return Util.element_text (this.$el, filter);
+    },
   },
 };
 </script>
