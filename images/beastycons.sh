@@ -105,3 +105,8 @@ $HOTSPOT || rm -r beastycons/
 tar tvf $TARBALL
 ls -l $TARBALL
 sha256sum $TARBALL
+
+# == upload cmd ==
+if grep -sq 'git@github.com:.*\.git$' $GITHUB_ASSETS/.git/config ; then
+  echo "# (cd \$GITHUB_ASSETS && hub release edit -m '' -a $ORIGIN/$TARBALL beastycons)"
+fi
