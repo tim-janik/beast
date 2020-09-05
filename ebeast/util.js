@@ -113,6 +113,121 @@ export function capture_event (eventname, callback) {
   return uncapture;
 }
 
+/** Get `__vue__` from element or its ancestors */
+function vue_ancestor (element) {
+  while (element)
+    {
+      if (element.__vue__)
+	return element.__vue__;
+      element = element.parentNode;
+    }
+  return undefined;
+}
+
+export const START = "START";
+export const STOP = "STOP";
+export const CANCEL = "CANCEL";
+export const MOVE = "MOVE";
+
+class PointerDrag {
+  constructor (vuecomponent, event) {
+    this.vm = vuecomponent;
+    this.el = event.target;
+    this.pointermove = this.pointermove.bind (this);
+    this.el.addEventListener ('pointermove', this.pointermove);
+    this.pointerup = this.pointerup.bind (this);
+    this.el.addEventListener ('pointerup', this.pointerup);
+    this.pointercancel = this.pointercancel.bind (this);
+    this.el.addEventListener ('pointercancel', this.pointercancel);
+    this.el.addEventListener ('lostpointercapture', this.pointercancel);
+    this.start_stamp = event.timeStamp;
+    try {
+      this.el.setPointerCapture (event.pointerId);
+      this._pointerid = event.pointerId;
+    } catch (e) {
+      // something went wrong, bail out the drag
+      this._disconnect (event);
+    }
+    if (this.el)
+      this.vm.drag_event (event, START);
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.el)
+      this.destroy();
+  }
+  _disconnect (event) {
+    if (this._pointerid)
+      {
+        this.el.releasePointerCapture (this._pointerid);
+	this._pointerid = 0;
+      }
+    this.el.removeEventListener ('pointermove', this.pointermove);
+    this.el.removeEventListener ('pointerup', this.pointerup);
+    this.el.removeEventListener ('pointercancel', this.pointercancel);
+    this.el.removeEventListener ('lostpointercapture', this.pointercancel);
+    // swallow dblclick after lengthy drags with bouncing start click
+    if (this.el && (this.seen_move || event.timeStamp - this.start_stamp > 500)) // milliseconds
+      {
+	const swallow_dblclick = event => {
+	  event.preventDefault();
+	  event.stopPropagation();
+	  // debug ("PointerDrag: dblclick swallowed");
+	};
+	window.addEventListener ('dblclick', swallow_dblclick, true);
+	setTimeout (_ => window.removeEventListener ('dblclick', swallow_dblclick, true), 40);
+      }
+    this.el = null;
+  }
+  destroy (event = null) {
+    if (this.el)
+      {
+	event = event || new PointerEvent ('pointercancel');
+	this._disconnect (event);
+	this.vm.drag_event (event, CANCEL);
+	this.el = null;
+      }
+    this.vm = null;
+  }
+  pointermove (event) {
+    if (this.el)
+      this.vm.drag_event (event, MOVE);
+    event.preventDefault();
+    event.stopPropagation();
+    this.seen_move = true;
+  }
+  pointerup (event) {
+    if (!this.el)
+      return;
+    this._disconnect (event);
+    this.vm.drag_event (event, STOP);
+    this.destroy (event);
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  pointercancel (event) {
+    if (!this.el)
+      return;
+    this._disconnect (event);
+    this.vm.drag_event (event, CANCEL);
+    this.destroy (event);
+    event.preventDefault();
+    event.stopPropagation();
+  }
+};
+
+/** Start `drag_event (event)` handling on a Vue component's element, use `@pointerdown="Util.drag_event"` */
+export function drag_event (event) {
+  assert (event.type == "pointerdown" && event.pointerId);
+  const vuecomponent = vue_ancestor (event.target);
+  if (vuecomponent && vuecomponent.$el &&
+      vuecomponent.drag_event)			// ignore request if we got wrong vue component (child)
+  {
+    const pdrag = new PointerDrag (vuecomponent, event);
+    return _ => pdrag.destroy();
+  }
+  return _ => undefined;
+}
+
 // Maintain pending_pointer_lock state
 function pointer_lock_changed (ev) {
   if (document.pointerLockElement !== pending_pointer_lock)
