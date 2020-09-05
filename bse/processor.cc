@@ -426,10 +426,11 @@ void
 Engine::make_schedule ()
 {
   assert_return (scheduler_depth_ == 0);
+  return_unless (flags_ & RESCHEDULE);
   std::lock_guard<std::mutex> locker (mutex_);
   if (0 == (flags_ & RESCHEDULE))
     return;
-  flags_ &= ~size_t (RESCHEDULE);
+  flags_ &= ~uint (RESCHEDULE);
   schedule_.clear();
   scheduler_depth_ += 1;
   for (auto root : roots_)

@@ -13,6 +13,10 @@
 
 <style lang="scss">
   @import 'mixins.scss';
+  #b-app {
+    //* create app stacking context */
+    position: relative; z-index: 0;
+  }
 </style>
 
 <template>
@@ -186,7 +190,7 @@ async function bootup() {
       bootlog ("Will clean Bse cachedirs in", ms + "ms...");
       setTimeout (async () => {
 	await Bse.server.purge_stale_cachedirs();
-	bootlog ("Cleaned Bse cachedirs...");
+	// bootlog ("Cleaned Bse cachedirs...");
       }, ms);
     }
   // Dismiss startup messages
@@ -206,7 +210,7 @@ class App {
       this.panel3 = a[(a.indexOf (this.panel3) + 1) % a.length];
   }
   panel2_types = [ 'd' /*devices*/, 'p' /*pianoroll*/ ];
-  panel2 = 'd';
+  panel2 = 'p';
   switch_panel2 (n) {
     const a = this.panel2_types;
     if ('string' == typeof n)

@@ -1169,8 +1169,34 @@ TrackImpl::xml_serialize (SerializationNode &xs)
         }
       printerr ("Bse::TrackImpl::%s: failed to create device: %s\n", __func__, uuiduri);
     }
+  for (auto &xc : xs.children ("Clip"))                        // in_load
+    {
+      const uint index = string_to_uint (xc.get ("index"));
+      ClipSeq cs = list_clips();
+      if (index < cs.size())
+        {
+          ClipIfaceP clipi = cs[index];
+          if (clipi)
+            {
+              auto *clip = dynamic_cast<ClipImpl*> (clipi.get());
+              if (clip)
+                {
+                  xc.load (*clip);
+                  continue;
+                }
+            }
+        }
+      else
+        printerr ("Bse::TrackImpl::%s: failed to find clip at: %u\n", __func__, index);
+    }
   for (DeviceIfaceP device : device_container()->list_devices()) // in_save
     xs.save_under ("Device", *dynamic_cast<DeviceImpl*> (device.get()));
+  for (ClipIfaceP clipi : clips_) // in_save
+    {
+      ClipImpl *clip = dynamic_cast<ClipImpl*> (clipi.get());
+      if (clip->needs_serialize())
+        xs.save_under ("Clip", *clip);
+    }
 }
 
 void
@@ -1182,7 +1208,7 @@ TrackImpl::xml_reflink (SerializationNode &xs)
 bool
 TrackImpl::needs_serialize()
 {
-  return device_container()->list_devices().size() > 0;
+  return clips_.size() || device_container()->list_devices().size() > 0;
 }
 
 bool
@@ -1342,7 +1368,7 @@ TrackImpl::list_clips ()
     {
       clips_.reserve (max_clips);
       while (clips_.size() < max_clips)
-        clips_.push_back (ClipImpl::create_clip());
+        clips_.push_back (ClipImpl::create_clip (*this));
     }
   ClipSeq cs;
   for (auto cp : clips_)
@@ -1432,17 +1458,44 @@ TrackImpl::outputs (const ItemSeq &newoutputs)
   bse_bus_or_track_set_outputs (self, newoutputs);
 }
 
+void
+TrackImpl::update_clip()
+{
+  return_unless (midi_in_);
+  SongImpl *song = get_song().get();
+  const double bpm = song ? song->bpm() : 110;
+  const AudioSignal::ParamId BPM = midi_in_->BPM;
+  MidiLib::MidiInputIfaceP midiin = midi_in_;
+  ClipImpl::OrderedEventList::ConstP cevp = clips_.size() ? clips_[0]->tick_events() : nullptr;
+  const double nbpm = midiin->value_to_normalized (BPM, bpm);
+  struct PtrCopy { mutable MidiLib::ClipEventVectorP cevp; };
+  PtrCopy pc { cevp }; // use ClipEventVectorP copy to defer dtor to user thread
+  auto lambda = [midiin, BPM, nbpm, pc] () {
+    midiin->set_normalized (BPM, nbpm);
+    midiin->swap_event_vector (pc.cevp);
+  };
+  BSE_SERVER.commit_job (lambda);
+}
+
 DeviceContainerIfaceP
 TrackImpl::device_container()
 {
   if (!device_container_)
     {
+      assert_return (!midi_in_, nullptr);
+      const char *midi_in_uri = "Bse.MidiLib.MidiInput";
+      midi_in_ = std::dynamic_pointer_cast<MidiLib::MidiInputIface> (AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), midi_in_uri));
+      assert_return (midi_in_, nullptr);
+      update_clip();
       DeviceImplP devicep = DeviceImpl::create_single_device ("Bse.AudioSignal.Chain");
       assert_return (devicep != nullptr, nullptr);
       DeviceContainerImplP device_container = std::dynamic_pointer_cast<DeviceContainerImpl> (devicep);
       assert_return (device_container != nullptr, nullptr);
       device_container_ = device_container;
-      BSE_SERVER.assign_event_source (*device_container_->processor());
+      AudioSignal::Chain *container = dynamic_cast<AudioSignal::Chain*> (&*device_container_->processor());
+      assert_return (container != nullptr, nullptr);
+      container->set_event_source (midi_in_);
+      BSE_SERVER.add_event_input (*midi_in_);
     }
   return device_container_;
 }

@@ -830,7 +830,30 @@ export function inside_display_none (element) {
   return false;
 }
 
-/** Retrieve normalized scroll wheel event delta (across Browsers)
+/** Check if `element` is displayed (has width/height assigned) */
+export function is_displayed (element) {
+  // https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom/33456469#33456469
+  if (element.offsetWidth || element.offsetHeight ||
+      element.getClientRects().length)
+    return true;
+  return false;
+}
+
+function calculate_scroll_line_height()
+{
+  // Work around Firefox sending wheel events with ev.deltaMode == DOM_DELTA_LINE, see:
+  // https://stackoverflow.com/questions/20110224/what-is-the-height-of-a-line-in-a-wheel-event-deltamode-dom-delta-line/57788612#57788612
+  const el = document.createElement ('div');
+  el.style.fontSize = 'initial';
+  el.style.display = 'none';
+  document.body.appendChild (el);
+  const fontsize = window.getComputedStyle (el).fontSize;
+  document.body.removeChild (el);
+  return fontsize ? window.parseInt (fontsize) : 18;
+}
+let scroll_line_height = undefined;
+
+/** Retrieve normalized scroll wheel event delta in CSS pixels (across Browsers)
  * This returns an object `{x,y}` with negative values pointing
  * LEFT/UP and positive values RIGHT/DOWN respectively.
  * For zoom step interpretation, the x/y pixel values should be
@@ -843,24 +866,43 @@ export function inside_display_none (element) {
 export function wheel_delta (ev)
 {
   const DPR = Math.max (window.devicePixelRatio || 1, 1);
-  const WHEEL_DELTA = 120;	// Corresponds to a 15° mouse wheel step
-  const CHROMEPIXEL = 53;	// Chromium has a wheelDeltaY/deltaY ratio of 120/53 and includes DPR
-  const FIREFOXPIXEL = DPR / 3;	// Firefox sets deltaX=1 and deltaY=3 per step on Linux
-  const PAGESTEP = 100 * DPR;	// Chromium pixels per scroll step
+  const DIV_DPR = 1 / DPR;                      // Factor to divide by DPR
+  const WHEEL_DELTA = -53 / 120.0 * DIV_DPR;    // Chromium wheelDeltaY to deltaY pixel ratio
+  const FIREFOX_X = 3;                          // Firefox sets deltaX=1 and deltaY=3 per step on Linux
+  const PAGESTEP = -100;                        // Chromium pixels per scroll step
   // https://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
   // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/U3kH6_98BuY
-  if (ev.deltaMode >= 2) // DOM_DELTA_PAGE
+  if (ev.deltaMode >= 2)                        // DOM_DELTA_PAGE
     return { x: ev.deltaX * PAGESTEP, y: ev.deltaY * PAGESTEP };
-  if (ev.deltaMode >= 1) // DOM_DELTA_LINE - Firefox sets deltaX=1 and deltaY=3 per step on Linux
-    return { x: ev.deltaX * 3 * FIREFOXPIXEL * 10, y: ev.deltaY * FIREFOXPIXEL * 10 };
-  if (ev.deltaMode >= 0) // DOM_DELTA_PIXEL - adjusted for Chromium ratio, includes DPR
-    return { x: ev.deltaX / CHROMEPIXEL * 10, y: ev.deltaY / CHROMEPIXEL * 10 };
-  if (ev.wheelDeltaX !== undefined) // Chromium includes DPR in wheelDelta
-    return { x: -ev.wheelDeltaX / WHEEL_DELTA * 10,
-	     y: -ev.wheelDeltaY / WHEEL_DELTA * 10 };
-  if (ev.wheelDelta !== undefined)
-    return { x: 0, y: -ev.wheelDelta / WHEEL_DELTA * 10 };
-  return { x: 0, y: (ev.detail || 0) * DPR * 10 };
+  if (ev.deltaMode >= 1)                        // DOM_DELTA_LINE - only Firefox is known to send this
+    {
+      if (scroll_line_height === undefined)
+        scroll_line_height = calculate_scroll_line_height();
+      return { x: ev.deltaX * FIREFOX_X * scroll_line_height, y: ev.deltaY * scroll_line_height };
+    }
+  if (ev.deltaMode >= 0)                        // DOM_DELTA_PIXEL - Chromium includes DPR
+    return { x: ev.deltaX * DIV_DPR, y: ev.deltaY * DIV_DPR };
+  if (ev.wheelDeltaX !== undefined)             // Use Chromium factors for normalization
+    return { x: ev.wheelDeltaX * WHEEL_DELTA, y: ev.wheelDeltaY * WHEEL_DELTA };
+  if (ev.wheelDelta !== undefined)              // legacy support
+    return { x: 0, y: ev.wheelDelta / -120 * 10 };
+  return { x: 0, y: (ev.detail || 0) * -10 };
+}
+
+/** Use deltas from `event` to call scrollBy() on `refs[scrollbars...]`. */
+export function wheel2scrollbars (event, refs, ...scrollbars)
+{
+  const delta = Util.wheel_delta (event);
+  for (const sb of scrollbars)
+    {
+      const scrollbar = refs[sb];
+      if (!scrollbar)
+	continue;
+      if (scrollbar.clientHeight > scrollbar.clientWidth)       // vertical
+        scrollbar.scrollBy ({ top: delta.y });
+      else                                                      // horizontal
+	scrollbar.scrollBy ({ left: delta.x });
+    }
 }
 
 /** List all elements that can take focus and are descendants of `element` or the document. */
@@ -1307,19 +1349,16 @@ export function resize_canvas (canvas, csswidth, cssheight, fill_style = false) 
   const cw = Math.round (csswidth), ch = Math.round (cssheight);
   const pw = Math.round (devicepixelratio * cw);
   const ph = Math.round (devicepixelratio * ch);
-  if (cw != canvas.style.width || ch != canvas.style.height ||
-      pw != canvas.width || ph != canvas.height || fill_style) {
-    canvas.style.width = cw + 'px';
-    canvas.style.height = ch + 'px';
-    canvas.width = pw;
-    canvas.height = ph;
-    const ctx = canvas.getContext ('2d');
-    if (!fill_style || fill_style === true)
-      ctx.clearRect (0, 0, canvas.width, canvas.height);
-    else {
-      ctx.fillStyle = fill_style;
-      ctx.fillRect (0, 0, canvas.width, canvas.height);
-    }
+  canvas.style.width = cw + 'px';
+  canvas.style.height = ch + 'px';
+  canvas.width = pw;
+  canvas.height = ph;
+  const ctx = canvas.getContext ('2d');
+  if (!fill_style || fill_style === true)
+    ctx.clearRect (0, 0, canvas.width, canvas.height);
+  else {
+    ctx.fillStyle = fill_style;
+    ctx.fillRect (0, 0, canvas.width, canvas.height);
   }
   return devicepixelratio;
 }
@@ -1723,6 +1762,14 @@ export function element_text (element, filter)
   return texts.join ('');
 }
 
+/// Popup `menu` using `event.target` as origin.
+export function dropdown (menu, event, options = {})
+{
+  if (!options.origin)
+    options.origin = event.target;
+  return menu?.popup (event, options);
+}
+
 /// Clone a menuitem icon via its `uri`.
 export function clone_menu_icon (menu, uri, title = '')
 {
@@ -1731,7 +1778,7 @@ export function clone_menu_icon (menu, uri, title = '')
     return {};
   App.zmove (); // pick up 'data-tip'
   return {
-    ic: menuitem.ic, fa: menuitem.fa, mi: menuitem.mi, uc: menuitem.uc,
+    ic: menuitem.ic, fa: menuitem.fa, mi: menuitem.mi, bc: menuitem.bc, uc: menuitem.uc,
     'data-kbd': menuitem.kbd,
     'data-tip': title ? title + ' ' + menuitem.get_text() : '',
   };
@@ -2049,6 +2096,9 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
       else if (!(tmpl[key] instanceof Object))
 	continue;
       const async_getter = tmpl[key].getter, async_notify = tmpl[key].notify, default_value = tmpl[key].default;
+      tmpl[key] = default_value;
+      if (!async_getter && !async_notify)
+	continue;
       const assign_getter_cleanup = (c) => assign_async_cleanup (getter_cleanups, key, c);
       const getter = async () => {
 	const had_cleanup = !!getter_cleanups[key];
@@ -2076,7 +2126,6 @@ export function vue_observable_from_getters (tmpl, predicate) { // `this` is Vue
 	  }
       };
       monitoring_getters.push (getter_and_listen);
-      tmpl[key] = default_value;
     }
   // make all fields observable
   odata = Vue.reactive (tmpl);

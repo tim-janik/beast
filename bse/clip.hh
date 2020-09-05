@@ -13,13 +13,16 @@ constexpr const uint MIDI_NOTE_ID_FIRST = 0x10000001;
 /// Last valid (internal) MIDI note event ID.
 constexpr const uint MIDI_NOTE_ID_LAST = 0xfffffffe;
 
+class TrackImpl;
+using TrackImplW = std::weak_ptr<TrackImpl>;
+
 // == ClipImpl ==
 class ClipImpl : public ObjectImpl, public virtual ClipIface {
   int starttick_ = 0;
   int stoptick_ = 0;
+  TrackImplW track_;
   struct CmpNoteTicks { int operator() (const PartNote &a, const PartNote &b) const; };
   struct CmpNoteIds   { int operator() (const PartNote &a, const PartNote &b) const; };
-  using OrderedEventList = OrderedEventList<PartNote,CmpNoteTicks>;
   EventList<PartNote,CmpNoteIds> notes_;
 protected:
   friend class FriendAllocator<ClipImpl>;
@@ -27,8 +30,12 @@ protected:
   virtual void xml_serialize (SerializationNode &xs) override;
   virtual void xml_reflink   (SerializationNode &xs) override;
   explicit     ClipImpl      ();
+  ssize_t      clip_index    () const;
+  bool         find_key_at_tick (PartNote &ev);
 public:
   using ClipImplP = std::shared_ptr<ClipImpl>;
+  using OrderedEventList = OrderedEventList<PartNote,CmpNoteTicks>;
+  OrderedEventList::ConstP tick_events  ();
   virtual int            end_tick       () override;
   virtual int            start_tick     () override;
   virtual int            stop_tick      () override;
@@ -36,7 +43,9 @@ public:
   virtual PartNoteSeq    list_all_notes () override;
   virtual PartControlSeq list_controls  (MidiSignal control_type) override;
   virtual int            change_note    (int id, int tick, int duration, int key, int fine_tune, double velocity) override;
-  static ClipImplP       create_clip    ();
+  bool                   needs_serialize()      { return notes_.size() > 0; }
+  static ClipImplP       create_clip    (TrackImpl &track);
+  static uint            next_noteid    ();
 };
 using ClipImplP = ClipImpl::ClipImplP;
 using ClipImplW = std::weak_ptr<ClipImpl>;

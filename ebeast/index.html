@@ -35,6 +35,7 @@
   if (typeof module === 'object' && require ('electron')) {
     bootlog ("Preloading Electron resources...");
     Object.defineProperty (globalThis, 'Electron', { value: require ('electron').remote });
+    //Electron.getCurrentWindow().webContents.setZoomFactor (1);
     document.head.querySelector ('[href="/menus.js"]').setAttribute ('rel', 'modulepreload');
   }
   // Electron.getCurrentWindow().toggleDevTools();

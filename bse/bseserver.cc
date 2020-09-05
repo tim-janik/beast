@@ -1438,13 +1438,11 @@ ServerImpl::test_counter_set (int v)
 }
 
 void
-ServerImpl::assign_event_source (AudioSignal::Processor &proc)
+ServerImpl::add_event_input (AudioSignal::Processor &proc)
 {
-  AudioSignal::Chain *container = dynamic_cast<AudioSignal::Chain*> (&proc);
-  assert_return (container != nullptr);
   if (!midi_proc_)
     midi_proc_ = create_server_midi_input();
-  container->set_event_source (midi_proc_);
+  proc.connect_event_input (*midi_proc_);
 }
 
 void

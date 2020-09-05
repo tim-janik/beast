@@ -79,7 +79,7 @@ public:
   void                close_pcm_driver      ();
   void                add_pcm_output_processor (AudioSignal::ProcessorP procp);
   void                del_pcm_output_processor (AudioSignal::ProcessorP procp);
-  void                assign_event_source      (AudioSignal::Processor &proc);
+  void                add_event_input       (AudioSignal::Processor &proc);
   explicit                 ServerImpl       (BseObject*);
   virtual bool             log_messages     () const override;
   virtual void             log_messages     (bool val) override;

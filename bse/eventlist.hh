@@ -3,6 +3,7 @@
 #define __BSE_EVENTLIST_HH__
 
 #include <bse/bcore.hh>
+#include <bse/serializable.hh>
 #include <any>
 
 namespace Bse {
@@ -22,8 +23,10 @@ private:
 /// Maintain an array of unique `Event` structures with change notification.
 template<class Event, class Compare>
 class EventList final {
+  using EventVector = std::vector<Event>;
 public:
   using Notify = std::function<void (const Event &event, int mod)>;
+  using CIter = typename EventVector::const_iterator;
   explicit     EventList      (const Notify &n = {}, const Compare &c = {});
   void         insert         (const Event &event);
   bool         remove         (const Event &event);
@@ -35,8 +38,11 @@ public:
   void         clear_silently ();
   template<class OrderedEventList> inline
   auto         ordered_events () -> typename OrderedEventList::ConstP;
+  CIter        begin          () const          { return events_.begin(); }
+  CIter        end            () const          { return events_.end(); }
+  void         xml_serialize (Xms::SerializationNode &xs, const String &ident) { xs[ident] & events_; }
 private:
-  std::vector<Event> events_;
+  EventVector        events_;
   Compare            compare_;
   Notify             notify_;
   std::any           ordered_;

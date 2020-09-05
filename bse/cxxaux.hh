@@ -264,7 +264,7 @@ struct Id32 {
   template<typename T,
            REQUIRES< (sizeof (T) <= 4 && (std::is_integral<T>::value ||
                                           std::is_enum<T>::value)) > = true>
-  Id32 (T eid) :
+  constexpr Id32 (T eid) :
     id (uint32_t (eid))
   {}
   uint32_t id;

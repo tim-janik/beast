@@ -201,7 +201,7 @@ EventStream::last_frame () const
 }
 
 // == EventRange ==
-EventRange::EventRange (const EventStream estream) :
+EventRange::EventRange (const EventStream &estream) :
   estream_ (estream)
 {}
 

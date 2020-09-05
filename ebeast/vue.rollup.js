@@ -33,11 +33,18 @@ export default {
     scss (),
     resolve(),
   ],
-  external: [
-    '/jsbse.js',
-    '/vue.mjs',
-    '/markdown-it.mjs',
-    '/util.js',
-    '/menus.js',
-  ],
+  // indicate which modules should be treated as external
+  external: id => {
+    // treat all regular file imports as external
+    return id.search (/\?/) < 0;
+  },
 };
+
+const external = [
+  '/jsbse.js',
+  '/vue.mjs',
+  '/markdown-it.mjs',
+  '/util.js',
+  '/menus.js',
+];
+external;

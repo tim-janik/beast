@@ -63,7 +63,7 @@
 	  <b-track-list class="grow1" :song="song"></b-track-list>
 	</b-hflex>
 	<!-- lower main area -->
-	<b-hflex class="b-projectshell-panel2" >
+	<b-hflex class="b-projectshell-panel2" :style="panel2_style()" >
 	  <b-piano-roll class="grow1" :msrc="App.piano_roll_source" v-show="App.panel2 == 'p'" ></b-piano-roll>
 	  <b-devicepanel v-show="App.panel2 == 'd'" :track="current_track" />
 	</b-hflex>
@@ -149,6 +149,9 @@ export default {
   },
   provide () { return { 'b-projectshell': this }; },
   methods: {
+    panel2_style() {
+      return App.panel2 == 'p' ? 'flex-grow: 5' : '';
+    },
     usermessage (e) {
       let msg = '';
       switch (e.umtype)
