@@ -113,6 +113,7 @@ async function bootup() {
   Vue.mixin (Util.vue_mixins.autodataattrs); // Auto apply data-* props to this.$el
   Object.assign (Vue.prototype, {
     CONFIG: globalThis.CONFIG,
+    assert: globalThis.assert,
     debug: globalThis.debug,
     Util: globalThis.Util,
     App: globalThis.App,
