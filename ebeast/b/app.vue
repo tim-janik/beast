@@ -59,8 +59,9 @@ async function bootup() {
   Object.assign (CONFIG, packagejson.config, mainconfig);
   // Chrome Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1092358 https://github.com/w3c/pointerlock/issues/42
   const chrome_major = parseInt (( /\bChrome\/([0-9]+)\./.exec (navigator.userAgent) || [0,0] )[1]);
-  CONFIG.dpr_movement = chrome_major >= 37 && chrome_major <= 83;
-  console.assert (chrome_major <= 83, `WARNING: Chrome/${chrome_major} has not been tested for the movementX devicePixelRatio bug`);
+  const chrome_major_last_buggy = 85;
+  CONFIG.dpr_movement = chrome_major >= 37 && chrome_major <= chrome_major_last_buggy;
+  console.assert (chrome_major <= chrome_major_last_buggy, `WARNING: Chrome/${chrome_major} has not been tested for the movementX devicePixelRatio bug`);
   if (CONFIG.dpr_movement)
     bootlog ("Detected Chrome bug #1092358...");
   // Electron specifics
