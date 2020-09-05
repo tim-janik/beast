@@ -139,17 +139,21 @@ $>/app/index.html: ebeast/index.html $>/app/bseapi_jsonipc.js $>/ebeast/node_mod
 		< ebeast/index.html	> $@.tmp
 	$Q mv $@.tmp $@
 
-# == cursors ==
-$>/ebeast/cursors/cursors.scss:				| $>/ebeast/
-	$(QECHO) FETCH "cursors-*.tgz"
-	@ $(eval T := cursors-200821-1-g00fe3f54e.tgz)
-	$Q cd $>/ebeast/ $(call AND_DOWNLOAD_SHAURL, \
-		db008d2782f77e3df729eb1b77b88270c66aa5dd3abc5b981785e47649fea524, \
-			https://github.com/tim-janik/assets/releases/download/cursors/$T)
+# == Beastycons ==
+$>/app/assets/Beastycons.css:				| $>/ebeast/ $>/app/assets/
+	@ $(eval ST := 257ee4587505a2e055fcb16edddf52b39731a105da6231803c583183c58bb7f3 beastycons-200905.3.tgz)
+	@ $(eval T := $(lastword $(ST))) $(eval S := $(firstword $(ST)))
+	$(QECHO) FETCH "$T"
+	$Q if test -e images/$T ; \
+		then $(CP) images/$T $>/ebeast/ ; \
+		else cd $>/ebeast/ $(call AND_DOWNLOAD_SHAURL, $S, https://github.com/tim-janik/assets/releases/download/beastycons/$T) ; \
+	   fi
+	$Q rm -fr $>/ebeast/beastycons/ && tar -xf $>/ebeast/$T -C $>/ebeast/ && rm $>/ebeast/$T
 	$(QGEN)
-	$Q cd $>/ebeast/ && rm -rf cursors/ && tar -xf $T
-	$Q rm $>/ebeast/$T
+	$Q test -e $>/ebeast/beastycons/bc-cursors.scss
+	$Q cp $>/ebeast/beastycons/Beastycons.css $>/ebeast/beastycons/Beastycons.woff2 $>/app/assets/
 $>/app/assets/stylesheets.css: $>/ebeast/cursors/cursors.scss
+$>/ebeast/cursors/cursors.scss: $>/app/assets/Beastycons.css
 
 # == &>/app/markdown-it.mjs ==
 # rollup for import+require is tricky: https://github.com/rollup/rollup/issues/1058#issuecomment-254187433
