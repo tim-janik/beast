@@ -133,6 +133,7 @@
 
   <b-grid class="b-piano-roll" tabindex="0"
 	  @keydown="piano_ctrl.keydown ($event)" @focus="focuschange" @blur="focuschange"
+	  @pointerdown="Util.drag_event"
 	  @mouseenter="mouseenter" @mouseleave="mouseleave" >
     <!-- VTitle, COL-1 -->
     <span class="-vtitle" style="grid-row: 1/-1"  > VTitle </span>
@@ -239,6 +240,8 @@ export default {
     this.stepping = [ PPQN, 0, 0 ];
   },
   mounted () {
+    // forward ctrl events
+    this.drag_event = this.piano_ctrl.drag_event.bind (this.piano_ctrl);
     // setup tool state
     this.usetool (this.pianotool);
     // keep vertical scroll position for each msrc, non-reactive
