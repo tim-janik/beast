@@ -9,7 +9,7 @@ namespace Bse {
 
 namespace MidiLib {
 
-using ClipEventVectorP = ClipImpl::OrderedEventList::ConstP;
+using ClipEventVectorP = ClipImpl::OrderedEventsP;
 
 class MidiInputIface : public AudioSignal::Processor {
 public:
