@@ -24,6 +24,7 @@ class ClipImpl : public ObjectImpl, public virtual ClipIface {
   struct CmpNoteTicks { int operator() (const PartNote &a, const PartNote &b) const; };
   struct CmpNoteIds   { int operator() (const PartNote &a, const PartNote &b) const; };
   EventList<PartNote,CmpNoteIds> notes_;
+  using OrderedEventsV = OrderedEventList<PartNote,CmpNoteTicks>;
 protected:
   friend class FriendAllocator<ClipImpl>;
   virtual     ~ClipImpl      ();
@@ -34,8 +35,8 @@ protected:
   bool         find_key_at_tick (PartNote &ev);
 public:
   using ClipImplP = std::shared_ptr<ClipImpl>;
-  using OrderedEventList = OrderedEventList<PartNote,CmpNoteTicks>;
-  OrderedEventList::ConstP tick_events  ();
+  using OrderedEventsP = OrderedEventsV::ConstP;
+  OrderedEventsP         tick_events  ();
   virtual int            end_tick       () override;
   virtual int            start_tick     () override;
   virtual int            stop_tick      () override;

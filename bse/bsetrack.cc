@@ -1466,7 +1466,7 @@ TrackImpl::update_clip()
   const double bpm = song ? song->bpm() : 110;
   const AudioSignal::ParamId BPM = midi_in_->BPM;
   MidiLib::MidiInputIfaceP midiin = midi_in_;
-  ClipImpl::OrderedEventList::ConstP cevp = clips_.size() ? clips_[0]->tick_events() : nullptr;
+  ClipImpl::OrderedEventsP cevp = clips_.size() ? clips_[0]->tick_events() : nullptr;
   const double nbpm = midiin->value_to_normalized (BPM, bpm);
   struct PtrCopy { mutable MidiLib::ClipEventVectorP cevp; };
   PtrCopy pc { cevp }; // use ClipEventVectorP copy to defer dtor to user thread

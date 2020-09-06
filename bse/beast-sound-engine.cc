@@ -241,7 +241,7 @@ simplify_path (const std::string &path)
 {
   using namespace Bse;
   std::vector<std::string> dirs = Bse::string_split (path, "/");
-  for (ssize_t i = 0; i < dirs.size(); i++)
+  for (ssize_t i = 0; i < ssize_t (dirs.size()); i++)
     if (dirs[i].empty() || dirs[i] == ".")
       dirs.erase (dirs.begin() + i--);
     else if (dirs[i] == "..")
@@ -557,7 +557,7 @@ main (int argc, char *argv[])
   // parse arguments
   bool seen_dashdash = false;
   std::vector<std::string> words;
-  for (size_t i = 0; i < argc; i++)
+  for (size_t i = 0; i < size_t (argc); i++)
     if (!argv[i])
       continue;
     else if (argv[i][0] == '-' && argv[i][1] == '-' && argv[i][2] == 0)
@@ -572,7 +572,7 @@ main (int argc, char *argv[])
             print_usage (false);
             return 0;
           }
-        else if (arg_name == "embed" && i + 1 < argc)
+        else if (arg_name == "embed" && i + 1 < size_t (argc))
           embedding_pollfd.fd = Bse::string_to_int (argv[++i]);
         else if (arg_name == "h" || arg_name == "help")
           {

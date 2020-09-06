@@ -122,10 +122,10 @@ ClipImpl::assign_range (int starttick, int stoptick)
 }
 
 /// Retrieve const vector with all notes ordered by tick.
-ClipImpl::OrderedEventList::ConstP
+ClipImpl::OrderedEventsP
 ClipImpl::tick_events ()
 {
-  return notes_.ordered_events<OrderedEventList> ();
+  return notes_.ordered_events<OrderedEventsV> ();
 }
 
 /// List all notes ordered by tick.
@@ -150,7 +150,8 @@ ClipImpl::change_note (int id, int tick, int duration, int key, int fine_tune, d
 {
   if (id < 0 && duration > 0)
     id = next_noteid(); // automatic id allocation for new notes
-  assert_return (id >= MIDI_NOTE_ID_FIRST && id <= MIDI_NOTE_ID_LAST, 0);
+  const uint uid = id;
+  assert_return (uid >= MIDI_NOTE_ID_FIRST && uid <= MIDI_NOTE_ID_LAST, 0);
   assert_return (duration >= 0, 0);
   if (tick < 0)
     return -1;
