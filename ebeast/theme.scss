@@ -162,7 +162,7 @@ $b-style-outset-activebg-glint: $b-style-outset-activebg-2 !default;
   //* The outset is implemented by adding a dark shadow around, and light shadows above and below */
   box-shadow: 0px -1px 0 0px $b-style-outset-glint-1, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-outset-glint-2;
   &:focus { box-shadow: 0px -1px 0 0px $b-style-outset-glint-1, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
-  &.active, &:active {
+  &.active, &:active, &[data-contextmenu=true] {
 	background-color: $b-style-outset-activebg-0; background: $b-style-outset-activebg;
 	box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-outset-glint-2;
 	&:focus { box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
@@ -184,7 +184,7 @@ $b-softbutton-lg-down: linear-gradient(to top, $b-softbutton-bgd, $b-softbutton-
   border-top-color: transparent; border-bottom-color: transparent;
   &:focus { outline: $b-focus-outline; }
   &.hover, &:hover   { box-shadow: inset 500px 500px rgba(255, 255, 255, 0.035); }
-  &.active, &:active {
+  &.active, &:active, &[data-contextmenu=true] {
     background: $b-softbutton-lg-up;
     border-color: $b-softbutton-bg; border-style: solid;
     box-shadow: inset 500px 500px rgba(0, 0, 0, 0.05);
