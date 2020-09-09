@@ -75,7 +75,7 @@
 	justify-self: stretch; align-self: stretch;
 	padding: 5px;
 	@include b-softbutton;
-	//* tweak cihld next to scroll boundary */
+	//* tweak child next to scroll boundary */
 	&:last-child {
 	  border-right: 1px solid transparent;			//* avoid double border */
 	  &.active, &:active {
