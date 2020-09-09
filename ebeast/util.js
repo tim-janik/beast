@@ -1810,7 +1810,7 @@ export function in_keyboard_click()
 }
 
 /// Trigger element click via keyboard.
-export function keyboard_click (element)
+export function keyboard_click (element, callclick = true)
 {
   if (element instanceof Element)
     {
@@ -1825,7 +1825,8 @@ export function keyboard_click (element)
 	      e.classList.toggle ('active', false);
 	    }, 170); // match focus-activation delay
 	}
-      element.click();
+      if (callclick)
+	element.click();
       keyboard_click_state.inclick -= 1;
       return true;
     }
@@ -2006,9 +2007,13 @@ function hotkey_handler (event) {
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
-      event.preventDefault();
-      kdebug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
-      Util.keyboard_click (document.activeElement);
+      kdebug ("hotkey_handler: button-activation: " + ' (' + document.activeElement.tagName + ')');
+      // allow `onclick` activation via `Enter` on <button/> and <a href/> with event.isTrusted
+      const click_pending = document.activeElement.nodeName == 'BUTTON' || (document.activeElement.nodeName == 'A' &&
+									    document.activeElement.href);
+      Util.keyboard_click (document.activeElement, !click_pending);
+      if (!click_pending)
+	event.preventDefault();
       return true;
     }
   // activate global hotkeys
