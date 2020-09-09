@@ -24,9 +24,10 @@
   *keepmounted*
   : Keep the menu and menu items mounted at all times, needed for map_kbd_hotkeys().
   ## Methods:
-  *popup (event, { origin, tieclass })*
+  *popup (event, { origin, data-contextmenu })*
   : Popup the contextmenu, the `event` coordinates are used for positioning, the `origin` is a
-  : reference DOM element to use for drop-down positioning.
+  : reference DOM element to use for drop-down positioning. The `data-contextmenu` element (or `origin`)
+  : has the `data-contextmenu=true` attribute assigned during popup.
   *close()*
   : Hide the contextmenu.
   *map_kbd_hotkeys (active)*
@@ -144,19 +145,28 @@ export default {
 	  if (this.popup_options?.origin)
 	    this.resize_observer.observe (this.popup_options.origin.$el || this.popup_options.origin);
 	}
-      else if (this.tieclass)
+      if (!this.$refs.cmenu || !this.visible)
+	this.clear_data_contextmenu();
+    },
+    clear_data_contextmenu ()
+    {
+      debug ("clear_data_contextmenu:", this._data_contextmenu_element);
+      if (this._data_contextmenu_element)
 	{
-	  this.tieclass.element.classList.remove (this.tieclass.class);
-	  this.tieclass = undefined;
+	  this._data_contextmenu_element.removeAttribute ('data-contextmenu');
+	  this._data_contextmenu_element = undefined;
 	}
+    },
+    add_data_contextmenu (element)
+    {
+      this.clear_data_contextmenu();
+      this._data_contextmenu_element = element;
+      this._data_contextmenu_element.setAttribute ('data-contextmenu', 'true');
+      debug ("add_data_contextmenu:", this._data_contextmenu_element);
     },
     dom_destroy () {
       this.clear_dragging();
-      if (this.tieclass)
-	{
-	  this.tieclass.element.classList.remove (this.tieclass.class);
-	  this.tieclass = undefined;
-	}
+      this.clear_data_contextmenu();
       this.resize_observer.disconnect();
       this.resize_observer = undefined;
       if (this.resize_timer)
@@ -235,9 +245,7 @@ export default {
     popup (event, options) {
       this.popup_options = Object.assign ({}, options || {});
       this.visible = false;
-      if (this.tieclass)
-	this.tieclass.element.classList.remove (this.tieclass.class);
-      this.tieclass = this.popup_options.tieclass;
+      this.clear_data_contextmenu();
       this.clear_dragging();
       if (event && event.pageX && event.pageY)
 	{
@@ -261,8 +269,9 @@ export default {
 	  window.addEventListener ('mousedown', this.dragging.handler, this.dragging.evpassive);
 	  window.addEventListener ('keydown',   this.dragging.handler, this.dragging.evpassive);
 	}
-      if (this.tieclass)
-	this.tieclass.element.classList.add (this.tieclass.class);
+      const data_contextmenu_element = this.popup_options['data-contextmenu'] || this.popup_options.origin;
+      if (data_contextmenu_element)
+	this.add_data_contextmenu (data_contextmenu_element);
       this.visible = true;
       App.zmove(); // force changes to be picked up
     },
