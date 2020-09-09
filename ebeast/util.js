@@ -1832,16 +1832,6 @@ export function keyboard_click (element)
   return false;
 }
 
-/// Trigger element click via keyboard.
-export function clear_keyboard_click (element)
-{
-  if (element.keyboard_click_reset_id)
-    {
-      clearTimeout (element.keyboard_click_reset_id);
-      element.keyboard_click_reset_id = undefined;
-    }
-}
-
 /** Check whether `element` is contained in `array` */
 export function in_array (element, array)
 {
