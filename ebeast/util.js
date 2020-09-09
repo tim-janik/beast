@@ -1972,7 +1972,7 @@ export function match_key_event (event, keyname)
   for (let i = 0; i < parts.length; i++)
     {
       // collect meta keys
-      switch (parts[i])
+      switch (parts[i].toLowerCase())
       {
 	case 'cmd': case 'command':
 	case 'super': case 'meta':	need_meta  = 1; continue;
@@ -2042,7 +2042,7 @@ function hotkey_handler (event) {
 	Util.keyboard_click (el);
 	return true;
       }
-  kdebug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
+  kdebug ('hotkey_handler: unused-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
