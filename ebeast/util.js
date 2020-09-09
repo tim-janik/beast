@@ -213,7 +213,7 @@ class PointerDrag {
     event.preventDefault();
     event.stopPropagation();
   }
-};
+}
 
 /** Start `drag_event (event)` handling on a Vue component's element, use `@pointerdown="Util.drag_event"` */
 export function drag_event (event) {
@@ -1877,11 +1877,14 @@ export function element_text (element, filter)
   return texts.join ('');
 }
 
-/// Popup `menu` using `event.target` as origin.
+/// Popup `menu` using `event.currentTarget` as origin.
 export function dropdown (menu, event, options = {})
 {
   if (!options.origin)
-    options.origin = event.target;
+    {
+      // use the event handler element for positioning
+      options.origin = event.currentTarget;
+    }
   return menu?.popup (event, options);
 }
 
