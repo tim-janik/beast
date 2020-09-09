@@ -102,7 +102,8 @@ export default {
           const rawmsg = els.length ? els[els.length - 1].getAttribute ('data-tip') : '';
           if (rawmsg != this.status_)
             Util.markdown_to_html (this.$refs['b-statusbar-text'], this.status_ = rawmsg);
-          const rawkbd = els.length ? els[els.length - 1].getAttribute ('data-kbd') : '';
+          const rawkbd = !els.length ? '' :
+			 els[els.length - 1].getAttribute ('data-kbd') || els[els.length - 1].getAttribute ('data-hotkey');
           if (rawkbd != this.kbd_)
             this.kbd_ = rawkbd;
 	}

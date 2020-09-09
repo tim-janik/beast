@@ -21,9 +21,9 @@
       class="b-playcontrols" >
     <b-button disabled @click="pcall ('...Last')"      ><b-icon fw lg fa="fast-backward" /></b-button>
     <b-button disabled @click="pcall ('...Backwards')" ><b-icon fw lg fa="backward"      /></b-button>
-    <b-button @click="pcall ('stop')"		hotkey="KeyS" data-kbd="S"
+    <b-button @click="pcall ('stop')"		hotkey="KeyS"
 	      data-tip="**CLICK** Stop playback" >		<b-icon fw lg fa="stop"          /></b-button>
-    <b-button @click="toggle_play()"		hotkey="Space" data-kbd="Space"
+    <b-button @click="toggle_play()"		hotkey="Space"
 	      data-tip="**CLICK** Start/stop playback" >	<b-icon fw lg fa="play"          /></b-button>
     <b-button disabled @click="pcall ('...Record')"    ><b-icon fw lg fa="circle"        /></b-button>
     <b-button disabled @click="pcall ('...Forwards')"  ><b-icon fw lg fa="forward"       /></b-button>
