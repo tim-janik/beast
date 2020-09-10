@@ -158,7 +158,6 @@ export default {
     },
     clear_data_contextmenu ()
     {
-      debug ("clear_data_contextmenu:", this._data_contextmenu_element);
       if (this._data_contextmenu_element)
 	{
 	  this._data_contextmenu_element.removeAttribute ('data-contextmenu');
