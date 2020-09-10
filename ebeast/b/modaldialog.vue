@@ -118,7 +118,9 @@
 <script>
 export default {
   name: 'b-modaldialog',
-  props:     { value: { default: false }, bwidth: { default: '' }, },
+  props:     { value: { type: Boolean },
+	       exclusive: { type: Boolean },
+	       bwidth: { default: '' }, },
   data_tmpl: { re_autofocus: false, intransition: 0, },
   mounted () {
     this.update_shield();
@@ -156,7 +158,8 @@ export default {
 	}
       if (modaldialog && !this.shield)
 	this.shield = Util.modal_shield (this.$refs.modaldialog, { class: 'b-modaldialog-shield',
-									close: this.close });
+								   exclusive: this.exclusive,
+								   close: this.close });
     },
     end_transitions() {
       this.intransition = 0;
