@@ -92,7 +92,8 @@
 const STR = { type: String, default: '' }; // empty string default
 export default {
   name: 'b-menuitem',
-  props: { 'uri': {}, 'disabled': {}, iconclass: STR, ic: STR, fa: STR, mi: STR, bc: STR, uc: STR,
+  props: { 'uri': {}, 'disabled': { type: Boolean },
+	   iconclass: STR, ic: STR, fa: STR, mi: STR, bc: STR, uc: STR,
 	   kbd: { type: String }, },
   inject: { menudata: { from: 'b-contextmenu.menudata',
 			default: { showicons: true, keepmounted: false, checkeduris: {},
