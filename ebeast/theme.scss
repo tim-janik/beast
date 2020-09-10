@@ -38,6 +38,9 @@ $b-track-list-bg:	$b-device-area1;
 $b-track-list-parts-bg:	$b-device-area2;
 $b-scroll-shadow-blur:  3px;
 $b-clipthumb-width:	6em;
+$b-modal-foreground:	lgrey(98.7%);
+$b-modal-background:	lgrey(18%);
+$b-modal-bordercol:	lgrey(36%);
 
 @mixin b-panel-box {
   color: $b-panel-foreground;
