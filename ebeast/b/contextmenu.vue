@@ -21,6 +21,8 @@
   : Event signaling activation of a submenu item, the `uri` of the submenu is provided as argument.
   *close*
   : Event signaling closing of a menu, regardless of whether menu item activation occoured or not.
+  *startfocus*
+  : Auto focus a menu item upon popup, in the same way menu bar menus work.
   *keepmounted*
   : Keep the menu and menu items mounted at all times, needed for map_kbd_hotkeys().
   ## Methods:
@@ -90,8 +92,8 @@ const menuitem_onclick = function (event) {
 const menuitem_isdisabled = function () {
   if (this.uri && undefined !== this.menudata.checkeduris[this.uri])
     return !this.menudata.checkeduris[this.uri];
-  if (this.disabled == "" || !!this.disabled ||
-      (this.$attrs && (this.$attrs['disabled'] == "" || !!this.$attrs['disabled'])))
+  if (this.disabled === "" || !!this.disabled ||
+      (this.$attrs && (this.$attrs['disabled'] === "" || !!this.$attrs['disabled'])))
     return true;
   return false;
 };
@@ -100,6 +102,7 @@ export default {
   name: 'b-contextmenu',
   props: { notransitions: { default: false },
 	   keepmounted: { type: Boolean, },
+	   startfocus: { type: Boolean, },
 	   xscale: { default: 1, },
 	   yscale: { default: 1, }, },
   computed: {
@@ -147,6 +150,11 @@ export default {
 	}
       if (!this.$refs.cmenu || !this.visible)
 	this.clear_data_contextmenu();
+      if (this.visible && !this.was_visible && this.startfocus)
+	Util.move_focus (-999999);
+      else if (!this.visible && this.was_visible)
+	Util.forget_focus (this.$el);
+      this.was_visible = this.visible;
     },
     clear_data_contextmenu ()
     {
