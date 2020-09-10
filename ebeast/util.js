@@ -2070,11 +2070,16 @@ function hotkey_handler (event) {
 	event.preventDefault();
       return true;
     }
+  // restrict global hotkeys during modal dialogs
+  const modal_element = document._b_modal_shields?.[0]?.root;
   // activate global hotkeys
   const array = hotkey_list;
   for (let i = 0; i < array.length; i++)
     if (match_key_event (event, array[i][0]))
       {
+	const subtree_element = array[i][2];
+	if (modal_element && !has_ancestor (subtree_element, modal_element))
+	  continue;
 	const callback = array[i][1];
 	event.preventDefault();
 	kdebug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
@@ -2086,6 +2091,8 @@ function hotkey_handler (event) {
   for (const el of hotkey_elements)
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
+	if (modal_element && !has_ancestor (el, modal_element))
+	  continue;
 	event.preventDefault();
 	kdebug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
@@ -2097,8 +2104,8 @@ function hotkey_handler (event) {
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
 
 /// Add a global hotkey handler.
-export function add_hotkey (hotkey, callback) {
-  hotkey_list.push ([ hotkey, callback ]);
+export function add_hotkey (hotkey, callback, subtree_element = undefined) {
+  hotkey_list.push ([ hotkey, callback, subtree_element ]);
 }
 
 /// Remove a global hotkey handler.
@@ -2110,6 +2117,17 @@ export function remove_hotkey (hotkey, callback) {
 	array.splice (i, 1);
 	return true;
       }
+  return false;
+}
+
+/** Check if `ancestor` is an ancestor or `element` */
+export function has_ancestor (element, ancestor) {
+  while (element)
+    {
+      if (element === ancestor)
+	return true;
+      element = element.parentNode;
+    }
   return false;
 }
 
