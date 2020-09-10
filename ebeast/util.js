@@ -1310,6 +1310,7 @@ class ModalShield {
   }; }
   constructor (modal_element, opts) {
     Object.assign (this, this.defaults());
+    this.exclusive = opts.exclusive || opts.exclusive === undefined;
     this.close_handler = opts.close;
     this.modal = modal_element;
     this.root = opts.root || this.modal;
@@ -1415,6 +1416,22 @@ class ModalShield {
 	  }
       }
   }
+  static modal_close_exclusives () {
+    const tried_close = [];
+    const last_exclusive = () => {
+      if (document._b_modal_shields)
+	for (const shield of document._b_modal_shields)
+	  if (shield.exclusive && !in_array (shield, tried_close))
+	    return shield;
+    };
+    let shield = last_exclusive();
+    while (shield)
+      {
+	tried_close.push (shield);
+	shield.close();
+	shield = last_exclusive();
+      }
+  }
 }
 
 /** Create a modal overlay under `body` and reparent `modal_element` to guard against outside DOM events */
@@ -1422,6 +1439,7 @@ export function modal_shield (modal_element, opts = {}) {
   console.assert (modal_element instanceof Element);
   if (opts.root)
     console.assert (opts.root.contains (modal_element));
+  ModalShield.modal_close_exclusives();
   return new ModalShield (modal_element, opts);
 }
 
