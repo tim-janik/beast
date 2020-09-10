@@ -333,7 +333,7 @@ export default {
 	    Util.remove_hotkey (k, this.active_kmap_[k]);
 	  this.active_kmap_ = undefined;
 	}
-      if (!active)
+      if (!active || !this.$el)
 	return;
       const kmap = {}; // key -> component
       const buildmap = v => {
@@ -346,7 +346,7 @@ export default {
       buildmap (this);
       this.active_kmap_ = kmap;
       for (const k in this.active_kmap_)
-	Util.add_hotkey (k, this.active_kmap_[k]);
+	Util.add_hotkey (k, this.active_kmap_[k], this.$el);
     },
     /// Find a menuitem via its `uri`.
     find_menuitem (uri) {
