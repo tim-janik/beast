@@ -205,6 +205,41 @@ $b-softbutton-lg-down: linear-gradient(to top, $b-softbutton-bgd, $b-softbutton-
   align-items: center; justify-content: center;
   border: 1px inset $b-softbutton-border-color;
 }
+// singlebutton is a seperately standing button wich clearly looks clickable
+$b-singlebutton-fg:   $b-modal-foreground;
+$b-singlebutton-fgd:  contrast-darken($b-singlebutton-fg, 1.1);
+$b-singlebutton-bg:   lgrey(42.6%);
+$b-singlebutton-bgl:  contrast-lighten($b-singlebutton-bg, 1.28);
+$b-singlebutton-bgd:  contrast-darken($b-singlebutton-bg, 1.28);
+$b-singlebutton-lg:   linear-gradient(to top, $b-singlebutton-bgd, $b-singlebutton-bgl);
+$b-singlebutton-dark: linear-gradient(to bottom, contrast-darken($b-singlebutton-bgd, 1.05), $b-singlebutton-bgd);
+$b-singlebutton-border-color: contrast-darken($b-singlebutton-bg, 3);
+@mixin b-singlebutton ($vpad: 5px, $hpad: 5px) {
+  background: $b-singlebutton-lg;
+  color: $b-singlebutton-fg;
+  border: 1px outset $b-singlebutton-border-color;
+  padding: $vpad $hpad $vpad $hpad;
+  &.hover, &:hover   { box-shadow: inset 500px 500px rgba(255, 255, 255, 0.035); }
+  &.active, &:active, &[data-contextmenu=true] {
+    background: $b-singlebutton-dark;
+    color: $b-singlebutton-fgd;
+    border-color: contrast-lighten($b-singlebutton-border-color, 1.1); border-style: solid;
+    box-shadow: inset 500px 500px rgba(0, 0, 0, 0.05);
+  }
+  &:focus {
+    $focus-outline-col: $b-glow-control;
+    outline: none;
+    box-shadow: 0 0 0 1px $focus-outline-col;
+    &.active, &:active, &[data-contextmenu=true] {
+      outline: none;
+      box-shadow: 0 0 0 1px contrast-darken($focus-outline-col, 1.1);
+    }
+  }
+  &[disabled] {
+    filter: saturate(80%) brightness(80%);
+    pointer-events: none;
+  }
+}
 
 // == Timeline ==
 $b-timeline-outer-height: 3em;
