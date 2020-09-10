@@ -1135,7 +1135,7 @@ export function is_button_input (element) {
 class FocusGuard {
   defaults() { return {
     updown_focus: true,
-    updown_cycling: false,
+    updown_cycling: true,
     focus_root_list: [],
     last_focus: undefined,
   }; }
@@ -1282,6 +1282,22 @@ export function move_focus (dir = 0) {
       return true;
     }
   return false;
+}
+
+/** Forget the last focus elemtn inside `element` */
+export function forget_focus (element) {
+  if (!the_focus_guard.last_focus)
+    return;
+  let l = the_focus_guard.last_focus;
+  while (l)
+    {
+      if (l == element)
+	{
+	  the_focus_guard.last_focus = undefined;
+	  return;
+	}
+      l = l.parentNode;
+    }
 }
 
 /** Installing a modal shield prevents mouse and key events for all elements */
