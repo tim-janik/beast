@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   viewBox="0 0 24 24"
+   height="24"
+   width="24" >
+  <path
+     style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 5,5 C 4.446,5 4,5.446 4,6 V 8 H 9 C 9.539978,8 9.622561,7.8774395 10,7.5 l 1,-1 -1,-1 C 9.556331,5.0563314 9.463364,5 9,5 Z m 7.5,2 c -0.463363,0 -0.556331,0.056331 -1,0.5 l -1,1 C 10.122561,8.8774395 10.039978,9 9.5,9 H 5 C 4.446,9 4,9.446 4,10 v 8 c 0,0.554 0.446,1 1,1 h 14 c 0.554,0 1,-0.446 1,-1 V 8 C 20,7.446 19.554,7 19,7 Z" />
+</svg>
