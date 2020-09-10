@@ -169,7 +169,6 @@ export default {
       this.clear_data_contextmenu();
       this._data_contextmenu_element = element;
       this._data_contextmenu_element.setAttribute ('data-contextmenu', 'true');
-      debug ("add_data_contextmenu:", this._data_contextmenu_element);
     },
     dom_destroy () {
       this.clear_dragging();
