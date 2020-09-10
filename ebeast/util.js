@@ -299,6 +299,26 @@ export function request_pointer_lock (element) {
 export const vue_mixins = {};
 export const vue_directives = {};
 
+/// Retrieve CSS scope selector for vm_attach_style()
+export function vm_scope_selector (vm) {
+  return vm.$el.nodeName + `[b-scope${vm._uid}]`;
+}
+
+/// Attach `css` to Vue instance `vm`, use vm_scope_selector() for the `vm` CSS scope
+export function vm_attach_style (vm, css) {
+  if (!vm.$el._vm_style)
+    {
+      vm.$el.setAttribute ('b-scope' + vm._uid, '');
+      vm.$el._vm_style = document.createElement ('style');
+      vm.$el._vm_style.type = 'text/css';
+      vm.$el.appendChild (vm.$el._vm_style);
+    }
+  if (!css.startsWith ('\n'))
+    css = '\n' + css;
+  if (vm.$el._vm_style.innerHTML != css)
+    vm.$el._vm_style.innerHTML = css;
+}
+
 /// Loop over all properties in `source` and assign to `target*
 export function assign_forin (target, source) {
   for (let p in source)
