@@ -68,9 +68,8 @@ make_cursor() # make_cursor foo.svg 16 16 fallback
   echo "\$bc-cursor-$N: url($URI) $X $Y, $FALLBACK;" >> beastycons/cursors.tmp
   # Add to font files
   cp $F $G
-  inkscape -f $G --verb=EditSelectAll --verb=ObjectToPath --verb=StrokeToPath --verb=FileSave --verb=FileQuit
-  inkscape -f $G --vacuum-defs --export-plain-svg $G
-  optimize_glyph $G
+  #inkscape -f $G --verb=EditSelectAll --verb=ObjectToPath --verb=StrokeToPath --verb=FileSave --verb=FileQuit
+  #inkscape -f $G --vacuum-defs --export-plain-svg $G
 }
 echo > beastycons/cursors.tmp
 
@@ -80,6 +79,17 @@ make_cursor	eraser.svg	12 28 not-allowed
 
 # == Populate Glyphs ==
 for SVG in icons/*.svg ; do
+  cp "$SVG" $TMP/svgs/
+done
+
+# == Turn Glyphs into Paths ==
+for SVG in $TMP/svgs/*.svg ; do
+  inkscape -f $SVG --verb=EditSelectAll --verb=ObjectToPath --verb=StrokeToPath --verb=FileSave --verb=FileQuit
+  inkscape -f $SVG --vacuum-defs --export-plain-svg $SVG
+done
+
+# == Optimize Glyphs ==
+for SVG in $TMP/svgs/*.svg ; do
   optimize_glyph "$SVG"
 done
 
