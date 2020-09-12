@@ -291,11 +291,11 @@ public:
     mz_zip_writer_set_follow_links (writer, true);
     mz_zip_writer_set_compress_level (writer, MZ_COMPRESS_LEVEL_BEST);
     mz_zip_writer_set_compress_method (writer, MZ_COMPRESS_METHOD_DEFLATE);
-    mz_zip_file file_info = { 0, };
-    file_info.version_madeby = BSE_MZ_VERSION_MADEBY; // MZ_VERSION_MADEBY_ZIP_VERSION;
-    file_info.zip64 = MZ_ZIP64_DISABLE;  // match limagic's ZIP-with-mimetype
-    file_info.flag = 0; // MZ_ZIP_FLAG_UTF8;
-    file_info.compression_method = MZ_COMPRESS_METHOD_DEFLATE;
+    //mz_zip_file file_info = { 0, };
+    //file_info.version_madeby = BSE_MZ_VERSION_MADEBY; // MZ_VERSION_MADEBY_ZIP_VERSION;
+    //file_info.zip64 = MZ_ZIP64_DISABLE;  // match limagic's ZIP-with-mimetype
+    //file_info.flag = 0; // MZ_ZIP_FLAG_UTF8;
+    //file_info.compression_method = MZ_COMPRESS_METHOD_DEFLATE;
     int err = mz_zip_writer_open_file (writer, filename.c_str(), 0, false);
     for (auto it = members_.begin(); err == MZ_OK && it != members_.end(); ++it)
       {
@@ -309,9 +309,11 @@ public:
       }
     if (err == MZ_OK)
       err = mz_zip_writer_close (writer);
+    const int saved_errno = errno;
     if (err != MZ_OK)
       unlink (filename.c_str());
     mz_zip_writer_delete (&writer);
+    errno = saved_errno;
     return err == MZ_OK;
   }
   String
