@@ -38,10 +38,10 @@ bse_type_register_enums (void)
     }
 }
 
-const char*
+String
 bse_error_blurb (Bse::Error error_value)
 {
-  return Aida::Introspection::legacy_enumerator ("Bse.Error", int64_t (error_value));
+  return Aida::Introspection::enumerator_blurb_from_value ("Bse.Error", int64_t (error_value));
 }
 
 Bse::Error
