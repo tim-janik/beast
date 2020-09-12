@@ -49,12 +49,7 @@
 <template>
   <b-vflex class="b-projectshell" >
 
-    <!-- play controls, time display -->
-    <b-hflex center style="margin: 5px">
-      <b-playcontrols :project="project"> </b-playcontrols>
-      <span style="width: 3em"><!-- spacer --></span>
-      <b-positionview :song="song"> </b-positionview>
-    </b-hflex>
+    <b-menubar :project="project" :song="song" />
 
     <b-hflex style="overflow: hidden; flex: 1 1 auto">
       <b-vflex grow1 shrink1>
@@ -273,7 +268,7 @@ export default {
 	  this.project.stop();
 	  this.project = null; // TODO: should trigger FinalizationGroup
 	}
-      // reaplce project & song without await, to synchronously trigger Vue updates for both
+      // replace project & song without await, to synchronously trigger Vue updates for both
       this.project = newproject;
       this.song = song;
       this.current_track = track;
