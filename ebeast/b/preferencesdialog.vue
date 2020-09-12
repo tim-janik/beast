@@ -24,9 +24,7 @@
   <b-modaldialog class="b-preferencesdialog"
 		 :value="value" @input="$emit ('input', $event)" >
     <div slot="header">BEAST Preferences</div>
-    <slot></slot>
-    <b-fed-object class="b-preferencesdialog-fed" ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=75>
-    </b-fed-object>
+    <b-fed-object class="b-preferencesdialog-fed" ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=75 />
   </b-modaldialog>
 </template>
 

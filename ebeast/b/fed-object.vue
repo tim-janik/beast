@@ -29,10 +29,16 @@
       &:hover			{ color: #eb4; }
       &:active			{ color: #3bf; }
 
-    } }
-  .b-fed-object > * { //* avoid visible overflow for worst-case resizing */
-    min-width: 0;
-    overflow-wrap: break-word;
+    }
+    > * { //* avoid visible overflow for worst-case resizing */
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+    .-field {
+      align-items: center;
+      margin-top: 0.5em;
+      &:first-child { margin-top: 0; }
+    }
   }
 </style>
 
@@ -41,7 +47,7 @@
   <b-grid class="b-fed-object" style="grid-gap: 0.6em 0.5em;">
     <template v-for="group in list_fields()">
 
-      <b-hflex style="grid-column: 1 / span 3; align-items: center; margin-top: 1em" :key="'group:' + group[0]">
+      <b-hflex class="-field" style="grid-column: 1 / span 3" :key="'group:' + group[0]">
 	<span style="flex-grow: 0; font-weight: bold">{{ group[0] }}</span>
 	<hr style="flex-grow: 1; margin-left: 0.5em; min-width: 5em" />
       </b-hflex>
