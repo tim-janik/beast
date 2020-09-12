@@ -1419,6 +1419,12 @@ ServerImpl::resource_crawler()
   return ResourceCrawlerImpl::instance_p();
 }
 
+String
+ServerImpl::describe_error (Error error)
+{
+  return bse_error_blurb (error);
+}
+
 int
 ServerImpl::test_counter_inc_fetch ()
 {
