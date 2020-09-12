@@ -327,18 +327,19 @@ public:
 // == IntrospectionRegistry ==
 class Introspection {
 public:
-  static const StringVector&     find_type              (const std::string &abstypename, std::string *kind = NULL);
-  static std::string             find_type_kind         (const std::string &abstypename);
-  static std::string             find_value             (const std::string &key, const StringVector &kvlist, const std::string &fallback = "");
-  static StringVector            find_nested            (const std::string &field, const StringVector &kvlist);
-  static std::string             strip_type_prefix      (const std::string &dottedstring);
+  static const StringVector& find_type                   (const std::string &abstypename, std::string *kind = NULL);
+  static std::string         find_type_kind              (const std::string &abstypename);
+  static std::string         find_value                  (const std::string &key, const StringVector &kvlist, const std::string &fallback = "");
+  static StringVector        find_nested                 (const std::string &field, const StringVector &kvlist);
+  static std::string         strip_type_prefix           (const std::string &dottedstring);
   // enum helpers
-  static StringVector            list_enumerators       (const std::string &enum_typename);
-  static std::string             match_enumerator       (const std::string &partialenumerator, const std::string &enum_context);
-  static StringVector            find_enumerator        (const std::string &enumerator);
-  static int64_t                 enumerator_to_value    (const std::string &enumerator, const std::string &enum_context = "");
-  static std::string             enumerator_from_value  (const std::string &enumtypename, int64_t value);
-  static const char*             legacy_enumerator      (const std::string &enumtypename, int64_t value);
+  static StringVector        list_enumerators            (const std::string &enum_typename);
+  static std::string         match_enumerator            (const std::string &partialenumerator, const std::string &enum_context);
+  static StringVector        find_enumerator             (const std::string &enumerator);
+  static int64_t             enumerator_to_value         (const std::string &enumerator, const std::string &enum_context = "");
+  static std::string         enumerator_from_value       (const std::string &enumtypename, int64_t value);
+  static std::string         enumerator_blurb_from_value (const std::string &enumtypename, int64_t value);
+  static const char*         legacy_enumerator           (const std::string &enumtypename, int64_t value);
 };
 
 /// Return the numeric value of `valuestring` in `enum_typename`.
