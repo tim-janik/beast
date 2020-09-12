@@ -1202,6 +1202,18 @@ ItemImpl::get_name_or_type ()
   return result;
 }
 
+String
+ItemImpl::get_custom (const String &key)
+{
+  return customkv_[key];
+}
+
+void
+ItemImpl::set_custom (const String &key, const String &value)
+{
+  customkv_[key] = value;
+}
+
 bool
 ItemImpl::internal ()
 {

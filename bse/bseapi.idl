@@ -707,6 +707,8 @@ interface Item : LegacyObject {
   String  get_uname_path    (); ///< Retrieve the project relative uname path for this item.
   String  get_name          (); ///< Retrieve an item's name.
   String  get_name_or_type  (); ///< Retrieve an item's name or type if it has no name.
+  String  get_custom        (String key);               ///< Get ephemeral value for key.
+  void    set_custom        (String key, String value); ///< Set ephemeral key=value pair.
   bool    internal          (); ///< Check whether an item is internal, i.e. owned by another non-internal item.
   bool    editable_property (String property); ///< Test whether a property is editable according to object state and property options.
   PropertyCandidates get_property_candidates (String property_name); ///< Retrieve tentative values for an item or item sequence property.
