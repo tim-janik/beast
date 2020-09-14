@@ -1056,13 +1056,11 @@ export function list_focusables (element)
     '[contenteditable]:not([contenteditable="false"])',
     '[tabindex]',
   ];
-  const excludes = ':not([disabled])' +
-		   ':not([tabindex="-1"])' +
-		   ':not([display="none"])';
+  const excludes = ':not([disabled]):not([tabindex="-1"])';
   const candidate_selector = candidates.map (e => e + excludes).join (', ');
   const nodes = element.querySelectorAll (candidate_selector); // selector for focusable elements
   const array1 = [].slice.call (nodes);
-  // filter out non-taabable elements
+  // filter out non-tabable elements
   const array = array1.filter (element => {
     if (element.offsetWidth <= 0 &&     // browsers can focus 0x0 sized elements
 	element.offsetHeight <= 0 &&
