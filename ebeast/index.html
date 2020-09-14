@@ -28,7 +28,7 @@
   <!-- Globals: CONFIG, debug(), bootlog(), Electron -->
   <script>
   'use strict';
-  Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true } });
+  Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true, transitiondelay: 500 } });
   Object.defineProperty (globalThis, 'assert', { value: console.assert, });
   Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
   Object.defineProperty (globalThis, 'bootlog', { value: debug || (() => undefined), });
