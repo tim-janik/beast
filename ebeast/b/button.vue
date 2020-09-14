@@ -41,7 +41,7 @@ export default {};
 
 const b_button = {
   name: 'b-button',
-  props: { hotkey: String, disabled: Boolean },
+  props: { hotkey: String, disabled: Boolean, canfocus: Boolean },
   functional: true,
   render: function (h, context) {
     const attrs = {
@@ -54,7 +54,7 @@ const b_button = {
       attrs: Object.assign ({}, context.data.attrs, attrs),
     };
     const data = Object.assign ({}, context.data, localdata);
-    return h ('span', data, context.children);
+    return h (context.props.canfocus ? 'button' : 'span', data, context.children);
   }
 };
 Vue.component (b_button.name, b_button);
