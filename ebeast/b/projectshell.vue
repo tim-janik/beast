@@ -217,19 +217,12 @@ export default {
 	      const ret = await newproject.restore_from_file (project_or_path);
 	      if (ret != Bse.Error.NONE)
 		{
-		  const Path = require ('path');
-		  Electron.dialog.showMessageBox (Electron.getCurrentWindow(),
-						  {
-						    type: 'error',
-						    title: Util.format_title ('Beast', 'Failed to Load Project'),
-						    message: 'Failed to load project from "' + Path.basename (project_or_path) + '"',
-						    detail:  'Error during loading: ' + ret,
-						    buttons: [ '&Dismiss', ],
-						    cancelId: 1, defaultId: 1, normalizeAccessKeys: true,
-						  },
-						  (response, checked) => {
-						    // nothing
-						  });
+		  await App.async_modal_dialog ("File Open Error",
+						"Failed to open project.\n" +
+						project_or_path + ": " +
+						await Bse.server.describe_error (ret),
+						[ 'Dismiss', 0 ],
+						'ERROR');
 		  return ret;
 		}
 	      const basename = project_or_path.replace (/.*\//, '');
@@ -284,27 +277,9 @@ export default {
     },
     async save_project (projectpath)
     {
-      let ret = Bse.Error.INTERNAL;
-      if (this.project)
-	{
-	  const self_contained = true;
-	  ret = await this.project.store (projectpath, self_contained);
-	  const Path = require ('path');
-	  if (ret != Bse.Error.NONE)
-	    Electron.dialog.showMessageBox (Electron.getCurrentWindow(),
-					    {
-					      type: 'error',
-					      title: Util.format_title ('Beast', 'Failed to Save Project'),
-					      message: 'Failed to save project as "' + Path.basename (projectpath) + '"',
-					      detail:  'Error during saving: ' + ret,
-					      buttons: [ '&Dismiss', ],
-					      cancelId: 1, defaultId: 1, normalizeAccessKeys: true,
-					    },
-					    (response, checked) => {
-					      // nothing
-					    });
-	}
-      return ret;
+      const self_contained = true;
+      return !this.project ? Bse.Error.INTERNAL :
+	     this.project.store (projectpath, self_contained);
     },
   },
 };
