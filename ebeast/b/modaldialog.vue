@@ -55,30 +55,37 @@
     &.v-leave-active		{ transition: opacity 0.15s ease-in,  transform 0.15s linear; }
     &.v-enter, &.v-leave-to 	{ opacity: 0.15; transform: scale(0.15); }
 
-    button {
+    .b-button {
       @include b-singlebutton;
       margin: 0 1em;
       border-radius: 3px;
     }
+    .-footer .b-button {
+      &:first-child { margin-left: 1px; }
+      &:last-child  { margin-right: 1px; }
+    }
   }
   .b-modaldialog-shield		{ transition: background 0.15s ease-in; background: $b-style-modal-overlay; }
   .b-modaldialog-shield-leave	{ background: #0000; }
-  .b-modaldialog-header {
+  .-header {
     font-size: 1.5em; font-weight: bold;
     justify-content: space-evenly;
     padding-bottom: 0.5em;
     border-bottom: 1px solid $b-modal-bordercol;
   }
-  .b-modaldialog-header, .b-modaldialog-footer {
-    width: 100%; align-items: center; text-align: center;
+  .-header, .-footer {
+    align-self: stretch;
+    align-items: center; text-align: center;
   }
-  .b-modaldialog-footer {
+  .-footer {
     justify-content: space-evenly;
     padding-top: 1em;
     border-top: 1px solid $b-modal-bordercol;
+    &.-empty { display: none; }
   }
-  .b-modaldialog-body {
+  .-body {
     padding: 1em 1em;
+    align-self: stretch;
   }
   .b-modaldialog-transition-enter {
     opacity: 0;
@@ -97,17 +104,17 @@
 	      @before-leave="intransition = shield && shield.toggle ('b-modaldialog-shield-leave')" >
     <div class="b-modaldialog" @click.stop ref='modaldialog' v-if='value' >
 
-      <b-hflex class="b-modaldialog-header">
+      <b-hflex class="-header">
 	<slot name="header">
 	  Modal Dialog
 	</slot>
       </b-hflex>
 
-      <div class="b-modaldialog-body">
+      <b-vflex class="-body">
 	<slot name="default"></slot>
-      </div>
+      </b-vflex>
 
-      <b-hflex class="b-modaldialog-footer">
+      <b-hflex class="-footer" :class="footerclass" ref="footer">
 	<slot name="footer"/>
       </b-hflex>
 
@@ -121,34 +128,35 @@ export default {
   props:     { value: { type: Boolean },
 	       exclusive: { type: Boolean },
 	       bwidth: { default: '' }, },
-  data_tmpl: { re_autofocus: false, intransition: 0, },
-  mounted () {
-    this.update_shield();
-  },
-  updated () {
-    this.update_shield();
-    if (this.re_autofocus)
-      {
-	const e = document.querySelector ('[autofocus]');
-	e?.focus();
-	this.re_autofocus = false;
-      }
-    if (!this.value)
-      this.re_autofocus = true; // re-focus next time
-    if (this.value)
-      {
-	const sel = Util.vm_scope_selector (this);
-	const css = [];
-	if (this.bwidth)
-	  css.push (`${sel} .b-modaldialog-footer button { min-width: ${this.bwidth}; }\n`);
-	Util.vm_attach_style (this, css.join ('\n'));
-      }
-  },
+  data_tmpl: { re_autofocus: true, intransition: 0, footerclass: '', },
   beforeDestroy () {
     if (this.shield)
       this.shield.destroy (false);
   },
+  mounted() {
+    this.update_shield();
+  },
   methods: {
+    dom_update() {
+      this.update_shield();
+      this.footerclass = this.$refs.footer && this.$refs.footer.innerHTML ? '' : '-empty';
+      if (this.value && this.re_autofocus)
+	{
+	  const e = document.querySelector ('[autofocus]:not([disabled]):not([display="none"])');
+	  e?.focus();
+	  this.re_autofocus = false;
+	}
+      if (!this.value)
+	this.re_autofocus = true; // re-focus next time
+      if (this.value)
+	{
+	  const sel = Util.vm_scope_selector (this);
+	  const css = [];
+	  if (this.bwidth)
+	    css.push (`${sel}.b-modaldialog .-footer .b-button { min-width: ${this.bwidth}; }\n`);
+	  Util.vm_attach_style (this, css.join ('\n'));
+	}
+    },
     update_shield() {
       const modaldialog = this.$refs.modaldialog;
       if (!modaldialog && this.shield && !this.intransition)
