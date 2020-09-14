@@ -117,6 +117,7 @@ async function bootup() {
     debug: globalThis.debug,
     Util: globalThis.Util,
     App: globalThis.App,
+    window: globalThis.window,
     document: globalThis.document,
     observable_from_getters: Util.vue_observable_from_getters,
     _: globalThis._,
