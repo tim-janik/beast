@@ -217,6 +217,8 @@ $b-singlebutton-border-color: contrast-darken($b-singlebutton-bg, 3);
 @mixin b-singlebutton ($vpad: 5px, $hpad: 5px) {
   background: $b-singlebutton-lg;
   color: $b-singlebutton-fg;
+  text-align: center;
+  justify-content: center;
   border: 1px outset $b-singlebutton-border-color;
   padding: $vpad $hpad $vpad $hpad;
   &.hover, &:hover   { box-shadow: inset 500px 500px rgba(255, 255, 255, 0.035); }
