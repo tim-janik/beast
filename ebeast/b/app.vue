@@ -138,13 +138,6 @@ async function bootup() {
     observable_from_getters: Util.vue_observable_from_getters,
     _: globalThis._,
   });
-  // Menus - import if Electron is present
-  if (globalThis.Electron)
-    {
-      const menus = await import ('/menus.js');
-      await menus.setup_app_menu();
-      bootlog ("Loaded Electron.Menus...");
-    }
   // SFC - import list of b/ Vue components and register with Vue
   bootlog ("Importing MJS components...");
   for (const link of document.querySelectorAll ('head link[data-autoload][href]'))

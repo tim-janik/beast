@@ -44,7 +44,6 @@ ebeast/copy.tool.targets ::= $(strip	\
 app/copy.content.targets ::= $(strip	\
 	$>/app/main.js			\
 	$>/app/jsbse.js			\
-	$>/app/menus.js			\
 	$>/app/util.js			\
 )
 ebeast/copy.targets ::= $(ebeast/copy.tool.targets) $(app/copy.content.targets) $(ebeast/b/js.inputs:ebeast/b/%=$>/app/b/%)
