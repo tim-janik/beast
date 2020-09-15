@@ -146,11 +146,8 @@ export default {
       event.preventDefault();  // avoid generating 'click' from 'mousedown'
       // trigger getter() refresh on each menu popup
       this.opencount++;
-      // keep an 'active' indicator for picklistbutton during menu popup
-      Util.clear_keyboard_click (this.$refs.picklistbutton); // reset cleanup handler from potential keyboard_click
-      const tieclass = { element: this.$refs.picklistbutton, class: 'active' };
-      // popup, the context menu takes it from here
-      this.$refs.cmenu.popup (event, { origin: this.$refs.flexroot, tieclass: tieclass });
+      // popup, the context menu takes it from here, keep the `data-contextmenu` flag on picklistbutton
+      this.$refs.cmenu.popup (event, { origin: this.$refs.flexroot, 'data-contextmenu': this.$refs.picklistbutton });
     },
   },
 };

@@ -141,6 +141,14 @@ export class PianoCtrl {
 	  roll.adata.focus_noteid = note_id;
       }
   }
+  drag_event (ev, MODE) {
+    const roll = this.piano_roll, layout = roll.layout;
+    if (ev.target == roll.$refs.timeline_canvas)
+      {
+	const tick = layout.tick_from_x (event.offsetX);
+	debug ("drag:", MODE, tick, ev);
+      }
+  }
 }
 
 function find_note (allnotes, predicate) {

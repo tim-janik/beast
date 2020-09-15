@@ -11,7 +11,6 @@
   <link rel="modulepreload" href="/markdown-it.mjs">
   <link rel="modulepreload" href="/jsbse.js">
   <link rel="modulepreload" href="/bseapi_jsonipc.js">
-  <link rel="maybe-preload" href="/menus.js">
   <link rel="stylesheet"    href="/assets/stylesheets.css">
   <link rel="stylesheet"    href="/assets/material-icons.css">
   <link rel="stylesheet"    href="/assets/forkawesome-webfont.css">
@@ -28,7 +27,8 @@
   <!-- Globals: CONFIG, debug(), bootlog(), Electron -->
   <script>
   'use strict';
-  Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true } });
+  Object.defineProperty (globalThis, 'CONFIG', { value: { debug: true, transitiondelay: 500 } });
+  Object.defineProperty (globalThis, 'assert', { value: console.assert, });
   Object.defineProperty (globalThis, 'debug', { value: (...a) => CONFIG.debug && console.log (...a), });
   Object.defineProperty (globalThis, 'bootlog', { value: debug || (() => undefined), });
   bootlog ("Setup CONFIG...");
@@ -36,7 +36,6 @@
     bootlog ("Preloading Electron resources...");
     Object.defineProperty (globalThis, 'Electron', { value: require ('electron').remote });
     //Electron.getCurrentWindow().webContents.setZoomFactor (1);
-    document.head.querySelector ('[href="/menus.js"]').setAttribute ('rel', 'modulepreload');
   }
   // Electron.getCurrentWindow().toggleDevTools();
   </script>

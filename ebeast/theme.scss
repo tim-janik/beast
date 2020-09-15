@@ -38,6 +38,9 @@ $b-track-list-bg:	$b-device-area1;
 $b-track-list-parts-bg:	$b-device-area2;
 $b-scroll-shadow-blur:  3px;
 $b-clipthumb-width:	6em;
+$b-modal-foreground:	lgrey(98.7%);
+$b-modal-background:	lgrey(18%);
+$b-modal-bordercol:	lgrey(36%);
 
 @mixin b-panel-box {
   color: $b-panel-foreground;
@@ -162,7 +165,7 @@ $b-style-outset-activebg-glint: $b-style-outset-activebg-2 !default;
   //* The outset is implemented by adding a dark shadow around, and light shadows above and below */
   box-shadow: 0px -1px 0 0px $b-style-outset-glint-1, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-outset-glint-2;
   &:focus { box-shadow: 0px -1px 0 0px $b-style-outset-glint-1, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
-  &.active, &:active {
+  &.active, &:active, &[data-contextmenu=true] {
 	background-color: $b-style-outset-activebg-0; background: $b-style-outset-activebg;
 	box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-dark-outline, 0 0px 0 1px $b-style-dark-outline, 0px 2px 0px 0px $b-style-outset-glint-2;
 	&:focus { box-shadow: 0px -1px 0 0px $b-style-outset-activebg-glint, 0px -1px 0 1px $b-style-focus-color, 0 0px 0 1px $b-style-focus-color, 0px 2px 0px 0px $b-style-outset-glint-2; }
@@ -184,7 +187,7 @@ $b-softbutton-lg-down: linear-gradient(to top, $b-softbutton-bgd, $b-softbutton-
   border-top-color: transparent; border-bottom-color: transparent;
   &:focus { outline: $b-focus-outline; }
   &.hover, &:hover   { box-shadow: inset 500px 500px rgba(255, 255, 255, 0.035); }
-  &.active, &:active {
+  &.active, &:active, &[data-contextmenu=true] {
     background: $b-softbutton-lg-up;
     border-color: $b-softbutton-bg; border-style: solid;
     box-shadow: inset 500px 500px rgba(0, 0, 0, 0.05);
@@ -201,6 +204,43 @@ $b-softbutton-lg-down: linear-gradient(to top, $b-softbutton-bgd, $b-softbutton-
   user-select: none; text-align: center;
   align-items: center; justify-content: center;
   border: 1px inset $b-softbutton-border-color;
+}
+// singlebutton is a seperately standing button wich clearly looks clickable
+$b-singlebutton-fg:   $b-modal-foreground;
+$b-singlebutton-fgd:  contrast-darken($b-singlebutton-fg, 1.1);
+$b-singlebutton-bg:   lgrey(42.6%);
+$b-singlebutton-bgl:  contrast-lighten($b-singlebutton-bg, 1.28);
+$b-singlebutton-bgd:  contrast-darken($b-singlebutton-bg, 1.28);
+$b-singlebutton-lg:   linear-gradient(to top, $b-singlebutton-bgd, $b-singlebutton-bgl);
+$b-singlebutton-dark: linear-gradient(to bottom, contrast-darken($b-singlebutton-bgd, 1.05), $b-singlebutton-bgd);
+$b-singlebutton-border-color: contrast-darken($b-singlebutton-bg, 3);
+@mixin b-singlebutton ($vpad: 5px, $hpad: 5px) {
+  background: $b-singlebutton-lg;
+  color: $b-singlebutton-fg;
+  text-align: center;
+  justify-content: center;
+  border: 1px outset $b-singlebutton-border-color;
+  padding: $vpad $hpad $vpad $hpad;
+  &.hover, &:hover   { box-shadow: inset 500px 500px rgba(255, 255, 255, 0.035); }
+  &.active, &:active, &[data-contextmenu=true] {
+    background: $b-singlebutton-dark;
+    color: $b-singlebutton-fgd;
+    border-color: contrast-lighten($b-singlebutton-border-color, 1.1); border-style: solid;
+    box-shadow: inset 500px 500px rgba(0, 0, 0, 0.05);
+  }
+  &:focus {
+    $focus-outline-col: $b-glow-control;
+    outline: none;
+    box-shadow: 0 0 0 1px $focus-outline-col;
+    &.active, &:active, &[data-contextmenu=true] {
+      outline: none;
+      box-shadow: 0 0 0 1px contrast-darken($focus-outline-col, 1.1);
+    }
+  }
+  &[disabled] {
+    filter: saturate(80%) brightness(80%);
+    pointer-events: none;
+  }
 }
 
 // == Timeline ==

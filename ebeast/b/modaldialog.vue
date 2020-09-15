@@ -37,14 +37,15 @@
   }
   .b-modaldialog {
     position: fixed; top: auto; left: auto; right: auto; bottom: auto;
-    max-height: 100%; max-width: 100%;
+    max-height: 99%; max-width: 99%;
     * { flex-shrink: 0; }
     @include b-flex-vbox; flex-shrink: 1;
     min-width: 16em; padding: 0;
-    background-color: $b-theme-background;
-    border-radius: $b-theme-border-radius;
-    border-top: 3px solid $b-main-border-light; border-left: 3px solid $b-main-border-light;
-    border-bottom: 3px solid $b-main-border-dark; border-right: 3px solid $b-main-border-dark;
+    border: 2px solid $b-modal-bordercol;
+    border-radius: 5px;
+    background: $b-modal-background;
+    color: $b-modal-foreground;
+    padding: 1em;
     @include b-popup-box-shadow;
     /* fix vscrolling: https://stackoverflow.com/a/33455342 */
     justify-content: space-between;
@@ -52,25 +53,39 @@
     overflow: auto;
     &.v-enter-active 		{ transition: opacity 0.15s ease-out, transform 0.15s linear; }
     &.v-leave-active		{ transition: opacity 0.15s ease-in,  transform 0.15s linear; }
-    &.v-enter, &.v-leave-to 	{ opacity: 0.5; transform: translateY(-100%) scale(1); }
+    &.v-enter, &.v-leave-to 	{ opacity: 0.15; transform: scale(0.15); }
+
+    .b-button {
+      @include b-singlebutton;
+      margin: 0 1em;
+      border-radius: 3px;
+    }
+    .-footer .b-button {
+      &:first-child { margin-left: 1px; }
+      &:last-child  { margin-right: 1px; }
+    }
   }
   .b-modaldialog-shield		{ transition: background 0.15s ease-in; background: $b-style-modal-overlay; }
   .b-modaldialog-shield-leave	{ background: #0000; }
-  .b-modaldialog-header {
+  .-header {
     font-size: 1.5em; font-weight: bold;
-    padding: 1rem 0 1.1rem;
     justify-content: space-evenly;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid $b-modal-bordercol;
   }
-  .b-modaldialog-header, .b-modaldialog-footer {
-    width: 100%; align-items: center; text-align: center;
-    background-color: darken($b-theme-background, 8%);
+  .-header, .-footer {
+    align-self: stretch;
+    align-items: center; text-align: center;
   }
-  .b-modaldialog-footer {
-    padding: 1.2rem 0 1rem;
+  .-footer {
     justify-content: space-evenly;
+    padding-top: 1em;
+    border-top: 1px solid $b-modal-bordercol;
+    &.-empty { display: none; }
   }
-  .b-modaldialog-body {
-    padding: 1.5em 2em;
+  .-body {
+    padding: 1em 1em;
+    align-self: stretch;
   }
   .b-modaldialog-transition-enter {
     opacity: 0;
@@ -87,22 +102,20 @@
 <template>
   <transition @after-leave="end_transitions"
 	      @before-leave="intransition = shield && shield.toggle ('b-modaldialog-shield-leave')" >
-    <div class="b-modaldialog" @click.stop ref='b-modaldialog' v-if='value' >
+    <div class="b-modaldialog" @click.stop ref='modaldialog' v-if='value' >
 
-      <b-hflex class="b-modaldialog-header">
+      <b-hflex class="-header">
 	<slot name="header">
 	  Modal Dialog
 	</slot>
       </b-hflex>
-      <div class="b-modaldialog-body">
+
+      <b-vflex class="-body">
 	<slot name="default"></slot>
-      </div>
-      <b-hflex class="b-modaldialog-footer">
-	<slot name="footer">
-	  <b-button class="b-modaldialog-button" ref="bclose" @click="close">
-	    Close
-	  </b-button>
-	</slot>
+      </b-vflex>
+
+      <b-hflex class="-footer" :class="footerclass" ref="footer">
+	<slot name="footer"/>
       </b-hflex>
 
     </div>
@@ -112,41 +125,49 @@
 <script>
 export default {
   name: 'b-modaldialog',
-  props:     { value: false, },
-  data_tmpl: { focus_close: true, intransition: 0, },
-  mounted () {
-    this.update_shield();
-    if (this.focus_close && this.$refs.bclose)
-      {
-	this.$refs.bclose.focus();
-	this.focus_close = false;
-      }
-  },
-  updated () {
-    this.update_shield();
-    if (this.focus_close && this.$refs.bclose)
-      {
-	this.$refs.bclose.focus();
-	this.focus_close = false;
-      }
-    if (!this.value)
-      this.focus_close = true; // re-focus next time
-  },
+  props:     { value: { type: Boolean },
+	       exclusive: { type: Boolean },
+	       bwidth: { default: '' }, },
+  data_tmpl: { re_autofocus: true, intransition: 0, footerclass: '', },
   beforeDestroy () {
     if (this.shield)
       this.shield.destroy (false);
   },
+  mounted() {
+    this.update_shield();
+  },
   methods: {
+    dom_update() {
+      this.update_shield();
+      this.footerclass = this.$refs.footer && this.$refs.footer.innerHTML ? '' : '-empty';
+      if (this.value && this.re_autofocus)
+	{
+	  const e = document.querySelector ('[autofocus]:not([disabled]):not([display="none"])');
+	  e?.focus();
+	  this.re_autofocus = false;
+	}
+      if (!this.value)
+	this.re_autofocus = true; // re-focus next time
+      if (this.value)
+	{
+	  const sel = Util.vm_scope_selector (this);
+	  const css = [];
+	  if (this.bwidth)
+	    css.push (`${sel}.b-modaldialog .-footer .b-button { min-width: ${this.bwidth}; }\n`);
+	  Util.vm_attach_style (this, css.join ('\n'));
+	}
+    },
     update_shield() {
-      const modaldialog = this.$refs['b-modaldialog'];
+      const modaldialog = this.$refs.modaldialog;
       if (!modaldialog && this.shield && !this.intransition)
 	{
 	  this.shield.destroy (false);
 	  this.shield = undefined;
 	}
       if (modaldialog && !this.shield)
-	this.shield = Util.modal_shield (this.$refs['b-modaldialog'], { class: 'b-modaldialog-shield',
-									close: this.close });
+	this.shield = Util.modal_shield (this.$refs.modaldialog, { class: 'b-modaldialog-shield',
+								   exclusive: this.exclusive,
+								   close: this.close });
     },
     end_transitions() {
       this.intransition = 0;

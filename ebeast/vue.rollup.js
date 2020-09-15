@@ -45,6 +45,5 @@ const external = [
   '/vue.mjs',
   '/markdown-it.mjs',
   '/util.js',
-  '/menus.js',
 ];
 external;

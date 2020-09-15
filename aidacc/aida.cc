@@ -583,7 +583,7 @@ Introspection::find_enumerator (const std::string &enumerator)
   return find_nested (tail, kvlist);
 }
 
-/// Match 'MEMBER.property=VALUE' against @a kvpair, return <MEMBER,VALUE> if @a property matches.
+/// Match 'MEMBER.property=VALUE' against @a kvpair, returns [ strlen (MEMBER), VALUE ] if @a property matches.
 static inline std::pair<size_t, const char*>
 split_member_at_property (const char *const kv, const char *const property)
 {
@@ -633,6 +633,33 @@ Introspection::enumerator_from_value (const std::string &enumtypename, int64_t v
         return normalized + "." + kv.substr (0, mvpair.first);
     }
   return "";
+}
+
+/// Return enum blurb in `enumtypename` for the exact numeric `value`.
+std::string
+Introspection::enumerator_blurb_from_value (const std::string &enumtypename, int64_t value)
+{
+  const String normalized = normalize_typename (enumtypename);
+  const StringVector &kvlist = find_normalized_type (normalized, NULL);
+  for (const String &kv : kvlist)
+    {
+      const char *kvc = kv.c_str();
+      const auto mvpair = split_member_at_property (kvc, "value");
+      if (!mvpair.second)
+        continue;                                       // not an IDENT.value=123 entry
+      size_t consumed = 0;
+      const int64 pvalue = string_to_int (mvpair.second, &consumed);
+      if (!consumed)
+        continue;                                       // not a parsable value number
+      if (value == pvalue)
+        {
+          const String blurb_prefix = kv.substr (0, mvpair.first) + ".blurb=";
+          for (const String &bv : kvlist)
+            if (strncmp (bv.c_str(), blurb_prefix.c_str(), blurb_prefix.size()) == 0)
+              return bv.c_str() + blurb_prefix.size();
+        }
+    }
+  return enumerator_from_value (enumtypename, value);
 }
 
 static std::string

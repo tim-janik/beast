@@ -113,6 +113,121 @@ export function capture_event (eventname, callback) {
   return uncapture;
 }
 
+/** Get `__vue__` from element or its ancestors */
+function vue_ancestor (element) {
+  while (element)
+    {
+      if (element.__vue__)
+	return element.__vue__;
+      element = element.parentNode;
+    }
+  return undefined;
+}
+
+export const START = "START";
+export const STOP = "STOP";
+export const CANCEL = "CANCEL";
+export const MOVE = "MOVE";
+
+class PointerDrag {
+  constructor (vuecomponent, event) {
+    this.vm = vuecomponent;
+    this.el = event.target;
+    this.pointermove = this.pointermove.bind (this);
+    this.el.addEventListener ('pointermove', this.pointermove);
+    this.pointerup = this.pointerup.bind (this);
+    this.el.addEventListener ('pointerup', this.pointerup);
+    this.pointercancel = this.pointercancel.bind (this);
+    this.el.addEventListener ('pointercancel', this.pointercancel);
+    this.el.addEventListener ('lostpointercapture', this.pointercancel);
+    this.start_stamp = event.timeStamp;
+    try {
+      this.el.setPointerCapture (event.pointerId);
+      this._pointerid = event.pointerId;
+    } catch (e) {
+      // something went wrong, bail out the drag
+      this._disconnect (event);
+    }
+    if (this.el)
+      this.vm.drag_event (event, START);
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.el)
+      this.destroy();
+  }
+  _disconnect (event) {
+    if (this._pointerid)
+      {
+        this.el.releasePointerCapture (this._pointerid);
+	this._pointerid = 0;
+      }
+    this.el.removeEventListener ('pointermove', this.pointermove);
+    this.el.removeEventListener ('pointerup', this.pointerup);
+    this.el.removeEventListener ('pointercancel', this.pointercancel);
+    this.el.removeEventListener ('lostpointercapture', this.pointercancel);
+    // swallow dblclick after lengthy drags with bouncing start click
+    if (this.el && (this.seen_move || event.timeStamp - this.start_stamp > 500)) // milliseconds
+      {
+	const swallow_dblclick = event => {
+	  event.preventDefault();
+	  event.stopPropagation();
+	  // debug ("PointerDrag: dblclick swallowed");
+	};
+	window.addEventListener ('dblclick', swallow_dblclick, true);
+	setTimeout (_ => window.removeEventListener ('dblclick', swallow_dblclick, true), 40);
+      }
+    this.el = null;
+  }
+  destroy (event = null) {
+    if (this.el)
+      {
+	event = event || new PointerEvent ('pointercancel');
+	this._disconnect (event);
+	this.vm.drag_event (event, CANCEL);
+	this.el = null;
+      }
+    this.vm = null;
+  }
+  pointermove (event) {
+    if (this.el)
+      this.vm.drag_event (event, MOVE);
+    event.preventDefault();
+    event.stopPropagation();
+    this.seen_move = true;
+  }
+  pointerup (event) {
+    if (!this.el)
+      return;
+    this._disconnect (event);
+    this.vm.drag_event (event, STOP);
+    this.destroy (event);
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  pointercancel (event) {
+    if (!this.el)
+      return;
+    this._disconnect (event);
+    this.vm.drag_event (event, CANCEL);
+    this.destroy (event);
+    event.preventDefault();
+    event.stopPropagation();
+  }
+}
+
+/** Start `drag_event (event)` handling on a Vue component's element, use `@pointerdown="Util.drag_event"` */
+export function drag_event (event) {
+  assert (event.type == "pointerdown" && event.pointerId);
+  const vuecomponent = vue_ancestor (event.target);
+  if (vuecomponent && vuecomponent.$el &&
+      vuecomponent.drag_event)			// ignore request if we got wrong vue component (child)
+  {
+    const pdrag = new PointerDrag (vuecomponent, event);
+    return _ => pdrag.destroy();
+  }
+  return _ => undefined;
+}
+
 // Maintain pending_pointer_lock state
 function pointer_lock_changed (ev) {
   if (document.pointerLockElement !== pending_pointer_lock)
@@ -183,6 +298,26 @@ export function request_pointer_lock (element) {
 // == Vue Helpers ==
 export const vue_mixins = {};
 export const vue_directives = {};
+
+/// Retrieve CSS scope selector for vm_attach_style()
+export function vm_scope_selector (vm) {
+  return vm.$el.nodeName + `[b-scope${vm._uid}]`;
+}
+
+/// Attach `css` to Vue instance `vm`, use vm_scope_selector() for the `vm` CSS scope
+export function vm_attach_style (vm, css) {
+  if (!vm.$el._vm_style)
+    {
+      vm.$el.setAttribute ('b-scope' + vm._uid, '');
+      vm.$el._vm_style = document.createElement ('style');
+      vm.$el._vm_style.type = 'text/css';
+      vm.$el.appendChild (vm.$el._vm_style);
+    }
+  if (!css.startsWith ('\n'))
+    css = '\n' + css;
+  if (vm.$el._vm_style.innerHTML != css)
+    vm.$el._vm_style.innerHTML = css;
+}
 
 /// Loop over all properties in `source` and assign to `target*
 export function assign_forin (target, source) {
@@ -921,13 +1056,11 @@ export function list_focusables (element)
     '[contenteditable]:not([contenteditable="false"])',
     '[tabindex]',
   ];
-  const excludes = ':not([disabled])' +
-		   ':not([tabindex="-1"])' +
-		   ':not([display="none"])';
+  const excludes = ':not([disabled]):not([tabindex="-1"])';
   const candidate_selector = candidates.map (e => e + excludes).join (', ');
   const nodes = element.querySelectorAll (candidate_selector); // selector for focusable elements
   const array1 = [].slice.call (nodes);
-  // filter out non-taabable elements
+  // filter out non-tabable elements
   const array = array1.filter (element => {
     if (element.offsetWidth <= 0 &&     // browsers can focus 0x0 sized elements
 	element.offsetHeight <= 0 &&
@@ -1000,7 +1133,7 @@ export function is_button_input (element) {
 class FocusGuard {
   defaults() { return {
     updown_focus: true,
-    updown_cycling: false,
+    updown_cycling: true,
     focus_root_list: [],
     last_focus: undefined,
   }; }
@@ -1149,6 +1282,22 @@ export function move_focus (dir = 0) {
   return false;
 }
 
+/** Forget the last focus elemtn inside `element` */
+export function forget_focus (element) {
+  if (!the_focus_guard.last_focus)
+    return;
+  let l = the_focus_guard.last_focus;
+  while (l)
+    {
+      if (l == element)
+	{
+	  the_focus_guard.last_focus = undefined;
+	  return;
+	}
+      l = l.parentNode;
+    }
+}
+
 /** Installing a modal shield prevents mouse and key events for all elements */
 class ModalShield {
   defaults() { return {
@@ -1159,6 +1308,7 @@ class ModalShield {
   }; }
   constructor (modal_element, opts) {
     Object.assign (this, this.defaults());
+    this.exclusive = opts.exclusive || opts.exclusive === undefined;
     this.close_handler = opts.close;
     this.modal = modal_element;
     this.root = opts.root || this.modal;
@@ -1264,6 +1414,22 @@ class ModalShield {
 	  }
       }
   }
+  static modal_close_exclusives () {
+    const tried_close = [];
+    const last_exclusive = () => {
+      if (document._b_modal_shields)
+	for (const shield of document._b_modal_shields)
+	  if (shield.exclusive && !in_array (shield, tried_close))
+	    return shield;
+    };
+    let shield = last_exclusive();
+    while (shield)
+      {
+	tried_close.push (shield);
+	shield.close();
+	shield = last_exclusive();
+      }
+  }
 }
 
 /** Create a modal overlay under `body` and reparent `modal_element` to guard against outside DOM events */
@@ -1271,6 +1437,7 @@ export function modal_shield (modal_element, opts = {}) {
   console.assert (modal_element instanceof Element);
   if (opts.root)
     console.assert (opts.root.contains (modal_element));
+  ModalShield.modal_close_exclusives();
   return new ModalShield (modal_element, opts);
 }
 
@@ -1695,7 +1862,7 @@ export function in_keyboard_click()
 }
 
 /// Trigger element click via keyboard.
-export function keyboard_click (element)
+export function keyboard_click (element, callclick = true)
 {
   if (element instanceof Element)
     {
@@ -1710,21 +1877,12 @@ export function keyboard_click (element)
 	      e.classList.toggle ('active', false);
 	    }, 170); // match focus-activation delay
 	}
-      element.click();
+      if (callclick)
+	element.click();
       keyboard_click_state.inclick -= 1;
       return true;
     }
   return false;
-}
-
-/// Trigger element click via keyboard.
-export function clear_keyboard_click (element)
-{
-  if (element.keyboard_click_reset_id)
-    {
-      clearTimeout (element.keyboard_click_reset_id);
-      element.keyboard_click_reset_id = undefined;
-    }
 }
 
 /** Check whether `element` is contained in `array` */
@@ -1762,11 +1920,14 @@ export function element_text (element, filter)
   return texts.join ('');
 }
 
-/// Popup `menu` using `event.target` as origin.
+/// Popup `menu` using `event.currentTarget` as origin.
 export function dropdown (menu, event, options = {})
 {
   if (!options.origin)
-    options.origin = event.target;
+    {
+      // use the event handler element for positioning
+      options.origin = event.currentTarget;
+    }
   return menu?.popup (event, options);
 }
 
@@ -1854,7 +2015,7 @@ export function match_key_event (event, keyname)
   for (let i = 0; i < parts.length; i++)
     {
       // collect meta keys
-      switch (parts[i])
+      switch (parts[i].toLowerCase())
       {
 	case 'cmd': case 'command':
 	case 'super': case 'meta':	need_meta  = 1; continue;
@@ -1898,16 +2059,25 @@ function hotkey_handler (event) {
   // activate focus via Enter
   if (Util.match_key_event (event, 'Enter') && document.activeElement != document.body)
     {
-      event.preventDefault();
-      kdebug ("hotkey_handler: keyboard-click1: " + ' (' + document.activeElement.tagName + ')');
-      Util.keyboard_click (document.activeElement);
+      kdebug ("hotkey_handler: button-activation: " + ' (' + document.activeElement.tagName + ')');
+      // allow `onclick` activation via `Enter` on <button/> and <a href/> with event.isTrusted
+      const click_pending = document.activeElement.nodeName == 'BUTTON' || (document.activeElement.nodeName == 'A' &&
+									    document.activeElement.href);
+      Util.keyboard_click (document.activeElement, !click_pending);
+      if (!click_pending)
+	event.preventDefault();
       return true;
     }
+  // restrict global hotkeys during modal dialogs
+  const modal_element = document._b_modal_shields?.[0]?.root;
   // activate global hotkeys
   const array = hotkey_list;
   for (let i = 0; i < array.length; i++)
     if (match_key_event (event, array[i][0]))
       {
+	const subtree_element = array[i][2];
+	if (modal_element && !has_ancestor (subtree_element, modal_element))
+	  continue;
 	const callback = array[i][1];
 	event.preventDefault();
 	kdebug ("hotkey_handler: hotkey-callback: '" + array[i][0] + "'", callback.name);
@@ -1919,19 +2089,21 @@ function hotkey_handler (event) {
   for (const el of hotkey_elements)
     if (match_key_event (event, el.getAttribute ('data-hotkey')))
       {
+	if (modal_element && !has_ancestor (el, modal_element))
+	  continue;
 	event.preventDefault();
 	kdebug ("hotkey_handler: keyboard-click2: '" + el.getAttribute ('data-hotkey') + "'", el);
 	Util.keyboard_click (el);
 	return true;
       }
-  kdebug ('hotkey_handler: ignore-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
+  kdebug ('hotkey_handler: unused-key: ' + event.code + ' ' + event.which + ' ' + event.charCode + ' (' + document.activeElement.tagName + ')');
   return false;
 }
 window.addEventListener ('keydown', hotkey_handler, { capture: true });
 
 /// Add a global hotkey handler.
-export function add_hotkey (hotkey, callback) {
-  hotkey_list.push ([ hotkey, callback ]);
+export function add_hotkey (hotkey, callback, subtree_element = undefined) {
+  hotkey_list.push ([ hotkey, callback, subtree_element ]);
 }
 
 /// Remove a global hotkey handler.
@@ -1943,6 +2115,17 @@ export function remove_hotkey (hotkey, callback) {
 	array.splice (i, 1);
 	return true;
       }
+  return false;
+}
+
+/** Check if `ancestor` is an ancestor or `element` */
+export function has_ancestor (element, ancestor) {
+  while (element)
+    {
+      if (element === ancestor)
+	return true;
+      element = element.parentNode;
+    }
   return false;
 }
 

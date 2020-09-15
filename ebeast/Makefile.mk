@@ -44,7 +44,6 @@ ebeast/copy.tool.targets ::= $(strip	\
 app/copy.content.targets ::= $(strip	\
 	$>/app/main.js			\
 	$>/app/jsbse.js			\
-	$>/app/menus.js			\
 	$>/app/util.js			\
 )
 ebeast/copy.targets ::= $(ebeast/copy.tool.targets) $(app/copy.content.targets) $(ebeast/b/js.inputs:ebeast/b/%=$>/app/b/%)
@@ -149,8 +148,8 @@ $>/app/index.html: ebeast/index.html $>/ebeast/node_modules/npm.done ebeast/ekno
 	$Q mv $@.tmp $@
 
 # == Beastycons ==
-$>/app/assets/Beastycons.css:				| $>/ebeast/ $>/app/assets/
-	@ $(eval ST := 257ee4587505a2e055fcb16edddf52b39731a105da6231803c583183c58bb7f3 beastycons-200905.3.tgz)
+$>/app/assets/Beastycons.css: ebeast/Makefile.mk		| $>/ebeast/ $>/app/assets/
+	@ $(eval ST := 2daaf07f819f48116cb3880d6939c417d09c0a64a275ffc79f348371f463cdd8 beastycons-200911.3.tgz)
 	@ $(eval T := $(lastword $(ST))) $(eval S := $(firstword $(ST)))
 	$(QECHO) FETCH "$T"
 	$Q if test -e images/$T ; \
@@ -161,8 +160,7 @@ $>/app/assets/Beastycons.css:				| $>/ebeast/ $>/app/assets/
 	$(QGEN)
 	$Q test -e $>/ebeast/beastycons/bc-cursors.scss
 	$Q cp $>/ebeast/beastycons/Beastycons.css $>/ebeast/beastycons/Beastycons.woff2 $>/app/assets/
-$>/app/assets/stylesheets.css: $>/ebeast/cursors/cursors.scss
-$>/ebeast/cursors/cursors.scss: $>/app/assets/Beastycons.css
+$>/app/assets/stylesheets.css: $>/app/assets/Beastycons.css
 
 # == &>/app/markdown-it.mjs ==
 # rollup for import+require is tricky: https://github.com/rollup/rollup/issues/1058#issuecomment-254187433

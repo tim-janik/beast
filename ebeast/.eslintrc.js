@@ -36,6 +36,7 @@ module.exports = {
     "no-extra-semi": [ "warn" ],
     "no-console": [ "off" ],
     "no-constant-condition": [ "warn" ],
+    "no-debugger": [ "warn" ],
     "indent": [ "off", 2 ],
     "linebreak-style": [ "error", "unix" ],
     "no-mixed-spaces-and-tabs": [ "off" ],

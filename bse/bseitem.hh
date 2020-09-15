@@ -127,6 +127,7 @@ namespace Bse {
 class ItemImpl : public LegacyObjectImpl, public virtual ItemIface {
 public: typedef std::function<Error (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
 private:
+  std::unordered_map<String,String> customkv_;
   void push_item_undo (const String &blurb, const UndoLambda &lambda);
   struct UndoDescriptorData {
     ptrdiff_t projectid;
@@ -136,12 +137,12 @@ private:
   UndoDescriptorData make_undo_descriptor_data    (ItemImpl &item);
   ItemImpl&          resolve_undo_descriptor_data (const UndoDescriptorData &udd);
 protected:
-  virtual           ~ItemImpl        ();
+  virtual              ~ItemImpl         ();
 public:
   explicit              ItemImpl         (BseObject*);
   ContainerImpl*        parent           ();
-  virtual ItemIfaceP    use               () override;
-  virtual void          unuse             () override;
+  virtual ItemIfaceP    use              () override;
+  virtual void          unuse            () override;
   virtual void          set_name          (const std::string &name) override;
   virtual bool          editable_property (const std::string &property_name) override;
   virtual Icon          icon             () const override;
@@ -161,6 +162,8 @@ public:
   virtual String        get_uname_path   () override;
   virtual String        get_name         () override;
   virtual String        get_name_or_type () override;
+  virtual String        get_custom       (const String &key) override;
+  virtual void          set_custom       (const String &key, const String &value) override;
   virtual bool          internal         () override;
   virtual PropertyCandidates get_property_candidates (const String &property_name) override;
   virtual int           seqid            () const override;

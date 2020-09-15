@@ -131,6 +131,7 @@ public:
   virtual DriverEntrySeq  list_pcm_drivers        () override;
   virtual DriverEntrySeq  list_midi_drivers       () override;
   virtual ResourceCrawlerIfaceP resource_crawler  () override;
+  virtual String          describe_error          (Error error) override;
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();
 };

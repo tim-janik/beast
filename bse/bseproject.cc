@@ -468,7 +468,11 @@ bse_project_store_bse (BseProject *self, BseSuper *super, const char *bsefilenam
 
   // create .bse file from container
   if (FEATURE_XML_PROJECT && !zip_storage.export_as (bsefilename))
-    return Bse::Error::FILE_WRITE_FAILED;
+    {
+      if (errno || !Bse::Path::check (bsefilename, "w"))
+        return bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
+      return Bse::Error::FILE_WRITE_FAILED;
+    }
   zip_storage.rm_file ("bse_storage.scm");
   return Bse::Error::NONE;
 }

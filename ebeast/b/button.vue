@@ -28,10 +28,11 @@
   }
   .b-button:focus            	{ outline: $b-focus-outline; }
   .b-button:hover            	{ @include b-buttonhover; }
-  .b-button.active,
+  .b-button.active, .b-button[data-contextmenu=true],
   .b-button:active           	{ @include b-buttonactive; }
   .b-button			{ color: $b-button-foreground; }
-  .b-button.active,	/* use '*' + fill!important to include svg elements in buttons */
+  /* use '*' + fill!important to include svg elements in buttons */
+  .b-button.active, .b-button[data-contextmenu=true],
   .b-button:active         	{ color: $b-button-active-fg; }
 </style>
 
@@ -40,7 +41,7 @@ export default {};
 
 const b_button = {
   name: 'b-button',
-  props: { hotkey: String, disabled: Boolean },
+  props: { hotkey: String, disabled: Boolean, canfocus: Boolean },
   functional: true,
   render: function (h, context) {
     const attrs = {
@@ -48,12 +49,12 @@ const b_button = {
       disabled: context.props.disabled,
     };
     const localdata = {
-      staticClass: Util.join_classes ('b-button', context.data.staticClass,
-				      context.props.disabled ? 'b-button-disabled' : ''),
+      class: Util.join_classes ('b-button', context.data.class,
+				context.props.disabled ? 'b-button-disabled' : ''),
       attrs: Object.assign ({}, context.data.attrs, attrs),
     };
     const data = Object.assign ({}, context.data, localdata);
-    return h ('span', data, context.children);
+    return h (context.props.canfocus ? 'button' : 'span', data, context.children);
   }
 };
 Vue.component (b_button.name, b_button);

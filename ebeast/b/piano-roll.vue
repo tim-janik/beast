@@ -75,7 +75,7 @@
 	justify-self: stretch; align-self: stretch;
 	padding: 5px;
 	@include b-softbutton;
-	//* tweak cihld next to scroll boundary */
+	//* tweak child next to scroll boundary */
 	&:last-child {
 	  border-right: 1px solid transparent;			//* avoid double border */
 	  &.active, &:active {
@@ -144,7 +144,7 @@
 	<b-icon class='-iconclass'
 		v-bind="Util.clone_menu_icon ($refs.toolmenu, pianotool, '**EDITOR TOOL**')" />
 	<b-contextmenu ref="toolmenu" keepmounted >
-	  <b-menuitem mi="crop_free"     uri="S" @click="usetool" kbd="Digit1" > Rectangular Selection </b-menuitem>
+	  <b-menuitem mi="open_with"     uri="S" @click="usetool" kbd="Digit1" > Rectangular Selection </b-menuitem>
 	  <b-menuitem mi="multiple_stop" uri="H" @click="usetool" kbd="Digit2" > Horizontal Selection </b-menuitem>
 	  <b-menuitem fa="pencil"        uri="P" @click="usetool" kbd="Digit3" > Pen          </b-menuitem>
 	  <b-menuitem fa="eraser"        uri="E" @click="usetool" kbd="Digit4" > Eraser       </b-menuitem>

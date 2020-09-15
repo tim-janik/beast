@@ -22,6 +22,22 @@
 <template>
   <div id="b-app" class="b-root" style="display: flex; width: 100%; height: 100%">
     <b-projectshell ref="Vue-prototype-Shell" ></b-projectshell>
+
+    <!-- Generic modal dialogs -->
+    <b-modaldialog v-for="d in modal_dialogs" :key="d.uid"
+		   :value="d.visible.value" @input="d.input ($event)"
+		   :exclusive="true" bwidth="9em" >
+      <div slot="header">{{ d.header }}</div>
+      <b-hflex slot="default" style="justify-content: flex-start; align-items: center;">
+	<b-icon v-bind="d.icon" />
+	<div style="flex-grow: 1; white-space: pre-line;" >{{ d.body }}</div>
+      </b-hflex>
+      <b-hflex slot="footer" :style="d.footerstyle" style="justify-content: space-between" >
+	<b-button v-for="(b, i) in d.buttons" :key="i" @click="d.click (i)" :disabled="b.disabled"
+		  :canfocus="b.canfocus" :autofocus="b.autofocus" >{{ b.label }}</b-button>
+      </b-hflex>
+    </b-modaldialog>
+
   </div>
 </template>
 
@@ -113,19 +129,15 @@ async function bootup() {
   Vue.mixin (Util.vue_mixins.autodataattrs); // Auto apply data-* props to this.$el
   Object.assign (Vue.prototype, {
     CONFIG: globalThis.CONFIG,
+    assert: globalThis.assert,
     debug: globalThis.debug,
     Util: globalThis.Util,
     App: globalThis.App,
+    window: globalThis.window,
+    document: globalThis.document,
     observable_from_getters: Util.vue_observable_from_getters,
     _: globalThis._,
   });
-  // Menus - import if Electron is present
-  if (globalThis.Electron)
-    {
-      const menus = await import ('/menus.js');
-      await menus.setup_app_menu();
-      bootlog ("Loaded Electron.Menus...");
-    }
   // SFC - import list of b/ Vue components and register with Vue
   bootlog ("Importing MJS components...");
   for (const link of document.querySelectorAll ('head link[data-autoload][href]'))
@@ -227,12 +239,63 @@ class App {
   }
 }
 
+// == modal dialog creation ==
+let modal_dialog_counter = 1;
+function async_modal_dialog (title, btext, buttons = [], icon) {
+  let resolve;
+  const promise = new Promise (r => resolve = r);
+  const m = {
+    uid: modal_dialog_counter++,
+    visible: Vue.reactive ({ value: false }),
+    input (v) {
+      if (!this.visible.value || v)
+	return;
+      this.visible.value = false;
+      resolve (this.result);
+      setTimeout (_ => Util.array_remove (App.vm.modal_dialogs, this), CONFIG.transitiondelay);
+    },
+    result: -1,
+    click (r) {
+      this.result = r;
+      this.input (false);
+    },
+    header: title,
+    body: btext,
+    icon: modal_icons[icon] || {},
+    footerstyle: '',
+    buttons: []
+  };
+  const is_string = s => typeof s === 'string' || s instanceof String;
+  const check_bool = (v, dflt) => v !== undefined ? !!v : dflt;
+  for (let i = 0; i < buttons.length; i++)
+    {
+      const label = is_string (buttons[i]) ? buttons[i] : buttons[i].label;
+      const disabled = check_bool (buttons[i].disabled, false);
+      const canfocus = check_bool (buttons[i].canfocus, true);
+      const autofocus = check_bool (buttons[i].autofocus, false);
+      const button = { label, disabled, autofocus, canfocus };
+      m.buttons.push (button);
+    }
+  if (m.buttons.length >= 2)
+    m.footerstyle = 'width: 100%;';
+  App.vm.modal_dialogs.push (m);
+  setTimeout (_ => m.visible.value = true, 0); // changing value triggers animation
+  return promise;
+}
+const modal_icons = {
+  QUESTION:	{ fa: "question-circle",	style: "font-size: 300%; padding-right: 1rem; float: left; color: #538cc1" },
+  ERROR:	{ fa: "times-circle",		style: "font-size: 300%; padding-right: 1rem; float: left; color: #cc2f2a" },
+};
+
 // == export default ==
 const export_default = {
   name: 'b-app',
   bootup,
   zmove: ZMove.zmove.bind (ZMove),
   zmovehooks: [],
+  data: _ => ({ modal_dialogs: [], }),
+  async_modal_dialog,
+  created () { App.vm = this; },
   __proto__: Vue.reactive (new App),
 };
 export default export_default;
