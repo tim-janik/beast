@@ -150,8 +150,6 @@ class PointerDrag {
     }
     if (this.el)
       this.vm.drag_event (event, START);
-    event.preventDefault();
-    event.stopPropagation();
     if (!this.el)
       this.destroy();
   }
