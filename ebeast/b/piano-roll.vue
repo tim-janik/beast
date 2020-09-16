@@ -308,21 +308,22 @@ export default {
       // canvas setup
       if (piano_layout.call (this))
 	return this.$forceUpdate();	// laoyut components resized
-      render_timeline.call (this);
-      render_piano.call (this);
-      render_notes.call (this);
+      this.dom_queue_draw();
       // store new zoom & scroll positions
       if (this.msrc && this.msrc.$id && this.auto_scrolls)
 	this.auto_scrolls[this.msrc.$id] = this.snapshot_zoomscroll();
       this.piano_ctrl.dom_update();
     },
     scrollbar_scroll() {
-      render_timeline.call (this);
-      render_piano.call (this);
-      render_notes.call (this);
+      this.dom_queue_draw();
       // store new zoom & scroll positions
       if (this.msrc && this.msrc.$id && this.auto_scrolls)
 	this.auto_scrolls[this.msrc.$id] = this.snapshot_zoomscroll();
+    },
+    dom_draw() {
+      render_timeline.call (this);
+      render_piano.call (this);
+      render_notes.call (this);
     },
     snapshot_zoomscroll (defaults = false) {
       if (defaults && this.snapshot_zoomscroll.defaults)
