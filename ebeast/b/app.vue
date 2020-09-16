@@ -125,7 +125,7 @@ async function bootup() {
   for (let directivename in Util.vue_directives) // register all utility directives
     Vue.directive (directivename, Util.vue_directives[directivename]);
   Vue.mixin (Util.vue_mixins.data_tmpl);   // Allow automatic `data` construction (cloning) from `data_tmpl`
-  Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_create`, `dom_update`, `dom_destroy` hooks
+  Vue.mixin (Util.vue_mixins.dom_updates); // Support `dom_update()` and similar hooks
   Vue.mixin (Util.vue_mixins.autodataattrs); // Auto apply data-* props to this.$el
   Object.assign (Vue.prototype, {
     CONFIG: globalThis.CONFIG,
