@@ -37,6 +37,7 @@
 	<span class="b-aboutdialog-field"  :key="'f' + p[0]" >{{ p[1] }}</span>
       </template>
     </b-grid>
+    <div slot="footer"><b-button autofocus canfocus onclick="Shell.show_about_dialog = false" > Close </b-button></div>
   </b-modaldialog>
 </template>
 
@@ -76,7 +77,7 @@ async function about_pairs() {
 export default {
   name: 'b-aboutdialog',
   props: {
-    value: false,
+    value: { default: false },
   },
   data_tmpl: { info_pairs: [] },
   async created() {
