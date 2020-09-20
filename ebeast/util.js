@@ -150,8 +150,6 @@ class PointerDrag {
     }
     if (this.el)
       this.vm.drag_event (event, START);
-    event.preventDefault();
-    event.stopPropagation();
     if (!this.el)
       this.destroy();
   }
@@ -638,111 +636,118 @@ export function hyphenate (string) {
   return string.replace (uppercase_boundary, '-$1').toLowerCase();
 }
 
-/** Vue mixin to provide a `dom_create`, `dom_update`, `dom_destroy` hooks.
- * This mixin calls instance method callbacks for DOM element creation
- * (`this.dom_create()`), updates (`this.dom_update()`,
- * and destruction (`this.dom_destroy()`).
- * If `dom_create` is an async function or returns a Promise, `dom_update`
- * calls are deferred until the returned Promise is resolved.
+/** Vue mixin to provide DOM handling hooks.
+ * This mixin adds instance method callbacks to handle dynamic DOM changes
+ * such as drawing into a `<canvas/>`.
+ * Reactive callback methods have their data dependencies tracked, so future
+ * changes to data dependencies of reactive methods will queue future updates.
+ * However reactive dependency tracking only works for non-async methods.
  *
- * Access to reactive properties during `dom_update` are tracked as dependencies,
- * watched by Vue, so future changes cause rerendering of the Vue component.
+ * - dom_update() - Reactive callback method, called after `this.$el` has been created
+ *   and after Vue component updates. Dependency changes result in `this.$forceUpdate()`.
+ * - dom_hidden() - Reactive callback method, called instead of `dom_update()` when
+ *   `this.$el` is not fully setup.
+ * - dom_draw() - Reactive callback method, called during an nimation frame, requested
+ *   via `dom_queue_draw()`. Dependency changes result in `this.dom_queue_draw()`.
+ * - dom_queue_draw() - Cause `this.dom_draw()` to be called during the next animation frame.
+ * - dom_destroy() - Callback method, called once the Vue component is destroyed.
  */
 vue_mixins.dom_updates = {
   beforeCreate: function () {
     console.assert (this.$dom_updates == undefined);
     // install $dom_updates helper on Vue instance
     this.$dom_updates = {
-      // members
-      promise: Promise.resolve(),
       destroying: false,
       // animateplaybackclear: undefined,
       pending: false,	// dom_update pending
-      unwatch: null,
-      // methods
-      chain_await: (promise_or_function) => {
-	const result = promise_or_function instanceof Function ? promise_or_function() : promise_or_function;
-	if (result instanceof Promise)
-	  this.$dom_updates.promise =
-	    this.$dom_updates.promise.then (async () => await result);
-      },
-      call_update: (resolve) => {
-	/* Here we invoke `dom_update` with dependency tracking through $watch. In case
-	 * it is implemented as an async function, we await the returned promise to
-	 * serialize with future `dom_update` or `dom_destroy` calls. Note that
-	 * dependencies cannot be tracked beyond the first await point in `dom_update`.
-	 */
-	// Clear old $watch if any
-	if (this.$dom_updates.unwatch)
-	  {
-	    this.$dom_updates.unwatch();
-	    this.$dom_updates.unwatch = null;
-	  }
-	/* Note, if vm._watcher is triggered before the $watch from below, it'll re-render
-	 * the VNodes and then our watcher is triggered, which causes $forceUpdate() and the
-	 * VNode tree is rendered *again*. This causes multiple calles to updated(), too.
-	 */
-	let once = 0;
-	const update_expr = vm => {
-	  if (once == 0)
-	    {
-	      const result = this.dom_update (this);
-	      if (result instanceof Promise)
-		{
-		  // Note, async dom_update() looses reactivity…
-		  result.then (resolve);
-		  console.warn ('dom_update() returned Promise, async functions are not reactive', this);
-		}
-	      else
-		resolve();
-	    }
-	  return ++once; // always change return value and guard against subsequent calls
-	};
-	/* A note on $watch. Its `expOrFn` is called immediately, the retrun value and
-	 * dependencies are recorded. Later, once a dependency changes, its `expOrFn`
-	 * is called again, also recording return value and new dependencies.
-	 * If the return value changes, `callback` is invoked.
-	 * What we need for updating DOM elements, is:
-	 * a) the initial call with dependency recording which we use for (expensive) updating,
-	 * b) trigger $forceUpdate() once a dependency changes, without intermediate expensive updating.
-	 */
-	this.$dom_updates.unwatch = this.$watch (update_expr, this.$forceUpdate);
-      },
+      unwatch1: null,
+      unwatch2: null,
+      rafid: undefined,
     };
+    function dom_queue_draw () {
+      if (this.$dom_updates.rafid !== undefined)
+	return;
+      function dom_draw_frame () {
+	this.$dom_updates.rafid = undefined;
+	if (!this.$dom_updates.destroying && this.$el instanceof Element)
+	  {
+	    this.$dom_updates.unwatch2?.();
+	    this.$dom_updates.unwatch2 = null;
+	    let once = 0;
+	    const dom_draw_reactive = vm => {
+	      if (once++ == 0 && this.dom_draw() instanceof Promise)
+		console.warn ('dom_draw() returned Promise, async functions are not reactive', this);
+	      return once;  // always change return value and guard against subsequent calls
+	    };
+	    this.$dom_updates.unwatch2 = this.$watch (dom_draw_reactive, this.dom_queue_draw);
+	  }
+      }
+      this.$dom_updates.rafid = requestAnimationFrame (dom_draw_frame.bind (this));
+    }
+    this.dom_queue_draw = dom_queue_draw;
   }, // beforeCreate
   mounted: function () {
     console.assert (this.$dom_updates);
-    if (this.dom_create)
-      this.$dom_updates.chain_await (this.dom_create());
-    this.$forceUpdate();  // always trigger `dom_update` after `dom_create`
+    if (this.dom_hidden)
+      this.dom_hidden (this);
+    if (this.dom_update || this.dom_hidden)
+      this.$forceUpdate();  // always trigger dom_update() after mounted()
   },
   updated: function () {
     console.assert (this.$dom_updates);
-    /* If multiple $watch() instances are triggered by an update, Vue may re-render
-     * and call updated() several times in a row. To avoid expensive intermediate
-     * updates, we use this.$dom_updates.pending as guard.
-     */
-    if (this.dom_update && !this.$dom_updates.pending)
-      {
-	this.$dom_updates.chain_await (new Promise (resolve => {
-	  // Wrap call_update() into a chained promise to serialize with dom_destroy
-	  this.$nextTick (() => {
-	    this.$dom_updates.pending = false;
-	    if (this.$dom_updates.destroying)
-	      resolve(); // No need for updates during destruction
-	    else
-	      this.$dom_updates.call_update (resolve);
-	  });
-	}));
-	this.$dom_updates.pending = true;
-      }
+    if (this.$dom_updates.pending || (!this.dom_hidden && !this.dom_update))
+      return;
+    const dom_tick_update = _ => {
+      const haselement = this.$el instanceof Element;
+      const needhidden = this.dom_hidden && (!haselement || this.$dom_updates.destroying);
+      const needupdate = this.dom_update && haselement && !this.$dom_updates.destroying;
+      /* Note, if vm._watcher is triggered before the $watch from below, it'll re-render
+       * the VNodes and then our watcher is triggered, which causes $forceUpdate() and the
+       * VNode tree is rendered *again*. This causes multiple calles to updated(), too.
+       */
+      let once = 0;
+      const dom_update_reactive = vm => {
+        if (once++ != 0)
+	  return once;	// always change return value and guard against subsequent calls
+	if (needhidden && this.dom_hidden (this) instanceof Promise)
+	  console.warn ('dom_hidden() returned Promise, async functions are not reactive', this);
+	if (needupdate && !this.$dom_updates.destroying && this.dom_update (this) instanceof Promise)
+	  console.warn ('dom_update() returned Promise, async functions are not reactive', this);
+        return once;
+      };
+      /* clean up any old $watch */
+      this.$dom_updates.unwatch1?.();
+      this.$dom_updates.unwatch1 = null;
+      this.$dom_updates.pending = false;
+      /* A note on $watch. Its `expOrFn` is called immediately, the return value and dependencies are
+       * recorded. Later, once a dependency changes, its `expOrFn` is called again, also recording
+       * return value and new dependencies. If the return value changes, `callback` is invoked.
+       * What we need for updating DOM elements, is:
+       * a: the initial call with dependency recording which we use for (expensive) updating,
+       * b: trigger $forceUpdate() once a dependency changes, without intermediate expensive updating.
+       */
+      this.$dom_updates.unwatch1 = this.$watch (dom_update_reactive, this.$forceUpdate);
+    };
+    this.$nextTick (dom_tick_update);
+    this.$dom_updates.pending = true;
   },
   beforeDestroy: function () {
     console.assert (this.$dom_updates);
     this.$dom_updates.destroying = true;
+    this.$dom_updates.unwatch1?.();
+    this.$dom_updates.unwatch1 = null;
+    this.$dom_updates.unwatch2?.();
+    this.$dom_updates.unwatch2 = null;
     this.dom_trigger_animate_playback (false);
+  },
+  destroyed: function () {
     if (this.dom_destroy)
-      this.$dom_updates.chain_await (() => this.dom_destroy());
+      this.dom_destroy (this);
+    if (this.$dom_updates.rafid !== undefined)
+      {
+	cancelAnimationFrame (this.$dom_updates.rafid);
+	this.$dom_updates.rafid = undefined;
+      }
   },
   methods: {
     dom_trigger_animate_playback (flag) {

@@ -25,6 +25,7 @@
 		 :value="value" @input="$emit ('input', $event)" >
     <div slot="header">BEAST Preferences</div>
     <b-fed-object class="b-preferencesdialog-fed" ref="fedobject" :value="prefdata" :default="defaults" :readonly="locked" @input="value_changed" debounce=75 />
+    <div slot="footer"><b-button autofocus canfocus onclick="Shell.show_preferences_dialog = false" > Close </b-button></div>
   </b-modaldialog>
 </template>
 
@@ -83,7 +84,7 @@ function component_data () {
 export default {
   name: 'b-preferencesdialog',
   props: {
-    value: false,
+    value: { default: false },
   },
   data() { return component_data.call (this); },
   watch: {

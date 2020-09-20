@@ -127,16 +127,17 @@ export default {
   name: 'b-modaldialog',
   props:     { value: { type: Boolean },
 	       exclusive: { type: Boolean },
-	       bwidth: { default: '' }, },
-  data_tmpl: { re_autofocus: true, intransition: 0, footerclass: '', },
+	       bwidth: { default: '9em' }, },
+  data_tmpl: { intransition: 0, footerclass: '', },
   beforeDestroy () {
     if (this.shield)
       this.shield.destroy (false);
   },
-  mounted() {
-    this.update_shield();
-  },
   methods: {
+    dom_hidden() {
+      this.update_shield();
+      this.re_autofocus = true;
+    },
     dom_update() {
       this.update_shield();
       this.footerclass = this.$refs.footer && this.$refs.footer.innerHTML ? '' : '-empty';
@@ -146,8 +147,6 @@ export default {
 	  e?.focus();
 	  this.re_autofocus = false;
 	}
-      if (!this.value)
-	this.re_autofocus = true; // re-focus next time
       if (this.value)
 	{
 	  const sel = Util.vm_scope_selector (this);
