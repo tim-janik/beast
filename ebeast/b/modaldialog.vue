@@ -127,7 +127,7 @@ export default {
   name: 'b-modaldialog',
   props:     { value: { type: Boolean },
 	       exclusive: { type: Boolean },
-	       bwidth: { default: '' }, },
+	       bwidth: { default: '9em' }, },
   data_tmpl: { intransition: 0, footerclass: '', },
   beforeDestroy () {
     if (this.shield)
