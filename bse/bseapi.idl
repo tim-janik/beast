@@ -647,6 +647,7 @@ interface Item;
 interface Source;
 interface WaveOsc;
 interface Project;
+interface Combo;
 
 /// Fundamental interface type to enable callback notifications.
 interface Notifier {
@@ -1059,7 +1060,20 @@ interface Processor : Notifier {
   StringSeq   list_properties   ();             ///< List all property identifiers.
   Property    access_property   (String ident); ///< Retrieve handle for a Property.
   PropertySeq access_properties (String hints); ///< Retrieve handles for properties with specific hints.
+  Combo       access_combo ();                  ///< Retrieve a Combo processor interface from an AudioSignal::Combo processors.
 };
+sequence ProcessorSeq { Processor processor; };
+
+/// Interface to access AudioSignal::Combo instances.
+interface Combo : Notifier {
+  ProcessorSeq  list_processors         ();      ///< List processors in order of processing, notified via "processors".
+  // create processors
+  bool          remove_processor        (Processor sub);  ///< Remove a directly contained processor.
+  Processor     create_processor        (String uuiduri); ///< Create a new processor, see list_processor_types().
+  Processor     create_processor_before (String uuiduri, Processor sibling); ///< Create processor, before sibling.
+  DeviceInfoSeq list_processor_types    ();      ///< List registered Processor types with their unique uri.
+};
+sequence ComboSeq { Combo combo; };
 
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {

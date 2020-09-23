@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "combo.hh"
+#include "bseserver.hh"
 #include "internal.hh"
 
 #define PDEBUG(...)     Bse::debug ("processor", __VA_ARGS__)
@@ -165,7 +166,8 @@ Chain::enqueue_children ()
 {
   last_output_ = nullptr;
   engine_.enqueue (*inlet_);
-  for (auto procp : processors_)
+  const ProcessorVec &cprocessors = processors_mt_;
+  for (auto procp : cprocessors)
     {
       engine_.enqueue (*procp);
       if (procp->n_obuses())
@@ -195,7 +197,8 @@ Chain::render (uint n_frames)
 size_t
 Chain::size ()
 {
-  return processors_.size();
+  const ProcessorVec &cprocessors = processors_mt_;
+  return cprocessors.size();
 }
 
 /// Return the Processor at position `nth` in the Chain.
@@ -203,7 +206,19 @@ ProcessorP
 Chain::at (uint nth)
 {
   return_unless (nth < size(), {});
-  return processors_[nth];
+  const ProcessorVec &cprocessors = processors_mt_;
+  return cprocessors[nth];
+}
+
+/// Return the index of Processor `proc` in the Chain.
+size_t
+Chain::find_pos (Processor &proc)
+{
+  const ProcessorVec &cprocessors = processors_mt_;
+  for (size_t i = 0; i < cprocessors.size(); i++)
+    if (cprocessors[i].get() == &proc)
+      return i;
+  return  ~size_t (0);
 }
 
 /// Remove a previously added Processor `proc` from the Chain.
@@ -212,12 +227,14 @@ Chain::remove (Processor &proc)
 {
   std::vector<Processor*> unconnected;
   ProcessorP processorp;
+  const ProcessorVec &cprocessors = processors_mt_;
   size_t pos; // find proc
-  for (pos = 0; pos < processors_.size(); pos++)
-    if (processors_[pos].get() == &proc)
+  for (pos = 0; pos < cprocessors.size(); pos++)
+    if (cprocessors[pos].get() == &proc)
       {
-        processorp = processors_[pos]; // and remove...
-        processors_.erase (processors_.begin() + pos);
+        processorp = cprocessors[pos]; // and remove...
+        std::lock_guard<std::mutex> locker (mt_mutex_);
+        processors_mt_.erase (processors_mt_.begin() + pos);
         break;
       }
   if (!processorp)
@@ -236,8 +253,12 @@ void
 Chain::insert (ProcessorP proc, size_t pos)
 {
   assert_return (proc != nullptr);
-  const size_t index = CLAMP (pos, 0, processors_.size());
-  processors_.insert (processors_.begin() + index, proc);
+  const ProcessorVec &cprocessors = processors_mt_;
+  const size_t index = CLAMP (pos, 0, cprocessors.size());
+  {
+    std::lock_guard<std::mutex> locker (mt_mutex_);
+    processors_mt_.insert (processors_mt_.begin() + index, proc);
+  }
   // fixup following connections
   reconnect (index);
   engine_.reschedule();
@@ -247,12 +268,13 @@ Chain::insert (ProcessorP proc, size_t pos)
 void
 Chain::reconnect (size_t start)
 {
+  const ProcessorVec &cprocessors = processors_mt_;
   // clear stale inputs
-  for (size_t i = start; i < processors_.size(); i++)
-    pm_disconnect_ibuses (*processors_[i]);
+  for (size_t i = start; i < cprocessors.size(); i++)
+    pm_disconnect_ibuses (*cprocessors[i]);
   // reconnect pairwise
-  for (size_t i = start; i < processors_.size(); i++)
-    chain_up (*(i ? processors_[i - 1] : inlet_), *processors_[i]);
+  for (size_t i = start; i < cprocessors.size(); i++)
+    chain_up (*(i ? cprocessors[i - 1] : inlet_), *cprocessors[i]);
 }
 
 /// Connect the main audio input of `next` to audio output of `prev`.
@@ -317,6 +339,13 @@ Chain::chain_up (Processor &prev, Processor &next)
   else
     logstate (MISS, &prev, obusid, &ospa, &next, ibusid, &ispa);
   return n_connected;
+}
+
+Chain::ProcessorVec
+Chain::list_processors_mt () const
+{
+  std::lock_guard<std::mutex> locker (const_cast<Chain*> (this)->mt_mutex_);
+  return processors_mt_; // copy with guard
 }
 
 // == Engine ==
@@ -423,4 +452,92 @@ Engine::render_block()
 }
 
 } // AudioSignal
+
+// == ComboImpl ==
+ComboImpl::ComboImpl (AudioSignal::ChainP combop) :
+  combo_ (combop)
+{
+  assert_return (combop != nullptr);
+}
+
+DeviceInfoSeq
+ComboImpl::list_processor_types ()
+{
+  using namespace AudioSignal;
+  DeviceInfoSeq iseq;
+  const auto rlist = Processor::registry_list();
+  iseq.reserve (rlist.size());
+  for (const auto &entry : rlist)
+    {
+      DeviceInfo info;
+      info.uri          = entry.uri;
+      info.name         = entry.label;
+      info.category     = entry.category;
+      info.description  = entry.description;
+      info.website_url  = entry.website_url;
+      info.creator_name = entry.creator_name;
+      info.creator_url  = entry.creator_url;
+      iseq.push_back (info);
+    }
+  return iseq;
+}
+
+ProcessorSeq
+ComboImpl::list_processors ()
+{
+  ProcessorSeq seq;
+  for (auto &p : combo_->list_processors_mt())
+    {
+      Bse::ProcessorImplP procimplp = p->access_processor();
+      seq.push_back (procimplp);
+    }
+  return seq;
+}
+
+ProcessorIfaceP
+ComboImpl::create_processor (const std::string &uuiduri)
+{
+  AudioSignal::ProcessorP procp = AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), uuiduri);
+  return_unless (procp, nullptr);
+  std::shared_ptr<AudioSignal::Chain> combo = combo_;
+  BSE_SERVER.commit_job ([combo, procp] () {
+    combo->insert (procp);
+  });
+  return procp->access_processor();
+}
+
+ProcessorIfaceP
+ComboImpl::create_processor_before (const std::string &uuiduri, ProcessorIface &sibling)
+{
+  Bse::ProcessorImplP procimplp = std::dynamic_pointer_cast<ProcessorImpl> (sibling.shared_from_this());
+  AudioSignal::ProcessorP siblingp = procimplp ? procimplp->audio_signal_processor() : nullptr;
+  return_unless (siblingp, nullptr);
+  AudioSignal::ProcessorP procp = AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), uuiduri);
+  return_unless (procp, nullptr);
+  std::shared_ptr<AudioSignal::Chain> combo = combo_;
+  BSE_SERVER.commit_job ([combo, procp, siblingp] () {
+    combo->insert (procp, combo->find_pos (*siblingp));
+  });
+  return procp->access_processor();
+}
+
+bool
+ComboImpl::remove_processor (ProcessorIface &sub)
+{
+  Bse::ProcessorImplP procimplp = std::dynamic_pointer_cast<ProcessorImpl> (sub.shared_from_this());
+  AudioSignal::ProcessorP procp = procimplp ? procimplp->audio_signal_processor() : nullptr;
+  return_unless (procp, false);
+  for (auto &p : combo_->list_processors_mt())
+    if (p.get() == procp.get())
+      {
+        std::shared_ptr<AudioSignal::Chain> combo = combo_;
+        BSE_SERVER.commit_job ([combo, procp] () {
+          if (!combo->remove (*procp))
+            Bse::warning ("Child of AudioSignal::Processor vanished during removal: %s", combo->debug_name());
+        });
+        return true;
+      }
+  return false;
+}
+
 } // Bse

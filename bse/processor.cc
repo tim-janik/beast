@@ -2,6 +2,7 @@
 #include "processor.hh"
 #include "property.hh"
 #include "bseserver.hh"
+#include "combo.hh"
 #include "internal.hh"
 #include <shared_mutex>
 
@@ -388,6 +389,12 @@ Processor::Processor() :
 Processor::~Processor ()
 {
   remove_all_buses();
+}
+
+Bse::ProcessorImplP
+Processor::access_processor () const
+{
+  return weak_ptr_fetch_or_create (const_cast<Processor*> (this)->bproc_, *const_cast<Processor*> (this));
 }
 
 const Processor::FloatBuffer&
@@ -1549,6 +1556,10 @@ public:
 };
 
 // == ProcessorImpl ==
+ProcessorImpl::ProcessorImpl (AudioSignal::Processor &proc) :
+  proc_ (proc.shared_from_this())
+{}
+
 DeviceInfo
 ProcessorImpl::processor_info ()
 {
@@ -1605,6 +1616,20 @@ ProcessorImpl::access_properties (const std::string &hints)
       pseq.push_back (prop);
     }
   return pseq;
+}
+
+const AudioSignal::ProcessorP
+ProcessorImpl::audio_signal_processor () const
+{
+  return proc_;
+}
+
+Bse::ComboIfaceP
+ProcessorImpl::access_combo ()
+{
+  AudioSignal::ChainP combop = std::dynamic_pointer_cast<AudioSignal::Chain> (proc_);
+  return_unless (combop, nullptr);
+  return weak_ptr_fetch_or_create (bcombo_, combop);
 }
 
 } // Bse

@@ -12,12 +12,14 @@ namespace AudioSignal {
 class Chain : public Processor, ProcessorManager {
   class Inlet;
   using InletP = std::shared_ptr<Inlet>;
+  using ProcessorVec = vector<ProcessorP>;
   InletP inlet_;
   ProcessorP eproc_;
-  vector<ProcessorP> processors_;
+  ProcessorVec processors_mt_; // modifications guarded by mt_mutex_
   Processor *last_output_ = nullptr;
   const SpeakerArrangement ispeakers_ = SpeakerArrangement (0);
   const SpeakerArrangement ospeakers_ = SpeakerArrangement (0);
+  std::mutex mt_mutex_;
 protected:
   void       initialize       () override;
   void       configure        (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override;
@@ -33,12 +35,27 @@ public:
   void       insert           (ProcessorP proc, size_t pos = ~size_t (0));
   bool       remove           (Processor &proc);
   ProcessorP at               (uint nth);
+  size_t     find_pos         (Processor &proc);
   size_t     size             ();
   void       set_event_source (ProcessorP eproc);
+  ProcessorVec list_processors_mt () const;
 };
 using ChainP = std::shared_ptr<Chain>;
 
 } // AudioSignal
+
+// == ComboImpl ==
+class ComboImpl : public NotifierImpl, public virtual ComboIface {
+  std::shared_ptr<AudioSignal::Chain> combo_;
+public:
+  explicit        ComboImpl               (AudioSignal::ChainP combop);
+  ProcessorSeq    list_processors         () override;
+  bool            remove_processor        (ProcessorIface &sub) override;
+  ProcessorIfaceP create_processor        (const std::string &uuiduri) override;
+  ProcessorIfaceP create_processor_before (const std::string &uuiduri, ProcessorIface &sibling) override;
+  DeviceInfoSeq   list_processor_types    () override;
+};
+
 } // Bse
 
 #endif // __BSE_COMBO_HH__

@@ -9,6 +9,10 @@
 
 namespace Bse {
 
+class ProcessorImpl;
+using ProcessorImplP = std::shared_ptr<ProcessorImpl>;
+class ComboImpl;
+
 namespace AudioSignal {
 
 /// Maximum number of sample frames to calculate in Processor::render().
@@ -211,7 +215,6 @@ private:
   std::vector<OConnection> outputs_;
   EventStreams            *estreams_ = nullptr;
   uint64_t                 done_frames_ = 0;
-  static __thread uint64   tls_timestamp;
   static void        registry_init      ();
   const PParam*      find_pparam        (Id32 paramid) const;
   const PParam*      find_pparam_       (ParamId paramid) const;
@@ -332,6 +335,7 @@ public:
   bool          has_event_output  ();
   void          connect_event_input    (Processor &oproc);
   void          disconnect_event_input ();
+  ProcessorImplP access_processor () const;
   // Registration and factory
   static RegistryList  registry_list      ();
   static ProcessorP    registry_create    (Engine &engine, const std::string &uuiduri);
@@ -340,6 +344,9 @@ public:
   // MT-Safe accessors
   static double param_peek_mt     (const ProcessorP proc, Id32 paramid);
   static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
+private:
+  std::weak_ptr<Bse::ProcessorImpl> bproc_;
+  static __thread uint64   tls_timestamp;
 };
 
 /// Timing information around AudioSignal processing.
@@ -679,13 +686,17 @@ enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
 }
 
 class ProcessorImpl : public NotifierImpl, public virtual ProcessorIface {
-  friend class AudioSignal::Processor;
   std::shared_ptr<AudioSignal::Processor> proc_;
+  std::weak_ptr<Bse::ComboImpl> bcombo_;
 public:
+  explicit       ProcessorImpl     (AudioSignal::Processor &proc);
   DeviceInfo     processor_info    () override;
   StringSeq      list_properties   () override;
   PropertyIfaceP access_property   (const std::string &ident) override;
   PropertySeq    access_properties (const std::string &hints) override;
+  ComboIfaceP    access_combo      () override;
+  AudioSignal::ProcessorP
+  const          audio_signal_processor () const;
 };
 
 } // Bse
