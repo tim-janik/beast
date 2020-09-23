@@ -198,6 +198,24 @@ shared_ptr_cast (const std::shared_ptr<Source> &sptr)
   return shared_ptr_cast<Target> (const_cast<std::shared_ptr<Source>&> (sptr));
 }
 
+/// Fetch `shared_ptr` from `wptr` while creating `C` from `...args` if needed.
+template<class C, typename ...Args> std::shared_ptr<C>
+weak_ptr_fetch_or_create (std::weak_ptr<C> &wptr, Args &&...args)
+{
+  std::shared_ptr<C> cptr = wptr.lock();
+  if (__builtin_expect (!!cptr, true))
+    return cptr; // fast path
+  std::shared_ptr<C> nptr = std::make_shared<C> (std::forward<Args> (args)...);
+  { // C++20 has: std::atomic<std::weak_ptr<C>>::compare_exchange
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> locker (mutex);
+    cptr = wptr.lock();
+    if (!cptr)
+      wptr = cptr = nptr;
+  }
+  return cptr;
+}
+
 /// Create a `std::array<F,N>`, where `F` is returned from `mkjump (INDICES...)`.
 template<typename J, size_t ...INDICES> static auto
 make_jump_table_indexed (const J &mkjump, std::index_sequence<INDICES...>)
