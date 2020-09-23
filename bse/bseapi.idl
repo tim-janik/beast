@@ -1052,6 +1052,15 @@ interface DeviceContainer : Device {
   bool   remove_device        (Device containee); ///< Remove a directly contained device.
 };
 
+/// Interface to access AudioSignal::Processor instances.
+interface Processor : Notifier {
+  DeviceInfo  processor_info    ();             ///< Describe this Processor type.
+  // Parameters
+  StringSeq   list_properties   ();             ///< List all property identifiers.
+  Property    access_property   (String ident); ///< Retrieve handle for a Property.
+  PropertySeq access_properties (String hints); ///< Retrieve handles for properties with specific hints.
+};
+
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.

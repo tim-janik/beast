@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "processor.hh"
+#include "bse/property.hh"
 #include "bse/bseserver.hh"
 #include "bse/internal.hh"
 #include <shared_mutex>
@@ -1869,4 +1870,156 @@ Processor::FloatBuffer::check ()
 }
 
 } // AudioSignal
+
+// == ProcessorPropertyWrapper ==
+class ProcessorPropertyWrapper : public PropertyWrapper {
+  AudioSignal::ProcessorP proc_;
+  AudioSignal::ParamInfoP info_;
+public:
+  std::string
+  get_tag (Tag tag) override
+  {
+    auto &info = *info_;
+    switch (tag)
+      {
+      case IDENTIFIER:    return info.ident;
+      case LABEL:         return info.label;
+      case NICK:          return info.nick;
+      case UNIT:          return info.unit;
+      case HINTS:         return info.hints;
+      case GROUP:         return info.group;
+      case BLURB:         return info.blurb;
+      case DESCRIPTION:   return info.description;
+      }
+    assert_return_unreached ({});
+  }
+  void
+  get_range (double *min, double *max, double *step) override
+  {
+    double a, b, c;
+    info_->get_range (min ? *min : a, max ? *max : b, step ? *step : c);
+  }
+  double
+  get_normalized () override
+  {
+    return proc_->value_to_normalized (info_->id, AudioSignal::Processor::param_peek_mt (proc_, info_->id));
+  }
+  bool
+  set_normalized (double v) override
+  {
+    AudioSignal::ProcessorP proc = proc_;
+    const AudioSignal::ParamId pid = info_->id;
+    auto lambda = [proc, pid, v] () {
+      proc->set_normalized (pid, v);
+    };
+    BSE_SERVER.commit_job (lambda);
+    return true;
+  }
+  std::string
+  get_text () override
+  {
+    const double value = AudioSignal::Processor::param_peek_mt (proc_, info_->id);
+    return proc_->param_value_to_text (info_->id, value);
+  }
+  bool
+  set_text (const std::string &v) override
+  {
+    const double value = proc_->param_value_from_text (info_->id, v);
+    const double normalized = proc_->value_to_normalized (info_->id, value);
+    AudioSignal::ProcessorP proc = proc_;
+    const AudioSignal::ParamId pid = info_->id;
+    auto lambda = [proc, pid, normalized] () {
+      proc->set_normalized (pid, normalized);
+    };
+    BSE_SERVER.commit_job (lambda);
+    return true;
+  }
+  bool
+  is_numeric () override
+  {
+    // TODO: we have yet to implement non-numeric Processor parameters
+    return true;
+  }
+  ChoiceSeq
+  choices () override
+  {
+    ChoiceSeq cs;
+    const auto ce = info_->get_choices();
+    cs.reserve (ce.size());
+    for (const auto &e : ce)
+      {
+        Choice c;
+        c.ident = e.ident;
+        c.label = e.label;
+        c.subject = e.subject;
+        c.icon = e.icon;
+        cs.push_back (c);
+      }
+    return cs;
+  }
+  explicit
+  ProcessorPropertyWrapper (AudioSignal::ProcessorP proc, AudioSignal::ParamInfoP param_) :
+    proc_ (proc), info_ (param_)
+  {}
+};
+
+// == ProcessorImpl ==
+DeviceInfo
+ProcessorImpl::processor_info ()
+{
+  AudioSignal::ProcessorInfo pinf;
+  proc_->query_info (pinf);
+  DeviceInfo info;
+  info.uri          = pinf.uri;
+  info.name         = pinf.label;
+  info.category     = pinf.category;
+  info.description  = pinf.description;
+  info.website_url  = pinf.website_url;
+  info.creator_name = pinf.creator_name;
+  info.creator_url  = pinf.creator_url;
+  return info;
+}
+
+StringSeq
+ProcessorImpl::list_properties ()
+{
+  using namespace AudioSignal;
+  const auto &iv = proc_->list_params();
+  StringSeq names;
+  names.reserve (iv.size());
+  for (const auto &param : iv)
+    names.push_back (param->ident);
+  return names;
+}
+
+PropertyIfaceP
+ProcessorImpl::access_property (const std::string &ident)
+{
+  using namespace AudioSignal;
+  ParamInfoP infop;
+  for (const ParamInfoP info : proc_->list_params())
+    if (info->ident == ident)
+      {
+        infop = info;
+        break;
+      }
+  return_unless (infop, {});
+  auto pwrapper = std::make_unique<ProcessorPropertyWrapper> (proc_, infop);
+  return PropertyImpl::create (std::move (pwrapper));
+}
+
+PropertySeq
+ProcessorImpl::access_properties (const std::string &hints)
+{
+  using namespace AudioSignal;
+  PropertySeq pseq;
+  for (const ParamInfoP info : proc_->list_params())
+    {
+      auto pwrapper = std::make_unique<ProcessorPropertyWrapper> (proc_, info);
+      PropertyIfaceP prop = PropertyImpl::create (std::move (pwrapper));
+      pseq.push_back (prop);
+    }
+  return pseq;
+}
+
 } // Bse

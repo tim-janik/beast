@@ -27,6 +27,7 @@ bse_jsonipc_stub_impls()
   Jsonipc::Class<Bse::PropertyImpl> ("Property").inherit<Bse::PropertyIface>();
   Jsonipc::Class<Bse::DeviceImpl> ("Device").inherit<Bse::DeviceIface>();
   Jsonipc::Class<Bse::DeviceContainerImpl> ("DeviceContainer").inherit<Bse::DeviceContainerIface>();
+  Jsonipc::Class<Bse::ProcessorImpl> ("Processor").inherit<Bse::ProcessorIface>();
   Jsonipc::Class<Bse::TrackImpl> ("Track").inherit<Bse::TrackIface>();
   Jsonipc::Class<Bse::BusImpl> ("Bus").inherit<Bse::BusIface>();
   Jsonipc::Class<Bse::SongImpl> ("Song").inherit<Bse::SongIface>();

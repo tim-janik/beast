@@ -2,6 +2,7 @@
 #ifndef __BSE_PROCESSOR_HH__
 #define __BSE_PROCESSOR_HH__
 
+#include <bse/object.hh>
 #include <bse/midievent.hh>
 #include <bse/floatutils.hh>
 #include <any>
@@ -707,6 +708,16 @@ enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
     }
   return AudioSignal::Processor::registry_enroll (makeasp, bfile, bline);
 }
+
+class ProcessorImpl : public NotifierImpl, public virtual ProcessorIface {
+  friend class AudioSignal::Processor;
+  std::shared_ptr<AudioSignal::Processor> proc_;
+public:
+  DeviceInfo     processor_info    () override;
+  StringSeq      list_properties   () override;
+  PropertyIfaceP access_property   (const std::string &ident) override;
+  PropertySeq    access_properties (const std::string &hints) override;
+};
 
 } // Bse
 
