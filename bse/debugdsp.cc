@@ -17,7 +17,7 @@ class DbgParameterizer : public AudioSignal::Processor {
   IBusId stereoin, auxin;
   OBusId stereout;
   void
-  query_info (ProcessorInfo &info) override
+  query_info (ProcessorInfo &info) const override
   {
     info.uri = "Bse.DebugDsp.DbgParameterizer";
     // info.version = "0";

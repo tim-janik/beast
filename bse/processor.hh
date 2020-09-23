@@ -294,7 +294,7 @@ public:
   uint          sample_rate       () const BSE_CONST;
   double        nyquist           () const BSE_CONST;
   double        inyquist          () const BSE_CONST;
-  virtual void  query_info        (ProcessorInfo &info) = 0;
+  virtual void  query_info        (ProcessorInfo &info) const = 0;
   String        debug_name        () const;
   // Parameters
   double              get_param             (Id32 paramid);
@@ -429,7 +429,7 @@ protected:
 public:
   explicit   Chain            (SpeakerArrangement iobuses = SpeakerArrangement::STEREO);
   virtual    ~Chain           ();
-  void       query_info       (ProcessorInfo &info) override;
+  void       query_info       (ProcessorInfo &info) const override;
   void       insert           (ProcessorP proc, size_t pos = ~size_t (0));
   bool       remove           (Processor &proc);
   ProcessorP at               (uint nth);
