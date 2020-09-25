@@ -6,18 +6,20 @@ bse_jsonipc_stub_impls()
 {
   using namespace Bse;
 
-  // IDL types +Impl
+  // Abstract Types
   // Jsonipc::Class<Bse::NotifierImpl> ("Notifier").inherit<Bse::NotifierIface>();
-  Jsonipc::Class<Bse::ObjectImpl> ("Object_").inherit<Bse::ObjectIface>();
-  Jsonipc::Class<Bse::LegacyObjectImpl> ("LegacyObject").inherit<Bse::LegacyObjectIface>();
-  Jsonipc::Class<Bse::ItemImpl> ("Item").inherit<Bse::ItemIface>();
+  // Jsonipc::Class<Bse::ObjectImpl> ("Object_").inherit<Bse::ObjectIface>();
+  // Jsonipc::Class<Bse::LegacyObjectImpl> ("LegacyObject").inherit<Bse::LegacyObjectIface>();
+  // Jsonipc::Class<Bse::ItemImpl> ("Item").inherit<Bse::ItemIface>();
+  // Jsonipc::Class<Bse::ContainerImpl> ("Container").inherit<Bse::ContainerIface>();
+  // Jsonipc::Class<Bse::SuperImpl> ("Super").inherit<Bse::SuperIface>();
+
+  // IDL Types +Impl
   Jsonipc::Class<Bse::PartImpl> ("Part").inherit<Bse::PartIface>();
   Jsonipc::Class<Bse::ClipImpl> ("Clip").inherit<Bse::ClipIface>();
   Jsonipc::Class<Bse::SignalMonitorImpl> ("SignalMonitor").inherit<Bse::SignalMonitorIface>();
   Jsonipc::Class<Bse::SourceImpl> ("Source").inherit<Bse::SourceIface>();
-  Jsonipc::Class<Bse::ContainerImpl> ("Container").inherit<Bse::ContainerIface>();
   Jsonipc::Class<Bse::ContextMergerImpl> ("ContextMerger").inherit<Bse::ContextMergerIface>();
-  Jsonipc::Class<Bse::SuperImpl> ("Super").inherit<Bse::SuperIface>();
   Jsonipc::Class<Bse::SNetImpl> ("SNet").inherit<Bse::SNetIface>();
   Jsonipc::Class<Bse::CSynthImpl> ("CSynth").inherit<Bse::CSynthIface>();
   Jsonipc::Class<Bse::SubSynthImpl> ("SubSynth").inherit<Bse::SubSynthIface>();
@@ -40,7 +42,7 @@ bse_jsonipc_stub_impls()
   Jsonipc::Class<Bse::ResourceCrawlerImpl> ("ResourceCrawler").inherit<Bse::ResourceCrawlerIface>();
   Jsonipc::Class<Bse::ServerImpl> ("Server").inherit<Bse::ServerIface>();
 
-  // Internal types
+  // Internal Types
   Jsonipc::Class<Bse::AspDeviceContainerImpl> ("AspDeviceContainer").inherit<Bse::DeviceContainerImpl>();
   Jsonipc::Class<Bse::AspDeviceImpl> ("AspDevice").inherit<Bse::DeviceImpl>();
 }

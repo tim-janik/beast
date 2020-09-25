@@ -78,9 +78,10 @@ ObjectImpl::list_props ()
   return props;
 }
 
+// == NotifierImpl ==
 void
-ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, const KV &a3,
-                        const KV &a4, const KV &a5, const KV &a6, const KV &a7)
+NotifierImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, const KV &a3,
+                          const KV &a4, const KV &a5, const KV &a6, const KV &a7)
 {
   const char ident_chars[] =
     "0123456789"
@@ -113,7 +114,7 @@ ObjectImpl::emit_event (const std::string &type, const KV &a1, const KV &a2, con
 }
 
 void
-ObjectImpl::notify (const String &detail)
+NotifierImpl::notify (const String &detail)
 {
   assert_return (detail.empty() == false);
   emit_event ("notify:" + detail);
