@@ -91,7 +91,7 @@ class SongImpl;
 using SongImplP = std::shared_ptr<SongImpl>;
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
-  DeviceContainerImplP device_container_;
+  AudioSignal::ChainP combo_chain_;
   MidiLib::MidiInputIfaceP midi_in_;
   using ClipV = std::vector<ClipImplP>;
   ClipV                clips_;
@@ -125,7 +125,7 @@ public:
   virtual void         midi_channel      (int val) override;
   virtual int          n_voices          () const override;
   virtual void         n_voices          (int val) override;
-  virtual DeviceContainerIfaceP device_container () override;
+  virtual ComboIfaceP  access_combo      () override;
 };
 using TrackImplP = std::shared_ptr<TrackImpl>;
 

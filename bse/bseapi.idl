@@ -1091,7 +1091,7 @@ interface Track : ContextMerger {
   /// Get the output module of a track.
   /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
   Source       get_output_source ();
-  DeviceContainer device_container ();          ///< Retrieve the Device chain container of the Track.
+  Combo        access_combo ();                 ///< Retrieve the Combo processor interface.
 
   group _("Adjustments") {
     bool  muted = Bool (_("Muted"), _("Mute this track by ignoring it in the sequencer."), STANDARD SKIP_DEFAULT, false);

@@ -20,7 +20,7 @@
 #include "bsepart.hh"
 #include "bseserver.hh"
 #include "bsecxxplugin.hh"
-#include "processor.hh"
+#include "combo.hh"
 #include "bse/internal.hh"
 #include <string.h>
 
@@ -1067,17 +1067,19 @@ static void
 bse_track_prepare (BseSource *source)
 {
   Bse::TrackImpl &self = *source->as<Bse::TrackImplP>();
-  auto &devcon = *dynamic_cast<Bse::DeviceContainerImpl*> (&*self.device_container());
+  Bse::ComboIfaceP combo_iface = self.access_combo(); // ensures combo_chain_
+  Bse::ComboImplP combop = std::dynamic_pointer_cast<Bse::ComboImpl> (combo_iface);
   BSE_SOURCE_CLASS (parent_class)->prepare (source); // chain up
-  BSE_SERVER.add_pcm_output_processor (devcon.processor());
+  BSE_SERVER.add_pcm_output_processor (combop->audio_signal_processor());
 }
 
 static void
 bse_track_reset (BseSource *source)
 {
   Bse::TrackImpl &self = *source->as<Bse::TrackImplP>();
-  auto &devcon = *dynamic_cast<Bse::DeviceContainerImpl*> (&*self.device_container());
-  BSE_SERVER.del_pcm_output_processor (devcon.processor());
+  Bse::ComboIfaceP combo_iface = self.access_combo();
+  Bse::ComboImplP combop = std::dynamic_pointer_cast<Bse::ComboImpl> (combo_iface);
+  BSE_SERVER.del_pcm_output_processor (combop->audio_signal_processor());
   BSE_SOURCE_CLASS (parent_class)->reset (source); // chain up
 }
 
@@ -1156,6 +1158,7 @@ TrackImpl::xml_serialize (SerializationNode &xs)
       const String uuiduri = xc.get ("type");
       if (!uuiduri.empty())
         {
+#if 0 // FIXME
           DeviceIfaceP devicei = device_container()->create_device (uuiduri);
           if (devicei)
             {
@@ -1166,6 +1169,7 @@ TrackImpl::xml_serialize (SerializationNode &xs)
                   continue;
                 }
             }
+#endif
         }
       printerr ("Bse::TrackImpl::%s: failed to create device: %s\n", __func__, uuiduri);
     }
@@ -1189,8 +1193,10 @@ TrackImpl::xml_serialize (SerializationNode &xs)
       else
         printerr ("Bse::TrackImpl::%s: failed to find clip at: %u\n", __func__, index);
     }
+#if 0 // FIXME
   for (DeviceIfaceP device : device_container()->list_devices()) // in_save
     xs.save_under ("Device", *dynamic_cast<DeviceImpl*> (device.get()));
+#endif
   for (ClipIfaceP clipi : clips_) // in_save
     {
       ClipImpl *clip = dynamic_cast<ClipImpl*> (clipi.get());
@@ -1208,7 +1214,7 @@ TrackImpl::xml_reflink (SerializationNode &xs)
 bool
 TrackImpl::needs_serialize()
 {
-  return clips_.size() || device_container()->list_devices().size() > 0;
+  return clips_.size(); // FIXME: || device_container()->list_devices().size() > 0;
 }
 
 bool
@@ -1477,27 +1483,28 @@ TrackImpl::update_clip()
   BSE_SERVER.commit_job (lambda);
 }
 
-DeviceContainerIfaceP
-TrackImpl::device_container()
+ComboIfaceP
+TrackImpl::access_combo ()
 {
-  if (!device_container_)
+  if (!combo_chain_)
     {
       assert_return (!midi_in_, nullptr);
       const char *midi_in_uri = "Bse.MidiLib.MidiInput";
       midi_in_ = std::dynamic_pointer_cast<MidiLib::MidiInputIface> (AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), midi_in_uri));
       assert_return (midi_in_, nullptr);
       update_clip();
-      DeviceImplP devicep = DeviceImpl::create_single_device ("Bse.AudioSignal.Chain");
-      assert_return (devicep != nullptr, nullptr);
-      DeviceContainerImplP device_container = std::dynamic_pointer_cast<DeviceContainerImpl> (devicep);
-      assert_return (device_container != nullptr, nullptr);
-      device_container_ = device_container;
-      AudioSignal::Chain *container = dynamic_cast<AudioSignal::Chain*> (&*device_container_->processor());
-      assert_return (container != nullptr, nullptr);
-      container->set_event_source (midi_in_);
+
+      const char *combo_chain_uri = "Bse.AudioSignal.Chain";
+      combo_chain_ = std::dynamic_pointer_cast<AudioSignal::Chain> (AudioSignal::Processor::registry_create (BSE_SERVER.global_engine(), combo_chain_uri));
+      assert_return (combo_chain_, nullptr);
+      combo_chain_->set_event_source (midi_in_);
       BSE_SERVER.add_event_input (*midi_in_);
     }
-  return device_container_;
+  ProcessorImplP procimplp = combo_chain_->access_processor();
+  assert_return (procimplp, nullptr);
+  ComboIfaceP comboimplp = procimplp->access_combo();
+  assert_return (comboimplp, nullptr);
+  return comboimplp;
 }
 
 } // Bse
