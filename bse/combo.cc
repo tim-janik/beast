@@ -540,4 +540,10 @@ ComboImpl::remove_processor (ProcessorIface &sub)
   return false;
 }
 
+const AudioSignal::ProcessorP
+ComboImpl::audio_signal_processor () const
+{
+  return combo_;
+}
+
 } // Bse

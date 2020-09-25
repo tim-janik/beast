@@ -54,7 +54,10 @@ public:
   ProcessorIfaceP create_processor        (const std::string &uuiduri) override;
   ProcessorIfaceP create_processor_before (const std::string &uuiduri, ProcessorIface &sibling) override;
   DeviceInfoSeq   list_processor_types    () override;
+  AudioSignal::ProcessorP
+  const          audio_signal_processor () const;
 };
+using ComboImplP = std::shared_ptr<ComboImpl>;
 
 } // Bse
 
