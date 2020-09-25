@@ -650,7 +650,9 @@ interface Project;
 
 /// Fundamental interface type to enable callback notifications.
 interface Notifier {
-  void  notify    (String eventdetails);        ///< Emit notification for object state or property changes.
+  void  notify    (String eventdetails);            ///< Emit notification for object state or property changes.
+  int64 notifyon  (String event, String callback);  ///< Placeholder, use the native `.on()` method.
+  bool  notifyoff (int64 notifierid);               ///< Placeholder, use the native `.off()` method.
 };
 
 /// Base type for all new style C++ objects.

@@ -120,4 +120,18 @@ NotifierImpl::notify (const String &detail)
   emit_event ("notify:" + detail);
 }
 
+int64_t
+NotifierImpl::notifyon (const std::string &event, const std::string &callback)
+{
+  warning ("Bse::NotifierImpl: the notifyon() method is a placeholder, use on() instead");
+  return 0;
+}
+
+bool
+NotifierImpl::notifyoff (int64_t notifierid)
+{
+  warning ("Bse::NotifierImpl: the notifyoff() method is a placeholder, use off()/disconnect() instead");
+  return false;
+}
+
 } // Bse

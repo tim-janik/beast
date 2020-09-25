@@ -11,13 +11,15 @@ class NotifierImpl : public Aida::EnableSharedFromThis<NotifierImpl>, public vir
   Aida::EventDispatcher  event_dispatcher_;
 protected:
   using KV = Aida::KeyValue;
-public:
-  virtual void      notify        (const String &detail) override;
-  void              emit_event    (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
-                                   const KV &a4 = KV(), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
-  // boilerplate
   virtual Aida::IfaceEventConnection __attach__ (const String &eventselector, EventHandlerF handler) override
   { return event_dispatcher_.attach (eventselector, handler); }
+public:
+  void    notify     (const String &detail) override;
+  int64_t notifyon   (const std::string &event, const std::string &callback) override;
+  bool    notifyoff  (int64_t notifierid) override;
+  void    emit_event (const std::string &type, const KV &a1 = KV(), const KV &a2 = KV(), const KV &a3 = KV(),
+                      const KV &a4 = KV (), const KV &a5 = KV(), const KV &a6 = KV(), const KV &a7 = KV());
+  // boilerplate
   using EnableSharedFromThis<NotifierImpl>::shared_from_this;
 };
 typedef std::shared_ptr<NotifierImpl> NotifierImplP;
