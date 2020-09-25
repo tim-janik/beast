@@ -528,7 +528,7 @@ main (int argc, char *argv[])
     bse_jsonipc_stub2();
     bse_jsonipc_stub3();
     bse_jsonipc_stub4();
-    bse_jsonipc_stub_rest();
+    bse_jsonipc_stub_impls();
     if (print_jsbse)
       Bse::printout ("%s\n", Jsonipc::ClassPrinter::to_string());
     // fixups, we know Bse::Server is a singleton
