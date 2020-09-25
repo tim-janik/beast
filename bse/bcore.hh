@@ -340,10 +340,12 @@ debug_message (const char *file, int line, const char *func, const char *cond, c
 }
 
 // == Assertions ==
-/// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define BSE_ASSERT_RETURN(cond, ...)     do { if (BSE_ISLIKELY (cond)) break; ::Bse::assertion_failed (#cond); return __VA_ARGS__; } while (0)
+/// Return from the current function if `expr` evaluates to false and issue an assertion warning.
+#define BSE_ASSERT_RETURN(expr, ...)     do { if (BSE_ISLIKELY (expr)) break; ::Bse::assertion_failed (#expr); return __VA_ARGS__; } while (0)
 /// Return from the current function and issue an assertion warning.
 #define BSE_ASSERT_RETURN_UNREACHED(...) do { ::Bse::assertion_failed (""); return __VA_ARGS__; } while (0)
+/// Issue an assertion warning if `expr` evaluates to false.
+#define BSE_ASSERT_WARN(expr)            do { if (BSE_ISLIKELY (expr)) break; ::Bse::assertion_failed (#expr); } while (0)
 
 // == Memory Utilities ==
 int     fmsb          (uint64  word) BSE_CONST; ///< Find most significant bit set in a word.
