@@ -7,6 +7,7 @@ bse_jsonipc_stub_impls()
   using namespace Bse;
 
   // IDL types +Impl
+  // Jsonipc::Class<Bse::NotifierImpl> ("Notifier").inherit<Bse::NotifierIface>();
   Jsonipc::Class<Bse::ObjectImpl> ("Object_").inherit<Bse::ObjectIface>();
   Jsonipc::Class<Bse::LegacyObjectImpl> ("LegacyObject").inherit<Bse::LegacyObjectIface>();
   Jsonipc::Class<Bse::ItemImpl> ("Item").inherit<Bse::ItemIface>();
