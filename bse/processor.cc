@@ -1287,6 +1287,51 @@ Processor::reconfigure (IBusId ibusid, SpeakerArrangement ipatch, OBusId obusid,
   reset_state();
 }
 
+static Processor        *const notifies_tail = (Processor*) ptrdiff_t (-1);
+static std::atomic<Processor*> notifies_head { notifies_tail };
+
+void
+Processor::enqueue_notify_mt ()
+{
+  assert_return (notifies_head != nullptr);
+  Processor *expected = nullptr;
+  if (nqueue_next_.compare_exchange_strong (expected, notifies_tail))
+    {
+      // nqueue_next_ was nullptr, need to insert into queue now
+      assert_warn (nqueue_guard_ == nullptr);
+      nqueue_guard_ = shared_from_this();
+      expected = notifies_head.load(); // must never be nullptr
+      do
+        nqueue_next_.store (expected);
+      while (!notifies_head.compare_exchange_strong (expected, this));
+    }
+}
+
+void
+Processor::call_notifies_mt ()
+{
+  Processor *head = notifies_head.exchange (notifies_tail);
+  while (head != notifies_tail)
+    {
+      Processor *current = std::exchange (head, head->nqueue_next_);
+      ProcessorP procp = std::exchange (current->nqueue_guard_, nullptr);
+      Processor *old_nqueue_next = current->nqueue_next_.exchange (nullptr);
+      assert_warn (old_nqueue_next != nullptr);
+      Bse::ProcessorImplP bprocp = !procp ? nullptr : procp->bproc_.lock();
+      // FIXME: pop flags
+      if (bprocp)
+        bprocp->notify ("change");
+      else
+        assert_warn (procp != nullptr);
+    }
+}
+
+bool
+Processor::has_notifies_mt ()
+{
+  return notifies_head != notifies_tail;
+}
+
 // == RegistryEntry ==
 struct RegistryId::Entry : ProcessorInfo {
   Entry *next = nullptr;

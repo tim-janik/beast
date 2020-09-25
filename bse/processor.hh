@@ -344,9 +344,14 @@ public:
   // MT-Safe accessors
   static double param_peek_mt     (const ProcessorP proc, Id32 paramid);
   static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
+  static bool   has_notifies_mt   ();
+  static void   call_notifies_mt  ();
 private:
+  void          enqueue_notify_mt ();
+  std::atomic<Processor*> nqueue_next_ { nullptr }; ///< No notifications queued while == nullptr
+  ProcessorP              nqueue_guard_;            ///< Only used while nqueue_next_ != nullptr
   std::weak_ptr<Bse::ProcessorImpl> bproc_;
-  static __thread uint64   tls_timestamp;
+  static __thread uint64  tls_timestamp;
 };
 
 /// Timing information around AudioSignal processing.
