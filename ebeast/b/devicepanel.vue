@@ -94,10 +94,10 @@
   <b-hflex class="b-devicepanel" >
     <span class="b-devicepanel-before-scroller"> Device Panel </span>
     <b-hflex class="b-devicepanel-scroller" >
-      <template v-for="device in devices" >
-	<b-more @click.native.stop="menuopen" :sibling="device" :key="device.$id"
+      <template v-for="proc in procs" >
+	<b-more @click.native.stop="menuopen" :sibling="proc" :key="proc.$id"
 		data-tip="**CLICK** Add New Elements" />
-	<b-deviceeditor :device="device" center :key="'deviceeditor' + device.$id" />
+	<b-deviceeditor :device="proc" center :key="'deviceeditor' + proc.$id" />
       </template>
       <b-more @click.native.stop="menuopen" :sibling="null"
 	      data-tip="**CLICK** Add New Elements" />
@@ -135,19 +135,19 @@ list_audio_device_types();
 
 function observable_device_data () {
   const data = {
-    devices:	  { default: [],	 notify: n => this.devcon_.on ("notify:devices", n),
-		    getter: async c => Object.freeze (await this.devcon_.list_devices()), },
+    procs:	  { default: [],	 notify: n => this.combo_.on ("notify:devices", n),
+		    getter: async c => Object.freeze (await this.combo_.list_processors()), },
     devicetypes:  { getter: c => list_audio_device_types(), },
   };
-  const have_devcon = async () => {
+  const fetch_combo = async () => {
     if (this.last_track_ != this.track)
       {
-	this.devcon_ = this.track ? await this.track.device_container() : null;
+	this.combo_ = this.track ? await this.track.access_combo() : null;
 	this.last_track_ = this.track;
       }
-    return this.devcon_;
+    return this.combo_;
   };
-  return this.observable_from_getters (data, have_devcon);
+  return this.observable_from_getters (data, fetch_combo);
 }
 
 export default {
@@ -163,12 +163,12 @@ export default {
       this.$refs.cmenu.close();
       if (uri == 'EBeast:add-device' || uri == 'EBeast:delete-device')
 	debug ("devicepanel.vue:", uri);
-      if (this.devcon_ && !uri.startsWith ('EBeast:')) // assuming b-treeselector.devicetypes
+      if (this.combo_ && !uri.startsWith ('EBeast:')) // assuming b-treeselector.devicetypes
 	{
 	  if (popup_options.device_sibling)
-	    this.devcon_.create_device_before (uri, popup_options.device_sibling);
+	    this.combo_.create_processor_before (uri, popup_options.device_sibling);
 	  else
-	    this.devcon_.create_device (uri);
+	    this.combo_.create_processor (uri);
 	}
     },
     menucheck (uri, component) {
