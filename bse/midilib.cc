@@ -63,7 +63,7 @@ public:
       }
   }
   void
-  query_info (ProcessorInfo &info) override
+  query_info (ProcessorInfo &info) const override
   {
     info.uri = "Bse.MidiLib.MidiInput";
     info.version = "0";

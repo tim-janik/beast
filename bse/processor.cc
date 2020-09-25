@@ -945,7 +945,7 @@ Processor::debug_name () const
 /// The field `uri` must be a globally unique URI (or UUID), that is can be used as unique
 /// identifier for reliable (de-)serialization.
 void
-Processor::query_info (ProcessorInfo &info)
+Processor::query_info (ProcessorInfo &info) const
 {}
 
 /// Mandatory method to setup parameters (see add_param()) and initialize internal structures.
@@ -1458,7 +1458,7 @@ public:
   {
     assert_return (nullptr != std::any_cast<Chain*> (any));
   }
-  void query_info (ProcessorInfo &info) override        { info.label = "Bse.AudioSignal.Chain.Inlet"; }
+  void query_info (ProcessorInfo &info) const override  { info.label = "Bse.AudioSignal.Chain.Inlet"; }
   void initialize () override                           {}
   void reset      () override                           {}
   void
@@ -1501,7 +1501,7 @@ Chain::~Chain()
 }
 
 void
-Chain::query_info (ProcessorInfo &info)
+Chain::query_info (ProcessorInfo &info) const
 {
   info.uri = "Bse.AudioSignal.Chain";
   info.label = "Bse::AudioSignal::Chain";

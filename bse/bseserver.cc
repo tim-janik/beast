@@ -1473,7 +1473,7 @@ ServerImpl::del_pcm_output_processor (AudioSignal::ProcessorP procp)
 // Processor providing MIDI device events
 class ServerMidiInput : public AudioSignal::Processor {
   void
-  query_info (ProcessorInfo &info) override
+  query_info (ProcessorInfo &info) const override
   {
     info.uri = "Bse.AudioSignal.Server.MidiInput";
     info.version = "0";

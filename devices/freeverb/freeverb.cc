@@ -18,7 +18,7 @@ class Freeverb : public AudioSignal::Processor {
   OBusId stereout;
   revmodel model;
   void
-  query_info (ProcessorInfo &info) override
+  query_info (ProcessorInfo &info) const override
   {
     info.uri = "Bse.VST2.JzR3.Freeverb3";
     info.version = "0";

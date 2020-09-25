@@ -269,7 +269,7 @@ class BlepSynth : public AudioSignal::Processor {
   std::vector<Voice *>  active_voices_;
   std::vector<Voice *>  idle_voices_;
   void
-  query_info (ProcessorInfo &info) override
+  query_info (ProcessorInfo &info) const override
   {
     info.uri = "Bse.BlepSynth";
     // info.version = "0";
