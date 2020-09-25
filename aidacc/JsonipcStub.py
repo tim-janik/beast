@@ -89,7 +89,7 @@ class Generator:
         jip_enum_types += [ tp ]
     # split for parallel compilation
     if self.nblocks:
-      total = len (jip_enum_types) + len (jip_class_types) * 2 # *2 for Impl types
+      total = len (jip_enum_types) + len (jip_class_types)
       nblocktypes = max (1, (total + self.nblocks - 1) / self.nblocks)
     else:
       nblocktypes = 9e99
@@ -155,13 +155,11 @@ class Generator:
         # output non-empty binding
         if b:
           s += '  jsonipc__%s\n' % ident (cxxclass) + b + '  ;\n'
+    # close BLOCK_TYPES blocks
+    if nblocktypes < 9e99:
+      s += '#endif\n'
     # Registration of conventional Impl types
     for tp in []: # for tp in jip_class_types:
-      if typecount >= nblocktypes:
-        s += '#endif\n#if BLOCK_TYPES == %d\n' % nthblock
-        nthblock += 1
-        typecount = 0
-      typecount += 1
       if tp.storage == Decls.INTERFACE:
         cxxiface, cxximpl, jsclass = get_cxxiface (tp), get_cxximpl (tp), get_jsclass (tp)
         jsclass_ = 'Object_' if jsclass == 'Object' else jsclass # work around Javascript nameclash
@@ -169,8 +167,6 @@ class Generator:
         s += '  jsonipc__%s\n' % ident (cxximpl)
         s += '    .inherit<%s>()\n' % cxxiface
         s += '  ;\n'
-    if nblocktypes < 9e99:
-      s += '#endif\n'
     s += '}\n'
     return s
 
