@@ -158,15 +158,12 @@ class Generator:
     # close BLOCK_TYPES blocks
     if nblocktypes < 9e99:
       s += '#endif\n'
-    # Registration of conventional Impl types
-    for tp in []: # for tp in jip_class_types:
+    # Show registration of conventional Impl types
+    for tp in jip_class_types:
       if tp.storage == Decls.INTERFACE:
         cxxiface, cxximpl, jsclass = get_cxxiface (tp), get_cxximpl (tp), get_jsclass (tp)
         jsclass_ = 'Object_' if jsclass == 'Object' else jsclass # work around Javascript nameclash
-        s += '  Jsonipc::Class<%s> jsonipc__%s ("%s");\n' % (cxximpl, ident (cxximpl), jsclass_)
-        s += '  jsonipc__%s\n' % ident (cxximpl)
-        s += '    .inherit<%s>()\n' % cxxiface
-        s += '  ;\n'
+        s += '  // Jsonipc::Class<%s> ("%s").inherit<%s>();\n' % (cxximpl, jsclass_, cxxiface)
     s += '}\n'
     return s
 
