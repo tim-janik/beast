@@ -135,7 +135,7 @@ list_audio_device_types();
 
 function observable_device_data () {
   const data = {
-    procs:	  { default: [],	 notify: n => this.combo_.on ("notify:devices", n),
+    procs:	  { default: [],	 notify: n => this.combo_.on ("sub", n), // sub:insert sub:remove
 		    getter: async c => Object.freeze (await this.combo_.list_processors()), },
     devicetypes:  { getter: c => list_audio_device_types(), },
   };
