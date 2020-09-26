@@ -349,9 +349,9 @@ public:
   // MT-Safe accessors
   static double param_peek_mt     (const ProcessorP proc, Id32 paramid);
   static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
-  static bool   has_notifies_mt   ();
-  static void   call_notifies_mt  ();
 private:
+  static bool   has_notifies_e    ();
+  static void   call_notifies_e   ();
   void          enqueue_notify_mt (uint32 pushmask);
   std::atomic<Processor*> nqueue_next_ { nullptr }; ///< No notifications queued while == nullptr
   ProcessorP              nqueue_guard_;            ///< Only used while nqueue_next_ != nullptr
@@ -372,14 +372,16 @@ class Engine {
   const double       inyquist_; ///< Inverse Nyquist frequency, i.e. 1.0 / nyquist_;
   const uint         sample_rate_; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
   uint64_t           frame_counter_;
-  std::atomic<uint>  flags_;
+  std::atomic<uint32> eflags_;
+  enum { RESCHEDULE = 1 << 0, WOKEN = 1 << 1, };
   uint               scheduler_depth_;
   std::vector<Processor*> schedule_;
   std::vector<ProcessorP> roots_;
   std::mutex              mutex_;
+  std::function<void()>   wakeup_;
 public:
   const AudioTiming &timing;
-  explicit      Engine           (uint32 samplerate, AudioTiming &atiming);
+  explicit      Engine           (uint32 samplerate, AudioTiming &atiming, std::function<void()> wakeup);
   uint          sample_rate      () const BSE_CONST      { return sample_rate_; }
   double        nyquist          () const BSE_CONST      { return nyquist_; }
   double        inyquist         () const BSE_CONST      { return inyquist_; }
@@ -391,6 +393,9 @@ public:
   void          reschedule       ();
   void          make_schedule    ();
   void          render_block     ();
+  bool          ipc_pending      ();
+  void          ipc_dispatch     ();
+  void          ipc_wakeup_mt    ();
 };
 
 /// Aggregate structure for input/output buffer state and values in Processor::render().

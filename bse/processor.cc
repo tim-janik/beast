@@ -1311,8 +1311,9 @@ Processor::enqueue_notify_mt (uint32 pushmask)
 }
 
 void
-Processor::call_notifies_mt ()
+Processor::call_notifies_e ()
 {
+  assert_return (this_thread_is_bse());
   Processor *head = notifies_head.exchange (notifies_tail);
   while (head != notifies_tail)
     {
@@ -1341,7 +1342,7 @@ Processor::call_notifies_mt ()
 }
 
 bool
-Processor::has_notifies_mt ()
+Processor::has_notifies_e ()
 {
   return notifies_head != notifies_tail;
 }
@@ -1384,7 +1385,7 @@ void
 Processor::registry_init()
 {
   static AudioTiming audio_timing { 120, 1024 * 1024 };
-  static Engine regengine (48000, audio_timing); // used only for registration
+  static Engine regengine (48000, audio_timing, []() {}); // used only for registration
   while (processor_registry_entries)
     {
       std::lock_guard<std::recursive_mutex> rlocker (processor_registry_mutex);
@@ -1419,6 +1420,8 @@ Processor::registry_init()
           // unlisted entries are left dangling for registry_create(RegistryId,std::any)
         }
     }
+  while (regengine.ipc_pending())
+    regengine.ipc_dispatch(); // empty any work queues
 }
 
 /// Create a new Processor object of the type specified by `uuiduri`.

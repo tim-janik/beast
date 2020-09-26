@@ -349,19 +349,17 @@ Chain::list_processors_mt () const
 }
 
 // == Engine ==
-enum {
-  RESCHEDULE = 1,
-};
-Engine::Engine (uint32 samplerate, AudioTiming &atiming) :
+Engine::Engine (uint32 samplerate, AudioTiming &atiming, std::function<void()> wakeup) :
   nyquist_ (samplerate * 0.5), inyquist_ (1.0 / nyquist_), sample_rate_ (samplerate),
-  frame_counter_ (MAX_RENDER_BLOCK_SIZE), flags_ (0), scheduler_depth_ (0),
-  timing { atiming }
+  frame_counter_ (MAX_RENDER_BLOCK_SIZE), eflags_ (0), scheduler_depth_ (0),
+  wakeup_ (wakeup), timing { atiming }
 {
   assert_return (samplerate > 0);
   assert_return (nyquist_ > 0 && nyquist_ == (samplerate >> 1));
   assert_return (0 == (samplerate & 3));
   schedule_.reserve (256);
   reschedule();
+  assert_return (wakeup_ != nullptr);
 }
 
 void
@@ -390,7 +388,7 @@ Engine::del_root (ProcessorP rootproc)
 void
 Engine::reschedule()
 {
-  flags_ |= RESCHEDULE;
+  eflags_ |= RESCHEDULE;
 }
 
 bool
@@ -407,11 +405,11 @@ void
 Engine::make_schedule ()
 {
   assert_return (scheduler_depth_ == 0);
-  return_unless (flags_ & RESCHEDULE);
+  return_unless (eflags_ & RESCHEDULE);
   std::lock_guard<std::mutex> locker (mutex_);
-  if (0 == (flags_ & RESCHEDULE))
+  if (0 == (eflags_ & RESCHEDULE))
     return;
-  flags_ &= ~uint (RESCHEDULE);
+  eflags_ &= ~uint (RESCHEDULE);
   schedule_.clear();
   scheduler_depth_ += 1;
   for (auto root : roots_)
@@ -437,7 +435,7 @@ Engine::enqueue (Processor &proc)
 void
 Engine::render_block()
 {
-  assert_return (!(flags_ & RESCHEDULE));
+  assert_return (!(eflags_ & RESCHEDULE));
   frame_counter_ += MAX_RENDER_BLOCK_SIZE;
   for (auto procp : schedule_)
     procp->render_block();
@@ -449,6 +447,28 @@ Engine::render_block()
      - per level, 3: process node itself, return
      - experiment: *also* maintain linear schedule_, have unused workers race over schedule_ concurrently
    */
+}
+
+bool
+Engine::ipc_pending ()
+{
+  eflags_ &= ~uint32 (WOKEN);
+  return Processor::has_notifies_e();
+}
+
+void
+Engine::ipc_dispatch ()
+{
+  eflags_ &= ~uint32 (WOKEN);
+  Processor::call_notifies_e();
+}
+
+void
+Engine::ipc_wakeup_mt ()
+{
+  const uint32 prev_flags = eflags_.fetch_or (WOKEN);
+  if (!(prev_flags & WOKEN))
+    wakeup_();
 }
 
 } // AudioSignal
