@@ -60,7 +60,7 @@ engine_prepare (GSource *source, gint *timeout_p)
     }
   *timeout_p = psource->loop.timeout;
   BSE_THREADS_LEAVE ();
-  return need_dispatch;
+  return need_dispatch || BSE_SERVER.engine_ipc_pending();
 }
 
 static gboolean
@@ -73,7 +73,7 @@ engine_check (GSource *source)
   psource->loop.revents_filled = TRUE;
   const bool need_dispatch = bse_engine_check (&psource->loop);
   BSE_THREADS_LEAVE ();
-  return need_dispatch;
+  return need_dispatch || BSE_SERVER.engine_ipc_pending();
 }
 
 static gboolean
@@ -82,6 +82,7 @@ engine_dispatch (GSource *source, GSourceFunc callback, void *user_data)
   BSE_THREADS_ENTER ();
   // invokes bse_engine_user_thread_collect();
   bse_engine_dispatch ();
+  BSE_SERVER.engine_ipc_dispatch();
   BSE_THREADS_LEAVE ();
   return true;
 }

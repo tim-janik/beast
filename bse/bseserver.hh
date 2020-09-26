@@ -63,6 +63,8 @@ protected:
   virtual             ~ServerImpl            ();
 public:
   AudioSignal::Engine& global_engine         ();
+  bool                 engine_ipc_pending    ();
+  void                 engine_ipc_dispatch   ();
   void                 enginechange          (bool active);
   void                 shutdown_             ();
   SharedBlock          allocate_shared_block (int64 length);
