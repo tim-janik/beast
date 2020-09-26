@@ -205,7 +205,12 @@ protected:
   using ProcessorInfo = AudioSignal::ProcessorInfo;
   using MinMax = std::pair<double,double>;
 #endif
-  enum { INITIALIZED = 1, };
+  enum { INITIALIZED   = 1 << 0,
+         PARAMCHANGE   = 1 << 3,
+         BUSCONNECT    = 1 << 4,
+         BUSDISCONNECT = 1 << 5,
+         INSERTION     = 1 << 6,
+         REMOVAL       = 1 << 7, };
   std::atomic<uint32>      flags_ = 0;
 private:
   uint32                   output_offset_ = 0;
@@ -347,10 +352,11 @@ public:
   static bool   has_notifies_mt   ();
   static void   call_notifies_mt  ();
 private:
-  void          enqueue_notify_mt ();
+  void          enqueue_notify_mt (uint32 pushmask);
   std::atomic<Processor*> nqueue_next_ { nullptr }; ///< No notifications queued while == nullptr
   ProcessorP              nqueue_guard_;            ///< Only used while nqueue_next_ != nullptr
   std::weak_ptr<Bse::ProcessorImpl> bproc_;
+  static constexpr uint32 NOTIFYMASK = PARAMCHANGE | BUSCONNECT | BUSDISCONNECT | INSERTION | REMOVAL;
   static __thread uint64  tls_timestamp;
 };
 

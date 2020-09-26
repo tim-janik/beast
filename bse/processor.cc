@@ -1291,9 +1291,12 @@ static Processor        *const notifies_tail = (Processor*) ptrdiff_t (-1);
 static std::atomic<Processor*> notifies_head { notifies_tail };
 
 void
-Processor::enqueue_notify_mt ()
+Processor::enqueue_notify_mt (uint32 pushmask)
 {
-  assert_return (notifies_head != nullptr);
+  return_unless (!bproc_.expired());            // need a means to report notifications
+  assert_return (notifies_head != nullptr);     // paranoid
+  const uint32 prev = flags_.fetch_or (pushmask & NOTIFYMASK);
+  return_unless (prev != (prev | pushmask));    // nothing new
   Processor *expected = nullptr;
   if (nqueue_next_.compare_exchange_strong (expected, notifies_tail))
     {
@@ -1317,10 +1320,21 @@ Processor::call_notifies_mt ()
       ProcessorP procp = std::exchange (current->nqueue_guard_, nullptr);
       Processor *old_nqueue_next = current->nqueue_next_.exchange (nullptr);
       assert_warn (old_nqueue_next != nullptr);
+      const uint32 nflags = NOTIFYMASK & current->flags_.fetch_and (~NOTIFYMASK);
       Bse::ProcessorImplP bprocp = !procp ? nullptr : procp->bproc_.lock();
-      // FIXME: pop flags
       if (bprocp)
-        bprocp->notify ("change");
+        {
+          if (nflags & BUSCONNECT)
+            bprocp->emit_event ("bus:connect");
+          if (nflags & BUSDISCONNECT)
+            bprocp->emit_event ("bus:disconnect");
+          if (nflags & INSERTION)
+            bprocp->emit_event ("sub:insert");
+          if (nflags & REMOVAL)
+            bprocp->emit_event ("sub:remove");
+          if (nflags & PARAMCHANGE)
+            bprocp->emit_event ("notify:paramchange"); // FIXME
+        }
       else
         assert_warn (procp != nullptr);
     }
