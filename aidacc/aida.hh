@@ -643,7 +643,7 @@ protected:
   virtual                    ~ImplicitBase        () = 0; // abstract class
 public:
   using PropertyAccessorPred = std::function<bool (const PropertyAccessor&)>;
-  virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
+  virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred &pred);
   uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID
   bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
   void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__

@@ -926,6 +926,12 @@ ImplicitBase::~ImplicitBase()
     locker.unlock();
 }
 
+bool
+ImplicitBase::__access__ (const std::string &propertyname, const PropertyAccessorPred &pred)
+{
+  return false;
+}
+
 static uint64 implicit_base_event_handler_next_id = 0xe000000 + 1; // see: BSE_STARTID_EVENT_HANDLER
 
 /// Attach an event @a handler function to a specific event @a type.

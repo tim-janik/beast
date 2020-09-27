@@ -464,28 +464,30 @@ class Generator:
     assert self.gen_mode == G4SERVANT
     s = ''
     virtual = 'virtual '
-    s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;\n' % (virtual + 'bool')
+    if len (tp.fields) > 0:
+      s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;\n' % (virtual + 'bool')
     return s
   def generate_server_class_any_method_impls (self, tp):
     assert self.gen_mode == G4SERVANT
     s, classH = '', self.C (tp)
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
     # __access__
-    s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessorPred &__p)\n{\n' % classH
-    a  = '  const bool __all = __n.empty();\n'
-    for fname, ftype in tp.fields:
-      if a:
-        s, a = s + a, ''
-      faux = self.generate_aux_data_string (ftype, fname)
-      s += '  const char *const __aux__%s =\n    %s;\n' % (fname, faux.strip().replace ('\n', '\n  '))
-      ctype = self.C (ftype) # self.type2cpp_relative (ftype)
-      s += '  if ((__all || __n == "%s") &&\n      __p (' % fname
-      s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, __aux__%s)' % (classH, ctype, fname, classH, fname, classH, fname, fname)
-      s += '))\n    return true;\n'
-    for atp in reduced_immediate_ancestors:
-      s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
-    s += '  return false;\n'
-    s += '}\n'
+    if len (tp.fields) > 0:
+      s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessorPred &__p)\n{\n' % classH
+      a  = '  const bool __all = __n.empty();\n'
+      for fname, ftype in tp.fields:
+        if a:
+          s, a = s + a, ''
+        faux = self.generate_aux_data_string (ftype, fname)
+        s += '  const char *const __aux__%s =\n    %s;\n' % (fname, faux.strip().replace ('\n', '\n  '))
+        ctype = self.C (ftype) # self.type2cpp_relative (ftype)
+        s += '  if ((__all || __n == "%s") &&\n      __p (' % fname
+        s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, __aux__%s)' % (classH, ctype, fname, classH, fname, classH, fname, fname)
+        s += '))\n    return true;\n'
+      for atp in reduced_immediate_ancestors:
+        s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
+      s += '  return false;\n'
+      s += '}\n'
     return s
   def generate_server_class_methods (self, tp):
     assert self.gen_mode == G4SERVANT
