@@ -2,10 +2,10 @@
 
 <docs>
   # B-DEVICEEDITOR
-  Editor for editing of modules.
+  Editor for audio signal processor devices.
   ## Props:
   *device*
-  : Container for the modules.
+  : Audio signal processor device.
 </docs>
 
 <style lang="scss">
@@ -36,10 +36,6 @@
       <b-pro-group v-for="group in gprops" :key="group.name" :style="group_style (group)"
 		   :name="group.name" :props="group.props" />
     </b-grid>
-    <b-vflex v-for="module in modules" :key="module.$id"
-	     class="b-deviceeditor-entry" center style="margin: 5px" >
-      <span > Module {{ module.$id }} </span>
-    </b-vflex>
     <b-contextmenu ref="cmenu" @click="menuactivation" >
       <b-menutitle> Module </b-menutitle>
       <b-menuitem fa="plus-circle"      uri="add-module" >      Add Module		</b-menuitem>
@@ -224,11 +220,9 @@ async function property_groups (asyncpropertylist) {
 
 function observable_device_data () {
   const data = {
-    modules:	{ default: [],  	notify: n => this.device.on ("notify:modules", n),
-		  getter: async c => Object.freeze (await this.device.list_modules()), },
     gprops:     { default: [], getter: async c => property_groups (this.device.access_properties ("")), },
     device_info: { default: "",		notify: n => this.device.on ("notify:device_info", n),
-		  getter: async c => Object.freeze (await this.device.device_info()), },
+		  getter: async c => Object.freeze (await this.device.processor_info()), },
   };
   return this.observable_from_getters (data, () => this.device);
 }
@@ -236,7 +230,7 @@ function observable_device_data () {
 export default {
   name: 'b-deviceeditor',
   props: {
-    device: { type: Bse.Device, },
+    device: { type: Bse.ProcessorIface, },
   },
   data() { return observable_device_data.call (this); },
   methods: {
@@ -261,11 +255,9 @@ export default {
     menuactivation (uri) {
       // close popup to remove focus guards
       this.$refs.cmenu.close();
-      if (uri == 'add-module')
-	this.device.create_module ('Dummy');
+      debug ("deviceeditor.vue: menuactivation:", uri);
     },
     menucheck (uri, component) {
-      console.log ("deviceeditor.vue", this.device);
       if (!this.device)
 	return false;
       switch (uri)
