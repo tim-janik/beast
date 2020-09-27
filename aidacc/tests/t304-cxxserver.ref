@@ -226,7 +226,6 @@ protected:
   explicit                              FirstInterfaceIface ();
   virtual  /*dtor*/                    ~FirstInterfaceIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          void_func           () = 0;
 };
 
@@ -521,7 +520,6 @@ protected:
   explicit                              ParentIface ();
   virtual  /*dtor*/                    ~ParentIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class ChildIface;
@@ -534,7 +532,6 @@ protected:
   explicit                              ChildIface ();
   virtual  /*dtor*/                    ~ChildIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class DescendantIface;
@@ -547,7 +544,6 @@ protected:
   explicit                              DescendantIface ();
   virtual  /*dtor*/                    ~DescendantIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class GrandChildIface;
@@ -560,7 +556,6 @@ protected:
   explicit                              GrandChildIface ();
   virtual  /*dtor*/                    ~GrandChildIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class QuickRecord
@@ -598,7 +593,6 @@ protected:
   explicit                              QuickIfaceIface ();
   virtual  /*dtor*/                    ~QuickIfaceIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          simple_function (int i = 9) = 0;
 };
 
@@ -612,7 +606,6 @@ protected:
   explicit                              MethodTestInterfaceIface ();
   virtual  /*dtor*/                    ~MethodTestInterfaceIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          method_with_void         () = 0;
   virtual bool                          method_with_bools        (bool input,
                                                                   bool optval = 0) = 0;
@@ -648,7 +641,6 @@ protected:
   explicit                              SignalTestInterfaceIface ();
   virtual  /*dtor*/                    ~SignalTestInterfaceIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class ChildInheritingSignalsIface;
@@ -661,7 +653,6 @@ protected:
   explicit                              ChildInheritingSignalsIface ();
   virtual  /*dtor*/                    ~ChildInheritingSignalsIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class AnotherChildIface;
@@ -674,7 +665,6 @@ protected:
   explicit                              AnotherChildIface ();
   virtual  /*dtor*/                    ~AnotherChildIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class PropertyTesterIface;
@@ -725,7 +715,6 @@ protected:
   explicit                              UseIncludesIface ();
   virtual  /*dtor*/                    ~UseIncludesIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class ButtonAreaIface;
@@ -760,7 +749,6 @@ protected:
   explicit                              PureMethodsIface ();
   virtual  /*dtor*/                    ~PureMethodsIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual int                           pure_method      (double f) = 0;
 };
 } // RapicornAidaTest
@@ -777,7 +765,6 @@ protected:
   explicit                              NameTestsIface ();
   virtual  /*dtor*/                    ~NameTestsIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
                                                                    const OtherNamespace::SomeRecord &sr) = 0;
@@ -830,7 +817,6 @@ protected:
   explicit                              SoundModuleIface ();
   virtual  /*dtor*/                    ~SoundModuleIface () override = 0;
 public:
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 } // BseTest
 
@@ -1281,11 +1267,6 @@ FirstInterfaceIface::FirstInterfaceIface ()
 {}
 FirstInterfaceIface::~FirstInterfaceIface ()
 {} // define empty dtor to emit vtable
-bool
-FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooRecord_ = {
   "typename=MandatoryNamespace.XFooRecord\0"
   "type=RECORD\0"
@@ -1653,44 +1634,21 @@ ParentIface::ParentIface ()
 {}
 ParentIface::~ParentIface ()
 {} // define empty dtor to emit vtable
-bool
-ParentIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 ChildIface::ChildIface ()
 {}
 ChildIface::~ChildIface ()
 {} // define empty dtor to emit vtable
-bool
-ChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->ParentIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 DescendantIface::DescendantIface ()
 {}
 DescendantIface::~DescendantIface ()
 {} // define empty dtor to emit vtable
-bool
-DescendantIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->ChildIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 GrandChildIface::GrandChildIface ()
 {}
 GrandChildIface::~GrandChildIface ()
 {} // define empty dtor to emit vtable
-bool
-GrandChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->DescendantIface::__access__ (__n, __p)) return true;
-  return false;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickRecord_ = {
   "typename=InterfaceTests.QuickRecord\0"
   "type=RECORD\0"
@@ -1728,53 +1686,26 @@ QuickIfaceIface::QuickIfaceIface ()
 {}
 QuickIfaceIface::~QuickIfaceIface ()
 {} // define empty dtor to emit vtable
-bool
-QuickIfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 MethodTestInterfaceIface::MethodTestInterfaceIface ()
 {}
 MethodTestInterfaceIface::~MethodTestInterfaceIface ()
 {} // define empty dtor to emit vtable
-bool
-MethodTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 SignalTestInterfaceIface::SignalTestInterfaceIface ()
 {}
 SignalTestInterfaceIface::~SignalTestInterfaceIface ()
 {} // define empty dtor to emit vtable
-bool
-SignalTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 ChildInheritingSignalsIface::ChildInheritingSignalsIface ()
 {}
 ChildInheritingSignalsIface::~ChildInheritingSignalsIface ()
 {} // define empty dtor to emit vtable
-bool
-ChildInheritingSignalsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 AnotherChildIface::AnotherChildIface ()
 {}
 AnotherChildIface::~AnotherChildIface ()
 {} // define empty dtor to emit vtable
-bool
-AnotherChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 PropertyTesterIface::PropertyTesterIface ()
 {}
@@ -1849,12 +1780,6 @@ UseIncludesIface::UseIncludesIface ()
 {}
 UseIncludesIface::~UseIncludesIface ()
 {} // define empty dtor to emit vtable
-bool
-UseIncludesIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->IncludeCheck::SomeInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 ButtonAreaIface::ButtonAreaIface ()
 {}
@@ -1891,11 +1816,6 @@ PureMethodsIface::PureMethodsIface ()
 {}
 PureMethodsIface::~PureMethodsIface ()
 {} // define empty dtor to emit vtable
-bool
-PureMethodsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 } // RapicornAidaTest
 
 namespace Other {
@@ -1904,11 +1824,6 @@ NameTestsIface::NameTestsIface ()
 {}
 NameTestsIface::~NameTestsIface ()
 {} // define empty dtor to emit vtable
-bool
-NameTestsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 } // Other
 
 namespace BseTest {
@@ -1973,11 +1888,6 @@ SoundModuleIface::SoundModuleIface ()
 {}
 SoundModuleIface::~SoundModuleIface ()
 {} // define empty dtor to emit vtable
-bool
-SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 } // BseTest
 
 
