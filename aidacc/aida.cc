@@ -1831,14 +1831,6 @@ EventDispatcher::emit (const Event &event)
     o_->emit (event);
 }
 
-// == CallableIface ==
-std::string
-CallableIface::__typename__ () const
-{
-  const StringVector &types = __typelist_mt__();
-  return types.empty() ? "" : types[0];
-}
-
 // == PropertyAccessor ==
 PropertyAccessor::~PropertyAccessor()
 {}

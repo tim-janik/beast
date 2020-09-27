@@ -316,12 +316,6 @@ class CallableIface : public virtual SharedFromThis<CallableIface> {
 public:
   /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
   virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
-  /// Retrieve the IDL type names of an instance, save to be called multi-threaded.
-  virtual StringVector         __typelist_mt__          () const = 0;
-  /// Retrieve the IDL type name of an instance.
-  std::string                  __typename__             () const;
-  /// Retrieve the IDL type names of an instance, wrapper for __typelist_mt__().
-  StringVector                 __typelist__             () const        { return __typelist_mt__(); }
 };
 
 // == IntrospectionRegistry ==
