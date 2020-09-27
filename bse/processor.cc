@@ -922,6 +922,8 @@ Processor::disconnect_event_input()
       estreams_->oproc = nullptr;
       engine_.reschedule();
       assert_return (backlink == true);
+      enqueue_notify_mt (BUSDISCONNECT);
+      oproc.enqueue_notify_mt (BUSDISCONNECT);
     }
 }
 
@@ -937,6 +939,8 @@ Processor::connect_event_input (Processor &oproc)
   // register backlink
   oproc.outputs_.push_back ({ this, EventStreams::EVENT_ISTREAM });
   engine_.reschedule();
+  enqueue_notify_mt (BUSCONNECT);
+  oproc.enqueue_notify_mt (BUSCONNECT);
 }
 
 /// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
@@ -1135,6 +1139,8 @@ Processor::disconnect (IBusId ibusid)
   ibus.obusid = {};
   engine_.reschedule();
   assert_return (backlink == true);
+  enqueue_notify_mt (BUSDISCONNECT);
+  oproc.enqueue_notify_mt (BUSDISCONNECT);
 }
 
 /// Connect input `ibusid` to output `obusid` of Processor `prev`.
@@ -1161,6 +1167,8 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   obus.fbuffer_concounter += 1; // conection counter
   oproc.outputs_.push_back ({ this, ibusid });
   engine_.reschedule();
+  enqueue_notify_mt (BUSCONNECT);
+  oproc.enqueue_notify_mt (BUSCONNECT);
 }
 
 /// Ensure `Processor::initialize()` has been called, so the parameters are fixed.

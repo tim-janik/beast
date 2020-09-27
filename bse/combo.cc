@@ -244,6 +244,7 @@ Chain::remove (Processor &proc)
   pm_disconnect_obuses (*processorp);
   // fixup following connections
   reconnect (pos);
+  enqueue_notify_mt (REMOVAL);
   return true;
 }
 
@@ -262,6 +263,7 @@ Chain::insert (ProcessorP proc, size_t pos)
   // fixup following connections
   reconnect (index);
   engine_.reschedule();
+  enqueue_notify_mt (INSERTION);
 }
 
 /// Reconnect Chain processors at start and after.
