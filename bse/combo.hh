@@ -28,6 +28,7 @@ protected:
   uint       chain_up         (Processor &pfirst, Processor &psecond);
   void       reconnect        (size_t start);
   void       enqueue_children () override;
+  ProcessorImplP processor_interface () const override;
 public:
   explicit   Chain            (SpeakerArrangement iobuses = SpeakerArrangement::STEREO);
   virtual    ~Chain           ();
@@ -45,10 +46,13 @@ using ChainP = std::shared_ptr<Chain>;
 } // AudioSignal
 
 // == ComboImpl ==
-class ComboImpl : public NotifierImpl, public virtual ComboIface {
+class ComboImpl : public ProcessorImpl, public virtual ComboIface {
   std::shared_ptr<AudioSignal::Chain> combo_;
+protected:
+  Aida::StringVector __typelist_mt__ () const override  { return ProcessorImpl::__typelist_mt__();} // TODO: remove
+  bool __access__ (const std::string &n, const PropertyAccessorPred &p) override { return ProcessorImpl::__access__ (n, p);} // TODO: remove
 public:
-  explicit        ComboImpl               (AudioSignal::ChainP combop);
+  explicit        ComboImpl               (AudioSignal::Chain &combo);
   ProcessorSeq    list_processors         () override;
   bool            remove_processor        (ProcessorIface &sub) override;
   ProcessorIfaceP create_processor        (const std::string &uuiduri) override;

@@ -391,10 +391,30 @@ Processor::~Processor ()
   remove_all_buses();
 }
 
+/// Create the `Bse::ProcessorIface` for `this`.
+ProcessorImplP
+Processor::processor_interface () const
+{
+  return std::make_shared<Bse::ProcessorImpl> (*const_cast<Processor*> (this));
+}
+
+/// Gain access to `this` through the `Bse::ProcessorIface` interface.
 Bse::ProcessorImplP
 Processor::access_processor () const
 {
-  return weak_ptr_fetch_or_create (const_cast<Processor*> (this)->bproc_, *const_cast<Processor*> (this));
+  std::weak_ptr<Bse::ProcessorImpl> &wptr = const_cast<Processor*> (this)->bproc_;
+  ProcessorImplP bprocp = wptr.lock();
+  return_unless (!bprocp, bprocp);
+  ProcessorImplP nprocp = processor_interface();
+  assert_return (nprocp != nullptr, nullptr);
+  { // C++20 has: std::atomic<std::weak_ptr<C>>::compare_exchange
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> locker (mutex);
+    bprocp = wptr.lock();
+    if (!bprocp)
+      wptr = bprocp = nprocp;
+  }
+  return bprocp;
 }
 
 const Processor::FloatBuffer&
@@ -1330,7 +1350,8 @@ Processor::call_notifies_e ()
       Processor *old_nqueue_next = current->nqueue_next_.exchange (nullptr);
       assert_warn (old_nqueue_next != nullptr);
       const uint32 nflags = NOTIFYMASK & current->flags_.fetch_and (~NOTIFYMASK);
-      Bse::ProcessorImplP bprocp = !procp ? nullptr : procp->bproc_.lock();
+      assert_warn (procp != nullptr);
+      Bse::ProcessorImplP bprocp = current->bproc_.lock();
       if (bprocp)
         {
           if (nflags & BUSCONNECT)
@@ -1344,8 +1365,6 @@ Processor::call_notifies_e ()
           if (nflags & PARAMCHANGE)
             bprocp->emit_event ("notify:paramchange"); // FIXME
         }
-      else
-        assert_warn (procp != nullptr);
     }
 }
 
@@ -1697,9 +1716,7 @@ ProcessorImpl::audio_signal_processor () const
 Bse::ComboIfaceP
 ProcessorImpl::access_combo ()
 {
-  AudioSignal::ChainP combop = std::dynamic_pointer_cast<AudioSignal::Chain> (proc_);
-  return_unless (combop, nullptr);
-  return weak_ptr_fetch_or_create (bcombo_, combop);
+  return std::dynamic_pointer_cast<Bse::ComboIface> (shared_from_this());
 }
 
 } // Bse

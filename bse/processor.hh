@@ -244,6 +244,8 @@ protected:
   virtual void  initialize        ();
   virtual void  configure         (uint n_ibuses, const SpeakerArrangement *ibuses,
                                    uint n_obuses, const SpeakerArrangement *obuses) = 0;
+  void          enqueue_notify_mt (uint32 pushmask);
+  virtual ProcessorImplP processor_interface () const;
   // Parameters
   virtual void  adjust_param      (Id32 tag) {}
   virtual void  enqueue_children  () {}
@@ -352,7 +354,6 @@ public:
 private:
   static bool   has_notifies_e    ();
   static void   call_notifies_e   ();
-  void          enqueue_notify_mt (uint32 pushmask);
   std::atomic<Processor*> nqueue_next_ { nullptr }; ///< No notifications queued while == nullptr
   ProcessorP              nqueue_guard_;            ///< Only used while nqueue_next_ != nullptr
   std::weak_ptr<Bse::ProcessorImpl> bproc_;
@@ -703,7 +704,6 @@ enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
 
 class ProcessorImpl : public NotifierImpl, public virtual ProcessorIface {
   std::shared_ptr<AudioSignal::Processor> proc_;
-  std::weak_ptr<Bse::ComboImpl> bcombo_;
 public:
   explicit       ProcessorImpl     (AudioSignal::Processor &proc);
   DeviceInfo     processor_info    () override;

@@ -350,6 +350,13 @@ Chain::list_processors_mt () const
   return processors_mt_; // copy with guard
 }
 
+/// Create the `Bse::ComboIface` for `this`.
+Bse::ProcessorImplP
+Chain::processor_interface () const
+{
+  return std::make_shared<Bse::ComboImpl> (*const_cast<Chain*> (this));
+}
+
 // == Engine ==
 Engine::Engine (uint32 samplerate, AudioTiming &atiming, std::function<void()> wakeup) :
   nyquist_ (samplerate * 0.5), inyquist_ (1.0 / nyquist_), sample_rate_ (samplerate),
@@ -476,10 +483,11 @@ Engine::ipc_wakeup_mt ()
 } // AudioSignal
 
 // == ComboImpl ==
-ComboImpl::ComboImpl (AudioSignal::ChainP combop) :
-  combo_ (combop)
+ComboImpl::ComboImpl (AudioSignal::Chain &combo) :
+  ProcessorImpl (combo)
 {
-  assert_return (combop != nullptr);
+  combo_ = std::dynamic_pointer_cast<AudioSignal::Chain> (combo.shared_from_this());
+  assert_return (combo_ != nullptr);
 }
 
 DeviceInfoSeq
