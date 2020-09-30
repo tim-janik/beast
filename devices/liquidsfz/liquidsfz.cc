@@ -76,10 +76,10 @@ class LiquidSFZ : public AudioSignal::Processor {
         switch (ev.message())
           {
           case Message::NOTE_OFF:
-            synth_.add_event_note_off (time_stamp, ev.channel, ev.pitch);
+            synth_.add_event_note_off (time_stamp, ev.channel, ev.key);
             break;
           case Message::NOTE_ON:
-            synth_.add_event_note_on (time_stamp, ev.channel, ev.pitch, std::clamp (bse_ftoi (ev.velocity * 127), 0, 127));
+            synth_.add_event_note_on (time_stamp, ev.channel, ev.key, std::clamp (bse_ftoi (ev.velocity * 127), 0, 127));
             break;
           case Message::ALL_NOTES_OFF:
             // TODO: not available in liquidsfz API at the moment
