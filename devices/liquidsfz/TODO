@@ -1,0 +1,1 @@
+- reset is not being called after stop, so notes hang (this is a beast bug, not a device bug)
