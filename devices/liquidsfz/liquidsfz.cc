@@ -50,7 +50,7 @@ class LiquidSFZ : public AudioSignal::Processor {
   void
   reset () override
   {
-    // TODO: reset is not available in liquidsfz API at the moment
+    synth_.system_reset();
 
     adjust_params (true);
   }
@@ -82,7 +82,8 @@ class LiquidSFZ : public AudioSignal::Processor {
             synth_.add_event_note_on (time_stamp, ev.channel, ev.key, std::clamp (bse_ftoi (ev.velocity * 127), 0, 127));
             break;
           case Message::ALL_NOTES_OFF:
-            // TODO: not available in liquidsfz API at the moment
+          case Message::ALL_SOUND_OFF:
+            synth_.all_sound_off();    // NOTE: there is no extra "all notes off" in liquidsfz
             break;
           default: ;
           }
