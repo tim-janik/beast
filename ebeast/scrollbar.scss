@@ -71,10 +71,10 @@ $scrollbar-shadow-rgba:		rgba(0, 0, 0, 0.25);
   border-radius: 999px;
   &:hover { background-color: $scrollbar-handle-bright; }
 }
-::-webkit-scrollbar-button:vertical:decrement   { background-image: url(tri-n.png); }
-::-webkit-scrollbar-button:horizontal:increment { background-image: url(tri-e.png); }
-::-webkit-scrollbar-button:vertical:increment   { background-image: url(tri-s.png); }
-::-webkit-scrollbar-button:horizontal:decrement { background-image: url(tri-w.png); }
+::-webkit-scrollbar-button:vertical:decrement   { background-image: url(/assets/tri-n.png); }
+::-webkit-scrollbar-button:horizontal:increment { background-image: url(/assets/tri-e.png); }
+::-webkit-scrollbar-button:vertical:increment   { background-image: url(/assets/tri-s.png); }
+::-webkit-scrollbar-button:horizontal:decrement { background-image: url(/assets/tri-w.png); }
 
 // See Makefile.mk for scrollbar-arrow image generation
 @supports (--makefile: rule) {
