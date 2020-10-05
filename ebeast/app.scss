@@ -68,7 +68,7 @@ button          		{ -webkit-appearance: normal; }
 
 // == Font-family "Inter" ==
 @font-face	{ font-family: 'Inter'; font-style: normal; font-weight: 500;
-		  src: url("Inter-Medium.woff2") format("woff2"); }
+		  src: url("/assets/Inter-Medium.woff2") format("woff2"); }
 @mixin inter-font-features() {
   font-feature-settings:
   "dlig" 1,     // Discretionary ligatures, e.g. !? -> interrobang
