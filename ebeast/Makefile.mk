@@ -36,6 +36,7 @@ app/assets.copies	::= $(strip	\
 	$>/app/assets/spinners.svg	\
 )
 ebeast/copy.tool.targets ::= $(strip	\
+	$>/ebeast/chromatic-sass2.js	\
 	$>/ebeast/vue.rollup.js		\
 	$>/ebeast/markdown-it.esm0.js	\
 	$>/ebeast/markdown-it.rollup.js	\

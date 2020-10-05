@@ -20,12 +20,11 @@ export default {
       // use node-sass, dart-sass has no support for { functions:... }
       style: { preprocessOptions: {
 	scss: {
-	  sass: require ('node-sass'),           // supports custom functions
 	  // https://github.com/sass/node-sass#options
 	  sourceMapEmbed: true,
-	  outputStyle: 'nested',                 // nested, expanded, compact, compressed
+	  outputStyle: 'expanded',
 	  sourceComments: false,
-	  functions: require ("chromatic-sass"), // provide node-sass color functions
+	  functions: require ("./chromatic-sass2"),
 	},
       }, },
       // data: { css: '/* globals... */', }, // increases line numbers in source maps
