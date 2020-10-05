@@ -3,11 +3,13 @@
 import vue from 'rollup-plugin-vue';		   // compile SFC.vue files
 import resolve from '@rollup/plugin-node-resolve'; // find vue-runtime-helpers/dist/normalize-component
 import scss from 'rollup-plugin-scss';		   // compile scss to css
+import path from 'path';
 
 export default {
   // https://rollupjs.org/guide/en/#big-list-of-options
   output: {
     sourcemap: 'inline',
+    sourcemapPathTransform: (relpath, mappath) => path.resolve (path.dirname (mappath), relpath),
     format: 'esm',
   },
   plugins: [
@@ -21,9 +23,10 @@ export default {
       style: { preprocessOptions: {
 	scss: {
 	  // https://github.com/sass/node-sass#options
-	  sourceMapEmbed: true,
 	  outputStyle: 'expanded',
-	  sourceComments: false,
+	  sourceMap: true,
+	  omitSourceMapUrl: false,
+	  sourceMapEmbed: true,
 	  functions: require ("./chromatic-sass2"),
 	},
       }, },
