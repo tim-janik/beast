@@ -6,26 +6,26 @@ import * as Bse from './bseapi_jsonipc.js';
 export * from './bseapi_jsonipc.js';
 // -------- Javascript BSE API (auto-generated) --------
 
-// == Object.on ==
-Bse.ObjectIface.prototype.on = function (eventselector, callback) {
+// == Notifier.on ==
+Bse.NotifierIface.prototype.on = function (eventselector, callback) {
   const connection = {
     active: true,
     promise: null,
     id: 0,
   };
-  const connect = async () => {
+  const BseNotifierIface_connect = async () => {
     connection.id = await Bse.$jsonipc.send ("Bse/EventHub/connect", [ this, eventselector ]);
     if (connection.id)
       {
-	const BseObjectIface_dispatchevent_ = function (...args) {
+	const BseNotifierIface_dispatchevent = function (...args) {
 	  if (connection.active)
 	    callback.call (this, ...args);
 	}; // this wrapper function needs an accurate name for backtraces
-	Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection.id ], BseObjectIface_dispatchevent_);
+	Bse.$jsonipc.observe ("Bse/EventHub/event", [ connection.id ], BseNotifierIface_dispatchevent);
       }
   };
-  connection.promise = connect();
-  const disconnect = async () => {
+  connection.promise = BseNotifierIface_connect();
+  const BseNotifierIface_disconnect = async () => {
     if (!connection.active)
       return;
     connection.active = false; // deactivate *before* first await
@@ -37,7 +37,7 @@ Bse.ObjectIface.prototype.on = function (eventselector, callback) {
       }
   };
   // after calling disconnect(), callback() is never executed
-  return disconnect;
+  return BseNotifierIface_disconnect;
 };
 
 // Connect and fetch Bse.server on startup

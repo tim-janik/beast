@@ -156,7 +156,7 @@ class Generator:
         if b:
           s += '  jsonipc__%s\n' % ident (cxxclass) + b + '  ;\n'
     # Registration of conventional Impl types
-    for tp in jip_class_types:
+    for tp in []: # for tp in jip_class_types:
       if typecount >= nblocktypes:
         s += '#endif\n#if BLOCK_TYPES == %d\n' % nthblock
         nthblock += 1
