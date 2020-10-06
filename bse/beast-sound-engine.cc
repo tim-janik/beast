@@ -345,12 +345,12 @@ class EventHub {
   static ssize_t new_id () { static ssize_t idgen = -1000000; return --idgen; }
   struct EventHandler {
     websocketpp::connection_hdl weak_hdl;       // connection weak_ptr
-    Bse::ObjectIfaceW           weak_obj;       // ObjectIface weak_ptr
+    Bse::NotifierIfaceW         weak_obj;       // NotifierIface weak_ptr
     Aida::IfaceEventConnection  event_con;      // internally weak_ptr
     const ssize_t               handler_id = 0;
     EventHandler (const EventHandler&) = delete;
     EventHandler& operator= (const EventHandler&) = delete;
-    EventHandler (ssize_t handlerid, Bse::ObjectIfaceW obj, websocketpp::connection_hdl chdl) :
+    EventHandler (ssize_t handlerid, Bse::NotifierIfaceW obj, websocketpp::connection_hdl chdl) :
       weak_hdl (chdl), weak_obj (obj), handler_id (handlerid)
     {
       BSE_ASSERT_RETURN (handler_id != 0);
@@ -362,7 +362,7 @@ class EventHub {
     void
     event (const Aida::Event &event)
     {
-      Bse::ObjectIfaceP obj = weak_obj.lock();
+      Bse::NotifierIfaceP obj = weak_obj.lock();
       websocketpp::lib::error_code ec;
       ServerEndpoint::connection_ptr con = websocket_server.get_con_from_hdl (weak_hdl, ec);
       if (ec) // ec.value() == websocketpp::error::bad_connection
@@ -400,7 +400,7 @@ public:
   {
     if (cbi.n_args() == 2 && bse_current_websocket_hdl)
       {
-        auto obj = Jsonipc::from_json<Bse::ObjectIfaceP> (cbi.ntharg (0));
+        auto obj = Jsonipc::from_json<Bse::NotifierIfaceP> (cbi.ntharg (0));
         auto eventname = Jsonipc::from_json<std::string> (cbi.ntharg (1));
         if (obj && !eventname.empty())
           {

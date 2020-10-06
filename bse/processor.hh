@@ -2,11 +2,16 @@
 #ifndef __BSE_PROCESSOR_HH__
 #define __BSE_PROCESSOR_HH__
 
+#include <bse/object.hh>
 #include <bse/midievent.hh>
 #include <bse/floatutils.hh>
 #include <any>
 
 namespace Bse {
+
+class ProcessorImpl;
+using ProcessorImplP = std::shared_ptr<ProcessorImpl>;
+class ComboImpl;
 
 namespace AudioSignal {
 
@@ -200,7 +205,12 @@ protected:
   using ProcessorInfo = AudioSignal::ProcessorInfo;
   using MinMax = std::pair<double,double>;
 #endif
-  enum { INITIALIZED = 1, };
+  enum { INITIALIZED   = 1 << 0,
+         PARAMCHANGE   = 1 << 3,
+         BUSCONNECT    = 1 << 4,
+         BUSDISCONNECT = 1 << 5,
+         INSERTION     = 1 << 6,
+         REMOVAL       = 1 << 7, };
   std::atomic<uint32>      flags_ = 0;
 private:
   uint32                   output_offset_ = 0;
@@ -210,7 +220,6 @@ private:
   std::vector<OConnection> outputs_;
   EventStreams            *estreams_ = nullptr;
   uint64_t                 done_frames_ = 0;
-  static __thread uint64   tls_timestamp;
   static void        registry_init      ();
   const PParam*      find_pparam        (Id32 paramid) const;
   const PParam*      find_pparam_       (ParamId paramid) const;
@@ -235,6 +244,8 @@ protected:
   virtual void  initialize        ();
   virtual void  configure         (uint n_ibuses, const SpeakerArrangement *ibuses,
                                    uint n_obuses, const SpeakerArrangement *obuses) = 0;
+  void          enqueue_notify_mt (uint32 pushmask);
+  virtual ProcessorImplP processor_interface () const;
   // Parameters
   virtual void  adjust_param      (Id32 tag) {}
   virtual void  enqueue_children  () {}
@@ -331,6 +342,7 @@ public:
   bool          has_event_output  ();
   void          connect_event_input    (Processor &oproc);
   void          disconnect_event_input ();
+  ProcessorImplP access_processor () const;
   // Registration and factory
   static RegistryList  registry_list      ();
   static ProcessorP    registry_create    (Engine &engine, const std::string &uuiduri);
@@ -339,6 +351,14 @@ public:
   // MT-Safe accessors
   static double param_peek_mt     (const ProcessorP proc, Id32 paramid);
   static void   param_notifies_mt (ProcessorP proc, Id32 paramid, bool need_notifies);
+private:
+  static bool   has_notifies_e    ();
+  static void   call_notifies_e   ();
+  std::atomic<Processor*> nqueue_next_ { nullptr }; ///< No notifications queued while == nullptr
+  ProcessorP              nqueue_guard_;            ///< Only used while nqueue_next_ != nullptr
+  std::weak_ptr<Bse::ProcessorImpl> bproc_;
+  static constexpr uint32 NOTIFYMASK = PARAMCHANGE | BUSCONNECT | BUSDISCONNECT | INSERTION | REMOVAL;
+  static __thread uint64  tls_timestamp;
 };
 
 /// Timing information around AudioSignal processing.
@@ -353,14 +373,16 @@ class Engine {
   const double       inyquist_; ///< Inverse Nyquist frequency, i.e. 1.0 / nyquist_;
   const uint         sample_rate_; ///< Sample rate (mixing frequency) in Hz used for Processor::render().
   uint64_t           frame_counter_;
-  std::atomic<uint>  flags_;
+  std::atomic<uint32> eflags_;
+  enum { RESCHEDULE = 1 << 0, WOKEN = 1 << 1, };
   uint               scheduler_depth_;
   std::vector<Processor*> schedule_;
   std::vector<ProcessorP> roots_;
   std::mutex              mutex_;
+  std::function<void()>   wakeup_;
 public:
   const AudioTiming &timing;
-  explicit      Engine           (uint32 samplerate, AudioTiming &atiming);
+  explicit      Engine           (uint32 samplerate, AudioTiming &atiming, std::function<void()> wakeup);
   uint          sample_rate      () const BSE_CONST      { return sample_rate_; }
   double        nyquist          () const BSE_CONST      { return nyquist_; }
   double        inyquist         () const BSE_CONST      { return inyquist_; }
@@ -372,6 +394,9 @@ public:
   void          reschedule       ();
   void          make_schedule    ();
   void          render_block     ();
+  bool          ipc_pending      ();
+  void          ipc_dispatch     ();
+  void          ipc_wakeup_mt    ();
 };
 
 /// Aggregate structure for input/output buffer state and values in Processor::render().
@@ -406,37 +431,6 @@ protected:
   static auto pm_reconfigure       (Processor &p, IBusId i, SpeakerArrangement ip, OBusId o, SpeakerArrangement op)
                                    { return p.reconfigure (i, ip, o, op); }
 };
-
-// == Chain ==
-/// Container for connecting multiple Processors in a chain.
-class Chain : public Processor, ProcessorManager {
-  class Inlet;
-  using InletP = std::shared_ptr<Inlet>;
-  InletP inlet_;
-  ProcessorP eproc_;
-  vector<ProcessorP> processors_;
-  Processor *last_output_ = nullptr;
-  const SpeakerArrangement ispeakers_ = SpeakerArrangement (0);
-  const SpeakerArrangement ospeakers_ = SpeakerArrangement (0);
-protected:
-  void       initialize       () override;
-  void       configure        (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override;
-  void       reset            () override;
-  void       render           (uint n_frames) override;
-  uint       chain_up         (Processor &pfirst, Processor &psecond);
-  void       reconnect        (size_t start);
-  void       enqueue_children () override;
-public:
-  explicit   Chain            (SpeakerArrangement iobuses = SpeakerArrangement::STEREO);
-  virtual    ~Chain           ();
-  void       query_info       (ProcessorInfo &info) const override;
-  void       insert           (ProcessorP proc, size_t pos = ~size_t (0));
-  bool       remove           (Processor &proc);
-  ProcessorP at               (uint nth);
-  size_t     size             ();
-  void       set_event_source (ProcessorP eproc);
-};
-using ChainP = std::shared_ptr<Chain>;
 
 // == Inlined Internals ==
 struct Processor::IBus : BusInfo {
@@ -707,6 +701,19 @@ enroll_asp (const char *bfile = __builtin_FILE(), int bline = __builtin_LINE())
     }
   return AudioSignal::Processor::registry_enroll (makeasp, bfile, bline);
 }
+
+class ProcessorImpl : public NotifierImpl, public virtual ProcessorIface {
+  std::shared_ptr<AudioSignal::Processor> proc_;
+public:
+  explicit       ProcessorImpl     (AudioSignal::Processor &proc);
+  DeviceInfo     processor_info    () override;
+  StringSeq      list_properties   () override;
+  PropertyIfaceP access_property   (const std::string &ident) override;
+  PropertySeq    access_properties (const std::string &hints) override;
+  ComboIfaceP    access_combo      () override;
+  AudioSignal::ProcessorP
+  const          audio_signal_processor () const;
+};
 
 } // Bse
 

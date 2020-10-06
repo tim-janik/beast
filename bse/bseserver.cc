@@ -644,7 +644,7 @@ ServerImpl::ServerImpl (BseObject *bobj) :
   ContainerImpl (bobj)
 {
   auto *audio_timing = new AudioSignal::AudioTiming { 120, 0 };
-  engine_ = new AudioSignal::Engine { bse_engine_sample_freq(), *audio_timing };
+  engine_ = new AudioSignal::Engine { bse_engine_sample_freq(), *audio_timing, bse_main_wakeup };
   BseServer *self = const_cast<ServerImpl*> (this)->as<BseServer*>();
   bse_pcm_module_set_processor_engine (self->pcm_omodule, engine_);
 }
@@ -663,6 +663,18 @@ AudioSignal::Engine&
 ServerImpl::global_engine ()
 {
   return *engine_;
+}
+
+bool
+ServerImpl::engine_ipc_pending ()
+{
+  return engine_->ipc_pending();
+}
+
+void
+ServerImpl::engine_ipc_dispatch ()
+{
+  return engine_->ipc_dispatch();
 }
 
 bool
@@ -1122,13 +1134,13 @@ validate_shm_fragments (const SharedMemory &smem, const ShmFragmentSeq &plan, si
   size_t length = 0;
   for (const auto &frag : plan)
     if (frag.shmoffset < 0 || frag.blength < 0 || frag.bpos < 0 ||
-        size_t (frag.shmoffset) + frag.blength > smem.shm_length)
+        ssize_t (frag.shmoffset) + frag.blength > smem.shm_length)
       return false;
     else
       length = std::max (length, frag.bpos + size_t (frag.blength));
   // the target buffer length does not strictly need to be smaller than the shared memory
   // area, but if it is indeed bigger, something fishy or very inefficient is going on
-  if (length > smem.shm_length)
+  if (length > size_t (smem.shm_length) || smem.shm_length < 0)
     return false;       // heuristic for overflow or out-of-bounds somewhere
   *lengthp = length;
   return true;
@@ -1213,7 +1225,7 @@ ServerImpl::shared_block_offset (const void *mem) const
   if (addr >= start)
     {
       const uintptr_t offset = addr - start;
-      if (offset < arena.reserved() && offset == int32 (offset))
+      if (offset < arena.reserved() && offset <= SFI_MAXINT)
         return offset;
     }
   return -1;

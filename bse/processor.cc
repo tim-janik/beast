@@ -1,7 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "processor.hh"
-#include "bse/bseserver.hh"
-#include "bse/internal.hh"
+#include "property.hh"
+#include "bseserver.hh"
+#include "combo.hh"
+#include "internal.hh"
 #include <shared_mutex>
 
 #define PDEBUG(...)     Bse::debug ("processor", __VA_ARGS__)
@@ -367,109 +369,6 @@ Processor::OBus::OBus (const std::string &identifier, const std::string &uilabel
   assert_return (ident != "");
 }
 
-// == Engine ==
-enum {
-  RESCHEDULE = 1,
-};
-Engine::Engine (uint32 samplerate, AudioTiming &atiming) :
-  nyquist_ (samplerate * 0.5), inyquist_ (1.0 / nyquist_), sample_rate_ (samplerate),
-  frame_counter_ (MAX_RENDER_BLOCK_SIZE), flags_ (0), scheduler_depth_ (0),
-  timing { atiming }
-{
-  assert_return (samplerate > 0);
-  assert_return (nyquist_ > 0 && nyquist_ == (samplerate >> 1));
-  assert_return (0 == (samplerate & 3));
-  schedule_.reserve (256);
-  reschedule();
-}
-
-void
-Engine::add_root (ProcessorP rootproc)
-{
-  assert_return (rootproc);
-  std::lock_guard<std::mutex> locker (mutex_);
-  auto pos = std::find (roots_.begin(), roots_.end(), rootproc);
-  bool was_root = pos != roots_.end();
-  assert_return (!was_root);
-  roots_.push_back (rootproc);
-  reschedule();
-}
-
-bool
-Engine::del_root (ProcessorP rootproc)
-{
-  assert_return (rootproc, false);
-  std::lock_guard<std::mutex> locker (mutex_);
-  const bool was_root = vector_erase_element (roots_, rootproc);
-  reschedule();
-  return was_root;
-}
-
-// Cause the engine to re-schedule Processors before the next process() cycle.
-void
-Engine::reschedule()
-{
-  flags_ |= RESCHEDULE;
-}
-
-bool
-Engine::in_schedule (Processor &proc)
-{
-  // TODO: this can be optimized via unsorted_set when profiled
-  for (auto procp : schedule_)
-    if (procp == &proc)
-      return true;
-  return false;
-}
-
-void
-Engine::make_schedule ()
-{
-  assert_return (scheduler_depth_ == 0);
-  return_unless (flags_ & RESCHEDULE);
-  std::lock_guard<std::mutex> locker (mutex_);
-  if (0 == (flags_ & RESCHEDULE))
-    return;
-  flags_ &= ~uint (RESCHEDULE);
-  schedule_.clear();
-  scheduler_depth_ += 1;
-  for (auto root : roots_)
-    enqueue (*root);
-  scheduler_depth_ -= 1;
-  for (auto proc : schedule_)
-    proc->reset_state();
-}
-
-void
-Engine::enqueue (Processor &proc)
-{
-  assert_return (this == &proc.engine_);
-  assert_return (scheduler_depth_ > 0 && scheduler_depth_ <= 999);
-  scheduler_depth_ += 1;
-  proc.enqueue_deps();
-  scheduler_depth_ -= 1;
-  if (!in_schedule (proc))
-    schedule_.push_back (&proc);
-}
-
-/// Render a block of MAX_RENDER_BLOCK_SIZE in all Processors connected to this Engine.
-void
-Engine::render_block()
-{
-  assert_return (!(flags_ & RESCHEDULE));
-  frame_counter_ += MAX_RENDER_BLOCK_SIZE;
-  for (auto procp : schedule_)
-    procp->render_block();
-  /* TODO: concurrent rendering:
-     - rework schedule_ into a dependency tree, each node reflects a processor and its dependencies
-     - a worker starts on a node, processes dependencies in depth first fashion
-     - per level, 1: process all dependencies that are not yet done and not processing (needs atomic flag)
-     - per level, 2: wait for all nodes (in turn) that are not yet done
-     - per level, 3: process node itself, return
-     - experiment: *also* maintain linear schedule_, have unused workers race over schedule_ concurrently
-   */
-}
-
 // == Processor ==
 const std::string Processor::STANDARD = ":G:S:r:w:"; ///< GUI STORAGE READABLE WRITABLE
 uint64 __thread Processor::tls_timestamp = 0;
@@ -490,6 +389,32 @@ Processor::Processor() :
 Processor::~Processor ()
 {
   remove_all_buses();
+}
+
+/// Create the `Bse::ProcessorIface` for `this`.
+ProcessorImplP
+Processor::processor_interface () const
+{
+  return std::make_shared<Bse::ProcessorImpl> (*const_cast<Processor*> (this));
+}
+
+/// Gain access to `this` through the `Bse::ProcessorIface` interface.
+Bse::ProcessorImplP
+Processor::access_processor () const
+{
+  std::weak_ptr<Bse::ProcessorImpl> &wptr = const_cast<Processor*> (this)->bproc_;
+  ProcessorImplP bprocp = wptr.lock();
+  return_unless (!bprocp, bprocp);
+  ProcessorImplP nprocp = processor_interface();
+  assert_return (nprocp != nullptr, nullptr);
+  { // C++20 has: std::atomic<std::weak_ptr<C>>::compare_exchange
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> locker (mutex);
+    bprocp = wptr.lock();
+    if (!bprocp)
+      wptr = bprocp = nprocp;
+  }
+  return bprocp;
 }
 
 const Processor::FloatBuffer&
@@ -1017,6 +942,8 @@ Processor::disconnect_event_input()
       estreams_->oproc = nullptr;
       engine_.reschedule();
       assert_return (backlink == true);
+      enqueue_notify_mt (BUSDISCONNECT);
+      oproc.enqueue_notify_mt (BUSDISCONNECT);
     }
 }
 
@@ -1032,6 +959,8 @@ Processor::connect_event_input (Processor &oproc)
   // register backlink
   oproc.outputs_.push_back ({ this, EventStreams::EVENT_ISTREAM });
   engine_.reschedule();
+  enqueue_notify_mt (BUSCONNECT);
+  oproc.enqueue_notify_mt (BUSCONNECT);
 }
 
 /// Add an input bus with `uilabel` and channels configured via `speakerarrangement`.
@@ -1230,6 +1159,8 @@ Processor::disconnect (IBusId ibusid)
   ibus.obusid = {};
   engine_.reschedule();
   assert_return (backlink == true);
+  enqueue_notify_mt (BUSDISCONNECT);
+  oproc.enqueue_notify_mt (BUSDISCONNECT);
 }
 
 /// Connect input `ibusid` to output `obusid` of Processor `prev`.
@@ -1256,6 +1187,8 @@ Processor::connect (IBusId ibusid, Processor &oproc, OBusId obusid)
   obus.fbuffer_concounter += 1; // conection counter
   oproc.outputs_.push_back ({ this, ibusid });
   engine_.reschedule();
+  enqueue_notify_mt (BUSCONNECT);
+  oproc.enqueue_notify_mt (BUSCONNECT);
 }
 
 /// Ensure `Processor::initialize()` has been called, so the parameters are fixed.
@@ -1382,316 +1315,63 @@ Processor::reconfigure (IBusId ibusid, SpeakerArrangement ipatch, OBusId obusid,
   reset_state();
 }
 
-// == LogState ==
-enum LogState { MSG, HAVE, REQUEST, MATCH, MISS };
-static const char*
-lstate (LogState ls)
+static Processor        *const notifies_tail = (Processor*) ptrdiff_t (-1);
+static std::atomic<Processor*> notifies_head { notifies_tail };
+
+void
+Processor::enqueue_notify_mt (uint32 pushmask)
 {
-  switch (ls)
+  return_unless (!bproc_.expired());            // need a means to report notifications
+  assert_return (notifies_head != nullptr);     // paranoid
+  const uint32 prev = flags_.fetch_or (pushmask & NOTIFYMASK);
+  return_unless (prev != (prev | pushmask));    // nothing new
+  Processor *expected = nullptr;
+  if (nqueue_next_.compare_exchange_strong (expected, notifies_tail))
     {
-    case MSG:           return "MSG";
-    case HAVE:          return "HAVE";
-    case REQUEST:       return "REQUEST";
-    case MATCH:         return "MATCH";
-    case MISS:          return "MISS";
-    }
-  return nullptr;
-}
-
-static std::string
-strname (Processor *proc)
-{
-  return_unless (proc, "NONE");
-  ProcessorInfo pinfo;
-  proc->query_info (pinfo);
-  return pinfo.label.empty() ? "UNKNOWN" : pinfo.label;
-}
-
-static std::string
-strname (Processor *proc, OBusId ob, const SpeakerArrangement *spa = nullptr)
-{
-  return_unless (proc, "NONE·  ");
-  if (!uint (ob))
-    return string_format ("%s·  ", strname (proc));
-  if (!spa)
-    return string_format ("%s·-%u>>", strname (proc), ob);
-  return string_format ("%s·%s-%u>>", strname (proc), speaker_arrangement_desc (*spa), ob);
-}
-
-static std::string
-strname (Processor *proc, IBusId ib, const SpeakerArrangement *spa = nullptr)
-{
-  return_unless (proc, "  ·NONE");
-  if (!uint (ib))
-    return string_format ("  ·%s", strname (proc));
-  if (!spa)
-    return string_format ("<<-%u·%s", ib, strname (proc));
-  return string_format ("<<%s-%u·%s", speaker_arrangement_desc (*spa), ib, strname (proc));
-}
-
-static void
-logstate (LogState ls, Processor *p, OBusId ob, const SpeakerArrangement *osa, Processor *n, IBusId ib, const SpeakerArrangement *isa)
-{
-  std::string join;
-  switch (ls)
-    {
-    case MSG:           join = "   "; break;
-    case HAVE:          join = "-:-"; break;
-    case REQUEST:       join = "???"; break;
-    case MATCH:         join = ">-<"; break;
-    case MISS:          join = "-/-"; break;
-    }
-  const auto msg = string_format ("  %-9s %40s  %s  %s", lstate (ls) + std::string (":"),
-                                  strname (p, ob, osa), join,
-                                  strname (n, ib, isa));
-  const bool verbose_ = true;
-  if (!msg.empty() && verbose_)
-    PDEBUG ("%s%s", msg, msg.back() != '\n' ? "\n" : "");
-}
-
-// == Inlet ==
-class Chain::Inlet : public Processor {
-  Chain &chain_;
-public:
-  Inlet (const std::any &any) :
-    chain_ (*std::any_cast<Chain*> (any))
-  {
-    assert_return (nullptr != std::any_cast<Chain*> (any));
-  }
-  void query_info (ProcessorInfo &info) const override  { info.label = "Bse.AudioSignal.Chain.Inlet"; }
-  void initialize () override                           {}
-  void reset      () override                           {}
-  void
-  configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
-  {
-    remove_all_buses();
-    auto output = add_output_bus ("Output", chain_.ispeakers_);
-    (void) output;
-  }
-  void
-  render (uint n_frames) override
-  {
-    const IBusId i1 = IBusId (1);
-    const OBusId o1 = OBusId (1);
-    const uint ni = chain_.n_ichannels (i1);
-    const uint no = this->n_ochannels (o1);
-    assert_return (ni == no);
-    for (size_t i = 0; i < ni; i++)
-      redirect_oblock (o1, i, chain_.ifloats (i1, i));
-  }
-};
-
-// == Chain ==
-Chain::Chain (SpeakerArrangement iobuses) :
-  ispeakers_ (iobuses), ospeakers_ (iobuses)
-{
-  static const auto reg_id = enroll_asp<AudioSignal::Chain::Inlet>();
-  assert_return (speaker_arrangement_count_channels (iobuses) > 0);
-  ProcessorP inlet = Processor::registry_create (engine_, reg_id, this);
-  assert_return (inlet != nullptr);
-  inlet_ = std::dynamic_pointer_cast<Inlet> (inlet);
-  assert_return (inlet_ != nullptr);
-}
-
-Chain::~Chain()
-{
-  pm_remove_all_buses (*inlet_);
-  inlet_ = nullptr;
-  eproc_ = nullptr;
-}
-
-void
-Chain::query_info (ProcessorInfo &info) const
-{
-  info.uri = "Bse.AudioSignal.Chain";
-  info.label = "Bse::AudioSignal::Chain";
-}
-static auto bseaudiosignalchain = Bse::enroll_asp<AudioSignal::Chain>();
-
-/// Assign event source for future auto-connections of chld processors.
-void
-Chain::set_event_source (ProcessorP eproc)
-{
-  if (eproc)
-    assert_return (eproc->has_event_output());
-  eproc_ = eproc;
-}
-
-void
-Chain::initialize ()
-{}
-
-void
-Chain::configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses)
-{
-  remove_all_buses();
-  auto monoin  = add_input_bus ("Input", ispeakers_);
-  auto monoout = add_output_bus ("Output", ospeakers_);
-  (void) monoin;
-  (void) monoout;
-}
-
-void
-Chain::reset()
-{}
-
-void
-Chain::enqueue_children ()
-{
-  last_output_ = nullptr;
-  engine_.enqueue (*inlet_);
-  for (auto procp : processors_)
-    {
-      engine_.enqueue (*procp);
-      if (procp->n_obuses())
-        last_output_ = procp.get();
-    }
-  // last_output_ is only valid during render()
-}
-
-void
-Chain::render (uint n_frames)
-{
-  // make the last processor output the chain output
-  constexpr OBusId OUT1 = OBusId (1);
-  const size_t nlastchannels = last_output_ ? last_output_->n_ochannels (OUT1) : 0;
-  const size_t n_och = n_ochannels (OUT1);
-  for (size_t c = 0; c < n_och; c++)
-    {
-      // an enqueue_children() call is guranteed *before* render(), so last_output_ is valid
-      if (last_output_)
-        redirect_oblock (OUT1, c, last_output_->ofloats (OUT1, std::min (c, nlastchannels - 1)));
-      else
-        assign_oblock (OUT1, c, 0);
+      // nqueue_next_ was nullptr, need to insert into queue now
+      assert_warn (nqueue_guard_ == nullptr);
+      nqueue_guard_ = shared_from_this();
+      expected = notifies_head.load(); // must never be nullptr
+      do
+        nqueue_next_.store (expected);
+      while (!notifies_head.compare_exchange_strong (expected, this));
     }
 }
 
-/// Return the number of Processor instances in the Chain.
-size_t
-Chain::size ()
-{
-  return processors_.size();
-}
-
-/// Return the Processor at position `nth` in the Chain.
-ProcessorP
-Chain::at (uint nth)
-{
-  return_unless (nth < size(), {});
-  return processors_[nth];
-}
-
-/// Remove a previously added Processor `proc` from the Chain.
-bool
-Chain::remove (Processor &proc)
-{
-  std::vector<Processor*> unconnected;
-  ProcessorP processorp;
-  size_t pos; // find proc
-  for (pos = 0; pos < processors_.size(); pos++)
-    if (processors_[pos].get() == &proc)
-      {
-        processorp = processors_[pos]; // and remove...
-        processors_.erase (processors_.begin() + pos);
-        break;
-      }
-  if (!processorp)
-    return false;
-  // clear stale connections
-  pm_disconnect_ibuses (*processorp);
-  pm_disconnect_obuses (*processorp);
-  // fixup following connections
-  reconnect (pos);
-  return true;
-}
-
-/// Add a new Processor `proc` at position `pos` to the Chain.
-/// The Processor `proc` must not be previously contained by any other ProcessorManager.
 void
-Chain::insert (ProcessorP proc, size_t pos)
+Processor::call_notifies_e ()
 {
-  assert_return (proc != nullptr);
-  const size_t index = CLAMP (pos, 0, processors_.size());
-  processors_.insert (processors_.begin() + index, proc);
-  // fixup following connections
-  reconnect (index);
-  engine_.reschedule();
-}
-
-/// Reconnect Chain processors at start and after.
-void
-Chain::reconnect (size_t start)
-{
-  // clear stale inputs
-  for (size_t i = start; i < processors_.size(); i++)
-    pm_disconnect_ibuses (*processors_[i]);
-  // reconnect pairwise
-  for (size_t i = start; i < processors_.size(); i++)
-    chain_up (*(i ? processors_[i - 1] : inlet_), *processors_[i]);
-}
-
-/// Connect the main audio input of `next` to audio output of `prev`.
-uint
-Chain::chain_up (Processor &prev, Processor &next)
-{
-  assert_return (this != &prev, 0);
-  assert_return (this != &next, 0);
-  const uint ni = next.n_ibuses();
-  const uint no = prev.n_obuses();
-  // assign event source
-  if (eproc_)
+  assert_return (this_thread_is_bse());
+  Processor *head = notifies_head.exchange (notifies_tail);
+  while (head != notifies_tail)
     {
-      if (prev.has_event_input())
-        pm_connect_events (*eproc_, prev);
-      if (next.has_event_input())
-        pm_connect_events (*eproc_, next);
-    }
-  // check need for audio connections
-  if (ni == 0 || no == 0)
-    {
-      logstate (MISS, &prev, OBusId (no ? 1 : 0), nullptr, &next, IBusId (ni ? 1 : 0), nullptr);
-      return 0; // nothing to do
-    }
-  uint n_connected = 0;
-  // try to connect prev main obus (1) with next main ibus (1)
-  const OBusId obusid { 1 };
-  const IBusId ibusid { 1 };
-  SpeakerArrangement ospa = speaker_arrangement_channels (prev.bus_info (obusid).speakers);
-  SpeakerArrangement ispa = speaker_arrangement_channels (next.bus_info (ibusid).speakers);
-  // logstate (HAVE, &prev, obusid, &ospa, &next, ibusid, &ispa);
-  if (ospa != ispa)
-    {
-#if 0
-      // try to increase output channels if possible
-      if (speaker_arrangement_count_channels (ospa) < speaker_arrangement_count_channels (ispa) &&
-          is_unconnected (prev)) // avoid reconfiguration of existing connections
+      Processor *current = std::exchange (head, head->nqueue_next_);
+      ProcessorP procp = std::exchange (current->nqueue_guard_, nullptr);
+      Processor *old_nqueue_next = current->nqueue_next_.exchange (nullptr);
+      assert_warn (old_nqueue_next != nullptr);
+      const uint32 nflags = NOTIFYMASK & current->flags_.fetch_and (~NOTIFYMASK);
+      assert_warn (procp != nullptr);
+      Bse::ProcessorImplP bprocp = current->bproc_.lock();
+      if (bprocp)
         {
-          logstate (REQUEST, &prev, obusid, &ispa, &next, ibusid, &ispa);
-          prev.reconfigure (IBusId (0), SpeakerArrangement::NONE, obusid, ispa);
-          ospa = speaker_arrangement_channels (prev.bus_info (obusid).speakers);
-          logstate (HAVE, &prev, obusid, &ospa, &next, ibusid, &ispa);
+          if (nflags & BUSCONNECT)
+            bprocp->emit_event ("bus:connect");
+          if (nflags & BUSDISCONNECT)
+            bprocp->emit_event ("bus:disconnect");
+          if (nflags & INSERTION)
+            bprocp->emit_event ("sub:insert");
+          if (nflags & REMOVAL)
+            bprocp->emit_event ("sub:remove");
+          if (nflags & PARAMCHANGE)
+            bprocp->emit_event ("notify:paramchange"); // FIXME
         }
-#endif
     }
-  // try to adjust input channels
-  if (ospa != ispa)
-    {
-      logstate (REQUEST, &prev, obusid, &ospa, &next, ibusid, &ospa);
-      pm_reconfigure (next, ibusid, ospa, OBusId (0), SpeakerArrangement::NONE);
-      ispa = speaker_arrangement_channels (next.bus_info (ibusid).speakers);
-      logstate (HAVE, &prev, obusid, &ospa, &next, ibusid, &ispa);
-    }
-  if (0 == (uint64_t (ispa) & ~uint64_t (ospa)) || // exact match
-      (ospa == SpeakerArrangement::MONO &&         // allow MONO -> STEREO connections
-       ispa == SpeakerArrangement::STEREO))
-    {
-      logstate (MATCH, &prev, obusid, &ospa, &next, ibusid, &ispa);
-      n_connected += speaker_arrangement_count_channels (ispa);
-      pm_connect (next, ibusid, prev, obusid);
-    }
-  else
-    logstate (MISS, &prev, obusid, &ospa, &next, ibusid, &ispa);
-  return n_connected;
+}
+
+bool
+Processor::has_notifies_e ()
+{
+  return notifies_head != notifies_tail;
 }
 
 // == RegistryEntry ==
@@ -1732,7 +1412,7 @@ void
 Processor::registry_init()
 {
   static AudioTiming audio_timing { 120, 1024 * 1024 };
-  static Engine regengine (48000, audio_timing); // used only for registration
+  static Engine regengine (48000, audio_timing, []() {}); // used only for registration
   while (processor_registry_entries)
     {
       std::lock_guard<std::recursive_mutex> rlocker (processor_registry_mutex);
@@ -1767,6 +1447,8 @@ Processor::registry_init()
           // unlisted entries are left dangling for registry_create(RegistryId,std::any)
         }
     }
+  while (regengine.ipc_pending())
+    regengine.ipc_dispatch(); // empty any work queues
 }
 
 /// Create a new Processor object of the type specified by `uuiduri`.
@@ -1869,4 +1551,172 @@ Processor::FloatBuffer::check ()
 }
 
 } // AudioSignal
+
+// == ProcessorPropertyWrapper ==
+class ProcessorPropertyWrapper : public PropertyWrapper {
+  AudioSignal::ProcessorP proc_;
+  AudioSignal::ParamInfoP info_;
+public:
+  std::string
+  get_tag (Tag tag) override
+  {
+    auto &info = *info_;
+    switch (tag)
+      {
+      case IDENTIFIER:    return info.ident;
+      case LABEL:         return info.label;
+      case NICK:          return info.nick;
+      case UNIT:          return info.unit;
+      case HINTS:         return info.hints;
+      case GROUP:         return info.group;
+      case BLURB:         return info.blurb;
+      case DESCRIPTION:   return info.description;
+      }
+    assert_return_unreached ({});
+  }
+  void
+  get_range (double *min, double *max, double *step) override
+  {
+    double a, b, c;
+    info_->get_range (min ? *min : a, max ? *max : b, step ? *step : c);
+  }
+  double
+  get_normalized () override
+  {
+    return proc_->value_to_normalized (info_->id, AudioSignal::Processor::param_peek_mt (proc_, info_->id));
+  }
+  bool
+  set_normalized (double v) override
+  {
+    AudioSignal::ProcessorP proc = proc_;
+    const AudioSignal::ParamId pid = info_->id;
+    auto lambda = [proc, pid, v] () {
+      proc->set_normalized (pid, v);
+    };
+    BSE_SERVER.commit_job (lambda);
+    return true;
+  }
+  std::string
+  get_text () override
+  {
+    const double value = AudioSignal::Processor::param_peek_mt (proc_, info_->id);
+    return proc_->param_value_to_text (info_->id, value);
+  }
+  bool
+  set_text (const std::string &v) override
+  {
+    const double value = proc_->param_value_from_text (info_->id, v);
+    const double normalized = proc_->value_to_normalized (info_->id, value);
+    AudioSignal::ProcessorP proc = proc_;
+    const AudioSignal::ParamId pid = info_->id;
+    auto lambda = [proc, pid, normalized] () {
+      proc->set_normalized (pid, normalized);
+    };
+    BSE_SERVER.commit_job (lambda);
+    return true;
+  }
+  bool
+  is_numeric () override
+  {
+    // TODO: we have yet to implement non-numeric Processor parameters
+    return true;
+  }
+  ChoiceSeq
+  choices () override
+  {
+    ChoiceSeq cs;
+    const auto ce = info_->get_choices();
+    cs.reserve (ce.size());
+    for (const auto &e : ce)
+      {
+        Choice c;
+        c.ident = e.ident;
+        c.label = e.label;
+        c.subject = e.subject;
+        c.icon = e.icon;
+        cs.push_back (c);
+      }
+    return cs;
+  }
+  explicit
+  ProcessorPropertyWrapper (AudioSignal::ProcessorP proc, AudioSignal::ParamInfoP param_) :
+    proc_ (proc), info_ (param_)
+  {}
+};
+
+// == ProcessorImpl ==
+ProcessorImpl::ProcessorImpl (AudioSignal::Processor &proc) :
+  proc_ (proc.shared_from_this())
+{}
+
+DeviceInfo
+ProcessorImpl::processor_info ()
+{
+  AudioSignal::ProcessorInfo pinf;
+  proc_->query_info (pinf);
+  DeviceInfo info;
+  info.uri          = pinf.uri;
+  info.name         = pinf.label;
+  info.category     = pinf.category;
+  info.description  = pinf.description;
+  info.website_url  = pinf.website_url;
+  info.creator_name = pinf.creator_name;
+  info.creator_url  = pinf.creator_url;
+  return info;
+}
+
+StringSeq
+ProcessorImpl::list_properties ()
+{
+  using namespace AudioSignal;
+  const auto &iv = proc_->list_params();
+  StringSeq names;
+  names.reserve (iv.size());
+  for (const auto &param : iv)
+    names.push_back (param->ident);
+  return names;
+}
+
+PropertyIfaceP
+ProcessorImpl::access_property (const std::string &ident)
+{
+  using namespace AudioSignal;
+  ParamInfoP infop;
+  for (const ParamInfoP info : proc_->list_params())
+    if (info->ident == ident)
+      {
+        infop = info;
+        break;
+      }
+  return_unless (infop, {});
+  auto pwrapper = std::make_unique<ProcessorPropertyWrapper> (proc_, infop);
+  return PropertyImpl::create (std::move (pwrapper));
+}
+
+PropertySeq
+ProcessorImpl::access_properties (const std::string &hints)
+{
+  using namespace AudioSignal;
+  PropertySeq pseq;
+  for (const ParamInfoP info : proc_->list_params())
+    {
+      auto pwrapper = std::make_unique<ProcessorPropertyWrapper> (proc_, info);
+      PropertyIfaceP prop = PropertyImpl::create (std::move (pwrapper));
+      pseq.push_back (prop);
+    }
+  return pseq;
+}
+
+const AudioSignal::ProcessorP
+ProcessorImpl::audio_signal_processor () const
+{
+  return proc_;
+}
+
+Bse::ComboIfaceP
+ProcessorImpl::access_combo ()
+{
+  return std::dynamic_pointer_cast<Bse::ComboIface> (shared_from_this());
+}
+
 } // Bse

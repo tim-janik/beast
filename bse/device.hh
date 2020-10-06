@@ -4,6 +4,7 @@
 
 #include <bse/module.hh>
 #include <bse/processor.hh>
+#include <bse/combo.hh>
 
 namespace Bse {
 

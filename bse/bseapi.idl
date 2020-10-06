@@ -647,6 +647,7 @@ interface Item;
 interface Source;
 interface WaveOsc;
 interface Project;
+interface Combo;
 
 /// Fundamental interface type to enable callback notifications.
 interface Notifier {
@@ -1052,6 +1053,28 @@ interface DeviceContainer : Device {
   bool   remove_device        (Device containee); ///< Remove a directly contained device.
 };
 
+/// Interface to access AudioSignal::Processor instances.
+interface Processor : Notifier {
+  DeviceInfo  processor_info    ();             ///< Describe this Processor type.
+  // Parameters
+  StringSeq   list_properties   ();             ///< List all property identifiers.
+  Property    access_property   (String ident); ///< Retrieve handle for a Property.
+  PropertySeq access_properties (String hints); ///< Retrieve handles for properties with specific hints.
+  Combo       access_combo ();                  ///< Retrieve a Combo processor interface from an AudioSignal::Combo processors.
+};
+sequence ProcessorSeq { Processor processor; };
+
+/// Interface to access AudioSignal::Combo instances.
+interface Combo : Notifier {
+  ProcessorSeq  list_processors         ();      ///< List processors in order of processing, notified via "processors".
+  // create processors
+  bool          remove_processor        (Processor sub);  ///< Remove a directly contained processor.
+  Processor     create_processor        (String uuiduri); ///< Create a new processor, see list_processor_types().
+  Processor     create_processor_before (String uuiduri, Processor sibling); ///< Create processor, before sibling.
+  DeviceInfoSeq list_processor_types    ();      ///< List registered Processor types with their unique uri.
+};
+sequence ComboSeq { Combo combo; };
+
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
@@ -1068,7 +1091,7 @@ interface Track : ContextMerger {
   /// Get the output module of a track.
   /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
   Source       get_output_source ();
-  DeviceContainer device_container ();          ///< Retrieve the Device chain container of the Track.
+  Combo        access_combo ();                 ///< Retrieve the Combo processor interface.
 
   group _("Adjustments") {
     bool  muted = Bool (_("Muted"), _("Mute this track by ignoring it in the sequencer."), STANDARD SKIP_DEFAULT, false);

@@ -25,10 +25,12 @@ using Bse::String;
 /// Yield the number of C @a array elements.
 #define ARRAY_SIZE(array)               BSE_ARRAY_SIZE (array)
 
-/// Return from the current function if @a cond is unmet and issue an assertion warning.
-#define assert_return(cond, ...)        BSE_ASSERT_RETURN (cond, __VA_ARGS__)
+/// Return from the current function if `expr` is unmet and issue an assertion warning.
+#define assert_return(expr, ...)        BSE_ASSERT_RETURN (expr, __VA_ARGS__)
 /// Return from the current function and issue an assertion warning.
 #define assert_return_unreached(...)    BSE_ASSERT_RETURN_UNREACHED (__VA_ARGS__)
+/// Issue an assertion warning if `expr` evaluates to false.
+#define assert_warn(expr)               BSE_ASSERT_WARN (expr)
 
 /// Indentation helper for editors that cannot (yet) decipher `if constexpr`
 #define	if_constexpr	if constexpr
