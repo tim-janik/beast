@@ -172,11 +172,7 @@ $>/app/markdown-it.mjs: $(ebeast/copy.tool.targets) $>/ebeast/node_modules/npm.d
 		-c ./markdown-it.rollup.js \
 		-i ./markdown-it.esm0.js \
 		-o ./markdown-it.esm1.js
-	@: # the 'export default' statement must be added manually
-	$Q sed '/^console.assert (ESM6EXPORT.default);/s/;/; export default ESM6EXPORT.default;/' \
-		< $>/ebeast/markdown-it.esm1.js \
-		> $>/ebeast/markdown-it.esm2.js
-	$Q cp $>/ebeast/markdown-it.esm2.js $@
+	$Q cp $>/ebeast/markdown-it.esm1.js $@
 $>/app/index.html: $>/app/markdown-it.mjs
 
 # == $>/app/b/%.mjs ==
