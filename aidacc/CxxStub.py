@@ -246,7 +246,6 @@ class Generator:
       s += '  ' + self.F ('inline') + '%s () = default;\n' % classC # ctor
       s += '  ' + self.F ('inline') + '%s (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { ' % classC # ctor
       s += 'v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }\n'
-    s += '  ' + self.F ('std::string') + '__typename__      () const\t{ return "%s"; }\n' % type_identifier
     s += '  ' + self.F ('static const Aida::StringVector&') + '__typedata__ ();\n'
     if type_info.storage == Decls.SEQUENCE and type_info.elements[1].storage != Decls.ANY:
       s += '  ' + self.F ('inline operator') + 'Aida::AnySeq      () const;\n'
@@ -403,7 +402,6 @@ class Generator:
       s += '  virtual ' + self.F (' /*dtor*/ ', -1) + '~%s () override = 0;\n' % self.C (type_info)
     s += 'public:\n'
     if self.gen_mode == G4SERVANT:
-      s += '  virtual ' + self.F ('Aida::StringVector') + '__typelist_mt__    () const override;\n'
       s += self.generate_class_any_method_decls (type_info)
     # properties
     il = 0
@@ -466,28 +464,30 @@ class Generator:
     assert self.gen_mode == G4SERVANT
     s = ''
     virtual = 'virtual '
-    s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;\n' % (virtual + 'bool')
+    if len (tp.fields) > 0:
+      s += '  %-37s __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;\n' % (virtual + 'bool')
     return s
   def generate_server_class_any_method_impls (self, tp):
     assert self.gen_mode == G4SERVANT
     s, classH = '', self.C (tp)
     reduced_immediate_ancestors = self.interface_class_ancestors (tp)
     # __access__
-    s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessorPred &__p)\n{\n' % classH
-    a  = '  const bool __all = __n.empty();\n'
-    for fname, ftype in tp.fields:
-      if a:
-        s, a = s + a, ''
-      faux = self.generate_aux_data_string (ftype, fname)
-      s += '  const char *const __aux__%s =\n    %s;\n' % (fname, faux.strip().replace ('\n', '\n  '))
-      ctype = self.C (ftype) # self.type2cpp_relative (ftype)
-      s += '  if ((__all || __n == "%s") &&\n      __p (' % fname
-      s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, __aux__%s)' % (classH, ctype, fname, classH, fname, classH, fname, fname)
-      s += '))\n    return true;\n'
-    for atp in reduced_immediate_ancestors:
-      s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
-    s += '  return false;\n'
-    s += '}\n'
+    if len (tp.fields) > 0:
+      s += 'bool\n%s::__access__ (const std::string &__n, const PropertyAccessorPred &__p)\n{\n' % classH
+      a  = '  const bool __all = __n.empty();\n'
+      for fname, ftype in tp.fields:
+        if a:
+          s, a = s + a, ''
+        faux = self.generate_aux_data_string (ftype, fname)
+        s += '  const char *const __aux__%s =\n    %s;\n' % (fname, faux.strip().replace ('\n', '\n  '))
+        ctype = self.C (ftype) # self.type2cpp_relative (ftype)
+        s += '  if ((__all || __n == "%s") &&\n      __p (' % fname
+        s += 'Aida::PropertyAccessorImpl<%s,%s> ("%s", *this, &%s::%s, &%s::%s, __aux__%s)' % (classH, ctype, fname, classH, fname, classH, fname, fname)
+        s += '))\n    return true;\n'
+      for atp in reduced_immediate_ancestors:
+        s += '  if (this->%s::__access__ (__n, __p)) return true;\n' % self.C (atp)
+      s += '  return false;\n'
+      s += '}\n'
     return s
   def generate_server_class_methods (self, tp):
     assert self.gen_mode == G4SERVANT
@@ -495,14 +495,6 @@ class Generator:
     s += '%s::%s ()' % (classC, classC) # ctor
     s += '\n{}\n'
     s += '%s::~%s ()\n{} // define empty dtor to emit vtable\n' % (classC, classC) # dtor
-    s += 'Aida::StringVector\n'
-    s += '%s::__typelist_mt__ () const\n{\n' % classC
-    s += '  return { '
-    ancestors = self.class_ancestry (tp)
-    for an in ancestors:
-      s += '"%s", ' % self.type_identifier (an)
-    s += '};\n'
-    s += '}\n'
     return s
   def generate_property_prototype (self, class_info, fident, ftype, pad = 0):
     s, v, v0, rptr, ptr = '', '', '', '', ''

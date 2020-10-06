@@ -926,6 +926,20 @@ ImplicitBase::~ImplicitBase()
     locker.unlock();
 }
 
+/// Invoke `pred` for accessors of properties matching `propertyname`.
+bool
+ImplicitBase::__access__ (const std::string &propertyname, const PropertyAccessorPred &pred)
+{
+  return false;
+}
+
+/// Attach an Event handler, returns an event connection handle that can be used for disconnection.
+IfaceEventConnection
+ImplicitBase::__attach__ (const String &eventselector, EventHandlerF handler)
+{
+  return {};
+}
+
 static uint64 implicit_base_event_handler_next_id = 0xe000000 + 1; // see: BSE_STARTID_EVENT_HANDLER
 
 /// Attach an event @a handler function to a specific event @a type.
@@ -1829,14 +1843,6 @@ EventDispatcher::emit (const Event &event)
 {
   if (o_)
     o_->emit (event);
-}
-
-// == CallableIface ==
-std::string
-CallableIface::__typename__ () const
-{
-  const StringVector &types = __typelist_mt__();
-  return types.empty() ? "" : types[0];
 }
 
 // == PropertyAccessor ==

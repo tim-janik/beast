@@ -110,11 +110,9 @@ typedef std::vector<String> StringVector;
 class Any;
 class Event;
 class ImplicitBase;
-class CallableIface;
 class SharedFromThisIface;
 struct PropertyAccessor;
 typedef std::shared_ptr<SharedFromThisIface> SharedFromThisP;
-typedef std::shared_ptr<CallableIface> CallableIfaceP;
 typedef std::shared_ptr<ImplicitBase> ImplicitBaseP;
 typedef std::function<void (const Event&)> EventHandlerF;
 
@@ -310,19 +308,6 @@ public:
   EventConnection       attach          (const String &eventselector, EventHandlerF handler);
 };
 using IfaceEventConnection = EventDispatcher::EventConnection;
-
-// == CallableIface ==
-class CallableIface : public virtual SharedFromThis<CallableIface> {
-public:
-  /// Attach an Event handler, returns an event connection handle that can be used for disconnection.
-  virtual IfaceEventConnection __attach__               (const String &eventselector, EventHandlerF handler) = 0;
-  /// Retrieve the IDL type names of an instance, save to be called multi-threaded.
-  virtual StringVector         __typelist_mt__          () const = 0;
-  /// Retrieve the IDL type name of an instance.
-  std::string                  __typename__             () const;
-  /// Retrieve the IDL type names of an instance, wrapper for __typelist_mt__().
-  StringVector                 __typelist__             () const        { return __typelist_mt__(); }
-};
 
 // == IntrospectionRegistry ==
 class Introspection {
@@ -644,15 +629,16 @@ inline KeyValueConstructor operator""_v (const char *key, size_t) { return KeyVa
 
 // == ImplicitBase ==
 /// Abstract base interface that all IDL interfaces are implicitely derived from.
-class ImplicitBase : public virtual CallableIface, public virtual SharedFromThis<ImplicitBase> {
+class ImplicitBase : public virtual SharedFromThis<ImplicitBase> {
 protected:
-  virtual                    ~ImplicitBase        () = 0; // abstract class
+  virtual                     ~ImplicitBase     () = 0; // abstract class
 public:
   using PropertyAccessorPred = std::function<bool (const PropertyAccessor&)>;
-  virtual bool                __access__          (const std::string &propertyname, const PropertyAccessorPred&) = 0;
-  uint64                      __event_attach__    (const String &type, EventHandlerF handler);          //: AIDAID
-  bool                        __event_detach__    (int64 connection_id);                                //: AIDAID __event_detachid__
-  void                        __event_emit__      (const Event &event);                                 //: AIDAID __event_callback__
+  virtual bool                 __access__       (const std::string &propertyname, const PropertyAccessorPred &pred);
+  virtual IfaceEventConnection __attach__       (const String &eventselector, EventHandlerF handler);
+  uint64                       __event_attach__ (const String &type, EventHandlerF handler);          //: AIDAID
+  bool                         __event_detach__ (int64 connection_id);                                //: AIDAID __event_detachid__
+  void                         __event_emit__   (const Event &event);                                 //: AIDAID __event_callback__
   using SharedFromThis<ImplicitBase>::shared_from_this;
 };
 

@@ -48,9 +48,6 @@ using ChainP = std::shared_ptr<Chain>;
 // == ComboImpl ==
 class ComboImpl : public ProcessorImpl, public virtual ComboIface {
   std::shared_ptr<AudioSignal::Chain> combo_;
-protected:
-  Aida::StringVector __typelist_mt__ () const override  { return ProcessorImpl::__typelist_mt__();} // TODO: remove
-  bool __access__ (const std::string &n, const PropertyAccessorPred &p) override { return ProcessorImpl::__access__ (n, p);} // TODO: remove
 public:
   explicit        ComboImpl               (AudioSignal::Chain &combo);
   ProcessorSeq    list_processors         () override;

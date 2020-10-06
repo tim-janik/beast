@@ -788,7 +788,7 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     assert_return_unreached (NULL);
   assert_return (object->cxxobject_ == cxxo, NULL);
   assert_return (object->cxxobjref_ == NULL, NULL);
-  Aida::CallableIfaceP cxxobjref = cxxo->shared_from_this();
+  Aida::ImplicitBaseP cxxobjref = cxxo->shared_from_this();
   assert_return (cxxo == &*cxxobjref, NULL);
   assert_return (cxxo == object->cxxobjref_->get(), NULL);
   assert_return (cxxo == *object, NULL);

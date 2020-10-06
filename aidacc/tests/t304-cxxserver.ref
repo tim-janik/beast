@@ -226,8 +226,6 @@ protected:
   explicit                              FirstInterfaceIface ();
   virtual  /*dtor*/                    ~FirstInterfaceIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          void_func           () = 0;
 };
 
@@ -254,7 +252,6 @@ public:
   Aida::Any                     any3;
   inline                        XFooRecord () = default;
   inline                        XFooRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooRecord"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const XFooRecord &other) const;
   bool                          operator!=   (const XFooRecord &other) const { return !operator== (other); }
@@ -269,7 +266,6 @@ public:
   inline                        XFooSequence () = default;
   inline                        XFooSequence (const Aida::AnySeq &s);
   explicit                      XFooSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.XFooSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -281,7 +277,6 @@ public:
   inline                        IntSequence () = default;
   inline                        IntSequence (const Aida::AnySeq &s);
   explicit                      IntSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.IntSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -293,7 +288,6 @@ public:
   inline                        FloatSequence () = default;
   inline                        FloatSequence (const Aida::AnySeq &s);
   explicit                      FloatSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.FloatSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -305,7 +299,6 @@ public:
   inline                        StringSequence () = default;
   inline                        StringSequence (const Aida::AnySeq &s);
   explicit                      StringSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.StringSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -317,7 +310,6 @@ public:
   inline                        ExtensiveEnumSequence () = default;
   inline                        ExtensiveEnumSequence (const Aida::AnySeq &s);
   explicit                      ExtensiveEnumSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.ExtensiveEnumSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -329,7 +321,6 @@ public:
   inline                        RecordSequence () = default;
   inline                        RecordSequence (const Aida::AnySeq &s);
   explicit                      RecordSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.RecordSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -341,7 +332,6 @@ public:
   inline                        SequenceSequence () = default;
   inline                        SequenceSequence (const Aida::AnySeq &s);
   explicit                      SequenceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.SequenceSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -353,7 +343,6 @@ public:
   inline                        InterfaceSequence () = default;
   inline                        InterfaceSequence (const Aida::AnySeq &s);
   explicit                      InterfaceSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.InterfaceSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -365,7 +354,6 @@ public:
   inline                        AnySequence () = default;
   inline                        AnySequence (const Aida::AnySeq &s);
   explicit                      AnySequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.AnySequence"; }
   static const Aida::StringVector& __typedata__ ();
 };
 
@@ -380,7 +368,6 @@ public:
   XFooSequence                  seq;
   inline                        NestedTypesRec () = default;
   inline                        NestedTypesRec (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesRec"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const NestedTypesRec &other) const;
   bool                          operator!=   (const NestedTypesRec &other) const { return !operator== (other); }
@@ -395,7 +382,6 @@ public:
   inline                        NestedTypesSeq () = default;
   inline                        NestedTypesSeq (const Aida::AnySeq &s);
   explicit                      NestedTypesSeq (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.NestedTypesSeq"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -409,7 +395,6 @@ public:
   NestedTypesRec                ntr;
   inline                        NewRecord () = default;
   inline                        NewRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.NewRecord"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const NewRecord &other) const;
   bool                          operator!=   (const NewRecord &other) const { return !operator== (other); }
@@ -427,7 +412,6 @@ public:
   NewRecord                     rec;
   inline                        InnerRecord () = default;
   inline                        InnerRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.Inner.InnerRecord"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const InnerRecord &other) const;
   bool                          operator!=   (const InnerRecord &other) const { return !operator== (other); }
@@ -442,7 +426,6 @@ public:
   Inner::InnerRecord            r;
   inline                        Refer2Inner () = default;
   inline                        Refer2Inner (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "MandatoryNamespace.Refer2Inner"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const Refer2Inner &other) const;
   bool                          operator!=   (const Refer2Inner &other) const { return !operator== (other); }
@@ -462,7 +445,6 @@ public:
   MandatoryNamespace::Inner::InnerRecord r4;
   inline                        SomeRecord () = default;
   inline                        SomeRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "OtherNamespace.SomeRecord"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const SomeRecord &other) const;
   bool                          operator!=   (const SomeRecord &other) const { return !operator== (other); }
@@ -483,7 +465,6 @@ public:
   std::string                   aux_str;
   inline                        RecordWithAuxdata () = default;
   inline                        RecordWithAuxdata (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "Auxdata.RecordWithAuxdata"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const RecordWithAuxdata &other) const;
   bool                          operator!=   (const RecordWithAuxdata &other) const { return !operator== (other); }
@@ -504,7 +485,6 @@ protected:
   explicit                              UIWidgetAreaIface ();
   virtual  /*dtor*/                    ~UIWidgetAreaIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual bool                          dummy    () const = 0;
   virtual void                          dummy    (bool) = 0;
@@ -540,8 +520,6 @@ protected:
   explicit                              ParentIface ();
   virtual  /*dtor*/                    ~ParentIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class ChildIface;
@@ -554,8 +532,6 @@ protected:
   explicit                              ChildIface ();
   virtual  /*dtor*/                    ~ChildIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class DescendantIface;
@@ -568,8 +544,6 @@ protected:
   explicit                              DescendantIface ();
   virtual  /*dtor*/                    ~DescendantIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class GrandChildIface;
@@ -582,8 +556,6 @@ protected:
   explicit                              GrandChildIface ();
   virtual  /*dtor*/                    ~GrandChildIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class QuickRecord
@@ -593,7 +565,6 @@ public:
   int                           int2 = 0;
   inline                        QuickRecord () = default;
   inline                        QuickRecord (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "InterfaceTests.QuickRecord"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const QuickRecord &other) const;
   bool                          operator!=   (const QuickRecord &other) const { return !operator== (other); }
@@ -608,7 +579,6 @@ public:
   inline                        QuickSequence () = default;
   inline                        QuickSequence (const Aida::AnySeq &s);
   explicit                      QuickSequence (std::initializer_list<value_type> il) : Sequence (il) {};
-  std::string                   __typename__      () const	{ return "InterfaceTests.QuickSequence"; }
   static const Aida::StringVector& __typedata__ ();
   inline operator               Aida::AnySeq      () const;
 };
@@ -623,8 +593,6 @@ protected:
   explicit                              QuickIfaceIface ();
   virtual  /*dtor*/                    ~QuickIfaceIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          simple_function (int i = 9) = 0;
 };
 
@@ -638,8 +606,6 @@ protected:
   explicit                              MethodTestInterfaceIface ();
   virtual  /*dtor*/                    ~MethodTestInterfaceIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          method_with_void         () = 0;
   virtual bool                          method_with_bools        (bool input,
                                                                   bool optval = 0) = 0;
@@ -675,8 +641,6 @@ protected:
   explicit                              SignalTestInterfaceIface ();
   virtual  /*dtor*/                    ~SignalTestInterfaceIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class ChildInheritingSignalsIface;
@@ -689,8 +653,6 @@ protected:
   explicit                              ChildInheritingSignalsIface ();
   virtual  /*dtor*/                    ~ChildInheritingSignalsIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class AnotherChildIface;
@@ -703,8 +665,6 @@ protected:
   explicit                              AnotherChildIface ();
   virtual  /*dtor*/                    ~AnotherChildIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class PropertyTesterIface;
@@ -717,7 +677,6 @@ protected:
   explicit                              PropertyTesterIface ();
   virtual  /*dtor*/                    ~PropertyTesterIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual bool                          bool_prop      () const = 0;
   virtual void                          bool_prop      (bool) = 0;
@@ -756,8 +715,6 @@ protected:
   explicit                              UseIncludesIface ();
   virtual  /*dtor*/                    ~UseIncludesIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 
 class ButtonAreaIface;
@@ -770,7 +727,6 @@ protected:
   explicit                              ButtonAreaIface ();
   virtual  /*dtor*/                    ~ButtonAreaIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual std::string                   on_click   () const = 0;
   virtual void                          on_click   (const std::string&) = 0;
@@ -793,8 +749,6 @@ protected:
   explicit                              PureMethodsIface ();
   virtual  /*dtor*/                    ~PureMethodsIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual int                           pure_method      (double f) = 0;
 };
 } // RapicornAidaTest
@@ -811,8 +765,6 @@ protected:
   explicit                              NameTestsIface ();
   virtual  /*dtor*/                    ~NameTestsIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual void                          args_from_other_namespace (const InterfaceTests::QuickRecord &qr,
                                                                    RapicornAidaTest::ClickType qe,
                                                                    const OtherNamespace::SomeRecord &sr) = 0;
@@ -831,7 +783,6 @@ protected:
   explicit                              CompressorIface ();
   virtual  /*dtor*/                    ~CompressorIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
   virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
   virtual double                        threshold () const = 0;
   virtual void                          threshold (double) = 0;
@@ -849,7 +800,6 @@ public:
   double                        threshold2 = 0;
   inline                        RecordForGroups () = default;
   inline                        RecordForGroups (const Aida::AnyRec &r) { __visit__ ([&r] (auto &v, const char *n) { v = r[n].get< typename std::decay<decltype (v)>::type >(); }); }
-  std::string                   __typename__      () const	{ return "BseTest.RecordForGroups"; }
   static const Aida::StringVector& __typedata__ ();
   bool                          operator==   (const RecordForGroups &other) const;
   bool                          operator!=   (const RecordForGroups &other) const { return !operator== (other); }
@@ -867,8 +817,6 @@ protected:
   explicit                              SoundModuleIface ();
   virtual  /*dtor*/                    ~SoundModuleIface () override = 0;
 public:
-  virtual Aida::StringVector            __typelist_mt__    () const override;
-  virtual bool                          __access__         (const std::string &propertyname, const PropertyAccessorPred&) override;
 };
 } // BseTest
 
@@ -1319,16 +1267,6 @@ FirstInterfaceIface::FirstInterfaceIface ()
 {}
 FirstInterfaceIface::~FirstInterfaceIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-FirstInterfaceIface::__typelist_mt__ () const
-{
-  return { "MandatoryNamespace.FirstInterface", };
-}
-bool
-FirstInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__MandatoryNamespace_XFooRecord_ = {
   "typename=MandatoryNamespace.XFooRecord\0"
   "type=RECORD\0"
@@ -1672,11 +1610,6 @@ UIWidgetAreaIface::UIWidgetAreaIface ()
 {}
 UIWidgetAreaIface::~UIWidgetAreaIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-UIWidgetAreaIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.UIWidgetArea", };
-}
 bool
 UIWidgetAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1701,64 +1634,21 @@ ParentIface::ParentIface ()
 {}
 ParentIface::~ParentIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-ParentIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.Parent", };
-}
-bool
-ParentIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 ChildIface::ChildIface ()
 {}
 ChildIface::~ChildIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-ChildIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.Child", "InterfaceTests.Parent", };
-}
-bool
-ChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->ParentIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 DescendantIface::DescendantIface ()
 {}
 DescendantIface::~DescendantIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-DescendantIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.Descendant", "InterfaceTests.Parent", "InterfaceTests.Child", };
-}
-bool
-DescendantIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->ChildIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 GrandChildIface::GrandChildIface ()
 {}
 GrandChildIface::~GrandChildIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-GrandChildIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.GrandChild", "InterfaceTests.Parent", "InterfaceTests.Child", "InterfaceTests.Descendant", };
-}
-bool
-GrandChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->DescendantIface::__access__ (__n, __p)) return true;
-  return false;
-}
 static const Aida::IntrospectionRegistry __aida__aux__data__InterfaceTests_QuickRecord_ = {
   "typename=InterfaceTests.QuickRecord\0"
   "type=RECORD\0"
@@ -1796,88 +1686,31 @@ QuickIfaceIface::QuickIfaceIface ()
 {}
 QuickIfaceIface::~QuickIfaceIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-QuickIfaceIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.QuickIface", };
-}
-bool
-QuickIfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 MethodTestInterfaceIface::MethodTestInterfaceIface ()
 {}
 MethodTestInterfaceIface::~MethodTestInterfaceIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-MethodTestInterfaceIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.MethodTestInterface", };
-}
-bool
-MethodTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 SignalTestInterfaceIface::SignalTestInterfaceIface ()
 {}
 SignalTestInterfaceIface::~SignalTestInterfaceIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-SignalTestInterfaceIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.SignalTestInterface", };
-}
-bool
-SignalTestInterfaceIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 
 ChildInheritingSignalsIface::ChildInheritingSignalsIface ()
 {}
 ChildInheritingSignalsIface::~ChildInheritingSignalsIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-ChildInheritingSignalsIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.ChildInheritingSignals", "InterfaceTests.SignalTestInterface", };
-}
-bool
-ChildInheritingSignalsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 AnotherChildIface::AnotherChildIface ()
 {}
 AnotherChildIface::~AnotherChildIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-AnotherChildIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.AnotherChild", "InterfaceTests.SignalTestInterface", };
-}
-bool
-AnotherChildIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->SignalTestInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 PropertyTesterIface::PropertyTesterIface ()
 {}
 PropertyTesterIface::~PropertyTesterIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-PropertyTesterIface::__typelist_mt__ () const
-{
-  return { "InterfaceTests.PropertyTester", };
-}
 bool
 PropertyTesterIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1947,27 +1780,11 @@ UseIncludesIface::UseIncludesIface ()
 {}
 UseIncludesIface::~UseIncludesIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-UseIncludesIface::__typelist_mt__ () const
-{
-  return { "RapicornAidaTest.UseIncludes", "IncludeCheck.SomeInterface", };
-}
-bool
-UseIncludesIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  if (this->IncludeCheck::SomeInterfaceIface::__access__ (__n, __p)) return true;
-  return false;
-}
 
 ButtonAreaIface::ButtonAreaIface ()
 {}
 ButtonAreaIface::~ButtonAreaIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-ButtonAreaIface::__typelist_mt__ () const
-{
-  return { "RapicornAidaTest.ButtonArea", };
-}
 bool
 ButtonAreaIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -1999,16 +1816,6 @@ PureMethodsIface::PureMethodsIface ()
 {}
 PureMethodsIface::~PureMethodsIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-PureMethodsIface::__typelist_mt__ () const
-{
-  return { "RapicornAidaTest.PureMethods", };
-}
-bool
-PureMethodsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 } // RapicornAidaTest
 
 namespace Other {
@@ -2017,16 +1824,6 @@ NameTestsIface::NameTestsIface ()
 {}
 NameTestsIface::~NameTestsIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-NameTestsIface::__typelist_mt__ () const
-{
-  return { "Other.NameTests", };
-}
-bool
-NameTestsIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 } // Other
 
 namespace BseTest {
@@ -2035,11 +1832,6 @@ CompressorIface::CompressorIface ()
 {}
 CompressorIface::~CompressorIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-CompressorIface::__typelist_mt__ () const
-{
-  return { "BseTest.Compressor", };
-}
 bool
 CompressorIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
 {
@@ -2096,16 +1888,6 @@ SoundModuleIface::SoundModuleIface ()
 {}
 SoundModuleIface::~SoundModuleIface ()
 {} // define empty dtor to emit vtable
-Aida::StringVector
-SoundModuleIface::__typelist_mt__ () const
-{
-  return { "BseTest.SoundModule", };
-}
-bool
-SoundModuleIface::__access__ (const std::string &__n, const PropertyAccessorPred &__p)
-{
-  return false;
-}
 } // BseTest
 
 
