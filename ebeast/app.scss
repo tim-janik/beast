@@ -37,7 +37,7 @@ BrowserWindowDefaults		{ backgroundColor:          $b-default-background-color;	
 				  // gradient with banding
 				  background-image: linear-gradient(to bottom, $b-main-background-lg0 0%, $b-main-background-lg1 100%);
 				  // gradient image with reduced banding
-				  background: url(gradient-01.png) center repeat-x; background-size: auto 100%; }
+				  background: url(/assets/gradient-01.png) center repeat-x; background-size: auto 100%; }
 html				{ width: 100vw; height: 100vh;
 				  background-color: $b-default-background-color;
 				  font-size: $b-default-font-size;
@@ -68,7 +68,7 @@ button          		{ -webkit-appearance: normal; }
 
 // == Font-family "Inter" ==
 @font-face	{ font-family: 'Inter'; font-style: normal; font-weight: 500;
-		  src: url("Inter-Medium.woff2") format("woff2"); }
+		  src: url("/assets/Inter-Medium.woff2") format("woff2"); }
 @mixin inter-font-features() {
   font-feature-settings:
   "dlig" 1,     // Discretionary ligatures, e.g. !? -> interrobang

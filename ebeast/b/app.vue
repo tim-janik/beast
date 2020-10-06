@@ -12,7 +12,7 @@
 </docs>
 
 <style lang="scss">
-  @import 'mixins.scss';
+  @import '../app.scss';
   #b-app {
     //* create app stacking context */
     position: relative; z-index: 0;

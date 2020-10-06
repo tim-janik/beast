@@ -1,7 +1,0 @@
---- node_modules/@vue/component-compiler-utils/dist/styleProcessors/index.js.orig	1985-10-26 09:15:00.000000000 +0100
-+++ node_modules/@vue/component-compiler-utils/dist/styleProcessors/index.js	2020-06-18 02:53:03.036573830 +0200
-@@ -6,3 +6,3 @@
-     render(source, map, options) {
--        const nodeSass = require('sass');
-+        const nodeSass = options.sass || require('sass');
-         const finalOptions = Object.assign({}, options, {

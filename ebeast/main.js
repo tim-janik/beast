@@ -23,7 +23,7 @@ function create_window ()
   // avoid menu flicker, leave menu construction to the window
   Electron.Menu.setApplicationMenu (null);
   // find some CSS presets needed as BrowserWindow defaults
-  let appcss = FS.readFileSync (__dirname + '/assets/stylesheets.css', 'UTF-8');
+  let appcss = FS.readFileSync (__dirname + '/b/app.css', 'UTF-8');
   let rex = /\bBrowserWindowDefaults\s*{([^}]*)}/m;
   appcss = rex.exec (appcss)[1];       // extract BrowserWindowDefaults section
   rex = /\/\*([^*]|\*[^\/])*\*\//;

@@ -29,13 +29,13 @@ app/generated 		::= $(strip	\
 	$(app/assets/tri-pngs)		\
 	$>/app/assets/gradient-01.png	\
 	$>/app/assets/forkawesome-webfont.css	\
-	$>/app/assets/stylesheets.css	\
 	$>/app/assets/material-icons.css \
 )
 app/assets.copies	::= $(strip	\
 	$>/app/assets/spinners.svg	\
 )
 ebeast/copy.tool.targets ::= $(strip	\
+	$>/ebeast/chromatic-sass2.js	\
 	$>/ebeast/vue.rollup.js		\
 	$>/ebeast/markdown-it.esm0.js	\
 	$>/ebeast/markdown-it.rollup.js	\
@@ -58,7 +58,7 @@ $(filter $>/app/%, $(ebeast/copy.targets)):	$>/app/%:    ebeast/%	| $>/app/b/
 
 # == npm ==
 NPM_INSTALL = npm --prefer-offline install $(if $(PARALLEL_MAKE), --progress=false)
-$>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff ebeast/fix-vue-ccu.diff | $>/ebeast/
+$>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff	| $>/ebeast/
 	$(QGEN)
 	$Q rm -f -r $>/ebeast/node_modules/
 	$Q cp $< $>/ebeast/package.json # avoids dependency on other ebeast/copy.targets
@@ -68,7 +68,6 @@ $>/ebeast/node_modules/npm.done: ebeast/package.json.in	ebeast/fix-scss.diff ebe
 	  && find . -name package.json -print0 | xargs -0 sed -r "\|$$PWD|s|^(\s*(\"_where\":\s*)?)\"$$PWD|\1\"/...|" -i
 	@: # Patch broken modules
 	$Q (cd  $>/ebeast/ && patch -p0) < ebeast/fix-scss.diff
-	$Q (cd  $>/ebeast/ && patch -p0) < ebeast/fix-vue-ccu.diff
 	$Q echo >$@
 # provide node_modules/ for use in other makefiles
 NODE_MODULES.bin  ::= $>/ebeast/node_modules/.bin/
@@ -160,7 +159,7 @@ $>/app/assets/Beastycons.css: ebeast/Makefile.mk		| $>/ebeast/ $>/app/assets/
 	$(QGEN)
 	$Q test -e $>/ebeast/beastycons/bc-cursors.scss
 	$Q cp $>/ebeast/beastycons/Beastycons.css $>/ebeast/beastycons/Beastycons.woff2 $>/app/assets/
-$>/app/assets/stylesheets.css: $>/app/assets/Beastycons.css
+$>/app/index.html: $>/app/assets/Beastycons.css
 
 # == &>/app/markdown-it.mjs ==
 # rollup for import+require is tricky: https://github.com/rollup/rollup/issues/1058#issuecomment-254187433
@@ -209,6 +208,7 @@ $>/app/bseapi_jsonipc.js: jsonipc/head.js $(lib/BeastSoundEngine) bse/bseapi.idl
 	$Q mv $@.tmp $@
 
 # == $>/app/assets/ ==
+$>/app/index.html: $(ebeast/app.scss.d)
 ebeast/inter-typeface-downloads ::= \
   9cd56084faa8cc5ee75bf6f3d01446892df88928731ee9321e544a682aec55ef \
     https://github.com/rsms/inter/raw/v3.10/docs/font-files/Inter-Medium.woff2
@@ -216,14 +216,7 @@ $>/app/assets/Inter-Medium.woff2:			| $>/app/assets/
 	$(QGEN)
 	$Q cd $(@D) \
 		$(call foreachpair, AND_DOWNLOAD_SHAURL, $(ebeast/inter-typeface-downloads))
-$>/app/assets/stylesheets.css: $(ebeast/app.scss.d) $>/app/assets/Inter-Medium.woff2	| $>/ebeast/node_modules/npm.done
-	$(QGEN) # NOTE: scss source and output file locations must be final, because .map is derived from it
-	$Q : # cd $>/app/ && ../ebeast/node_modules/.bin/node-sass app.scss assets/stylesheets.css --source-map true
-	$Q $(NODE_MODULES.bin)/node-sass \
-		--functions $(NODE_MODULES.bin)/../chromatic-sass/dist/main.js \
-		ebeast/app.scss $@ \
-		--include-path ebeast/ --include-path $>/ebeast/ \
-		--source-map-embed --source-map-contents --source-comments
+$>/app/index.html: $>/app/assets/Inter-Medium.woff2
 $>/app/assets/material-icons.css:			| $>/ebeast/ $>/app/assets/
 	$(QECHO) FETCH "material-icons-*.tar.xz"
 	@ $(eval T := material-icons-200821-1-h0fccaba10.tar.xz)
@@ -244,17 +237,17 @@ $>/app/assets/forkawesome-webfont.css:				| $>/app/assets/
 	$Q cd $(@D) $(call foreachpair, AND_DOWNLOAD_SHAURL, $(ebeast/fork-awesome-downloads))
 	$Q sed "/^ *src: *url/s,src: *url(.*);,src: url('forkawesome-webfont.woff2');," -i $>/app/assets/fork-awesome.css
 	$Q mv $>/app/assets/fork-awesome.css $@
-$>/app/assets/gradient-01.png: $>/app/assets/stylesheets.css ebeast/Makefile.mk
-	$(QGEN) # generate non-banding gradient from stylesheets.css: gradient-01 { -im-convert: "..."; }
+$>/app/assets/gradient-01.png: $>/app/b/app.css ebeast/Makefile.mk
+	$(QGEN) # generate non-banding gradient from app/b/app.css: gradient-01 { -im-convert: "..."; }
 	$Q      # see: http://www.imagemagick.org/script/command-line-options.php#noise http://www.imagemagick.org/Usage/canvas/
-	$Q tr '\n' ' ' < $>/app/assets/stylesheets.css | \
+	$Q tr '\n' ' ' < $>/app/b/app.css | \
 	     sed -nr 's/.*@supports\s*\(--makefile:\s*rule\)\s*\{[^{]*\bgradient-01\s*\{\s*im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q $(IMAGEMAGICK_CONVERT) $$(cat $@.cli) $@.tmp.png
 	$Q rm $@.cli && mv $@.tmp.png $@
-$>/app/assets/tri-n.png: ebeast/triangle32.png $>/app/assets/stylesheets.css	| $>/app/assets/
+$>/app/assets/tri-n.png: ebeast/triangle32.png $>/app/b/app.css	| $>/app/assets/
 	$(QGEN)
-	$Q tr '\n' ' ' < $>/app/assets/stylesheets.css | \
+	$Q tr '\n' ' ' < $>/app/b/app.css | \
 	     sed -nr 's/.*@supports\s*\(--makefile:\s*rule\)\s*\{[^{]*\bscrollbar-arrow\s*\{\s*im-convert:\s*"([^"]*)"\s*[;}].*/\1/; T; p' > $@.cli
 	$Q test -s $@.cli # check that we actually found the -im-convert directive
 	$Q $(IMAGEMAGICK_CONVERT) $< $$(cat $@.cli) $@.tmp.png

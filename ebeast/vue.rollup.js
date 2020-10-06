@@ -3,11 +3,13 @@
 import vue from 'rollup-plugin-vue';		   // compile SFC.vue files
 import resolve from '@rollup/plugin-node-resolve'; // find vue-runtime-helpers/dist/normalize-component
 import scss from 'rollup-plugin-scss';		   // compile scss to css
+import path from 'path';
 
 export default {
   // https://rollupjs.org/guide/en/#big-list-of-options
   output: {
     sourcemap: 'inline',
+    sourcemapPathTransform: (relpath, mappath) => path.resolve (path.dirname (mappath), relpath),
     format: 'esm',
   },
   plugins: [
@@ -20,12 +22,12 @@ export default {
       // use node-sass, dart-sass has no support for { functions:... }
       style: { preprocessOptions: {
 	scss: {
-	  sass: require ('node-sass'),           // supports custom functions
 	  // https://github.com/sass/node-sass#options
+	  outputStyle: 'expanded',
+	  sourceMap: true,
+	  omitSourceMapUrl: false,
 	  sourceMapEmbed: true,
-	  outputStyle: 'nested',                 // nested, expanded, compact, compressed
-	  sourceComments: false,
-	  functions: require ("chromatic-sass"), // provide node-sass color functions
+	  functions: require ("./chromatic-sass2"),
 	},
       }, },
       // data: { css: '/* globals... */', }, // increases line numbers in source maps
