@@ -92,7 +92,7 @@ config-checks.require.pkgconfig ::= $(strip	\
 # used for GLIB_CFLAGS and GLIB_LIBS
 GLIB_PACKAGES    ::= glib-2.0 gobject-2.0 gmodule-no-export-2.0 zlib
 # used for BSEDEPS_CFLAGS BSEDEPS_LIBS
-BSEDEPS_PACKAGES ::= fluidsynth vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
+BSEDEPS_PACKAGES ::= fluidsynth liquidsfz vorbisenc vorbisfile vorbis ogg flac zlib $(GLIB_PACKAGES) # mad
 # used for BSE_JACK_LIBS
 BSEDEP_JACK     ::= jack >= 0.124.0
 
