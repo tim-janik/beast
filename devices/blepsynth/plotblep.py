@@ -72,9 +72,10 @@ def osc_py (params):
       sub_phase = 0  # not really correct (see bleposc.hh for a better implementation)
 
     sub_phase += 0.0005 * sync_factor
-    saw_state = -4 * sub_phase * (shape + 1)
     if sub_phase > 1:
       sub_phase -= 1
+
+    saw_state = -4 * sub_phase * (shape + 1)
 
     if sub_phase > c:
       pout = shape * 4 + 3
