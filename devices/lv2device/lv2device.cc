@@ -470,7 +470,10 @@ class LV2Device : public AudioSignal::Processor {
   initialize () override
   {
     plugin_host.options.set (sample_rate(), /* FIXME: buffer size */ 128);
-    plugin_instance = plugin_host.instantiate ("http://zynaddsubfx.sourceforge.net", sample_rate());
+    const char *uri = getenv ("LV2URI");
+    if (!uri)
+      uri = "http://zynaddsubfx.sourceforge.net";
+    plugin_instance = plugin_host.instantiate (uri, sample_rate());
   }
   void
   query_info (ProcessorInfo &info) const override
