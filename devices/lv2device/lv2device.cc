@@ -150,6 +150,10 @@ struct Port
 {
   LV2_Evbuf  *evbuf;
   float       control;    /* for control ports */
+  float       min_value;  /* min control */
+  float       max_value;  /* max control */
+  String      name;
+
   enum {
     UNKNOWN,
     CONTROL_IN,
@@ -317,10 +321,12 @@ PluginInstance::init_ports()
   plugin_ports.resize (n_ports);
 
   vector<float> defaults (n_ports);
+  vector<float> min_values (n_ports);
+  vector<float> max_values (n_ports);
 
   size_t n_control_ports = 0;
 
-  lilv_plugin_get_port_ranges_float (plugin, nullptr, nullptr, &defaults[0]);
+  lilv_plugin_get_port_ranges_float (plugin, &min_values[0], &max_values[0], &defaults[0]);
   for (int i = 0; i < n_ports; i++)
     {
       const LilvPort *port = lilv_plugin_get_port_by_index (plugin, i);
@@ -346,6 +352,12 @@ PluginInstance::init_ports()
                 {
                   plugin_ports[i].control = defaults[i];      // start with default value
                   plugin_ports[i].type = Port::CONTROL_IN;
+                  plugin_ports[i].min_value = min_values[i];
+                  plugin_ports[i].max_value = max_values[i];
+
+                  LilvNode *nname = lilv_port_get_name (plugin, port);
+                  plugin_ports[i].name = lilv_node_as_string (nname);
+                  lilv_node_free (nname);
 
                   lilv_instance_connect_port (instance, i, &plugin_ports[i].control);
 
@@ -465,7 +477,8 @@ class LV2Device : public AudioSignal::Processor {
   PluginInstance *plugin_instance;
   PluginHost plugin_host; // TODO: should be only one instance for all lv2 devices
 
-  static constexpr const int PID_CC_OFFSET = 1000;
+  vector<Port *> param_id_port;
+
   void
   initialize () override
   {
@@ -474,6 +487,14 @@ class LV2Device : public AudioSignal::Processor {
     if (!uri)
       uri = "http://zynaddsubfx.sourceforge.net";
     plugin_instance = plugin_host.instantiate (uri, sample_rate());
+
+    param_id_port.push_back (nullptr); // 0 is not a param id
+    for (auto& port : plugin_instance->plugin_ports)
+      if (port.type == Port::CONTROL_IN)
+        {
+          add_param (port.name, port.name, port.min_value, port.max_value, port.control);
+          param_id_port.push_back (&port);
+        }
   }
   void
   query_info (ProcessorInfo &info) const override
@@ -499,7 +520,8 @@ class LV2Device : public AudioSignal::Processor {
   void
   adjust_param (Id32 tag) override
   {
-    // TODO
+    if (tag > 0 && tag < param_id_port.size())
+      param_id_port[tag]->control = get_param (tag);
   }
   void
   render (uint n_frames) override
