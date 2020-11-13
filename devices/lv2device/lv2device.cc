@@ -189,6 +189,8 @@ struct PluginInstance
   void reset_event_buffers();
   void write_midi (uint32_t time, size_t size, const uint8_t *data);
   void run (float *audio_out_l, float *audio_out_r, uint32_t nframes);
+  void activate();
+  void deactivate();
 };
 
 struct PluginHost
@@ -440,6 +442,18 @@ PluginInstance::reset_event_buffers()
 }
 
 void
+PluginInstance::activate()
+{
+  lilv_instance_activate (instance);
+}
+
+void
+PluginInstance::deactivate()
+{
+  lilv_instance_deactivate (instance);
+}
+
+void
 PluginInstance::run (float *audio_out_l, float *audio_out_r, uint32_t nframes)
 {
   float fake_in[nframes];
@@ -495,6 +509,10 @@ class LV2Device : public AudioSignal::Processor {
           add_param (port.name, port.name, port.min_value, port.max_value, port.control);
           param_id_port.push_back (&port);
         }
+
+    // TODO: deactivate?
+    // TODO: is this the right place?
+    plugin_instance->activate();
   }
   void
   query_info (ProcessorInfo &info) const override
