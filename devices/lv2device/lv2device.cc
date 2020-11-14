@@ -9,6 +9,7 @@
 #include "lv2/lv2plug.in/ns/ext/parameters/parameters.h"
 #include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
 #include "lv2/lv2plug.in/ns/ext/worker/worker.h"
+#include "lv2/presets/presets.h"
 
 #include "lv2_evbuf.h"
 
@@ -65,6 +66,11 @@ public:
   feature() const
   {
     return &lv2_urid_map_feature;
+  }
+  LV2_URID_Map *
+  lv2_map()
+  {
+    return &lv2_urid_map;
   }
 };
 
@@ -153,6 +159,7 @@ struct Port
   float       min_value;  /* min control */
   float       max_value;  /* max control */
   String      name;
+  String      symbol;
 
   enum {
     UNKNOWN,
@@ -166,6 +173,12 @@ struct Port
     type (UNKNOWN)
   {
   }
+};
+
+struct PresetInfo
+{
+  String          name;
+  const LilvNode *preset = nullptr;
 };
 
 struct PluginInstance
@@ -184,6 +197,7 @@ struct PluginInstance
   std::vector<int>              atom_in_ports;
   std::vector<int>              audio_in_ports;
   std::vector<int>              audio_out_ports;
+  std::vector<PresetInfo>       presets;
 
   void init_ports();
   void reset_event_buffers();
@@ -201,8 +215,10 @@ struct PluginHost
 
   struct URIDs {
     LV2_URID param_sampleRate;
+    LV2_URID atom_Double;
     LV2_URID atom_Float;
     LV2_URID atom_Int;
+    LV2_URID atom_Long;
     LV2_URID atom_eventTransfer;
     LV2_URID bufsz_maxBlockLength;
     LV2_URID bufsz_minBlockLength;
@@ -210,8 +226,10 @@ struct PluginHost
 
     URIDs (Map& map) :
       param_sampleRate          (map.urid_map (LV2_PARAMETERS__sampleRate)),
+      atom_Double               (map.urid_map (LV2_ATOM__Double)),
       atom_Float                (map.urid_map (LV2_ATOM__Float)),
       atom_Int                  (map.urid_map (LV2_ATOM__Int)),
+      atom_Long                 (map.urid_map (LV2_ATOM__Long)),
       atom_eventTransfer        (map.urid_map (LV2_ATOM__eventTransfer)),
       bufsz_maxBlockLength      (map.urid_map (LV2_BUF_SIZE__maxBlockLength)),
       bufsz_minBlockLength      (map.urid_map (LV2_BUF_SIZE__minBlockLength)),
@@ -229,6 +247,9 @@ struct PluginHost
 
     LilvNode *lv2_atom_Chunk;
     LilvNode *lv2_atom_Sequence;
+    LilvNode *lv2_presets_Preset;
+
+    LilvNode *rdfs_label;
 
     void init (LilvWorld *world)
     {
@@ -240,6 +261,9 @@ struct PluginHost
 
       lv2_atom_Chunk    = lilv_new_uri (world, LV2_ATOM__Chunk);
       lv2_atom_Sequence = lilv_new_uri (world, LV2_ATOM__Sequence);
+
+      lv2_presets_Preset = lilv_new_uri(world, LV2_PRESETS__Preset);
+      rdfs_label         = lilv_new_uri(world, LILV_NS_RDFS "label");
     }
   } nodes;
 
@@ -311,6 +335,22 @@ PluginHost::instantiate (const char *plugin_uri, float mix_freq)
   plugin_instance->plugin = plugin;
   plugin_instance->init_ports();
 
+  // TODO: should probably be plugin_instance->init_presets()
+  LilvNodes* presets = lilv_plugin_get_related (plugin, nodes.lv2_presets_Preset);
+  LILV_FOREACH (nodes, i, presets)
+    {
+      const LilvNode* preset = lilv_nodes_get (presets, i);
+      lilv_world_load_resource (world, preset);
+      LilvNodes* labels = lilv_world_find_nodes (world, preset, nodes.rdfs_label, NULL);
+      if (labels)
+        {
+          const LilvNode* label = lilv_nodes_get_first (labels);
+          plugin_instance->presets.push_back ({lilv_node_as_string (label), lilv_node_duplicate (preset)});
+          lilv_nodes_free (labels);
+        }
+    }
+  lilv_nodes_free (presets);
+
   return plugin_instance;
 }
 
@@ -360,6 +400,9 @@ PluginInstance::init_ports()
                   LilvNode *nname = lilv_port_get_name (plugin, port);
                   plugin_ports[i].name = lilv_node_as_string (nname);
                   lilv_node_free (nname);
+
+                  const LilvNode *nsymbol = lilv_port_get_symbol (plugin, port);
+                  plugin_ports[i].symbol = lilv_node_as_string (nsymbol);
 
                   lilv_instance_connect_port (instance, i, &plugin_ports[i].control);
 
@@ -492,6 +535,13 @@ class LV2Device : public AudioSignal::Processor {
   PluginHost plugin_host; // TODO: should be only one instance for all lv2 devices
 
   vector<Port *> param_id_port;
+  int current_preset = 0;
+
+  enum
+    {
+      PID_PRESET         = 1,
+      PID_CONTROL_OFFSET = 10
+    };
 
   void
   initialize () override
@@ -502,11 +552,18 @@ class LV2Device : public AudioSignal::Processor {
       uri = "http://zynaddsubfx.sourceforge.net";
     plugin_instance = plugin_host.instantiate (uri, sample_rate());
 
-    param_id_port.push_back (nullptr); // 0 is not a param id
+    ChoiceEntries centries;
+    centries += { "-none-" };
+    for (auto preset : plugin_instance->presets)
+      centries += { preset.name };
+    add_param (PID_PRESET, "Device Preset", "Preset", std::move (centries), 0, "", "Device Preset to be used");
+    current_preset = 0;
+
+    int pid = PID_CONTROL_OFFSET;
     for (auto& port : plugin_instance->plugin_ports)
       if (port.type == Port::CONTROL_IN)
         {
-          add_param (port.name, port.name, port.min_value, port.max_value, port.control);
+          add_param (pid++, port.name, port.name, port.min_value, port.max_value, port.control);
           param_id_port.push_back (&port);
         }
 
@@ -538,8 +595,34 @@ class LV2Device : public AudioSignal::Processor {
   void
   adjust_param (Id32 tag) override
   {
-    if (tag > 0 && tag < param_id_port.size())
-      param_id_port[tag]->control = get_param (tag);
+    // controls for LV2Device
+    if (int (tag) == PID_PRESET)
+      {
+        int want_preset = bse_ftoi (get_param (tag));
+        if (current_preset != want_preset)
+          {
+            current_preset = want_preset;
+
+            if (want_preset > 0 && want_preset <= int (plugin_instance->presets.size()))
+              {
+                // TODO: this should not be done in audio thread
+
+                auto preset_info = plugin_instance->presets[want_preset - 1];
+                printf ("load preset %s\n", preset_info.name.c_str());
+                LilvState *state = lilv_state_new_from_world (plugin_host.world, plugin_host.urid_map.lv2_map(), preset_info.preset);
+                const LV2_Feature* state_features[] = { // TODO: more features
+                  plugin_host.urid_map.feature(),
+                  NULL
+                };
+                lilv_state_restore (state, plugin_instance->instance, set_port_value, this, 0, state_features);
+              }
+          }
+      }
+
+    // real LV2 controls start at PID_CONTROL_OFFSET
+    auto control_id = tag - PID_CONTROL_OFFSET;
+    if (control_id >= 0 && control_id < param_id_port.size())
+      param_id_port[control_id]->control = get_param (tag);
   }
   void
   render (uint n_frames) override
@@ -583,6 +666,58 @@ class LV2Device : public AudioSignal::Processor {
       oblock (stereo_out_, 1)
     };
     plugin_instance->run (output[0], output[1], n_frames);
+  }
+  void
+  set_port_value (const char*         port_symbol,
+                  const void*         value,
+                  uint32_t            size,
+                  uint32_t            type)
+  {
+    double dvalue = 0;
+    if (type == plugin_host.urids.atom_Float)
+      {
+        dvalue = *(const float*)value;
+      }
+    else if (type == plugin_host.urids.atom_Double)
+      {
+        dvalue = *(const double*)value;
+      }
+    else if (type == plugin_host.urids.atom_Int)
+      {
+        dvalue = *(const int32_t*)value;
+      }
+    else if (type == plugin_host.urids.atom_Long)
+      {
+        dvalue = *(const int64_t*)value;
+      }
+    else
+      {
+        // TODO: unmap
+#if 0
+                fprintf(stderr, "error: Preset `%s' value has bad type <%s>\n",
+                        port_symbol, jalv->unmap.unmap(jalv->unmap.handle, type));
+#endif
+        return;
+      }
+    printf ("%s = %f\n", port_symbol, dvalue);
+    for (int i = 0; i < (int) param_id_port.size(); i++)
+      {
+        if (param_id_port[i]->symbol == port_symbol)
+          {
+            set_param (i + PID_CONTROL_OFFSET, dvalue);
+          }
+      }
+  }
+
+  static void
+  set_port_value (const char*         port_symbol,
+                  void*               user_data,
+                  const void*         value,
+                  uint32_t            size,
+                  uint32_t            type)
+  {
+    LV2Device *dev = (LV2Device *) user_data;
+    dev->set_port_value (port_symbol, value, size, type);
   }
 };
 
