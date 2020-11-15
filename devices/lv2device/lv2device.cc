@@ -34,6 +34,7 @@ class Map
 {
   LV2_URID              next_id;
   map<string, LV2_URID> m_urid_map;
+  map<LV2_URID, String> m_urid_unmap;
 
   LV2_URID_Map       lv2_urid_map;
   const LV2_Feature  lv2_urid_map_feature;
@@ -58,8 +59,18 @@ public:
     if (id == 0)
       id = next_id++;
 
+    m_urid_unmap[id] = str;
     printf ("map %s -> %d\n", str, id);
     return id;
+  }
+  const char *
+  urid_unmap (LV2_URID id)
+  {
+    auto it = m_urid_unmap.find (id);
+    if (it != m_urid_unmap.end())
+      return it->second.c_str();
+    else
+      return nullptr;
   }
 
   const LV2_Feature *
@@ -697,11 +708,8 @@ class LV2Device : public AudioSignal::Processor {
       }
     else
       {
-        // TODO: unmap
-#if 0
-                fprintf(stderr, "error: Preset `%s' value has bad type <%s>\n",
-                        port_symbol, jalv->unmap.unmap(jalv->unmap.handle, type));
-#endif
+        fprintf (stderr, "error: Preset `%s' value has bad type <%s>\n",
+                          port_symbol, plugin_instance->plugin_host.urid_map.urid_unmap (type));
         return;
       }
     printf ("%s = %f\n", port_symbol, dvalue);
