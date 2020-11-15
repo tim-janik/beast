@@ -200,6 +200,7 @@ struct PluginInstance
   std::vector<PresetInfo>       presets;
 
   void init_ports();
+  void init_presets();
   void reset_event_buffers();
   void write_midi (uint32_t time, size_t size, const uint8_t *data);
   void run (float *audio_out_l, float *audio_out_r, uint32_t nframes);
@@ -334,22 +335,7 @@ PluginHost::instantiate (const char *plugin_uri, float mix_freq)
   plugin_instance->instance = instance;
   plugin_instance->plugin = plugin;
   plugin_instance->init_ports();
-
-  // TODO: should probably be plugin_instance->init_presets()
-  LilvNodes* presets = lilv_plugin_get_related (plugin, nodes.lv2_presets_Preset);
-  LILV_FOREACH (nodes, i, presets)
-    {
-      const LilvNode* preset = lilv_nodes_get (presets, i);
-      lilv_world_load_resource (world, preset);
-      LilvNodes* labels = lilv_world_find_nodes (world, preset, nodes.rdfs_label, NULL);
-      if (labels)
-        {
-          const LilvNode* label = lilv_nodes_get_first (labels);
-          plugin_instance->presets.push_back ({lilv_node_as_string (label), lilv_node_duplicate (preset)});
-          lilv_nodes_free (labels);
-        }
-    }
-  lilv_nodes_free (presets);
+  plugin_instance->init_presets();
 
   return plugin_instance;
 }
@@ -449,6 +435,25 @@ PluginInstance::init_ports()
   printf ("audio IN:%zd OUT:%zd\n", audio_in_ports.size(), audio_out_ports.size());
   printf ("control IN:%zd\n", n_control_ports);
   printf ("--------------------------------------------------\n");
+}
+
+void
+PluginInstance::init_presets()
+{
+  LilvNodes* lilv_presets = lilv_plugin_get_related (plugin, plugin_host.nodes.lv2_presets_Preset);
+  LILV_FOREACH (nodes, i, lilv_presets)
+    {
+      const LilvNode* preset = lilv_nodes_get (lilv_presets, i);
+      lilv_world_load_resource (plugin_host.world, preset);
+      LilvNodes* labels = lilv_world_find_nodes (plugin_host.world, preset, plugin_host.nodes.rdfs_label, NULL);
+      if (labels)
+        {
+          const LilvNode* label = lilv_nodes_get_first (labels);
+          presets.push_back ({lilv_node_as_string (label), lilv_node_duplicate (preset)}); // TODO: preset leak
+          lilv_nodes_free (labels);
+        }
+    }
+  lilv_nodes_free (lilv_presets);
 }
 
 void
