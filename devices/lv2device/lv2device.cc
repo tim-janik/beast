@@ -323,6 +323,7 @@ struct PluginInstance
   std::vector<int>              audio_in_ports;
   std::vector<int>              audio_out_ports;
   std::vector<PresetInfo>       presets;
+  bool                          active = false;
 
   void init_ports();
   void init_presets();
@@ -472,6 +473,9 @@ PluginInstance::PluginInstance (PluginHost& plugin_host) :
 PluginInstance::~PluginInstance()
 {
   worker.stop();
+
+  if (active)
+    deactivate();
 }
 
 void
@@ -626,13 +630,25 @@ PluginInstance::reset_event_buffers()
 void
 PluginInstance::activate()
 {
-  lilv_instance_activate (instance);
+  if (!active)
+    {
+      printf ("activate\n");
+      lilv_instance_activate (instance);
+
+      active = true;
+    }
 }
 
 void
 PluginInstance::deactivate()
 {
-  lilv_instance_deactivate (instance);
+  if (active)
+    {
+      printf ("deactivate\n");
+      lilv_instance_deactivate (instance);
+
+      active = false;
+    }
 }
 
 void
