@@ -2,6 +2,7 @@
 #include "bse/processor.hh"
 #include "bse/signalmath.hh"
 #include "bse/internal.hh"
+#include "bse/bseengine.hh"
 
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/midi/midi.h"
@@ -12,6 +13,7 @@
 #include "lv2/presets/presets.h"
 
 #include "lv2_evbuf.h"
+#include "ringbuffer.hh"
 
 #include <lilv/lilv.h>
 
@@ -115,20 +117,115 @@ class Worker
 {
   LV2_Worker_Schedule lv2_worker_sched;
   const LV2_Feature   lv2_worker_feature;
+
+  const LV2_Worker_Interface *worker_interface = nullptr;
+  LV2_Handle                  instance = nullptr;
+  RingBuffer<uint8>           work_buffer_;
+  RingBuffer<uint8>           response_buffer_;
+  std::thread                 thread_;
 public:
   Worker() :
     lv2_worker_sched { this, schedule },
-    lv2_worker_feature { LV2_WORKER__schedule, &lv2_worker_sched }
+    lv2_worker_feature { LV2_WORKER__schedule, &lv2_worker_sched },
+    work_buffer_ (4096),
+    response_buffer_ (4096)
   {
+    thread_ = std::thread (&Worker::run, this);
   }
 
+  void
+  set_instance (LilvInstance *lilv_instance)
+  {
+    instance = lilv_instance_get_handle (lilv_instance);
+
+    const LV2_Descriptor *descriptor = lilv_instance_get_descriptor (lilv_instance);
+    if (descriptor && descriptor->extension_data)
+       worker_interface = (const LV2_Worker_Interface *) (*descriptor->extension_data) (LV2_WORKER__interface);
+  }
+
+  void
+  run()
+  {
+    for (;;) // TODO: join thread
+      {
+        g_usleep (10 * 1000); // TODO: avoid sleep
+        while (work_buffer_.get_readable_values())
+          {
+            uint32 size;
+            work_buffer_.read (sizeof (size), (uint8 *) &size);
+            uint8 data[size];
+            work_buffer_.read (size, data);
+
+            printf ("got work %d bytes\n", size);
+            worker_interface->work (instance, respond, this, size, data);
+          }
+      }
+  }
+
+  LV2_Worker_Status
+  send_data (RingBuffer<uint8>& ring_buffer, uint32_t size, const void *data)
+  {
+    const uint32 n_values = sizeof (size) + size;
+    if (n_values <= ring_buffer.get_writable_values())
+      {
+        uint8 to_write[n_values];
+        memcpy (to_write, &size, sizeof (size));
+        memcpy (to_write + sizeof (size), data, size);
+
+        ring_buffer.write (n_values, to_write);
+        return LV2_WORKER_SUCCESS;
+      }
+    else
+      {
+        return LV2_WORKER_ERR_NO_SPACE;
+      }
+  }
+  LV2_Worker_Status
+  schedule (uint32_t size, const void *data)
+  {
+    if (!worker_interface)
+      return LV2_WORKER_ERR_UNKNOWN;
+
+    return send_data (work_buffer_, size, data);
+  }
+  LV2_Worker_Status
+  respond (uint32_t size, const void *data)
+  {
+    if (!worker_interface)
+      return LV2_WORKER_ERR_UNKNOWN;
+
+    printf ("queue work response\n");
+    return send_data (response_buffer_, size, data);
+  }
+  void
+  handle_responses()
+  {
+    while (response_buffer_.get_readable_values())
+      {
+        uint32 size;
+        response_buffer_.read (sizeof (size), (uint8 *) &size);
+        uint8 data[size];
+        response_buffer_.read (size, data);
+
+        printf ("got work response %d bytes\n", size);
+        worker_interface->work_response (instance, size, data);
+      }
+  }
   static LV2_Worker_Status
   schedule (LV2_Worker_Schedule_Handle handle,
             uint32_t                   size,
             const void*                data)
   {
-    printf ("schedule %p %d %p\n", handle, size, data);
-    return LV2_WORKER_ERR_UNKNOWN; // TODO
+    Worker *worker = static_cast<Worker *> (handle);
+    return worker->schedule (size, data);
+  }
+  static LV2_Worker_Status
+  respond  (LV2_Worker_Respond_Handle handle,
+            uint32_t                  size,
+            const void*               data)
+  {
+    Worker *worker = static_cast<Worker *> (handle);
+    return worker->respond (size, data);
   }
 
   const LV2_Feature *
@@ -196,13 +293,15 @@ struct PluginInstance
 {
   PluginHost& plugin_host;
 
-  PluginInstance (PluginHost& plugin_host) :
-    plugin_host (plugin_host)
-  {
-  }
+  Features features;
 
-  const LilvPlugin             *plugin;
-  LilvInstance                 *instance;
+  Worker   worker;
+
+  PluginInstance (PluginHost& plugin_host);
+
+  const LilvPlugin             *plugin = nullptr;
+  LilvInstance                 *instance = nullptr;
+  const LV2_Worker_Interface   *worker_interface = nullptr;
   std::vector<Port>             plugin_ports;
   std::vector<int>              atom_out_ports;
   std::vector<int>              atom_in_ports;
@@ -222,7 +321,6 @@ struct PluginInstance
 struct PluginHost
 {
   LilvWorld  *world;
-  Features    features;
   Map         urid_map;
 
   struct URIDs {
@@ -279,7 +377,6 @@ struct PluginHost
     }
   } nodes;
 
-  Worker   worker;
   Options  options;
 
   PluginHost() :
@@ -291,10 +388,6 @@ struct PluginHost
     lilv_world_load_all (world);
 
     nodes.init (world);
-
-    features.add (urid_map.feature());
-    features.add (worker.feature());
-    features.add (options.feature());
   }
   PluginInstance *instantiate (const char *plugin_uri, float mix_freq);
 };
@@ -335,20 +428,30 @@ PluginHost::instantiate (const char *plugin_uri, float mix_freq)
     }
   lilv_node_free (uri);
 
-  LilvInstance *instance = lilv_plugin_instantiate (plugin, mix_freq, features.get_features());
+  PluginInstance *plugin_instance = new PluginInstance (*this);
+
+  LilvInstance *instance = lilv_plugin_instantiate (plugin, mix_freq, plugin_instance->features.get_features());
   if (!instance)
     {
       fprintf (stderr, "plugin instantiate failed\n");
       exit (1);
     }
 
-  PluginInstance *plugin_instance = new PluginInstance (*this);
   plugin_instance->instance = instance;
   plugin_instance->plugin = plugin;
   plugin_instance->init_ports();
   plugin_instance->init_presets();
+  plugin_instance->worker.set_instance (instance);
 
   return plugin_instance;
+}
+
+PluginInstance::PluginInstance (PluginHost& plugin_host) :
+  plugin_host (plugin_host)
+{
+  features.add (plugin_host.urid_map.feature());
+  features.add (worker.feature());
+  features.add (plugin_host.options.feature()); /* TODO: maybe make a local version */
 }
 
 void
@@ -562,7 +665,7 @@ class LV2Device : public AudioSignal::Processor {
   void
   initialize () override
   {
-    plugin_host.options.set (sample_rate(), /* FIXME: buffer size */ 128);
+    plugin_host.options.set (sample_rate(), BSE_ENGINE_MAX_BLOCK_SIZE);
     const char *uri = getenv ("LV2URI");
     if (!uri)
       uri = "http://zynaddsubfx.sourceforge.net";
@@ -682,6 +785,7 @@ class LV2Device : public AudioSignal::Processor {
       oblock (stereo_out_, 1)
     };
     plugin_instance->run (output[0], output[1], n_frames);
+    plugin_instance->worker.handle_responses();
   }
   void
   set_port_value (const char*         port_symbol,
