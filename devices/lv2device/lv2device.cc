@@ -3,6 +3,7 @@
 #include "bse/signalmath.hh"
 #include "bse/internal.hh"
 #include "bse/bseengine.hh"
+#include "aidacc/aida.hh"
 
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/midi/midi.h"
@@ -123,6 +124,7 @@ class Worker
   RingBuffer<uint8>           work_buffer_;
   RingBuffer<uint8>           response_buffer_;
   std::thread                 thread_;
+  Aida::ScopedSemaphore       sem_;
 public:
   Worker() :
     lv2_worker_sched { this, schedule },
@@ -148,7 +150,7 @@ public:
   {
     for (;;) // TODO: join thread
       {
-        g_usleep (10 * 1000); // TODO: avoid sleep
+        sem_.wait();
         while (work_buffer_.get_readable_values())
           {
             uint32 size;
@@ -186,7 +188,9 @@ public:
     if (!worker_interface)
       return LV2_WORKER_ERR_UNKNOWN;
 
-    return send_data (work_buffer_, size, data);
+    auto rc = send_data (work_buffer_, size, data);
+    sem_.post();
+    return rc;
   }
   LV2_Worker_Status
   respond (uint32_t size, const void *data)
