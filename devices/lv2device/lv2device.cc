@@ -692,11 +692,14 @@ class LV2Device : public AudioSignal::Processor {
       uri = "http://zynaddsubfx.sourceforge.net";
     plugin_instance = plugin_host.instantiate (uri, sample_rate());
 
-    ChoiceEntries centries;
-    centries += { "-none-" };
-    for (auto preset : plugin_instance->presets)
-      centries += { preset.name };
-    add_param (PID_PRESET, "Device Preset", "Preset", std::move (centries), 0, "", "Device Preset to be used");
+    if (plugin_instance->presets.size()) /* choice with 1 entry will crash */
+      {
+        ChoiceEntries centries;
+        centries += { "-none-" };
+        for (auto preset : plugin_instance->presets)
+          centries += { preset.name };
+        add_param (PID_PRESET, "Device Preset", "Preset", std::move (centries), 0, "", "Device Preset to be used");
+      }
     current_preset = 0;
 
     add_param (PID_DELETE, "Test Delete", "TestDel", false);
