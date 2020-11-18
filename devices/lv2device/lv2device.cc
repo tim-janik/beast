@@ -124,15 +124,25 @@ class Worker
   RingBuffer<uint8>           work_buffer_;
   RingBuffer<uint8>           response_buffer_;
   std::thread                 thread_;
+  std::atomic<int>            quit_;
   Aida::ScopedSemaphore       sem_;
 public:
   Worker() :
     lv2_worker_sched { this, schedule },
     lv2_worker_feature { LV2_WORKER__schedule, &lv2_worker_sched },
     work_buffer_ (4096),
-    response_buffer_ (4096)
+    response_buffer_ (4096),
+    quit_ (0)
   {
     thread_ = std::thread (&Worker::run, this);
+  }
+  void
+  stop()
+  {
+    quit_ = 1;
+    sem_.post();
+    thread_.join();
+    printf ("worker thread joined\n");
   }
 
   void
@@ -148,7 +158,7 @@ public:
   void
   run()
   {
-    for (;;) // TODO: join thread
+    while (!quit_)
       {
         sem_.wait();
         while (work_buffer_.get_readable_values())
@@ -302,6 +312,7 @@ struct PluginInstance
   Worker   worker;
 
   PluginInstance (PluginHost& plugin_host);
+  ~PluginInstance();
 
   const LilvPlugin             *plugin = nullptr;
   LilvInstance                 *instance = nullptr;
@@ -456,6 +467,11 @@ PluginInstance::PluginInstance (PluginHost& plugin_host) :
   features.add (plugin_host.urid_map.feature());
   features.add (worker.feature());
   features.add (plugin_host.options.feature()); /* TODO: maybe make a local version */
+}
+
+PluginInstance::~PluginInstance()
+{
+  worker.stop();
 }
 
 void
@@ -663,6 +679,7 @@ class LV2Device : public AudioSignal::Processor {
   enum
     {
       PID_PRESET         = 1,
+      PID_DELETE         = 2,
       PID_CONTROL_OFFSET = 10
     };
 
@@ -681,6 +698,8 @@ class LV2Device : public AudioSignal::Processor {
       centries += { preset.name };
     add_param (PID_PRESET, "Device Preset", "Preset", std::move (centries), 0, "", "Device Preset to be used");
     current_preset = 0;
+
+    add_param (PID_DELETE, "Test Delete", "TestDel", false);
 
     int pid = PID_CONTROL_OFFSET;
     for (auto& port : plugin_instance->plugin_ports)
@@ -718,6 +737,9 @@ class LV2Device : public AudioSignal::Processor {
   void
   adjust_param (Id32 tag) override
   {
+    if (!plugin_instance)
+      return;
+
     // controls for LV2Device
     if (int (tag) == PID_PRESET)
       {
@@ -741,6 +763,11 @@ class LV2Device : public AudioSignal::Processor {
               }
           }
       }
+    if (int (tag) == PID_DELETE && get_param (tag) > 0.5) // this is just test code
+      {
+        delete plugin_instance;
+        plugin_instance = nullptr;
+      }
 
     // real LV2 controls start at PID_CONTROL_OFFSET
     auto control_id = tag - PID_CONTROL_OFFSET;
@@ -751,6 +778,13 @@ class LV2Device : public AudioSignal::Processor {
   render (uint n_frames) override
   {
     adjust_params (false);
+
+    if (!plugin_instance)
+      {
+        bse_block_fill_0 (n_frames, oblock (stereo_out_, 0));
+        bse_block_fill_0 (n_frames, oblock (stereo_out_, 1));
+        return;
+      }
 
     // reset event buffers and write midi events
     plugin_instance->reset_event_buffers();
