@@ -450,7 +450,9 @@ PluginHost::instantiate (const char *plugin_uri, float mix_freq)
   if (!instance)
     {
       fprintf (stderr, "plugin instantiate failed\n");
-      exit (1);
+      delete plugin_instance;
+
+      return nullptr;
     }
 
   plugin_instance->instance = instance;
@@ -474,8 +476,14 @@ PluginInstance::~PluginInstance()
 {
   worker.stop();
 
-  if (active)
-    deactivate();
+  if (instance)
+    {
+      if (active)
+        deactivate();
+
+      lilv_instance_free (instance);
+      instance = nullptr;
+    }
 }
 
 void
@@ -717,7 +725,10 @@ class LV2Device : public AudioSignal::Processor {
     const char *uri = getenv ("LV2URI");
     if (!uri)
       uri = "http://zynaddsubfx.sourceforge.net";
+
     plugin_instance = plugin_host.instantiate (uri, sample_rate());
+    if (!plugin_instance)
+      return;
 
     if (plugin_instance->presets.size()) /* choice with 1 entry will crash */
       {
@@ -754,6 +765,9 @@ class LV2Device : public AudioSignal::Processor {
   void
   configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
   {
+    if (!plugin_instance)
+      return;
+
     remove_all_buses();
     prepare_event_input();
     if (plugin_instance->audio_in_ports.size())
@@ -764,6 +778,9 @@ class LV2Device : public AudioSignal::Processor {
   void
   reset () override
   {
+    if (!plugin_instance)
+      return;
+
     adjust_params (true);
   }
   void
