@@ -731,6 +731,8 @@ class LV2Device : public AudioSignal::Processor {
     for (auto& port : plugin_instance->plugin_ports)
       if (port.type == Port::CONTROL_IN)
         {
+          // TODO: lv2 port numbers are not reliable for serialization, should use port.symbol instead
+          // TODO: special case boolean, enumeration, logarithmic,... controls
           add_param (pid++, port.name, port.name, port.min_value, port.max_value, port.control);
           param_id_port.push_back (&port);
         }
