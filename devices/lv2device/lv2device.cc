@@ -329,7 +329,8 @@ struct PluginInstance
   void init_presets();
   void reset_event_buffers();
   void write_midi (uint32_t time, size_t size, const uint8_t *data);
-  void run (const float *audio_in_l, const float *audio_in_r, float *audio_out_l, float *audio_out_r, uint32_t nframes);
+  void connect_audio_port (uint32_t port, float *buffer);
+  void run (uint32_t nframes);
   void activate();
   void deactivate();
 };
@@ -660,44 +661,15 @@ PluginInstance::deactivate()
 }
 
 void
-PluginInstance::run (const float *audio_in_l,
-                     const float *audio_in_r,
-                     float *audio_out_l,
-                     float *audio_out_r,
-                     uint32_t nframes)
+PluginInstance::connect_audio_port (uint32_t port, float *buffer)
 {
-  float fake_in[nframes];
+  lilv_instance_connect_port (instance, port, buffer);
+}
 
-  // fake input: use on-stack buffer with zeros
-  if (!audio_in_ports.empty())
-    {
-      std::fill_n (fake_in, nframes, 0.0);
-
-      for (size_t i = 0; i < audio_in_ports.size(); i++)
-        lilv_instance_connect_port (instance, audio_in_ports[i], fake_in);
-    }
-
-  // connect inputs
-  if (audio_in_ports.size() > 0)
-    lilv_instance_connect_port (instance, audio_in_ports[0], const_cast<float *> (audio_in_l));
-  if (audio_in_ports.size() > 1)
-    lilv_instance_connect_port (instance, audio_in_ports[1], const_cast<float *> (audio_in_r));
-
-  // connect outputs
-  const bool mono_plugin_out = audio_out_ports.size() == 1;
-  const bool stereo_plugin_out = audio_out_ports.size() == 2;
-
-  assert_return (mono_plugin_out || stereo_plugin_out);
-  lilv_instance_connect_port (instance, audio_out_ports[0], audio_out_l);
-
-  if (stereo_plugin_out)
-    lilv_instance_connect_port (instance, audio_out_ports[1], audio_out_r);
-
+void
+PluginInstance::run (uint32_t nframes)
+{
   lilv_instance_run (instance, nframes);
-
-  // automatically convert mono -> stereo
-  if (mono_plugin_out)
-    std::copy (audio_out_l, audio_out_l + nframes, audio_out_r);
 }
 
 }
@@ -705,6 +677,9 @@ PluginInstance::run (const float *audio_in_l,
 class LV2Device : public AudioSignal::Processor {
   IBusId stereo_in_;
   OBusId stereo_out_;
+  vector<IBusId> mono_ins_;
+  vector<OBusId> mono_outs_;
+
   PluginInstance *plugin_instance;
   PluginHost plugin_host; // TODO: should be only one instance for all lv2 devices
 
@@ -763,17 +738,42 @@ class LV2Device : public AudioSignal::Processor {
     info.category = "Synth";
   }
   void
-  configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override
-  {
+  configure (uint n_ibusses, const SpeakerArrangement *ibusses, uint n_obusses, const SpeakerArrangement *obusses) override {
     if (!plugin_instance)
       return;
 
     remove_all_buses();
     prepare_event_input();
-    if (plugin_instance->audio_in_ports.size())
-      stereo_in_ = add_input_bus ("Stereo In", SpeakerArrangement::STEREO);
-    stereo_out_ = add_output_bus ("Stereo Out", SpeakerArrangement::STEREO);
-    assert_return (bus_info (stereo_out_).ident == "stereo-out");
+
+    /* map audio inputs/outputs to busses;
+     *
+     *   channels == 1 -> one mono bus
+     *   channels == 2 -> one stereo bus
+     *   channels >= 3 -> N mono busses (TODO: is this the best mapping for all plugins?)
+     */
+    mono_ins_.clear();
+    mono_outs_.clear();
+    if (plugin_instance->audio_in_ports.size() == 2)
+      {
+        stereo_in_ = add_input_bus ("Stereo In", SpeakerArrangement::STEREO);
+        assert_return (bus_info (stereo_in_).ident == "stereo-in");
+      }
+    else
+      {
+        for (size_t i = 0; i < plugin_instance->audio_in_ports.size(); i++)
+          mono_ins_.push_back (add_input_bus (string_format ("Mono In %zd", i + 1), SpeakerArrangement::MONO));
+      }
+
+    if (plugin_instance->audio_out_ports.size() == 2)
+      {
+        stereo_out_ = add_output_bus ("Stereo Out", SpeakerArrangement::STEREO);
+        assert_return (bus_info (stereo_out_).ident == "stereo-out");
+      }
+    else
+      {
+        for (size_t i = 0; i < plugin_instance->audio_out_ports.size(); i++)
+          mono_outs_.push_back (add_output_bus (string_format ("Mono Out %zd", i + 1), SpeakerArrangement::MONO));
+      }
   }
   void
   reset () override
@@ -830,8 +830,16 @@ class LV2Device : public AudioSignal::Processor {
 
     if (!plugin_instance)
       {
-        bse_block_fill_0 (n_frames, oblock (stereo_out_, 0));
-        bse_block_fill_0 (n_frames, oblock (stereo_out_, 1));
+        if (plugin_instance->audio_out_ports.size() == 2)
+          {
+            bse_block_fill_0 (n_frames, oblock (stereo_out_, 0));
+            bse_block_fill_0 (n_frames, oblock (stereo_out_, 1));
+          }
+        else
+          {
+            for (size_t i = 0; i < plugin_instance->audio_out_ports.size(); i++)
+              bse_block_fill_0 (n_frames, oblock (mono_outs_[i], 0));
+          }
         return;
       }
 
@@ -867,18 +875,28 @@ class LV2Device : public AudioSignal::Processor {
           }
       }
 
-    const float *input[2] = { nullptr, nullptr };
-    if (plugin_instance->audio_in_ports.size())
+    if (plugin_instance->audio_in_ports.size() == 2)
       {
-        input[0] = ifloats (stereo_in_, 0);
-        input[1] = ifloats (stereo_in_, 1);
+        plugin_instance->connect_audio_port (plugin_instance->audio_in_ports[0], const_cast<float *> (ifloats (stereo_in_, 0)));
+        plugin_instance->connect_audio_port (plugin_instance->audio_in_ports[1], const_cast<float *> (ifloats (stereo_in_, 1)));
+      }
+    else
+      {
+        for (size_t i = 0; i < plugin_instance->audio_in_ports.size(); i++)
+          plugin_instance->connect_audio_port (plugin_instance->audio_in_ports[i], const_cast<float *> (ifloats (mono_ins_[i], 0)));
       }
 
-    float *output[2] = {
-      oblock (stereo_out_, 0),
-      oblock (stereo_out_, 1)
-    };
-    plugin_instance->run (input[0], input[1], output[0], output[1], n_frames);
+    if (plugin_instance->audio_out_ports.size() == 2)
+      {
+        plugin_instance->connect_audio_port (plugin_instance->audio_out_ports[0], oblock (stereo_out_, 0));
+        plugin_instance->connect_audio_port (plugin_instance->audio_out_ports[1], oblock (stereo_out_, 1));
+      }
+    else
+      {
+        for (size_t i = 0; i < plugin_instance->audio_out_ports.size(); i++)
+          plugin_instance->connect_audio_port (plugin_instance->audio_out_ports[i], oblock (mono_outs_[i], 0));
+      }
+    plugin_instance->run (n_frames);
     plugin_instance->worker.handle_responses();
   }
   void
