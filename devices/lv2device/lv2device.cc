@@ -225,6 +225,13 @@ public:
         worker_interface->work_response (instance, size, data);
       }
   }
+  void
+  end_run()
+  {
+    /* to be called after each run cycle */
+    if (worker_interface && worker_interface->end_run)
+      worker_interface->end_run (instance);
+  }
   static LV2_Worker_Status
   schedule (LV2_Worker_Schedule_Handle handle,
             uint32_t                   size,
@@ -670,6 +677,9 @@ void
 PluginInstance::run (uint32_t nframes)
 {
   lilv_instance_run (instance, nframes);
+
+  worker.handle_responses();
+  worker.end_run();
 }
 
 }
@@ -897,7 +907,6 @@ class LV2Device : public AudioSignal::Processor {
           plugin_instance->connect_audio_port (plugin_instance->audio_out_ports[i], oblock (mono_outs_[i], 0));
       }
     plugin_instance->run (n_frames);
-    plugin_instance->worker.handle_responses();
   }
   void
   set_port_value (const char*         port_symbol,
