@@ -4,6 +4,7 @@
 #include "internal.hh"
 #include "gsldatautils.hh"
 #include "bseblockutils.hh"
+#include "bsemididecoder.hh"
 
 #include <unistd.h>
 
@@ -11,6 +12,7 @@
 
 #if __has_include(<jack/jack.h>)
 #include <jack/jack.h>
+#include <jack/midiport.h>
 
 #define MAX_JACK_STRING_SIZE    1024
 
@@ -36,11 +38,6 @@ To fix this, there should be an explicit audio engine start/stop in BEAST.
 Once the audio engine is started, the JACK client should remain registered
 with JACK, even if no song is playing. This should fix the problems this
 driver has due to JACK disconnect on device close.
-
-JACK Midi
----------
-Apart from audio, JACK can provide midi events to clients. This can be
-added later on.
 
 Less buffering, better latency
 ------------------------------
@@ -85,7 +82,7 @@ fast_copy (uint        n_values,
            Data       *ovalues,
 	   const Data *ivalues)
 {
-  copy (ivalues, ivalues + n_values, ovalues);
+  std::copy (ivalues, ivalues + n_values, ovalues);
 }
 
 template<> void
@@ -294,6 +291,52 @@ public:
   }
 };
 
+/* special case API in case FrameRingBuffer n_channels == 1 */
+template<class T>
+class RingBuffer
+{
+  FrameRingBuffer<T> rb;
+public:
+  RingBuffer (uint n_items = 0) :
+    rb (n_items)
+  {
+  }
+  uint
+  get_readable_items()
+  {
+    return rb.get_readable_frames();
+  }
+  uint
+  read (uint  n_items,
+        T    *items)
+  {
+    T *i_ptr[1] = {items};
+    return rb.read (n_items, i_ptr);
+  }
+  uint
+  get_writable_items()
+  {
+    return rb.get_writable_frames();
+  }
+  uint
+  write (uint     n_items,
+         const T *items)
+  {
+    const T *i_ptr[1] = {items};
+    return rb.write (n_items, i_ptr);
+  }
+  void
+  clear()
+  {
+    rb.clear();
+  }
+  void
+  resize (uint n_items)
+  {
+    rb.resize (n_items);
+  }
+};
+
 static void
 error_callback_silent (const char *msg)
 {
@@ -410,6 +453,9 @@ query_jack_devices (jack_client_t *jack_client)
   return devices;
 }
 
+// special audio / midi driver devid which doesn't auto connect to a physical device
+static const String no_auto_connect_devid = "no-auto-connect";
+
 static void
 list_jack_drivers (Driver::EntryVec &entries)
 {
@@ -441,8 +487,15 @@ list_jack_drivers (Driver::EntryVec &entries)
           entry.capabilities += string_format (", channels: %d*playback + %d*capture", details.input_ports, details.output_ports);
           entry.device_info = "Routing via the JACK Audio Connection Kit";
           if (details.physical_ports == details.ports)
-            entry.notice = "Note: JACK adds latency compared to direct hardware access";
+            entry.notice = "Note: JACK driver adds latency compared to direct hardware access";
           entry.priority = Driver::JACK;
+          entries.push_back (entry);
+
+          // add device entry which doesn't auto connect to hardware device
+          entry.devid = no_auto_connect_devid;
+          entry.device_name = string_format ("JACK \"%s\" Audio Device", entry.devid);
+          entry.capabilities = "Full-Duplex Audio";
+          entry.priority = Driver::JACK + 1;
           entries.push_back (entry);
         }
     }
@@ -454,6 +507,9 @@ namespace Bse {
 
 /* macro for jack dropout tests - see below */
 #define TEST_DROPOUT() if (unlink ("/tmp/bse-dropout") == 0) usleep (1.5 * 1000000. * buffer_frames_ / mix_freq_); /* sleep 1.5 * buffer size */
+
+class JackPcmDriver;
+static JackPcmDriver *jack_pcm_driver = nullptr; // allow jack midi driver to communicate with jack audio driver
 
 // == JackPcmDriver ==
 class JackPcmDriver : public PcmDriver {
@@ -477,6 +533,16 @@ class JackPcmDriver : public PcmDriver {
   uint64                        device_read_counter_ = 0;
   uint64                        device_write_counter_ = 0;
   int                           device_open_counter_ = 0;
+
+  /* midi stuff */
+  using MidiDriverCallback = std::function<void(uint, uint8*)>;
+  struct MidiLink {
+    uint                        id = 0;
+    jack_port_t                *jack_port = nullptr;
+    RingBuffer<uint8>           ring_buffer { 8000 };
+    MidiDriverCallback          callback;
+  };
+  vector<std::unique_ptr<MidiLink>> midi_links;
 
   int
   process_callback (jack_nframes_t n_frames)
@@ -515,6 +581,23 @@ class JackPcmDriver : public PcmDriver {
 
         for (auto values : out_values)
           Block::fill (n_frames, values, 0.0);
+      }
+
+    if (atomic_active_)
+      {
+        for (auto& midi_link_ptr : midi_links)
+          {
+            /* handle midi input */
+            void *port_buf = jack_port_get_buffer (midi_link_ptr->jack_port, n_frames);
+            jack_nframes_t event_count = jack_midi_get_event_count (port_buf);
+            for (jack_nframes_t event_index = 0; event_index < event_count; event_index++)
+              {
+                jack_midi_event_t    in_event;
+                jack_midi_event_get (&in_event, port_buf, event_index);
+                if (midi_link_ptr->ring_buffer.get_writable_items() >= in_event.size)  // write whole event or nothing
+                  midi_link_ptr->ring_buffer.write (in_event.size, in_event.buffer);
+              }
+          }
       }
     return 0;
   }
@@ -597,6 +680,7 @@ public:
   close () override
   {
     assert_return (opened());
+    jack_pcm_driver = nullptr;
     disconnect_jack (jack_client_);
     jack_client_ = nullptr;
   }
@@ -627,14 +711,14 @@ public:
         char port_name[port_name_size];
         jack_port_t *port;
 
-        snprintf (port_name, port_name_size, "in_%u", i);
+        snprintf (port_name, port_name_size, "in_%u", i + 1);
         port = jack_port_register (jack_client_, port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
         if (port)
           input_ports_.push_back (port);
         else
           error = Bse::Error::FILE_OPEN_FAILED;
 
-        snprintf (port_name, port_name_size, "out_%u", i);
+        snprintf (port_name, port_name_size, "out_%u", i + 1);
         port = jack_port_register (jack_client_, port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
         if (port)
           output_ports_.push_back (port);
@@ -705,7 +789,8 @@ public:
       }
 
     /* connect ports */
-    if (error == 0) // we may want to make auto connect configurable (so it can be turned off)
+    const bool auto_connect = devid_ != no_auto_connect_devid;
+    if (error == 0 && auto_connect)
       {
         std::map<std::string, DeviceDetails> devices = query_jack_devices (jack_client_);
         std::map<std::string, DeviceDetails>::const_iterator di;
@@ -732,6 +817,7 @@ public:
       {
         flags_ |= Flags::OPENED;
 
+        jack_pcm_driver = this;         // for jack midi driver
         uint dummy;
         pcm_latency (&dummy, &dummy);   // debugging only: print latency values
       }
@@ -771,6 +857,9 @@ public:
 
     /* enable processing in callback (if not already active) */
     atomic_active_ = 1;
+
+    /* notify midi drivers if new events have arrived */
+    notify_midi_drivers();
 
     /* report jack driver xruns */
     if (atomic_xruns_ != printed_xruns_)
@@ -904,9 +993,178 @@ public:
     uint frames_written = output_ringbuffer_.write (block_length_, deinterleaved_frames);
     assert_return (frames_written == block_length_);
   }
+  /*---- midi driver related ----*/
+  uint
+  attach_midi_driver (const std::string& from_port, MidiDriverCallback callback)
+  {
+    const uint id = midi_links.size() + 1;
+    String port_name = string_format ("midi_in_%d", id);
+    jack_port_t *midi_port = jack_port_register (jack_client_, port_name.c_str(), JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+
+    const bool auto_connect = from_port != no_auto_connect_devid;
+    if (auto_connect && jack_connect (jack_client_, from_port.c_str(), jack_port_name (midi_port)) != 0)
+      {
+        jack_port_unregister (jack_client_, midi_port);
+        return 0;
+      }
+
+    auto& midi_link_ptr = midi_links.emplace_back (std::make_unique<MidiLink>());
+    midi_link_ptr->callback = callback;
+    midi_link_ptr->jack_port = midi_port;
+    midi_link_ptr->id = id;
+    return id;
+  }
+  void
+  notify_midi_drivers()
+  {
+    for (auto& midi_link_ptr : midi_links)
+      {
+        uint n = midi_link_ptr->ring_buffer.get_readable_items();
+        if (n > 0 && midi_link_ptr->callback)
+          {
+            uint8 midi_data[n];
+            midi_link_ptr->ring_buffer.read (n, midi_data);
+            midi_link_ptr->callback (n, midi_data); // process event data in JackMidiDriver
+          }
+      }
+  }
+  void
+  detach_midi_driver (uint id)
+  {
+    for (auto& midi_link_ptr : midi_links)
+      if (midi_link_ptr->id == id)
+        midi_link_ptr->callback = nullptr;
+  }
 };
 
 static const String jack_pcm_driverid = PcmDriver::register_driver ("jack", JackPcmDriver::create, list_jack_drivers);
+
+/* JackMidiDriver and JackPcmDriver use the same jack_client which is owned by
+ * the audio driver. The jack midi input port is really handled by the audio
+ * driver in the JACK process_callback(), and the midi driver is notified by
+ * the audio driver if new midi input is available.
+ *
+ * We assume that the API is used only by one thread at a time, and in the
+ * following order:
+ *
+ * 1. open audio driver:
+ *   - JackPcmDriver::open()
+ * 2. open midi drivers:
+ *   - JackMidiDriver::open() [can be called never, once or more than once]
+ * 3. use audio/midi drivers:
+ *   - JackPcmDriver::pcm_check_io(), ::pcm_write(), ... and related
+ * 4. close drivers (in any order):
+ *   - JackMidiDriver::close()
+ *   - JackPcmDriver::close()
+ *
+ * After you have started using the audio/midi drivers, open() is no longer
+ * permitted.
+ */
+class JackMidiDriver : public MidiDriver {
+  BseMidiDecoder *midi_decoder_ = nullptr;
+  uint            midi_driver_id_ = 0;
+public:
+  static MidiDriverP
+  create (const String &devid)
+  {
+    auto mdriverp = std::make_shared<JackMidiDriver> (devid);
+    return mdriverp;
+  }
+  explicit
+  JackMidiDriver (const String &devid) :
+    MidiDriver (devid)
+  {
+    midi_decoder_ = bse_midi_decoder_new (TRUE, FALSE, MusicalTuning::OD_12_TET);
+  }
+  ~JackMidiDriver()
+  {
+    bse_midi_decoder_destroy (midi_decoder_);
+  }
+  virtual void
+  close () override
+  {
+    assert_return (opened());
+    if (jack_pcm_driver)
+      jack_pcm_driver->detach_midi_driver (midi_driver_id_);
+
+    flags_ &= ~size_t (Flags::OPENED | Flags::READABLE | Flags::WRITABLE);
+  }
+  void
+  process_midi (uint n, uint8 *midi_data)
+  {
+    const uint64 systime = sfi_time_system ();
+    bse_midi_decoder_push_data (midi_decoder_, n, midi_data, systime);
+  }
+  virtual Error
+  open (IODir iodir) override
+  {
+    assert_return (!opened(), Error::INTERNAL);
+
+    if (!jack_pcm_driver)
+      return Error::FILE_OPEN_FAILED;
+
+    midi_driver_id_ = jack_pcm_driver->attach_midi_driver (devid_, [this] (uint n, uint8 *midi_data) { process_midi (n, midi_data); });
+    if (!midi_driver_id_)
+      return Error::FILE_OPEN_FAILED;
+
+    flags_ |= Flags::READABLE | Flags::OPENED;
+    return Error::NONE;
+  }
+  static void
+  list (Driver::EntryVec &entries)
+  {
+    jack_client_t *jack_client = connect_jack();
+    if (!jack_client)
+      return;
+
+    // ports which are automatically connected to hardware device
+    uint priority = Driver::JACK;
+    const char **ports = jack_get_ports (jack_client, NULL, JACK_DEFAULT_MIDI_TYPE, JackPortIsPhysical | JackPortIsOutput);
+    if (ports)
+      {
+        for (uint i = 0; ports[i]; i++)
+          {
+            jack_port_t *jack_port = jack_port_by_name (jack_client, ports[i]);
+
+            char alias1[MAX_JACK_STRING_SIZE] = "", alias2[MAX_JACK_STRING_SIZE] = "";
+            char *aliases[2] = { alias1, alias2, };
+            const int cnt = jack_port_get_aliases (jack_port, aliases);
+            std::string input_port_alias = (cnt >= 1 && alias1[0]) ? alias1 : "";
+
+            std::string devid = ports[i];
+            Driver::Entry entry;
+            entry.devid = devid;
+            entry.device_name = string_format ("JACK Midi \"%s\"", devid);
+            const std::string phprefix = "Physical: ";
+            if (!input_port_alias.empty())
+              entry.device_name += " [" + phprefix + input_port_alias + "]";
+
+            entry.capabilities = "Hardware Midi Input";
+            entry.device_info = "Routing via the JACK Audio Connection Kit";
+            entry.priority = priority++;
+            entry.readonly = true;
+            entries.push_back (entry);
+          }
+
+        free (ports);
+      }
+
+    // port which isn't connected (let the user connect it to other apps)
+    Driver::Entry entry;
+    entry.devid = no_auto_connect_devid;
+    entry.device_name = string_format ("JACK Midi \"%s\"", entry.devid);
+    entry.capabilities = "Virtual Midi Input";
+    entry.device_info = "Routing via the JACK Audio Connection Kit";
+    entry.priority = priority++;
+    entry.readonly = true;
+    entries.push_back (entry);
+
+    disconnect_jack (jack_client);
+  }
+};
+
+static const String jack_midi_driverid = MidiDriver::register_driver ("jack", JackMidiDriver::create, JackMidiDriver::list);
+
 } // Bse
 
 #endif  // __has_include(<jack/jack.h>)
