@@ -1,0 +1,44 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bse/bsecxxmodule.idl";
+namespace Bse {
+enum LadderFilterType {
+  LADDER_FILTER_LP4      = Enum (_("Lowpass 4"),      _("4 pole lowpass, 24db/octave")),
+  LADDER_FILTER_LP3      = Enum (_("Lowpass 3"),      _("3 pole lowpass, 18db/octave")),
+  LADDER_FILTER_LP2      = Enum (_("Lowpass 2"),      _("2 pole lowpass, 12db/octave")),
+  LADDER_FILTER_LP1      = Enum (_("Lowpass 1"),      _("1 pole lowpass, 6db/octave")),
+};
+
+interface LadderFilter : Effect {
+  Info    authors   = "Stefan Westerfeld";
+  Info    license   = _("GNU Lesser General Public License");
+  Info    category  = _("/Filters/Ladder Filter");
+  Info    blurb     = _("Resonant ladder lowpass filter with adjustable number of poles");
+
+  IStream audio_in1  = Stream (_("Audio In1"), _("Audio input 1"));
+  IStream audio_in2  = Stream (_("Audio In2"), _("Audio input 2"));
+  IStream freq_in    = Stream (_("Freq In"), _("Frequency Input"));
+  IStream freq_mod_in = Stream (_("Freq Mod In"), _("Frequency Modulation Input"));
+  IStream key_freq_in = Stream (_("Key Freq In"), _("Keyboard Frequency Input (Key Tracking)"));
+  IStream reso_mod_in = Stream (_("Reso Mod In"), _("Resonance Modulation Input"));
+
+  OStream audio_out1 = Stream (_("Audio Out1"), _("Filtered audio output 1"));
+  OStream audio_out2 = Stream (_("Audio Out2"), _("Filtered audio output 2"));
+
+  group _("Filter") {
+    LadderFilterType filter_type = SfiEnum (_("Filter Type"), _("The filter type for the ladder filter"), LADDER_FILTER_LP4, STANDARD);
+  };
+  group _("Cutoff Frequency") {
+    Real cutoff           = Freq (_("Cutoff [Hz]"), _("Cutoff Frequency"), 440.0, STANDARD);
+    Real freq_mod_octaves = (_("Freq Mod [Octaves]"), _("Exponential frequency modulation: Number of Octaves"), 1.0, -5.0, 5.0, 0.01, STANDARD ":f:scale");
+    Real key_tracking = Perc (_("Key Tracking [%]"), _("Set the key tracking amount in percent"), 50, STANDARD);
+  };
+  group _("Resonance") {
+    Real resonance  = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 25, STANDARD);
+    Real resonance_mod = (_("Resonance Mod [%]"), _("Resonance modulation in percent"), 10, -100.0, 100.0, 0.1, STANDARD ":scale");
+  };
+  group _("Drive") {
+    Real drive_db   = Gain (_("Drive [dB]"), _("Set pre-filter gain to drive filter to saturation"), 0, -24, 36, 1, STANDARD ":scale");
+  };
+};
+
+} // Bse
