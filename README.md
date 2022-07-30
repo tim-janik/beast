@@ -7,6 +7,10 @@ BEAST & BSE
 [![Download](https://api.bintray.com/packages/beast-team/testing/Beast-AppImage/images/download.svg)](https://bintray.com/beast-team/testing/Beast-AppImage/_latestVersion)
 
 
+# DISCONTINUED
+
+Further Beast development has been halted, our development efforts now concentrate on [Anklang](github.com/tim-janik/anklang/) which is in many way a modern and better reimplementation of the Beast feature set. Modules and functionality of Beast are incrementally integrated into Anklang.
+
 # DESCRIPTION
 
 Beast is a digital synthesizer and music creation system. It has support
