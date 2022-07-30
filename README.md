@@ -9,7 +9,7 @@ BEAST & BSE
 
 # DISCONTINUED
 
-Further Beast development has been halted, our development efforts now concentrate on [Anklang](github.com/tim-janik/anklang/) which is in many way a modern and better reimplementation of the Beast feature set. Modules and functionality of Beast are incrementally integrated into Anklang.
+Further Beast development has been halted, our development efforts now concentrate on [Anklang](github.com/tim-janik/anklang/) which is in many ways a modern and better reimplementation of the Beast feature set. Modules and functionality of Beast are incrementally integrated into Anklang.
 
 # DESCRIPTION
 
